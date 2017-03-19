@@ -484,7 +484,7 @@ namespace ScriptEditor {
             this.treeView1.ShowRootLines = false;
             this.treeView1.Size = new System.Drawing.Size(138, 650);
             this.treeView1.TabIndex = 0;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             // 
             // tabPage5
             // 
@@ -506,6 +506,7 @@ namespace ScriptEditor {
             this.treeView2.ShowRootLines = false;
             this.treeView2.Size = new System.Drawing.Size(138, 650);
             this.treeView2.TabIndex = 0;
+            this.treeView2.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             // 
             // tabPage6
             // 

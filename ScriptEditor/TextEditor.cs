@@ -472,15 +472,21 @@ namespace ScriptEditor
             } else {
                 ls = currentTab.textEditor.Document.GetLineSegment(line - 1);
             }
-            TextLocation start, end;
+            TextLocation start, end, start_scroll;
+            end = new TextLocation(0, currentTab.textEditor.Document.TotalNumberOfLines);
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = end;
+            currentTab.textEditor.ActiveTextAreaControl.ScrollToCaret();
+
             if (column == -1 || column >= ls.Length - 2) {
                 start = new TextLocation(0, ls.LineNumber);
+                start_scroll = new TextLocation(0, ls.LineNumber-2);
             } else {
                 start = new TextLocation(column - 1, ls.LineNumber);
+                start_scroll = new TextLocation(column - 1, ls.LineNumber-2);
             }
             end = new TextLocation(ls.Length, ls.LineNumber);
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start;
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start_scroll;
             currentTab.textEditor.ActiveTextAreaControl.ScrollToCaret();
             currentTab.textEditor.ActiveTextAreaControl.Focus();
         }
@@ -1234,7 +1240,7 @@ namespace ScriptEditor
             }
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             string file = null;
             int line = 0;
