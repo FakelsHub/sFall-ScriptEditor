@@ -40,6 +40,7 @@ namespace ScriptEditor
         public static bool enableParser = true;
         public static bool shortCircuit = false;
         public static bool autocomplete = true;
+        public static bool showlog = true;
 
         public static void SetupWindowPosition(SavedWindows window, System.Windows.Forms.Form f)
         {

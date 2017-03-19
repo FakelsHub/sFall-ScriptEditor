@@ -26,6 +26,8 @@ namespace ScriptEditor
         private SearchForm sf;
         private GoToLine goToLine;
         private int previousTabIndex = -1;
+        private int minimizelogsize;
+        //private bool showlog = true;
 
         public TextEditor()
         {
@@ -45,8 +47,9 @@ namespace ScriptEditor
                 ToolStripMenuItem mi = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(file), null, delegate(object sender, EventArgs e) {
                     Open(file, OpenType.File, false, true);
                 });
-                templatesToolStripMenuItem.DropDownItems.Add(mi);
+                TemplateScript_ToolStripMenuItem.DropDownItems.Add(mi);
             }
+            // Parser
             parserLabel = new ToolStripLabel("Parser: No file");
             parserLabel.Alignment = ToolStripItemAlignment.Right;
             MainMenu.Items.Add(parserLabel);
@@ -62,7 +65,7 @@ namespace ScriptEditor
             ProgramInfo.LoadOpcodes();
         }
 
-        protected override void WndProc(ref Message m)
+        /*protected override void WndProc(ref Message m)
         {
             if (m.Msg == SingleInstanceManager.WM_SFALL_SCRIPT_EDITOR_OPEN) {
                 ShowMe();
@@ -72,7 +75,7 @@ namespace ScriptEditor
                 }
             }
             base.WndProc(ref m);
-        }
+        }*/
 
         private void ShowMe()
         {
@@ -90,7 +93,7 @@ namespace ScriptEditor
         private void TextEditor_Load(object sender, EventArgs e)
         {
             if (Settings.editorSplitterPosition != -1) {
-                splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
+                //splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
             }
             if (Settings.editorSplitterPosition2 != -1) {
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
@@ -127,7 +130,7 @@ namespace ScriptEditor
         }
 
         private void UpdateRecentList()
-        {
+        { 
             string[] items = Settings.GetRecent();
             recentToolStripMenuItem.DropDownItems.Clear();
             for (int i = items.Length - 1; i >= 0; i--) {
@@ -418,16 +421,19 @@ namespace ScriptEditor
             }
             treeView1.BeginUpdate();
             treeView1.Nodes.Clear();
+            treeView2.BeginUpdate();
+            treeView2.Nodes.Clear();
             if (currentTab.parseInfo != null && currentTab.shouldParse) {
-                foreach (var s in new List<string> { "Procedures", "Variables" }) {
+                /*foreach (var s in new List<string> { "Procedures", "Variables" }) {
                     var rootNode = treeView1.Nodes.Add(s);
                     rootNode.NodeFont = new System.Drawing.Font("Arial", 9, System.Drawing.FontStyle.Bold);
-
-                }
+                }*/
+                var rootNode = treeView1.Nodes.Add("Script Procedures");
+                rootNode.NodeFont = new System.Drawing.Font("Arial", 9, System.Drawing.FontStyle.Bold);
                 foreach (Procedure p in currentTab.parseInfo.procs) {
-                    TreeNode tn = new TreeNode(p.ToString(false));
+                    TreeNode tn = new TreeNode(p.name); //TreeNode(p.ToString(false));
                     tn.Tag = p;
-                    tn.ToolTipText = p.ToString() + "\n : " + p.filename;
+                    tn.ToolTipText = p.ToString(); // +"\n : " + p.filename;
                     foreach (Variable var in p.variables) {
                         TreeNode tn2 = new TreeNode(var.name);
                         tn2.Tag = var;
@@ -437,15 +443,18 @@ namespace ScriptEditor
                     treeView1.Nodes[0].Nodes.Add(tn);
                     treeView1.Nodes[0].Expand();
                 }
+                rootNode = treeView2.Nodes.Add("Script Variables");
+                rootNode.NodeFont = new System.Drawing.Font("Arial", 9, System.Drawing.FontStyle.Bold);
                 foreach (Variable var in currentTab.parseInfo.vars) {
                     TreeNode tn = new TreeNode(var.name);
                     tn.Tag = var;
                     tn.ToolTipText = var.ToString();
-                    treeView1.Nodes[1].Nodes.Add(tn);
-                    treeView1.Nodes[1].Expand();
+                    treeView2.Nodes[0].Nodes.Add(tn);
+                    treeView2.Nodes[0].Expand();
                 }
             }
             treeView1.EndUpdate();
+            treeView2.EndUpdate();
             if (treeView1.Nodes.Count > 0) {
                 treeView1.Nodes[0].EnsureVisible();
             }
@@ -564,11 +573,20 @@ namespace ScriptEditor
             }
         }
 
+/*
+ * 
+ * 
+ * 
+ *     MENU EVENTS 
+ * 
+ * 
+ * 
+ */
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save(currentTab);
         }
-
+        
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Open(null, OpenType.None);
@@ -576,13 +594,15 @@ namespace ScriptEditor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ofdScripts.ShowDialog() == DialogResult.OK) {
-                foreach (string s in ofdScripts.FileNames) {
+            if (ofdScripts.ShowDialog() == DialogResult.OK)
+            {
+                foreach (string s in ofdScripts.FileNames)
+                {
                     Open(s, OpenType.File);
                 }
             }
         }
-
+       
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveAs(currentTab);
@@ -593,10 +613,6 @@ namespace ScriptEditor
             Close(currentTab);
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
@@ -819,8 +835,11 @@ namespace ScriptEditor
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (sf == null) {
+            if (currentTab == null) { return; }
+            if (sf == null)
+            {
                 sf = new SearchForm();
+                //sf.Parent = Form.
                 sf.FormClosing += delegate(object a1, FormClosingEventArgs a2) { sf = null; };
                 sf.KeyUp += delegate(object a1, KeyEventArgs a2) {
                     if (a2.KeyCode == Keys.Escape) {
@@ -1419,16 +1438,9 @@ namespace ScriptEditor
                 Close(tabs[i]);
         }
 
-        private void headsFrmPatcherToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (HeadsFrmPatcher hfp = new HeadsFrmPatcher()) {
-                hfp.ShowDialog();
-            }
-        }
-
         void GoToLineToolStripMenuItemClick(object sender, EventArgs e)
         {
-            if (currentTab == null) {
+            if (currentTab == null || sf != null) {
                 return;
             }
             goToLine = new GoToLine();
@@ -1533,7 +1545,27 @@ namespace ScriptEditor
                 toolTipAC.Hide(panel1);
             }
         }
+
+        private void minimize_log_button_Click(object sender, EventArgs e)
+        {
+            if (minimizelogsize == 0) {
+                minimizelogsize = splitContainer1.SplitterDistance; 
+                splitContainer1.SplitterDistance = Form.ActiveForm.Size.Height;
+            } else {
+                splitContainer1.SplitterDistance = minimizelogsize;
+                minimizelogsize = 0;
+            }
+        }
+
+        private void showLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Settings.showlog) {
+                splitContainer1.Panel2Collapsed = true;
+                Settings.showlog = false;
+            } else {
+                splitContainer1.Panel2Collapsed = false;
+                Settings.showlog = true;
+            }
+        }
     }
-
-
 }

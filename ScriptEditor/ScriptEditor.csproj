@@ -14,6 +14,15 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <ApplicationIcon>Icon_2.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -28,16 +37,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NoWin32Manifest>False</NoWin32Manifest>
-    <SignAssembly>False</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <ApplicationIcon>Icon_2.ico</ApplicationIcon>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <RunCodeAnalysis>False</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -59,9 +58,13 @@
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>packages\ICSharpCode.TextEditor.3.2.1.6466\lib\Net20\ICSharpCode.TextEditor.dll</HintPath>
+      <HintPath>.\icsharpcode.texteditor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -95,12 +98,6 @@
     </Compile>
     <Compile Include="GoToLine.Designer.cs">
       <DependentUpon>GoToLine.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HeadsFrmPatcher.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="HeadsFrmPatcher.Designer.cs">
-      <DependentUpon>HeadsFrmPatcher.cs</DependentUpon>
     </Compile>
     <Compile Include="SingleInstanceManager.cs" />
     <Compile Include="Program.cs" />
@@ -150,9 +147,6 @@
     <EmbeddedResource Include="GoToLine.resx">
       <DependentUpon>GoToLine.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HeadsFrmPatcher.resx">
-      <DependentUpon>HeadsFrmPatcher.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -181,7 +175,7 @@
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -191,7 +185,7 @@
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
+      <ProductName>Установщик Windows 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
@@ -200,9 +194,8 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)\*SyntaxRules.xshd" "$(TargetDir)\resources\"
 copy "$(ProjectDir)\opcodes.txt" "$(TargetDir)\resources\"
-copy "$(TargetPath)" "d:\GAMES\Fallout2\sfall_modderspack\ScriptEditor\ScriptEditor.exe"
-copy "$(ProjectDir)\*SyntaxRules.xshd" "d:\GAMES\Fallout2\sfall_modderspack\ScriptEditor\resources\"
-copy "$(ProjectDir)\opcodes.txt" "d:\GAMES\Fallout2\sfall_modderspack\ScriptEditor\resources\"</PostBuildEvent>
+
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <BaseAddress>4194304</BaseAddress>
