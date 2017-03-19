@@ -27,7 +27,6 @@ namespace ScriptEditor
         private GoToLine goToLine;
         private int previousTabIndex = -1;
         private int minimizelogsize;
-        //private bool showlog = true;
 
         public TextEditor()
         {
@@ -92,9 +91,12 @@ namespace ScriptEditor
 
         private void TextEditor_Load(object sender, EventArgs e)
         {
-            if (Settings.editorSplitterPosition != -1) {
-                //splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
+            if (!Settings.showlog){
+                showLogWindowToolStripMenuItem.Checked = Settings.showlog;
+                splitContainer1.Panel2Collapsed = true;
             }
+            splitContainer1.SplitterDistance = Size.Height;
+            minimizelogsize = Size.Height-(Size.Height/5);
             if (Settings.editorSplitterPosition2 != -1) {
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
             }
@@ -105,7 +107,6 @@ namespace ScriptEditor
             if (sf != null) {
                 sf.Close();
             }
-            Settings.editorSplitterPosition = splitContainer1.SplitterDistance;
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
             Settings.SaveWindowPosition(SavedWindows.Main, this);
             Settings.Save();
@@ -1556,7 +1557,7 @@ namespace ScriptEditor
         {
             if (minimizelogsize == 0) {
                 minimizelogsize = splitContainer1.SplitterDistance; 
-                splitContainer1.SplitterDistance = Form.ActiveForm.Size.Height;
+                splitContainer1.SplitterDistance = Size.Height;
             } else {
                 splitContainer1.SplitterDistance = minimizelogsize;
                 minimizelogsize = 0;

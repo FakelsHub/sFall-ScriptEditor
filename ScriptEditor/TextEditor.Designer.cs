@@ -154,7 +154,7 @@ namespace ScriptEditor {
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(835, 707);
+            this.panel1.Size = new System.Drawing.Size(896, 707);
             this.panel1.TabIndex = 2;
             // 
             // lbAutocomplete
@@ -255,7 +255,7 @@ namespace ScriptEditor {
             // readmeToolStripMenuItem
             // 
             this.readmeToolStripMenuItem.Name = "readmeToolStripMenuItem";
-            this.readmeToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.readmeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.readmeToolStripMenuItem.Text = "Docs folder";
             this.readmeToolStripMenuItem.Click += new System.EventHandler(this.readmeToolStripMenuItem_Click);
             // 
@@ -276,8 +276,8 @@ namespace ScriptEditor {
             this.splitContainer2.Panel2.Controls.Add(this.tabControl3);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.Panel2MinSize = 125;
-            this.splitContainer2.Size = new System.Drawing.Size(835, 682);
-            this.splitContainer2.SplitterDistance = 680;
+            this.splitContainer2.Size = new System.Drawing.Size(896, 682);
+            this.splitContainer2.SplitterDistance = 704;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 4;
             // 
@@ -299,7 +299,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel2.Controls.Add(this.minimizelog_button);
             this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Size = new System.Drawing.Size(680, 682);
+            this.splitContainer1.Size = new System.Drawing.Size(704, 682);
             this.splitContainer1.SplitterDistance = 550;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
@@ -312,7 +312,7 @@ namespace ScriptEditor {
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(680, 550);
+            this.tabControl1.Size = new System.Drawing.Size(704, 550);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
@@ -325,7 +325,7 @@ namespace ScriptEditor {
             this.minimizelog_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.minimizelog_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.minimizelog_button.Image = ((System.Drawing.Image)(resources.GetObject("minimizelog_button.Image")));
-            this.minimizelog_button.Location = new System.Drawing.Point(659, 1);
+            this.minimizelog_button.Location = new System.Drawing.Point(683, 1);
             this.minimizelog_button.Name = "minimizelog_button";
             this.minimizelog_button.Size = new System.Drawing.Size(20, 20);
             this.minimizelog_button.TabIndex = 6;
@@ -344,7 +344,7 @@ namespace ScriptEditor {
             this.tabControl2.Multiline = true;
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(680, 130);
+            this.tabControl2.Size = new System.Drawing.Size(704, 130);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl2_MouseClick);
             // 
@@ -353,7 +353,7 @@ namespace ScriptEditor {
             this.tabPage1.Controls.Add(this.tbOutput);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(672, 104);
+            this.tabPage1.Size = new System.Drawing.Size(696, 104);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Build output";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -366,7 +366,7 @@ namespace ScriptEditor {
             this.tbOutput.Multiline = true;
             this.tbOutput.Name = "tbOutput";
             this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutput.Size = new System.Drawing.Size(672, 104);
+            this.tbOutput.Size = new System.Drawing.Size(696, 104);
             this.tbOutput.TabIndex = 0;
             // 
             // tabPage2
@@ -374,7 +374,7 @@ namespace ScriptEditor {
             this.tabPage2.Controls.Add(this.dgvErrors);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(672, 104);
+            this.tabPage2.Size = new System.Drawing.Size(696, 104);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Errors";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -399,7 +399,7 @@ namespace ScriptEditor {
             this.dgvErrors.ReadOnly = true;
             this.dgvErrors.RowHeadersVisible = false;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvErrors.Size = new System.Drawing.Size(672, 104);
+            this.dgvErrors.Size = new System.Drawing.Size(696, 104);
             this.dgvErrors.TabIndex = 0;
             this.dgvErrors.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
             // 
@@ -435,7 +435,7 @@ namespace ScriptEditor {
             this.tabPage3.Controls.Add(this.tbOutputParse);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(672, 104);
+            this.tabPage3.Size = new System.Drawing.Size(696, 104);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Parser output";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -449,7 +449,7 @@ namespace ScriptEditor {
             this.tbOutputParse.Multiline = true;
             this.tbOutputParse.Name = "tbOutputParse";
             this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutputParse.Size = new System.Drawing.Size(672, 104);
+            this.tbOutputParse.Size = new System.Drawing.Size(696, 104);
             this.tbOutputParse.TabIndex = 1;
             // 
             // tabControl3
@@ -461,7 +461,7 @@ namespace ScriptEditor {
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(152, 682);
+            this.tabControl3.Size = new System.Drawing.Size(189, 682);
             this.tabControl3.TabIndex = 1;
             // 
             // tabPage4
@@ -470,7 +470,7 @@ namespace ScriptEditor {
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(144, 656);
+            this.tabPage4.Size = new System.Drawing.Size(181, 656);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -482,7 +482,7 @@ namespace ScriptEditor {
             this.treeView1.Name = "treeView1";
             this.treeView1.ShowNodeToolTips = true;
             this.treeView1.ShowRootLines = false;
-            this.treeView1.Size = new System.Drawing.Size(138, 650);
+            this.treeView1.Size = new System.Drawing.Size(175, 650);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             // 
@@ -553,7 +553,7 @@ namespace ScriptEditor {
             this.toolStripSeparator4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(835, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(896, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip2";
             // 
@@ -1008,7 +1008,7 @@ namespace ScriptEditor {
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(835, 707);
+            this.ClientSize = new System.Drawing.Size(896, 707);
             this.Controls.Add(this.panel1);
             this.Icon = global::ScriptEditor.Properties.Resources.Icon_1;
             this.Name = "TextEditor";
