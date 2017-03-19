@@ -51,7 +51,7 @@ namespace ScriptEditor
             // Parser
             parserLabel = new ToolStripLabel("Parser: No file");
             parserLabel.Alignment = ToolStripItemAlignment.Right;
-            MainMenu.Items.Add(parserLabel);
+            ToolStrip.Items.Add(parserLabel);
             tabControl1.tabsSwapped += delegate(object sender, TabsSwappedEventArgs e) {
                 TabInfo tmp = tabs[e.aIndex];
                 tabs[e.aIndex] = tabs[e.bIndex];
@@ -729,7 +729,7 @@ namespace ScriptEditor
             (new AboutBox()).ShowDialog();
         }
 
-        private void readmeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(".\\docs\\");
         }
@@ -1467,14 +1467,18 @@ namespace ScriptEditor
 
         void UPPERCASEToolStripMenuItemClick(object sender, EventArgs e)
         {
-            var action = new ICSharpCode.TextEditor.Actions.ToUpperCase();
-            action.Execute(currentTab.textEditor.ActiveTextAreaControl.TextArea);
+            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                var action = new ICSharpCode.TextEditor.Actions.ToUpperCase();
+                action.Execute(currentTab.textEditor.ActiveTextAreaControl.TextArea);
+            }
         }
 
         void LowecaseToolStripMenuItemClick(object sender, EventArgs e)
         {
-            var action = new ICSharpCode.TextEditor.Actions.ToLowerCase();
-            action.Execute(currentTab.textEditor.ActiveTextAreaControl.TextArea);
+            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                var action = new ICSharpCode.TextEditor.Actions.ToLowerCase();
+                action.Execute(currentTab.textEditor.ActiveTextAreaControl.TextArea);
+            }
         }
 
         void CloseAllToolStripMenuItemClick(object sender, EventArgs e)
