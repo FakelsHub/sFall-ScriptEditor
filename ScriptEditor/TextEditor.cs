@@ -135,7 +135,10 @@ namespace ScriptEditor
         private void UpdateRecentList()
         { 
             string[] items = Settings.GetRecent();
-            recentToolStripMenuItem.DropDownItems.Clear();
+            int count = Open_toolStripSplitButton.DropDownItems.Count-1;
+            for (int i = 3; i <= count; i++) {
+                Open_toolStripSplitButton.DropDownItems.RemoveAt(3);
+            }
             for (int i = items.Length - 1; i >= 0; i--) {
                 Open_toolStripSplitButton.DropDownItems.Add(items[i], null, recentItem_Click);
             }
@@ -417,6 +420,7 @@ namespace ScriptEditor
             return success;
         }
 
+        // Создание имен для процедур и переменных в дереве
         private void UpdateNames()
         {
             if (currentTab == null) {
@@ -463,6 +467,7 @@ namespace ScriptEditor
             }
         }
 
+        // Скролинг текста скрипта выбраной переменной или процедуры в дереве
         private void SelectLine(string file, int line, int column = -1)
         {
             if (Open(file, OpenType.File, false) == null) {
@@ -475,23 +480,28 @@ namespace ScriptEditor
             } else {
                 ls = currentTab.textEditor.Document.GetLineSegment(line - 1);
             }
-            TextLocation start, end, start_scroll;
-            end = new TextLocation(0, currentTab.textEditor.Document.TotalNumberOfLines);
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = end;
-            currentTab.textEditor.ActiveTextAreaControl.ScrollToCaret();
-
+            
+            TextLocation start, end;
             if (column == -1 || column >= ls.Length - 2) {
                 start = new TextLocation(0, ls.LineNumber);
-                start_scroll = new TextLocation(0, ls.LineNumber-2);
             } else {
                 start = new TextLocation(column - 1, ls.LineNumber);
-                start_scroll = new TextLocation(column - 1, ls.LineNumber-2);
             }
+            // Раскрыть закрытый маркер процедуры (подумать над другим методом а не через foreach)
+            foreach (FoldMarker fm in currentTab.textEditor.Document.FoldingManager.FoldMarker) {
+                if (fm.FoldType == FoldType.MemberBody && fm.StartLine == start.Line) {
+                    fm.IsFolded = false;
+                    break;
+                }
+            }
+            // Перейти в конец тектового документа
+            currentTab.textEditor.ActiveTextAreaControl.ScrollTo(currentTab.textEditor.Document.TotalNumberOfLines);
+            
             end = new TextLocation(ls.Length, ls.LineNumber);
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start_scroll;
-            currentTab.textEditor.ActiveTextAreaControl.ScrollToCaret();
-            currentTab.textEditor.ActiveTextAreaControl.Focus();
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start; 
+            currentTab.textEditor.ActiveTextAreaControl.ScrollTo(start.Line-2);
+            currentTab.textEditor.ActiveTextAreaControl.Focus(); // bug фокус не переходит на элемент управления
         }
 
         private void KeyPressed(object sender, KeyPressEventArgs e)
@@ -582,6 +592,426 @@ namespace ScriptEditor
             }
         }
 
+        private void ParseMessages(TabInfo ti)
+        {
+            ti.messages.Clear();
+            char[] split = new char[] { '}' };
+            for (int i = 0; i < ti.msgFileTab.textEditor.Document.TotalNumberOfLines; i++)
+            {
+                string[] line = ti.msgFileTab.textEditor.Document.GetText(ti.msgFileTab.textEditor.Document.GetLineSegment(i)).Split(split, StringSplitOptions.RemoveEmptyEntries);
+                if (line.Length != 3)
+                    continue;
+                for (int j = 0; j < 3; j += 2)
+                {
+                    line[j] = line[j].Trim();
+                    if (line[j].Length == 0 || line[j][0] != '{')
+                        continue;
+                    line[j] = line[j].Substring(1);
+                }
+                int index;
+                if (!int.TryParse(line[0], out index))
+                    continue;
+                ti.messages[index] = line[2];
+            }
+        }
+
+        class WorkerArgs
+        {
+            public readonly string text;
+            public readonly TabInfo tab;
+
+            public WorkerArgs(string text, TabInfo tab)
+            {
+                this.text = text;
+                this.tab = tab;
+            }
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            if (currentTab == null || !currentTab.shouldParse || !Settings.enableParser)
+                return;
+
+            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy)
+            {
+                parserLabel.Text = "Parser: Working";
+                parserRunning = true;
+                bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentTab.textEditor.Document.TextContent, currentTab));
+                timer.Stop();
+            }
+        }
+
+        private void bwSyntaxParser_DoWork(object sender, System.ComponentModel.DoWorkEventArgs eventArgs)
+        {
+            WorkerArgs args = (WorkerArgs)eventArgs.Argument;
+            var compiler = new Compiler();
+            args.tab.parseInfo = compiler.Parse(args.text, args.tab.filepath);
+            eventArgs.Result = args.tab;
+            parserRunning = false;
+        }
+
+        private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            if (File.Exists("errors.txt"))
+            {
+                tbOutputParse.Text = File.ReadAllText("errors.txt");
+            }
+            if (!(e.Result is TabInfo))
+            {
+                throw new Exception("TabInfo is expected!");
+            }
+            var tab = e.Result as TabInfo;
+            if (currentTab == tab)
+            {
+                currentTab.needsParse = false;
+                if (tab.parseInfo != null)
+                {
+                    if (tab.parseInfo.parsed)
+                    {
+                        currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
+                        currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+                        UpdateNames();
+                        parserLabel.Text = "Parser: Complete";
+                    }
+                    else
+                    {
+                        parserLabel.Text = "Parser: Failed parsing";
+                    }
+                }
+                else
+                {
+                    parserLabel.Text = "Parser: Failed preprocessing (see parser errors tab)";
+                }
+            }
+        }
+
+        private bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)
+        {
+            if (start >= text.Length)
+                start = 0;
+            mstart = 0;
+            mlen = str.Length;
+            if (regex != null)
+            {
+                Match m = regex.Match(text, start);
+                if (m.Success)
+                {
+                    mstart = m.Index;
+                    mlen = m.Length;
+                    return true;
+                }
+                if (!restart)
+                    return false;
+                m = regex.Match(text);
+                if (m.Success)
+                {
+                    mstart = m.Index;
+                    mlen = m.Length;
+                    return true;
+                }
+            }
+            else
+            {
+                int i = text.IndexOf(str, start, StringComparison.OrdinalIgnoreCase);
+                if (i != -1)
+                {
+                    mstart = i;
+                    return true;
+                }
+                if (!restart)
+                    return false;
+                i = text.IndexOf(str, StringComparison.OrdinalIgnoreCase);
+                if (i != -1)
+                {
+                    mstart = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool Search(string text, string str, Regex regex)
+        {
+            if (regex != null)
+            {
+                if (regex.IsMatch(text))
+                    return true;
+            }
+            else
+            {
+                if (text.IndexOf(str, StringComparison.OrdinalIgnoreCase) != -1)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool SearchAndScroll(TabInfo tab, Regex regex)
+        {
+            int start, len;
+            if (Search(tab.textEditor.Text, sf.tbSearch.Text, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, out start, out len))
+            {
+                TextLocation locstart = tab.textEditor.Document.OffsetToPosition(start);
+                TextLocation locend = tab.textEditor.Document.OffsetToPosition(start + len);
+                tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
+                tab.textEditor.ActiveTextAreaControl.Caret.Position = locstart;
+                tab.textEditor.ActiveTextAreaControl.ScrollToCaret();
+                return true;
+            }
+            return false;
+        }
+
+        private void SearchForAll(TabInfo tab, Regex regex, DataGridView dgv, List<int> offsets, List<int> lengths)
+        {
+            int start, len, line, lastline = -1;
+            int offset = 0;
+            while (Search(tab.textEditor.Text, sf.tbSearch.Text, regex, offset, false, out start, out len))
+            {
+                offset = start + 1;
+                line = tab.textEditor.Document.OffsetToPosition(start).Line;
+                if (offsets != null)
+                {
+                    offsets.Add(start);
+                    lengths.Add(len);
+                }
+                if (line != lastline)
+                {
+                    lastline = line;
+                    var message = TextUtilities.GetLineAsString(tab.textEditor.Document, line);
+                    Error error = new Error(message, tab.filepath, line + 1);
+                    dgv.Rows.Add(tab.filename, error.line.ToString(), error);
+                }
+            }
+        }
+        private void SearchForAll(string[] text, string file, Regex regex, DataGridView dgv)
+        {
+            bool matched;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (regex != null)
+                {
+                    matched = regex.IsMatch(text[i]);
+                }
+                else
+                {
+                    matched = text[i].IndexOf(sf.tbSearch.Text, StringComparison.OrdinalIgnoreCase) != -1;
+                }
+                if (matched)
+                {
+                    Error error = new Error(text[i], file, i + 1);
+                    dgv.Rows.Add(Path.GetFileName(file), (i + 1).ToString(), error);
+                }
+            }
+        }
+
+        private bool bSearchInternal(List<int> offsets, List<int> lengths)
+        {
+            Regex regex = null;
+            if (sf.cbRegular.Checked)
+            {
+                regex = new Regex(sf.tbSearch.Text);
+            }
+            if (sf.rbFolder.Checked && Settings.lastSearchPath == null)
+            {
+                MessageBox.Show("No search path set.", "Error");
+                return false;
+            }
+            if (!sf.cbFindAll.Checked)
+            {
+                if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2))
+                {
+                    if (currentTab == null)
+                    {
+                        return false;
+                    }
+                    if (SearchAndScroll(currentTab, regex))
+                    {
+                        return true;
+                    }
+                }
+                else if (sf.rbAll.Checked)
+                {
+                    int starttab = currentTab == null ? 0 : currentTab.index;
+                    int endtab = starttab == 0 ? tabs.Count - 1 : starttab - 1;
+                    int tab = starttab - 1;
+                    do
+                    {
+                        if (++tab == tabs.Count)
+                            tab = 0;
+                        if (SearchAndScroll(tabs[tab], regex))
+                        {
+                            if (currentTab == null || currentTab.index != tab)
+                                tabControl1.SelectTab(tab);
+                            return true;
+                        }
+                    } while (tab != endtab);
+                }
+                else
+                {
+                    SearchOption so = sf.cbSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                    List<string> files = new List<string>(Directory.GetFiles(Settings.lastSearchPath, "*.ssl", so));
+                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.h", so));
+                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.msg", so));
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        string text = File.ReadAllText(files[i]);
+                        if (Search(text, sf.tbSearch.Text, regex))
+                        {
+                            SearchAndScroll(Open(files[i], OpenType.File), regex);
+                            return true;
+                        }
+                    }
+                }
+                MessageBox.Show("Search string not found");
+                return false;
+            }
+            else
+            {
+                DataGridViewTextBoxColumn c1 = new DataGridViewTextBoxColumn(), c2 = new DataGridViewTextBoxColumn(), c3 = new DataGridViewTextBoxColumn();
+                c1.HeaderText = "File";
+                c1.ReadOnly = true;
+                c1.Width = 120;
+                c2.HeaderText = "Line";
+                c2.ReadOnly = true;
+                c2.Width = 40;
+                c3.HeaderText = "Match";
+                c3.ReadOnly = true;
+                c3.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                DataGridView dgv = new DataGridView();
+                dgv.Name = "dgv";
+                dgv.AllowUserToAddRows = false;
+                dgv.AllowUserToDeleteRows = false;
+                dgv.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+                dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+                dgv.Columns.Add(c1);
+                dgv.Columns.Add(c2);
+                dgv.Columns.Add(c3);
+                dgv.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+                dgv.GridColor = System.Drawing.SystemColors.ControlLight;
+                dgv.MultiSelect = false;
+                dgv.ReadOnly = true;
+                dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+                dgv.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
+                dgv.RowHeadersVisible = false;
+
+                if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2))
+                {
+                    if (currentTab == null)
+                        return false;
+                    SearchForAll(currentTab, regex, dgv, offsets, lengths);
+                }
+                else if (sf.rbAll.Checked)
+                {
+                    for (int i = 0; i < tabs.Count; i++)
+                        SearchForAll(tabs[i], regex, dgv, offsets, lengths);
+                }
+                else
+                {
+                    SearchOption so = sf.cbSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                    List<string> files = new List<string>(Directory.GetFiles(Settings.lastSearchPath, "*.ssl", so));
+                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.h", so));
+                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.msg", so));
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), regex, dgv);
+                    }
+                }
+
+                TabPage tp = new TabPage("Search results");
+                tp.Controls.Add(dgv);
+                dgv.Dock = DockStyle.Fill;
+                tabControl2.TabPages.Add(tp);
+                tabControl2.SelectTab(tp);
+                return true;
+            }
+        }
+
+        private void UpdateEditorToolStripMenu()
+        {
+            openIncludeToolStripMenuItem.Enabled = false;
+            if (currentTab.parseInfo == null)
+            {
+                findReferencesToolStripMenuItem.Enabled = false;
+                findDeclerationToolStripMenuItem.Enabled = false;
+                findDefinitionToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                NameType nt = NameType.None;
+                IParserInfo item = null;
+                if (treeView1.Focused)
+                {
+                    TreeNode node = treeView1.SelectedNode;
+                    if (node.Tag is Variable)
+                    {
+                        Variable var = (Variable)node.Tag;
+                        nt = var.Type();
+                        item = var;
+                    }
+                    else if (node.Tag is Procedure)
+                    {
+                        Procedure proc = (Procedure)node.Tag;
+                        nt = proc.Type();
+                        item = proc;
+                    }
+                }
+                else
+                {
+                    TextLocation tl = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
+                    editorMenuStrip.Tag = tl;
+                    HighlightColor hc = currentTab.textEditor.Document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
+                    if (hc == null
+                        || hc.Color == System.Drawing.Color.Green
+                        || hc.Color == System.Drawing.Color.Brown
+                        || hc.Color == System.Drawing.Color.DarkGreen)
+                    {
+                        nt = NameType.None;
+                    }
+                    else
+                    {
+                        string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
+                        item = currentTab.parseInfo.Lookup(word, currentTab.filename, tl.Line);
+                        if (item != null)
+                        {
+                            nt = item.Type();
+                        }
+                        //nt=currentTab.parseInfo.LookupTokenType(word, currentTab.filename, tl.Line);
+                    }
+                    string line = TextUtilities.GetLineAsString(currentTab.textEditor.Document, tl.Line).Trim();
+                    if (line.StartsWith("#include "))
+                    {
+                        openIncludeToolStripMenuItem.Enabled = true;
+                    }
+                }
+                switch (nt)
+                {
+                    case NameType.LVar:
+                    case NameType.GVar:
+                        findReferencesToolStripMenuItem.Enabled = true;
+                        findDeclerationToolStripMenuItem.Enabled = true;
+                        findDefinitionToolStripMenuItem.Enabled = false;
+                        break;
+                    case NameType.Proc:
+                        {
+                            Procedure proc = (Procedure)item;
+                            findReferencesToolStripMenuItem.Enabled = true;
+                            findDeclerationToolStripMenuItem.Enabled = true;
+                            findDefinitionToolStripMenuItem.Enabled = !proc.IsImported();
+                            break;
+                        }
+                    case NameType.Macro:
+                        findReferencesToolStripMenuItem.Enabled = false;
+                        findDeclerationToolStripMenuItem.Enabled = true;
+                        findDefinitionToolStripMenuItem.Enabled = false;
+                        break;
+                    default:
+                        findReferencesToolStripMenuItem.Enabled = false;
+                        findDeclerationToolStripMenuItem.Enabled = false;
+                        findDefinitionToolStripMenuItem.Enabled = false;
+                        break;
+                }
+            }
+        }
+
 /*
  * 
  * 
@@ -621,7 +1051,6 @@ namespace ScriptEditor
         {
             Close(currentTab);
         }
-
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
@@ -708,6 +1137,9 @@ namespace ScriptEditor
                         return;
                     }
                 }
+            }
+            else if (e.Button == MouseButtons.Left && minimizelogsize != 0 ) {
+                minimizelog_button.PerformClick();
             }
         }
 
@@ -809,9 +1241,12 @@ namespace ScriptEditor
             }
             timer_Tick(null, null);
             foreach (FoldMarker fm in currentTab.textEditor.Document.FoldingManager.FoldMarker) {
-                fm.IsFolded = fm.FoldType == FoldType.MemberBody;
+                if (fm.FoldType == FoldType.MemberBody) {
+                    fm.IsFolded = !fm.IsFolded;
+                }
             }
             currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Position.Line, 0);
         }
 
         private void registerScriptToolStripMenuItem_Click(object sender, EventArgs e)
@@ -886,204 +1321,7 @@ namespace ScriptEditor
             }
         }
 
-        private bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)
-        {
-            if (start >= text.Length)
-                start = 0;
-            mstart = 0;
-            mlen = str.Length;
-            if (regex != null) {
-                Match m = regex.Match(text, start);
-                if (m.Success) {
-                    mstart = m.Index;
-                    mlen = m.Length;
-                    return true;
-                }
-                if (!restart)
-                    return false;
-                m = regex.Match(text);
-                if (m.Success) {
-                    mstart = m.Index;
-                    mlen = m.Length;
-                    return true;
-                }
-            } else {
-                int i = text.IndexOf(str, start, StringComparison.OrdinalIgnoreCase);
-                if (i != -1) {
-                    mstart = i;
-                    return true;
-                }
-                if (!restart)
-                    return false;
-                i = text.IndexOf(str, StringComparison.OrdinalIgnoreCase);
-                if (i != -1) {
-                    mstart = i;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool Search(string text, string str, Regex regex)
-        {
-            if (regex != null) {
-                if (regex.IsMatch(text))
-                    return true;
-            } else {
-                if (text.IndexOf(str, StringComparison.OrdinalIgnoreCase) != -1)
-                    return true;
-            }
-            return false;
-        }
-
-        private bool SearchAndScroll(TabInfo tab, Regex regex)
-        {
-            int start, len;
-            if (Search(tab.textEditor.Text, sf.tbSearch.Text, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, out start, out len)) {
-                TextLocation locstart = tab.textEditor.Document.OffsetToPosition(start);
-                TextLocation locend = tab.textEditor.Document.OffsetToPosition(start + len);
-                tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
-                tab.textEditor.ActiveTextAreaControl.Caret.Position = locstart;
-                tab.textEditor.ActiveTextAreaControl.ScrollToCaret();
-                return true;
-            }
-            return false;
-        }
-
-        private void SearchForAll(TabInfo tab, Regex regex, DataGridView dgv, List<int> offsets, List<int> lengths)
-        {
-            int start, len, line, lastline = -1;
-            int offset = 0;
-            while (Search(tab.textEditor.Text, sf.tbSearch.Text, regex, offset, false, out start, out len)) {
-                offset = start + 1;
-                line = tab.textEditor.Document.OffsetToPosition(start).Line;
-                if (offsets != null) {
-                    offsets.Add(start);
-                    lengths.Add(len);
-                }
-                if (line != lastline) {
-                    lastline = line;
-                    var message = TextUtilities.GetLineAsString(tab.textEditor.Document, line);
-                    Error error = new Error(message, tab.filepath, line + 1);
-                    dgv.Rows.Add(tab.filename, error.line.ToString(), error);
-                }
-            }
-        }
-        private void SearchForAll(string[] text, string file, Regex regex, DataGridView dgv)
-        {
-            bool matched;
-            for (int i = 0; i < text.Length; i++) {
-                if (regex != null) {
-                    matched = regex.IsMatch(text[i]);
-                } else {
-                    matched = text[i].IndexOf(sf.tbSearch.Text, StringComparison.OrdinalIgnoreCase) != -1;
-                }
-                if (matched) {
-                    Error error = new Error(text[i], file, i + 1);
-                    dgv.Rows.Add(Path.GetFileName(file), (i + 1).ToString(), error);
-                }
-            }
-        }
-
-        private bool bSearchInternal(List<int> offsets, List<int> lengths)
-        {
-            Regex regex = null;
-            if (sf.cbRegular.Checked) {
-                regex = new Regex(sf.tbSearch.Text);
-            }
-            if (sf.rbFolder.Checked && Settings.lastSearchPath == null) {
-                MessageBox.Show("No search path set.", "Error");
-                return false;
-            }
-            if (!sf.cbFindAll.Checked) {
-                if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
-                    if (currentTab == null) {
-                        return false;
-                    }
-                    if (SearchAndScroll(currentTab, regex)) {
-                        return true;
-                    }
-                } else if (sf.rbAll.Checked) {
-                    int starttab = currentTab == null ? 0 : currentTab.index;
-                    int endtab = starttab == 0 ? tabs.Count - 1 : starttab - 1;
-                    int tab = starttab - 1;
-                    do {
-                        if (++tab == tabs.Count)
-                            tab = 0;
-                        if (SearchAndScroll(tabs[tab], regex)) {
-                            if (currentTab == null || currentTab.index != tab)
-                                tabControl1.SelectTab(tab);
-                            return true;
-                        }
-                    } while (tab != endtab);
-                } else {
-                    SearchOption so = sf.cbSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                    List<string> files = new List<string>(Directory.GetFiles(Settings.lastSearchPath, "*.ssl", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.h", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.msg", so));
-                    for (int i = 0; i < files.Count; i++) {
-                        string text = File.ReadAllText(files[i]);
-                        if (Search(text, sf.tbSearch.Text, regex)) {
-                            SearchAndScroll(Open(files[i], OpenType.File), regex);
-                            return true;
-                        }
-                    }
-                }
-                MessageBox.Show("Search string not found");
-                return false;
-            } else {
-                DataGridViewTextBoxColumn c1 = new DataGridViewTextBoxColumn(), c2 = new DataGridViewTextBoxColumn(), c3 = new DataGridViewTextBoxColumn();
-                c1.HeaderText = "File";
-                c1.ReadOnly = true;
-                c1.Width = 120;
-                c2.HeaderText = "Line";
-                c2.ReadOnly = true;
-                c2.Width = 40;
-                c3.HeaderText = "Match";
-                c3.ReadOnly = true;
-                c3.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                DataGridView dgv = new DataGridView();
-                dgv.Name = "dgv";
-                dgv.AllowUserToAddRows = false;
-                dgv.AllowUserToDeleteRows = false;
-                dgv.BackgroundColor = System.Drawing.SystemColors.ControlLight;
-                dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-                dgv.Columns.Add(c1);
-                dgv.Columns.Add(c2);
-                dgv.Columns.Add(c3);
-                dgv.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-                dgv.GridColor = System.Drawing.SystemColors.ControlLight;
-                dgv.MultiSelect = false;
-                dgv.ReadOnly = true;
-                dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-                dgv.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
-                dgv.RowHeadersVisible = false;
-
-                if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
-                    if (currentTab == null)
-                        return false;
-                    SearchForAll(currentTab, regex, dgv, offsets, lengths);
-                } else if (sf.rbAll.Checked) {
-                    for (int i = 0; i < tabs.Count; i++)
-                        SearchForAll(tabs[i], regex, dgv, offsets, lengths);
-                } else {
-                    SearchOption so = sf.cbSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                    List<string> files = new List<string>(Directory.GetFiles(Settings.lastSearchPath, "*.ssl", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.h", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.msg", so));
-                    for (int i = 0; i < files.Count; i++) {
-                        SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), regex, dgv);
-                    }
-                }
-
-                TabPage tp = new TabPage("Search results");
-                tp.Controls.Add(dgv);
-                dgv.Dock = DockStyle.Fill;
-                tabControl2.TabPages.Add(tp);
-                tabControl2.SelectTab(tp);
-                return true;
-            }
-        }
+      
 
         private void bSearch_Click(object sender, EventArgs e)
         {
@@ -1161,88 +1399,8 @@ namespace ScriptEditor
                 return;
             AssossciateMsg(currentTab, true);
         }
-
-        private void ParseMessages(TabInfo ti)
-        {
-            ti.messages.Clear();
-            char[] split = new char[] { '}' };
-            for (int i = 0; i < ti.msgFileTab.textEditor.Document.TotalNumberOfLines; i++) {
-                string[] line = ti.msgFileTab.textEditor.Document.GetText(ti.msgFileTab.textEditor.Document.GetLineSegment(i)).Split(split, StringSplitOptions.RemoveEmptyEntries);
-                if (line.Length != 3)
-                    continue;
-                for (int j = 0; j < 3; j += 2) {
-                    line[j] = line[j].Trim();
-                    if (line[j].Length == 0 || line[j][0] != '{')
-                        continue;
-                    line[j] = line[j].Substring(1);
-                }
-                int index;
-                if (!int.TryParse(line[0], out index))
-                    continue;
-                ti.messages[index] = line[2];
-            }
-        }
-
-        class WorkerArgs
-        {
-            public readonly string text;
-            public readonly TabInfo tab;
-
-            public WorkerArgs(string text, TabInfo tab)
-            {
-                this.text = text;
-                this.tab = tab;
-            }
-        }
-
-        void timer_Tick(object sender, EventArgs e)
-        {
-            if (currentTab == null || !currentTab.shouldParse || !Settings.enableParser)
-                return;
-
-            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy) {
-                parserLabel.Text = "Parser: Working";
-                parserRunning = true;
-                bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentTab.textEditor.Document.TextContent, currentTab));
-                timer.Stop();
-            }
-        }
-
-        private void bwSyntaxParser_DoWork(object sender, System.ComponentModel.DoWorkEventArgs eventArgs)
-        {
-            WorkerArgs args = (WorkerArgs)eventArgs.Argument;
-            var compiler = new Compiler();
-            args.tab.parseInfo = compiler.Parse(args.text, args.tab.filepath);
-            eventArgs.Result = args.tab;
-            parserRunning = false;
-        }
-
-        private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
-        {
-            if (File.Exists("errors.txt")) {
-                tbOutputParse.Text = File.ReadAllText("errors.txt");
-            }
-            if (!(e.Result is TabInfo)) {
-                throw new Exception("TabInfo is expected!");
-            }
-            var tab = e.Result as TabInfo;
-            if (currentTab == tab) {
-                currentTab.needsParse = false;
-                if (tab.parseInfo != null) {
-                    if (tab.parseInfo.parsed) {
-                        currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
-                        currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-                        UpdateNames();
-                        parserLabel.Text = "Parser: Complete";
-                    } else {
-                        parserLabel.Text = "Parser: Failed parsing";
-                    }
-                } else {
-                    parserLabel.Text = "Parser: Failed preprocessing (see parser errors tab)";
-                }
-            }
-        }
-
+        
+        // Клик по дереву Procedures/Variables
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             string file = null;
@@ -1357,78 +1515,7 @@ namespace ScriptEditor
         {
             MessageBox.Show("Test " + e.KeyCode);
         }
-
-        private void UpdateEditorToolStripMenu()
-        {
-            openIncludeToolStripMenuItem.Enabled = false;
-            if (currentTab.parseInfo == null) {
-                findReferencesToolStripMenuItem.Enabled = false;
-                findDeclerationToolStripMenuItem.Enabled = false;
-                findDefinitionToolStripMenuItem.Enabled = false;
-            } else {
-                NameType nt = NameType.None;
-                IParserInfo item = null;
-                if (treeView1.Focused) {
-                    TreeNode node = treeView1.SelectedNode;
-                    if (node.Tag is Variable) {
-                        Variable var = (Variable)node.Tag;
-                        nt = var.Type();
-                        item = var;
-                    } else if (node.Tag is Procedure) {
-                        Procedure proc = (Procedure)node.Tag;
-                        nt = proc.Type();
-                        item = proc;
-                    }
-                } else {
-                    TextLocation tl = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
-                    editorMenuStrip.Tag = tl;
-                    HighlightColor hc = currentTab.textEditor.Document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
-                    if (hc == null 
-                        || hc.Color == System.Drawing.Color.Green 
-                        || hc.Color == System.Drawing.Color.Brown 
-                        || hc.Color == System.Drawing.Color.DarkGreen) {
-                        nt = NameType.None;
-                    } else {
-                        string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
-                        item = currentTab.parseInfo.Lookup(word, currentTab.filename, tl.Line);
-                        if (item != null) {
-                            nt = item.Type();
-                        }
-                        //nt=currentTab.parseInfo.LookupTokenType(word, currentTab.filename, tl.Line);
-                    }
-                    string line = TextUtilities.GetLineAsString(currentTab.textEditor.Document, tl.Line).Trim();
-                    if (line.StartsWith("#include ")) {
-                        openIncludeToolStripMenuItem.Enabled = true;
-                    }
-                }
-                switch (nt) {
-                    case NameType.LVar:
-                    case NameType.GVar:
-                        findReferencesToolStripMenuItem.Enabled = true;
-                        findDeclerationToolStripMenuItem.Enabled = true;
-                        findDefinitionToolStripMenuItem.Enabled = false;
-                        break;
-                    case NameType.Proc: {
-                            Procedure proc = (Procedure)item;
-                            findReferencesToolStripMenuItem.Enabled = true;
-                            findDeclerationToolStripMenuItem.Enabled = true;
-                            findDefinitionToolStripMenuItem.Enabled = !proc.IsImported();
-                            break;
-                        }
-                    case NameType.Macro:
-                        findReferencesToolStripMenuItem.Enabled = false;
-                        findDeclerationToolStripMenuItem.Enabled = true;
-                        findDefinitionToolStripMenuItem.Enabled = false;
-                        break;
-                    default:
-                        findReferencesToolStripMenuItem.Enabled = false;
-                        findDeclerationToolStripMenuItem.Enabled = false;
-                        findDefinitionToolStripMenuItem.Enabled = false;
-                        break;
-                }
-            }
-        }
-
+ 
         private void editorMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (currentTab == null/* && !treeView1.Focused*/) {
@@ -1565,7 +1652,12 @@ namespace ScriptEditor
                 minimizelogsize = splitContainer1.SplitterDistance; 
                 splitContainer1.SplitterDistance = Size.Height;
             } else {
-                splitContainer1.SplitterDistance = minimizelogsize;
+                int hs = Size.Height-(Size.Height/5);
+                if (minimizelogsize > hs) {
+                    splitContainer1.SplitterDistance = hs; 
+                } else {
+                    splitContainer1.SplitterDistance = minimizelogsize;       
+                }
                 minimizelogsize = 0;
             }
         }

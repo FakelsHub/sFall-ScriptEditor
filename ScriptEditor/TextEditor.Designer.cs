@@ -624,6 +624,7 @@ namespace ScriptEditor {
             this.Outline_toolStripButton.Name = "Outline_toolStripButton";
             this.Outline_toolStripButton.Size = new System.Drawing.Size(23, 22);
             this.Outline_toolStripButton.Text = "Outline";
+            this.Outline_toolStripButton.ToolTipText = "Outline Expand/Collapse";
             this.Outline_toolStripButton.Click += new System.EventHandler(this.outlineToolStripMenuItem_Click);
             // 
             // toolStripSeparator17
