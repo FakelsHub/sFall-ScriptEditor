@@ -46,7 +46,7 @@ namespace ScriptEditor
                 ToolStripMenuItem mi = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(file), null, delegate(object sender, EventArgs e) {
                     Open(file, OpenType.File, false, true);
                 });
-                TemplateScript_ToolStripMenuItem.DropDownItems.Add(mi);
+                New_toolStripDropDownButton.DropDownItems.Add(mi);
             }
             // Parser
             parserLabel = new ToolStripLabel("Parser: No file");
@@ -64,7 +64,8 @@ namespace ScriptEditor
             ProgramInfo.LoadOpcodes();
         }
 
-        /*protected override void WndProc(ref Message m)
+#if !DEBUG
+        protected override void WndProc(ref Message m)
         {
             if (m.Msg == SingleInstanceManager.WM_SFALL_SCRIPT_EDITOR_OPEN) {
                 ShowMe();
@@ -74,7 +75,7 @@ namespace ScriptEditor
                 }
             }
             base.WndProc(ref m);
-        }*/
+        }
 
         private void ShowMe()
         {
@@ -88,6 +89,7 @@ namespace ScriptEditor
             // set it back to whatever it was
             TopMost = top;
         }
+#endif
 
         private void TextEditor_Load(object sender, EventArgs e)
         {
@@ -135,7 +137,7 @@ namespace ScriptEditor
             string[] items = Settings.GetRecent();
             recentToolStripMenuItem.DropDownItems.Clear();
             for (int i = items.Length - 1; i >= 0; i--) {
-                recentToolStripMenuItem.DropDownItems.Add(items[i], null, recentItem_Click);
+                Open_toolStripSplitButton.DropDownItems.Add(items[i], null, recentItem_Click);
             }
         }
 

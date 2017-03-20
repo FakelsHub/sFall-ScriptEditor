@@ -30,6 +30,7 @@ namespace ScriptEditor {
             this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tabControl1 = new DraggableTabControl();
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -53,15 +54,21 @@ namespace ScriptEditor {
             this.New_toolStripDropDownButton = new System.Windows.Forms.ToolStripSplitButton();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TemplateScript_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.Open_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator18 = new System.Windows.Forms.ToolStripSeparator();
             this.Save_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.Save_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveAs_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveAll_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveAsTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.Outline_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
             this.Undo_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Redo_ToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
@@ -71,21 +78,29 @@ namespace ScriptEditor {
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.Goto_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.editRegisteredScriptsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.MSG_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.qCompile_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.Compile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CompileAllOpen_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MassCompile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.Preprocess_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.roundtripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
+            this.About_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.Help_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.showLogWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.qCompile_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
-            this.CompileAllOpen_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MassCompile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.Preprocess_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
-            this.About_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.Help_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.cmsTabControls = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -106,19 +121,6 @@ namespace ScriptEditor {
             this.findDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
-            this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
-            this.Compile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
-            this.editRegisteredScriptsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
-            this.MSG_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.roundtripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.Outline_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
-            this.tabControl1 = new DraggableTabControl();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -216,6 +218,21 @@ namespace ScriptEditor {
             this.splitContainer1.SplitterDistance = 550;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(704, 550);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // minimizelog_button
             // 
@@ -468,7 +485,8 @@ namespace ScriptEditor {
             this.New_toolStripDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.New_toolStripDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
-            this.TemplateScript_ToolStripMenuItem});
+            this.TemplateScript_ToolStripMenuItem,
+            this.toolStripSeparator19});
             this.New_toolStripDropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("New_toolStripDropDownButton.Image")));
             this.New_toolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.New_toolStripDropDownButton.Name = "New_toolStripDropDownButton";
@@ -488,9 +506,15 @@ namespace ScriptEditor {
             // 
             // TemplateScript_ToolStripMenuItem
             // 
+            this.TemplateScript_ToolStripMenuItem.Enabled = false;
             this.TemplateScript_ToolStripMenuItem.Name = "TemplateScript_ToolStripMenuItem";
             this.TemplateScript_ToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.TemplateScript_ToolStripMenuItem.Text = "Templates Script";
+            this.TemplateScript_ToolStripMenuItem.Text = "Tepmplates Scripts";
+            // 
+            // toolStripSeparator19
+            // 
+            this.toolStripSeparator19.Name = "toolStripSeparator19";
+            this.toolStripSeparator19.Size = new System.Drawing.Size(172, 6);
             // 
             // toolStripSeparator7
             // 
@@ -502,7 +526,8 @@ namespace ScriptEditor {
             this.Open_toolStripSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.Open_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.recentToolStripMenuItem});
+            this.recentToolStripMenuItem,
+            this.toolStripSeparator18});
             this.Open_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Open_toolStripSplitButton.Image")));
             this.Open_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Open_toolStripSplitButton.Name = "Open_toolStripSplitButton";
@@ -522,9 +547,15 @@ namespace ScriptEditor {
             // 
             // recentToolStripMenuItem
             // 
+            this.recentToolStripMenuItem.Enabled = false;
             this.recentToolStripMenuItem.Name = "recentToolStripMenuItem";
             this.recentToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.recentToolStripMenuItem.Text = "Recent";
+            this.recentToolStripMenuItem.Text = "Recent Files";
+            // 
+            // toolStripSeparator18
+            // 
+            this.toolStripSeparator18.Name = "toolStripSeparator18";
+            this.toolStripSeparator18.Size = new System.Drawing.Size(148, 6);
             // 
             // Save_toolStripSplitButton
             // 
@@ -569,10 +600,36 @@ namespace ScriptEditor {
             this.SaveAll_ToolStripMenuItem.Text = "Save All";
             this.SaveAll_ToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
+            // toolStripSeparator15
+            // 
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(188, 6);
+            // 
+            // saveAsTemplateToolStripMenuItem
+            // 
+            this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
+            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
+            // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+            // 
+            // Outline_toolStripButton
+            // 
+            this.Outline_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Outline_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Outline_toolStripButton.Image")));
+            this.Outline_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Outline_toolStripButton.Name = "Outline_toolStripButton";
+            this.Outline_toolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.Outline_toolStripButton.Text = "Outline";
+            this.Outline_toolStripButton.Click += new System.EventHandler(this.outlineToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator17
+            // 
+            this.toolStripSeparator17.Name = "toolStripSeparator17";
+            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 25);
             // 
             // Undo_toolStripButton
             // 
@@ -647,6 +704,150 @@ namespace ScriptEditor {
             this.toolStripSeparator10.Name = "toolStripSeparator10";
             this.toolStripSeparator10.Size = new System.Drawing.Size(6, 25);
             // 
+            // Script_toolStripSplitButton
+            // 
+            this.Script_toolStripSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Script_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editRegisteredScriptsToolStripMenuItem});
+            this.Script_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Script_toolStripSplitButton.Image")));
+            this.Script_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Script_toolStripSplitButton.Name = "Script_toolStripSplitButton";
+            this.Script_toolStripSplitButton.Size = new System.Drawing.Size(32, 22);
+            this.Script_toolStripSplitButton.Text = "Register Script";
+            this.Script_toolStripSplitButton.ButtonClick += new System.EventHandler(this.registerScriptToolStripMenuItem_Click);
+            // 
+            // editRegisteredScriptsToolStripMenuItem
+            // 
+            this.editRegisteredScriptsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("editRegisteredScriptsToolStripMenuItem.Image")));
+            this.editRegisteredScriptsToolStripMenuItem.Name = "editRegisteredScriptsToolStripMenuItem";
+            this.editRegisteredScriptsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+            this.editRegisteredScriptsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.editRegisteredScriptsToolStripMenuItem.Text = "Edit registered Scripts";
+            this.editRegisteredScriptsToolStripMenuItem.Click += new System.EventHandler(this.editRegisteredScriptsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator16
+            // 
+            this.toolStripSeparator16.Name = "toolStripSeparator16";
+            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton3.Text = "View Dialog";
+            // 
+            // MSG_toolStripButton
+            // 
+            this.MSG_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MSG_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("MSG_toolStripButton.Image")));
+            this.MSG_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.MSG_toolStripButton.Name = "MSG_toolStripButton";
+            this.MSG_toolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.MSG_toolStripButton.Text = "View MSG File";
+            this.MSG_toolStripButton.Click += new System.EventHandler(this.associateMsgToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+            // 
+            // qCompile_toolStripSplitButton
+            // 
+            this.qCompile_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Compile_ToolStripMenuItem,
+            this.CompileAllOpen_ToolStripMenuItem,
+            this.MassCompile_ToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.Preprocess_ToolStripMenuItem,
+            this.roundtripToolStripMenuItem});
+            this.qCompile_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("qCompile_toolStripSplitButton.Image")));
+            this.qCompile_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.qCompile_toolStripSplitButton.Name = "qCompile_toolStripSplitButton";
+            this.qCompile_toolStripSplitButton.Size = new System.Drawing.Size(76, 22);
+            this.qCompile_toolStripSplitButton.Text = "Compile";
+            this.qCompile_toolStripSplitButton.ToolTipText = "Quick Compile Script [F8]";
+            this.qCompile_toolStripSplitButton.ButtonClick += new System.EventHandler(this.compileToolStripMenuItem1_Click);
+            // 
+            // Compile_ToolStripMenuItem
+            // 
+            this.Compile_ToolStripMenuItem.Name = "Compile_ToolStripMenuItem";
+            this.Compile_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
+            this.Compile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.Compile_ToolStripMenuItem.Text = "Compile";
+            this.Compile_ToolStripMenuItem.Visible = false;
+            this.Compile_ToolStripMenuItem.Click += new System.EventHandler(this.compileToolStripMenuItem1_Click);
+            // 
+            // CompileAllOpen_ToolStripMenuItem
+            // 
+            this.CompileAllOpen_ToolStripMenuItem.Name = "CompileAllOpen_ToolStripMenuItem";
+            this.CompileAllOpen_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.CompileAllOpen_ToolStripMenuItem.Text = "Compile All Open";
+            this.CompileAllOpen_ToolStripMenuItem.Click += new System.EventHandler(this.compileAllOpenToolStripMenuItem_Click);
+            // 
+            // MassCompile_ToolStripMenuItem
+            // 
+            this.MassCompile_ToolStripMenuItem.Name = "MassCompile_ToolStripMenuItem";
+            this.MassCompile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.MassCompile_ToolStripMenuItem.Text = "Mass Compile";
+            this.MassCompile_ToolStripMenuItem.Click += new System.EventHandler(this.massCompileToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(162, 6);
+            // 
+            // Preprocess_ToolStripMenuItem
+            // 
+            this.Preprocess_ToolStripMenuItem.Name = "Preprocess_ToolStripMenuItem";
+            this.Preprocess_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
+            this.Preprocess_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.Preprocess_ToolStripMenuItem.Text = "Preprocess";
+            this.Preprocess_ToolStripMenuItem.Click += new System.EventHandler(this.preprocessToolStripMenuItem_Click);
+            // 
+            // roundtripToolStripMenuItem
+            // 
+            this.roundtripToolStripMenuItem.Name = "roundtripToolStripMenuItem";
+            this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.roundtripToolStripMenuItem.Text = "Roundtrip";
+            this.roundtripToolStripMenuItem.Click += new System.EventHandler(this.roundtripToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(6, 25);
+            // 
+            // About_toolStripButton
+            // 
+            this.About_toolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.About_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.About_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("About_toolStripButton.Image")));
+            this.About_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.About_toolStripButton.Name = "About_toolStripButton";
+            this.About_toolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.About_toolStripButton.Text = "About";
+            this.About_toolStripButton.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // Help_toolStripButton
+            // 
+            this.Help_toolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.Help_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Help_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Help_toolStripButton.Image")));
+            this.Help_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Help_toolStripButton.Name = "Help_toolStripButton";
+            this.Help_toolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.Help_toolStripButton.Text = "Help";
+            this.Help_toolStripButton.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -687,87 +888,10 @@ namespace ScriptEditor {
             this.showLogWindowToolStripMenuItem.Text = "Show Log Window";
             this.showLogWindowToolStripMenuItem.Click += new System.EventHandler(this.showLogWindowToolStripMenuItem_Click);
             // 
-            // toolStripSeparator9
+            // toolStripSeparator14
             // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
-            // 
-            // qCompile_toolStripSplitButton
-            // 
-            this.qCompile_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Compile_ToolStripMenuItem,
-            this.CompileAllOpen_ToolStripMenuItem,
-            this.MassCompile_ToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.Preprocess_ToolStripMenuItem,
-            this.roundtripToolStripMenuItem});
-            this.qCompile_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("qCompile_toolStripSplitButton.Image")));
-            this.qCompile_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.qCompile_toolStripSplitButton.Name = "qCompile_toolStripSplitButton";
-            this.qCompile_toolStripSplitButton.Size = new System.Drawing.Size(76, 22);
-            this.qCompile_toolStripSplitButton.Text = "Compile";
-            this.qCompile_toolStripSplitButton.ToolTipText = "Quick Compile Script [F8]";
-            this.qCompile_toolStripSplitButton.ButtonClick += new System.EventHandler(this.compileToolStripMenuItem1_Click);
-            // 
-            // CompileAllOpen_ToolStripMenuItem
-            // 
-            this.CompileAllOpen_ToolStripMenuItem.Name = "CompileAllOpen_ToolStripMenuItem";
-            this.CompileAllOpen_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.CompileAllOpen_ToolStripMenuItem.Text = "Compile All Open";
-            this.CompileAllOpen_ToolStripMenuItem.Click += new System.EventHandler(this.compileAllOpenToolStripMenuItem_Click);
-            // 
-            // MassCompile_ToolStripMenuItem
-            // 
-            this.MassCompile_ToolStripMenuItem.Name = "MassCompile_ToolStripMenuItem";
-            this.MassCompile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.MassCompile_ToolStripMenuItem.Text = "Mass Compile";
-            this.MassCompile_ToolStripMenuItem.Click += new System.EventHandler(this.massCompileToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(162, 6);
-            // 
-            // Preprocess_ToolStripMenuItem
-            // 
-            this.Preprocess_ToolStripMenuItem.Name = "Preprocess_ToolStripMenuItem";
-            this.Preprocess_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.Preprocess_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.Preprocess_ToolStripMenuItem.Text = "Preprocess";
-            this.Preprocess_ToolStripMenuItem.Click += new System.EventHandler(this.preprocessToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator13
-            // 
-            this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(6, 25);
-            // 
-            // About_toolStripButton
-            // 
-            this.About_toolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.About_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.About_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("About_toolStripButton.Image")));
-            this.About_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.About_toolStripButton.Name = "About_toolStripButton";
-            this.About_toolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.About_toolStripButton.Text = "About";
-            this.About_toolStripButton.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // Help_toolStripButton
-            // 
-            this.Help_toolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.Help_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Help_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Help_toolStripButton.Image")));
-            this.Help_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Help_toolStripButton.Name = "Help_toolStripButton";
-            this.Help_toolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.Help_toolStripButton.Text = "Help";
-            this.Help_toolStripButton.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(6, 25);
             // 
             // cmsTabControls
             // 
@@ -928,114 +1052,6 @@ namespace ScriptEditor {
             this.toolTipAC.InitialDelay = 500;
             this.toolTipAC.ReshowDelay = 100;
             // 
-            // Script_toolStripSplitButton
-            // 
-            this.Script_toolStripSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Script_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editRegisteredScriptsToolStripMenuItem});
-            this.Script_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Script_toolStripSplitButton.Image")));
-            this.Script_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Script_toolStripSplitButton.Name = "Script_toolStripSplitButton";
-            this.Script_toolStripSplitButton.Size = new System.Drawing.Size(32, 22);
-            this.Script_toolStripSplitButton.Text = "Register Script";
-            this.Script_toolStripSplitButton.ButtonClick += new System.EventHandler(this.registerScriptToolStripMenuItem_Click);
-            // 
-            // Compile_ToolStripMenuItem
-            // 
-            this.Compile_ToolStripMenuItem.Name = "Compile_ToolStripMenuItem";
-            this.Compile_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.Compile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.Compile_ToolStripMenuItem.Text = "Compile";
-            this.Compile_ToolStripMenuItem.Visible = false;
-            this.Compile_ToolStripMenuItem.Click += new System.EventHandler(this.compileToolStripMenuItem1_Click);
-            // 
-            // toolStripSeparator14
-            // 
-            this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(6, 25);
-            // 
-            // editRegisteredScriptsToolStripMenuItem
-            // 
-            this.editRegisteredScriptsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("editRegisteredScriptsToolStripMenuItem.Image")));
-            this.editRegisteredScriptsToolStripMenuItem.Name = "editRegisteredScriptsToolStripMenuItem";
-            this.editRegisteredScriptsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-            this.editRegisteredScriptsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.editRegisteredScriptsToolStripMenuItem.Text = "Edit registered Scripts";
-            this.editRegisteredScriptsToolStripMenuItem.Click += new System.EventHandler(this.editRegisteredScriptsToolStripMenuItem_Click);
-            // 
-            // saveAsTemplateToolStripMenuItem
-            // 
-            this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
-            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
-            // 
-            // toolStripSeparator15
-            // 
-            this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(188, 6);
-            // 
-            // MSG_toolStripButton
-            // 
-            this.MSG_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.MSG_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("MSG_toolStripButton.Image")));
-            this.MSG_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.MSG_toolStripButton.Name = "MSG_toolStripButton";
-            this.MSG_toolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.MSG_toolStripButton.Text = "View MSG File";
-            this.MSG_toolStripButton.Click += new System.EventHandler(this.associateMsgToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator16
-            // 
-            this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton3.Text = "View Dialog";
-            // 
-            // roundtripToolStripMenuItem
-            // 
-            this.roundtripToolStripMenuItem.Name = "roundtripToolStripMenuItem";
-            this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.roundtripToolStripMenuItem.Text = "Roundtrip";
-            this.roundtripToolStripMenuItem.Click += new System.EventHandler(this.roundtripToolStripMenuItem_Click);
-            // 
-            // Outline_toolStripButton
-            // 
-            this.Outline_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Outline_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Outline_toolStripButton.Image")));
-            this.Outline_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Outline_toolStripButton.Name = "Outline_toolStripButton";
-            this.Outline_toolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.Outline_toolStripButton.Text = "Outline";
-            this.Outline_toolStripButton.Click += new System.EventHandler(this.outlineToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator17
-            // 
-            this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 25);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(704, 550);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
-            // 
             // TextEditor
             // 
             this.AllowDrop = true;
@@ -1136,7 +1152,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
         private System.Windows.Forms.ToolStripSplitButton New_toolStripDropDownButton;
-        private System.Windows.Forms.ToolStripMenuItem TemplateScript_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripSplitButton qCompile_toolStripSplitButton;
         private System.Windows.Forms.ToolStripMenuItem CompileAllOpen_ToolStripMenuItem;
@@ -1169,5 +1184,8 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem roundtripToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton Outline_toolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator18;
+        private System.Windows.Forms.ToolStripMenuItem TemplateScript_ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator19;
     }
 }
