@@ -4,69 +4,67 @@
     <Property name="LineComment" value="//"/>
   </Properties>
 
-  <Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
+  <Digits name = "Digits" bold = "false" italic = "false" color = "Red"/>
 
   <RuleSets>
     <RuleSet ignorecase="true">
       <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#ifdef</Begin>
+        <Begin color="Brown" startofline="true">#ifdef</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#ifndef</Begin>
+        <Begin color="Brown" startofline="true">#ifndef</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red">#if</Begin>
+        <Begin color="Brown">#if</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#else</Begin>
+        <Begin color="Brown" startofline="true">#else</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#elif</Begin>
+        <Begin color="Brown" startofline="true">#elif</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#endif</Begin>
+        <Begin color="Brown" startofline="true">#endif</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#define</Begin>
+        <Begin color="Brown" startofline="true">#undef</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#undef</Begin>
+        <Begin color="Brown" startofline="true">#warning</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#warning</Begin>
+        <Begin color="Brown" startofline="true">#error</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#error</Begin>
+        <Begin color="Brown" startofline="true">#line</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#line</Begin>
+        <Begin color="Brown" startofline="true">#include</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#include</Begin>
+        <Begin color="Brown" startofline="true">#pragma</Begin>
       </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#pragma</Begin>
+      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="Black" stopateol = "true">
+        <Begin bold="false" color="Brown" startofline="true">#define</Begin>
+        <End>(</End>
       </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin startofline="true">#</Begin>
-      </Span>
-
-      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+      
+      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "Gray" stopateol = "true">
         <Begin>//</Begin>
       </Span>
-      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
+      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "Gray" stopateol = "false">
         <Begin>/*</Begin>
         <End>*/</End>
       </Span>
 
-      <Span name = "String" rule = "StringSet" bold = "false" italic = "false" color = "Brown" stopateol = "true">
+      <Span name = "String" rule = "StringSet" bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black" stopateol = "true">
         <Begin>"</Begin>
         <End>"</End>
       </Span>
-
-      <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "Black">
+      
+      <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkBlue">
         <Key word = "," />
         <Key word = "." />
         <Key word = ";" />
@@ -87,8 +85,8 @@
         <Key word = "!" />
         <Key word = "|" />
       </KeyWords>
-
-      <KeyWords name = "CoreKeywords" bold="false" italic="false" color="Blue">
+      
+      <KeyWords name = "CoreKeywords" bold="true" italic="false" color="MediumBlue">
         <Key word = "procedure" />
         <Key word = "variable" />
         <Key word = "import" />
@@ -128,9 +126,19 @@
         <Key word = "critical" />
         <Key word = "break" />
         <Key word = "continue" />
+        <Key word = "and" />
+        <Key word = "or" />
+        <Key word = "bwand" />
+        <Key word = "bwor" />
+        <Key word = "bwnot" />
+        <Key word = "bwxor" />
+        <Key word = "not" />
+        <Key word = "true" />
+        <Key word = "false" />
+        <Key word = "floor" />
       </KeyWords>
       
-      <KeyWords name = "FalloutBaseFunctions" bold="false" italic="false" color="DarkMagenta">
+      <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="DarkMagenta">
         <Key word = "give_exp_points" />
         <Key word = "scr_return" />
         <Key word = "play_sfx" />
@@ -411,7 +419,7 @@
         <Key word = "tokenize" />
       </KeyWords>
       
-      <KeyWords name = "SfallFunctions" bold="true" italic="false" color="DarkMagenta">
+      <KeyWords name = "SfallFunctions" bold="true" italic="false" color="SaddleBrown">
         <Key word = "read_byte" />
         <Key word = "read_short" />
         <Key word = "read_int" />
@@ -686,23 +694,24 @@
         <Key word = "tile_light" />
         <Key word = "obj_blocking_line" />
         <Key word = "obj_blocking_tile" />
-        <Key word = "tile_get_objs" />
+        <Key word = "tile_get_next_obj" />
+        <Key word = "get_next_party_member" />
         <Key word = "party_member_list" />
         <Key word = "path_find_to" />
         <Key word = "create_spatial" />
         <Key word = "art_exists" />
-        <Key word = "obj_is_carrying_obj" />
-        <Key word = "sfall_func0" />
+		<Key word = "obj_is_carrying_obj" />
+		
+		<Key word = "sfall_func0" />
 		<Key word = "sfall_func1" />
 		<Key word = "sfall_func2" />
 		<Key word = "sfall_func3" />
 		<Key word = "sfall_func4" />
 		<Key word = "sfall_func5" />
 		<Key word = "sfall_func6" />
-        
       </KeyWords>
       
-      <KeyWords name = "SfallMacros" bold="true" italic="true" color="DarkMagenta">
+      <KeyWords name = "SfallMacros" bold="true" italic="false" color="BlueViolet">
         <Key word = "create_array_list" />
         <Key word = "temp_array_list" />
         <Key word = "create_array_map" />
@@ -746,31 +755,21 @@
         <Key word = "mstr_stat" />
         <Key word = "mstr_trait" />
         <Key word = "mstr_worldmap" />
-		
-        <Key word = "spatial_radius" />
+        
+		<Key word = "spatial_radius" />
         <Key word = "critter_inven_obj2" />
         <Key word = "intface_redraw" />
         <Key word = "intface_hide" />
         <Key word = "intface_show" />
         <Key word = "intface_is_hidden" />
         <Key word = "exec_map_update_scripts" />
-        
       </KeyWords>
 
-      <KeyWords name = "OpKeywords" bold="false" italic="false" color="Indigo">
-        <Key word = "and" />
-        <Key word = "or" />
-        <Key word = "bwand" />
-        <Key word = "bwor" />
-        <Key word = "bwnot" />
-        <Key word = "bwxor" />
-        <Key word = "not" />
-        <Key word = "true" />
-        <Key word = "false" />
-        <Key word = "floor" />
+      <KeyWords name = "OpKeywords" bold="true" italic="false" color="DarkBlue">
+
       </KeyWords>
       
-      <KeyWords name = "Constants" bold="false" italic="false" color="DarkBlue">
+      <KeyWords name = "Constants" bold="true" italic="false" color="PaleVioletRed">
         <Key word = "textshadow" />
         <Key word = "textunderline" />
         <Key word = "textmonospace" />
@@ -825,7 +824,7 @@
       <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
     </RuleSet>
 
-    <RuleSet name = "StringSet" ignorecase="false" escapecharacter="\">
+    <RuleSet name = "StringSet" ignorecase="false">
       <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
     </RuleSet>
   </RuleSets>
