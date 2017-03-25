@@ -66,15 +66,15 @@ namespace ScriptEditor
             windowPositions[(int)window] = wp;
         }
 
-        public static void AddRecentFile(string s)
+        public static void AddRecentFile(string s, bool b = false)
         {
             for (int i = 0; i < recent.Count; i++) {
                 if (string.Compare(recent[i], s, true) == 0)
                     recent.RemoveAt(i--);
             }
-            if (recent.Count >= MAX_RECENT)
+            if (!b && recent.Count >= MAX_RECENT)
                 recent.RemoveAt(0);
-            recent.Add(s);
+            if (!b) recent.Add(s);
         }
 
         public static string[] GetRecent() { return recent.ToArray(); }

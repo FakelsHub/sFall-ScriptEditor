@@ -116,6 +116,7 @@ namespace ScriptEditor
             if (Settings.editorSplitterPosition2 != -1) {
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
             }
+            splitContainer2.Panel2Collapsed = true;
             if (Settings.enableParser) CreateTabVarTree();
         }
 
@@ -167,17 +168,25 @@ namespace ScriptEditor
 
         public enum OpenType { None, File, Text }
 
-        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false)
+        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false)
         {
             if (type == OpenType.File) {
                 if (!Path.IsPathRooted(file)) {
                     file = Path.GetFullPath(file);
                 }
+                // Check file
+                if (recent) {
+                    if (File.Exists(file)) recent = false;
+                }
                 //Add this file to the recent files list
                 if (addToMRU) {
-                    Settings.AddRecentFile(file);
+                    Settings.AddRecentFile(file, recent);
+                    UpdateRecentList();
+                    if (recent) {
+                        MessageBox.Show("This file was not found.", "Error");
+                        return null;
+                    }
                 }
-                UpdateRecentList();
                 //If this is an int, decompile
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     var compiler = new Compiler();
@@ -241,7 +250,7 @@ namespace ScriptEditor
             TabInfo ti = new TabInfo();
             ti.textEditor = te;
             ti.changed = false;
-            if (type == OpenType.File && !alwaysNew) {
+            if (type == OpenType.File && !alwaysNew) { 
                 ti.filepath = file;
                 ti.filename = Path.GetFileName(file);
             } else {
@@ -258,7 +267,7 @@ namespace ScriptEditor
             te.Dock = DockStyle.Fill;
 
             tabControl1.TabPages.Add(tp);
-            if (type == OpenType.File & !alwaysNew) {
+            if (type == OpenType.File && !alwaysNew) { 
                 tp.ToolTipText = ti.filepath;
                 System.String ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
@@ -271,6 +280,7 @@ namespace ScriptEditor
             if (tabControl1.TabPages.Count > 1) {
                 tabControl1.SelectTab(tp);
             } else {
+                splitContainer2.Panel2Collapsed = false;
                 tabControl1_Selected(null, null);
             }
             return ti;
@@ -678,6 +688,7 @@ namespace ScriptEditor
                     if (tab.parseInfo.parsed) {
                         currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
                         currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+                        Outline_toolStripButton.Enabled = true;
                         UpdateNames(); // Update Tree Variables/Pocedures
                         parserLabel.Text = "Parser: Complete";
                     } else {
@@ -722,9 +733,11 @@ namespace ScriptEditor
         // Called when creating a new document and when switching tabs
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
+            Outline_toolStripButton.Enabled = false;
             if (tabControl1.SelectedIndex == -1) {
                 currentTab = null;
-                parserLabel.Text = "Parser: No file";
+                parserLabel.Text = (Settings.enableParser) ? "Parser: No file" : parseoff;
+                splitContainer2.Panel2Collapsed = true;
             } else {
                 if (currentTab != null) {
                     previousTabIndex = currentTab.index;
@@ -741,9 +754,12 @@ namespace ScriptEditor
                         tabControl3.TabPages.RemoveAt(1);
                     }
                 } else if (tabControl3.TabPages.Count < 3 && (Settings.enableParser || currentTab.parseInfo != null)) {
-                    if (currentTab.parseInfo.parseData) CreateTabVarTree();
+                    if (currentTab.parseInfo.parseData) {
+                        CreateTabVarTree();
+                    }
                 }
                 if (currentTab.shouldParse) {
+                    if (currentTab.parseInfo != null && currentTab.parseInfo.parseData) Outline_toolStripButton.Enabled = true;
                     if (currentTab.needsParse) {
                         parserLabel.Text = (Settings.enableParser) ? "Parser: Wait for update" : parseoff;
                     } else {
@@ -1211,12 +1227,12 @@ namespace ScriptEditor
 
         private void recentItem_Click(object sender, EventArgs e)
         {
-            Open(((ToolStripMenuItem)sender).Text, OpenType.File);
+            Open(((ToolStripMenuItem)sender).Text, OpenType.File, true, false, true);
         }
 
         private void Template_Click(object sender, EventArgs e)
         {
-            Open(((ToolStripMenuItem)sender).Tag.ToString(), OpenType.File, false, false);
+            Open(((ToolStripMenuItem)sender).Tag.ToString(), OpenType.File, false, true);
         }
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1310,7 +1326,6 @@ namespace ScriptEditor
             if (currentTab == null) {
                 return;
             }
-            timer_Tick(null, null);
             foreach (FoldMarker fm in currentTab.textEditor.Document.FoldingManager.FoldMarker) {
                 if (fm.FoldType == FoldType.MemberBody) {
                     fm.IsFolded = !fm.IsFolded;

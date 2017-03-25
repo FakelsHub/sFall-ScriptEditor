@@ -30,6 +30,7 @@ namespace ScriptEditor {
             this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tabControl1 = new DraggableTabControl();
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -118,7 +119,6 @@ namespace ScriptEditor {
             this.findDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
-            this.tabControl1 = new DraggableTabControl();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -215,6 +215,21 @@ namespace ScriptEditor {
             this.splitContainer1.SplitterDistance = 550;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(704, 550);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // minimizelog_button
             // 
@@ -578,6 +593,7 @@ namespace ScriptEditor {
             // Outline_toolStripButton
             // 
             this.Outline_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Outline_toolStripButton.Enabled = false;
             this.Outline_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Outline_toolStripButton.Image")));
             this.Outline_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Outline_toolStripButton.Name = "Outline_toolStripButton";
@@ -1011,21 +1027,6 @@ namespace ScriptEditor {
             this.toolTipAC.AutoPopDelay = 50000;
             this.toolTipAC.InitialDelay = 500;
             this.toolTipAC.ReshowDelay = 100;
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(704, 550);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // TextEditor
             // 
