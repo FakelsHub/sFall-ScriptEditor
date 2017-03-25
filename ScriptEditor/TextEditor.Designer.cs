@@ -30,7 +30,6 @@ namespace ScriptEditor {
             this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.tabControl1 = new DraggableTabControl();
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -45,11 +44,9 @@ namespace ScriptEditor {
             this.tbOutputParse = new System.Windows.Forms.TextBox();
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.treeView2 = new System.Windows.Forms.TreeView();
+            this.ProcTree = new System.Windows.Forms.TreeView();
             this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.treeView3 = new System.Windows.Forms.TreeView();
+            this.FunctionsTree = new System.Windows.Forms.TreeView();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.New_toolStripDropDownButton = new System.Windows.Forms.ToolStripSplitButton();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -121,6 +118,7 @@ namespace ScriptEditor {
             this.findDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
+            this.tabControl1 = new DraggableTabControl();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -136,7 +134,6 @@ namespace ScriptEditor {
             this.tabPage3.SuspendLayout();
             this.tabControl3.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            this.tabPage5.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.ToolStrip.SuspendLayout();
             this.cmsTabControls.SuspendLayout();
@@ -218,21 +215,6 @@ namespace ScriptEditor {
             this.splitContainer1.SplitterDistance = 550;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(704, 550);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // minimizelog_button
             // 
@@ -370,7 +352,6 @@ namespace ScriptEditor {
             // tabControl3
             // 
             this.tabControl3.Controls.Add(this.tabPage4);
-            this.tabControl3.Controls.Add(this.tabPage5);
             this.tabControl3.Controls.Add(this.tabPage6);
             this.tabControl3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
@@ -381,66 +362,44 @@ namespace ScriptEditor {
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.treeView1);
+            this.tabPage4.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.tabPage4.Controls.Add(this.ProcTree);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage4.Size = new System.Drawing.Size(181, 656);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
-            this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // treeView1
+            // ProcTree
             // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(3, 3);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.ShowNodeToolTips = true;
-            this.treeView1.ShowRootLines = false;
-            this.treeView1.Size = new System.Drawing.Size(175, 650);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.treeView2);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(181, 656);
-            this.tabPage5.TabIndex = 1;
-            this.tabPage5.Text = "Variables";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // treeView2
-            // 
-            this.treeView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView2.Location = new System.Drawing.Point(3, 3);
-            this.treeView2.Name = "treeView2";
-            this.treeView2.ShowNodeToolTips = true;
-            this.treeView2.ShowRootLines = false;
-            this.treeView2.Size = new System.Drawing.Size(175, 650);
-            this.treeView2.TabIndex = 0;
-            this.treeView2.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
+            this.ProcTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcTree.Location = new System.Drawing.Point(3, 3);
+            this.ProcTree.Name = "ProcTree";
+            this.ProcTree.ShowNodeToolTips = true;
+            this.ProcTree.ShowRootLines = false;
+            this.ProcTree.Size = new System.Drawing.Size(175, 650);
+            this.ProcTree.TabIndex = 0;
+            this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             // 
             // tabPage6
             // 
-            this.tabPage6.Controls.Add(this.treeView3);
+            this.tabPage6.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.tabPage6.Controls.Add(this.FunctionsTree);
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage6.Size = new System.Drawing.Size(181, 656);
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "Functions";
-            this.tabPage6.UseVisualStyleBackColor = true;
             // 
-            // treeView3
+            // FunctionsTree
             // 
-            this.treeView3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView3.Location = new System.Drawing.Point(3, 3);
-            this.treeView3.Name = "treeView3";
-            this.treeView3.Size = new System.Drawing.Size(175, 650);
-            this.treeView3.TabIndex = 0;
+            this.FunctionsTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FunctionsTree.Location = new System.Drawing.Point(3, 3);
+            this.FunctionsTree.Name = "FunctionsTree";
+            this.FunctionsTree.Size = new System.Drawing.Size(175, 650);
+            this.FunctionsTree.TabIndex = 0;
             // 
             // ToolStrip
             // 
@@ -1053,6 +1012,21 @@ namespace ScriptEditor {
             this.toolTipAC.InitialDelay = 500;
             this.toolTipAC.ReshowDelay = 100;
             // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(704, 550);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
+            // 
             // TextEditor
             // 
             this.AllowDrop = true;
@@ -1081,7 +1055,6 @@ namespace ScriptEditor {
             this.tabPage3.PerformLayout();
             this.tabControl3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.ToolStrip.ResumeLayout(false);
             this.ToolStrip.PerformLayout();
@@ -1116,7 +1089,7 @@ namespace ScriptEditor {
         private System.Windows.Forms.DataGridViewTextBoxColumn cMessage;
         private System.ComponentModel.BackgroundWorker bwSyntaxParser;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView ProcTree;
         private System.Windows.Forms.ContextMenuStrip editorMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem findReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findDeclerationToolStripMenuItem;
@@ -1133,7 +1106,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStrip ToolStrip;
         private System.Windows.Forms.TabControl tabControl3;
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.Button minimizelog_button;
         private System.Windows.Forms.ToolStripButton Undo_toolStripButton;
@@ -1170,8 +1142,7 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem showLogWindowToolStripMenuItem;
-        private System.Windows.Forms.TreeView treeView2;
-        private System.Windows.Forms.TreeView treeView3;
+        private System.Windows.Forms.TreeView FunctionsTree;
         private System.Windows.Forms.ToolStripButton Help_toolStripButton;
         private System.Windows.Forms.ToolStripMenuItem Compile_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSplitButton Script_toolStripSplitButton;

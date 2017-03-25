@@ -56,7 +56,7 @@ namespace ScriptEditor.CodeTranslation
 
         #endregion
 
-        private int lastStatus;
+        private int lastStatus = 1;
 
         private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
         {
@@ -123,19 +123,42 @@ namespace ScriptEditor.CodeTranslation
             return Encoding.ASCII.GetString(namelist, name - 4, strlen).TrimEnd('\0');
         }
 
-        public ProgramInfo Parse(string file, string path)
+        // Parse disabled, get only macros
+        public ProgramInfo MacroParse(string file, string path, ProgramInfo previnfo)
         {
             File.WriteAllText(parserPath, file);
-            lastStatus = parse_main(parserPath, path, Path.GetDirectoryName(path));
-            if (lastStatus >= 2) // preprocess failed
-                return null;
-            ProgramInfo pi = (lastStatus == 1)
+            ProgramInfo pi = new ProgramInfo(0, 0);
+            if (!Settings.enableParser && previnfo != null) { // store parse info
+                if (previnfo.parseData) {
+                    pi = previnfo;
+                    pi.parsed = false;
+                    pi.macros.Clear();
+                }
+            }
+            GetMacros(parserPath, Path.GetDirectoryName(path), pi.macros);
+            return pi;
+        }
+
+        public ProgramInfo Parse(string file, string path, ProgramInfo previnfo)
+        {
+            File.WriteAllText(parserPath, file);
+            if (Settings.enableParser) lastStatus = parse_main(parserPath, path, Path.GetDirectoryName(path));
+            ProgramInfo pi = (lastStatus >= 1)
                             ? new ProgramInfo(0, 0)
                             : new ProgramInfo(numProcs(), numVars());
+            if (lastStatus == 1 && previnfo.parseData) { // preprocess error - store previous data Procs/Vars
+                pi = previnfo;
+                pi.parsed = false;
+                pi.macros.Clear();
+            } 
             GetMacros(parserPath, Path.GetDirectoryName(path), pi.macros);
-            if (lastStatus == 1)  // parse failed, return only macros
+            if (lastStatus >= 1) { // parse failed, return macros and previous data Procs/Vars
+                // to do - написать свою функцию в случае preprocess failed 'lastStatus > 0'  
                 return pi;
+            }
+            // Getting data of variables/procedures
             pi.parsed = true;
+            pi.parseData = true;
             byte[] names = new byte[namespaceSize()];
             int stringsSize = stringspaceSize();
             getNamespace(names);
@@ -177,7 +200,6 @@ namespace ScriptEditor.CodeTranslation
                         pi.vars[i].references[j] = Reference.FromPtr(tmp[j * 2], tmp[j * 2 + 1]);
                 }
             }
-
             //Procedures
             for (int i = 0; i < pi.procs.Length; i++) {
                 pi.procs[i] = new Procedure();

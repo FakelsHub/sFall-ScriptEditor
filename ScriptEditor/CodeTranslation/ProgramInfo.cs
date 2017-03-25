@@ -72,6 +72,7 @@ namespace ScriptEditor.CodeTranslation
         private readonly Dictionary<string, Variable> varLookup;
         public readonly Dictionary<string, Macro> macros;
         public bool parsed = false;
+        public bool parseData = false; // Data Variables and Procedures received.
 
         public IParserInfo Lookup(string token, string file, int line)
         {
@@ -96,11 +97,18 @@ namespace ScriptEditor.CodeTranslation
             return null;
         }
 
-        public string LookupToken(string token, string file, int line)
+        public static string LookupOpcodesToken(string token)
         {
             token = token.ToLowerInvariant();
-            if (opcodes.ContainsKey(token))
-                return opcodes[token];
+            if (opcodes.ContainsKey(token)) {
+                return opcodes[token]; 
+            }else {
+                return null;
+            }
+        }
+
+        public string LookupToken(string token, string file, int line)
+        {
             IParserInfo pi = Lookup(token, file, line);
             if (pi == null)
                 return null;
@@ -135,6 +143,7 @@ namespace ScriptEditor.CodeTranslation
             } else
                 pi.Deceleration(out ofile, out oline);
         }
+
         public void LookupDefinition(string token, out string ofile, out int oline)
         {
             token = token.ToLowerInvariant();
