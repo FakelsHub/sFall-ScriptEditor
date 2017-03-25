@@ -46,9 +46,9 @@ namespace ScriptEditor
             UpdateRecentList();
             // Templates
             foreach (string file in Directory.GetFiles(Path.Combine(Settings.ResourcesFolder, "templates"), "*.ssl")) {
-                ToolStripMenuItem mi = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(file), null, delegate(object sender, EventArgs e) {
-                    Open(file, OpenType.File, false, false); // Open Templates file
-                });
+                ToolStripMenuItem mi = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(file));
+                mi.Tag = file;
+                mi.Click += new EventHandler(Template_Click); // Open Templates file
                 New_toolStripDropDownButton.DropDownItems.Add(mi);
             }
             // Parser
@@ -1212,6 +1212,11 @@ namespace ScriptEditor
         private void recentItem_Click(object sender, EventArgs e)
         {
             Open(((ToolStripMenuItem)sender).Text, OpenType.File);
+        }
+
+        private void Template_Click(object sender, EventArgs e)
+        {
+            Open(((ToolStripMenuItem)sender).Tag.ToString(), OpenType.File, false, false);
         }
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
