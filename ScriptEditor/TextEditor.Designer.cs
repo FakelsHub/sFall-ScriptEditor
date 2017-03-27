@@ -30,7 +30,9 @@ namespace ScriptEditor {
             this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.TabClose_button = new System.Windows.Forms.Button();
             this.tabControl1 = new DraggableTabControl();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -158,18 +160,22 @@ namespace ScriptEditor {
             // 
             // lbAutocomplete
             // 
-            this.lbAutocomplete.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbAutocomplete.BackColor = System.Drawing.SystemColors.Info;
+            this.lbAutocomplete.Cursor = System.Windows.Forms.Cursors.Help;
+            this.lbAutocomplete.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbAutocomplete.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lbAutocomplete.FormattingEnabled = true;
-            this.lbAutocomplete.IntegralHeight = false;
             this.lbAutocomplete.ItemHeight = 16;
             this.lbAutocomplete.Location = new System.Drawing.Point(631, -6);
             this.lbAutocomplete.Name = "lbAutocomplete";
-            this.lbAutocomplete.Size = new System.Drawing.Size(132, 31);
+            this.lbAutocomplete.Size = new System.Drawing.Size(132, 20);
             this.lbAutocomplete.TabIndex = 5;
             this.lbAutocomplete.Visible = false;
+            this.lbAutocomplete.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lbAutocomplete_PasteOpcode);
             this.lbAutocomplete.SelectedIndexChanged += new System.EventHandler(this.LbAutocompleteSelectedIndexChanged);
             this.lbAutocomplete.VisibleChanged += new System.EventHandler(this.LbAutocompleteVisibleChanged);
             this.lbAutocomplete.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LbAutocompleteKeyDown);
+            this.lbAutocomplete.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lbAutocomplete_MouseMove);
             // 
             // splitContainer2
             // 
@@ -202,6 +208,7 @@ namespace ScriptEditor {
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.TabClose_button);
             this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
             this.splitContainer1.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer1.Panel1MinSize = 500;
@@ -216,10 +223,28 @@ namespace ScriptEditor {
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
             // 
+            // TabClose_button
+            // 
+            this.TabClose_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.TabClose_button.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.TabClose_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.TabClose_button.ForeColor = System.Drawing.Color.DarkRed;
+            this.TabClose_button.Location = new System.Drawing.Point(683, 22);
+            this.TabClose_button.Name = "TabClose_button";
+            this.TabClose_button.Size = new System.Drawing.Size(18, 18);
+            this.TabClose_button.TabIndex = 0;
+            this.TabClose_button.Text = "X";
+            this.TabClose_button.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.toolTipAC.SetToolTip(this.TabClose_button, "Close this document");
+            this.TabClose_button.UseVisualStyleBackColor = true;
+            this.TabClose_button.Visible = false;
+            this.TabClose_button.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
             // tabControl1
             // 
             this.tabControl1.AllowDrop = true;
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -230,6 +255,13 @@ namespace ScriptEditor {
             this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
             this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
             this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "107619_LowPriorityNote_16x16.png");
+            this.imageList1.Images.SetKeyName(1, "107597_HighPriorityNote_16x16.png");
             // 
             // minimizelog_button
             // 
@@ -369,6 +401,7 @@ namespace ScriptEditor {
             this.tabControl3.Controls.Add(this.tabPage4);
             this.tabControl3.Controls.Add(this.tabPage6);
             this.tabControl3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
@@ -379,6 +412,8 @@ namespace ScriptEditor {
             // 
             this.tabPage4.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.tabPage4.Controls.Add(this.ProcTree);
+            this.tabPage4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tabPage4.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -1160,5 +1195,7 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator18;
         private System.Windows.Forms.ToolStripMenuItem TemplateScript_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator19;
+        private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.Button TabClose_button;
     }
 }

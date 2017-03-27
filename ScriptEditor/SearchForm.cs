@@ -5,15 +5,33 @@ namespace ScriptEditor
 {
     public partial class SearchForm : Form
     {
+        public bool bcChange;
+
         public SearchForm()
         {
             InitializeComponent();
             if (Settings.lastSearchPath == null) {
-                label2.Text = "<unset>";
+                textBox1.Text = "<unset>";
             } else {
-                label2.Text = Settings.lastSearchPath;
+                textBox1.Text = Settings.lastSearchPath;
                 fbdSearchFolder.SelectedPath = Settings.lastSearchPath;
             }
+        }
+
+        private void SearchForm_Deactivate(object sender, EventArgs e)
+        {
+            if (!bcChange) Opacity = 0.7;
+        }
+
+        private void SearchForm_Activated(object sender, EventArgs e)
+        {
+            Opacity = 1;
+            bcChange = false;  
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

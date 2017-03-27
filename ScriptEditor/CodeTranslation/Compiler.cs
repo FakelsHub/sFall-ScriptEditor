@@ -128,12 +128,10 @@ namespace ScriptEditor.CodeTranslation
         {
             File.WriteAllText(parserPath, file);
             ProgramInfo pi = new ProgramInfo(0, 0);
-            if (!Settings.enableParser && previnfo != null) { // store parse info
-                if (previnfo.parseData) {
+            if (!Settings.enableParser && previnfo != null && previnfo.parseData) { // store parse info
                     pi = previnfo;
                     pi.parsed = false;
                     pi.macros.Clear();
-                }
             }
             GetMacros(parserPath, Path.GetDirectoryName(path), pi.macros);
             return pi;
@@ -146,7 +144,7 @@ namespace ScriptEditor.CodeTranslation
             ProgramInfo pi = (lastStatus >= 1)
                             ? new ProgramInfo(0, 0)
                             : new ProgramInfo(numProcs(), numVars());
-            if (lastStatus == 1 && previnfo.parseData) { // preprocess error - store previous data Procs/Vars
+            if (lastStatus == 1 && previnfo != null && previnfo.parseData) { // preprocess error - store previous data Procs/Vars
                 pi = previnfo;
                 pi.parsed = false;
                 pi.macros.Clear();
