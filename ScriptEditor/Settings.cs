@@ -27,7 +27,7 @@ namespace ScriptEditor
         public static bool multiThreaded = true;
         public static bool autoOpenMsgs = true;
         public static string outputDir;
-        public static string scriptsHFile;
+        public static string PathScriptsHFile;
         public static string lastMassCompile;
         public static string lastSearchPath;
         private static readonly List<string> recent = new List<string>();
@@ -113,9 +113,9 @@ namespace ScriptEditor
             editorSplitterPosition = br.ReadInt32(); // reseved
             autoOpenMsgs = br.ReadBoolean();
             editorSplitterPosition2 = br.ReadInt32();
-            scriptsHFile = br.ReadString();
-            if (scriptsHFile.Length == 0)
-                scriptsHFile = null;
+            PathScriptsHFile = br.ReadString();
+            if (PathScriptsHFile.Length == 0)
+                PathScriptsHFile = null;
             language = br.ReadString();
             if (language.Length == 0)
                 language = "english";
@@ -178,7 +178,7 @@ namespace ScriptEditor
             bw.Write(editorSplitterPosition); // reseved
             bw.Write(autoOpenMsgs);
             bw.Write(editorSplitterPosition2);
-            bw.Write(scriptsHFile == null ? "" : scriptsHFile);
+            bw.Write(PathScriptsHFile == null ? "" : PathScriptsHFile);
             bw.Write(language == null ? "english" : language);
             bw.Write(tabsToSpaces);
             bw.Write(tabSize);
@@ -200,7 +200,6 @@ namespace ScriptEditor
         {
             return Path.Combine(outputDir, Path.GetFileNameWithoutExtension(infile)) + ".int";
         }
-
 
 #if DLL_COMPILER
         public static string[] GetSslcCommandLine(string infile, bool preprocess) {

@@ -11,7 +11,7 @@ namespace ScriptEditor
         public SettingsDialog()
         {
             outpath = Settings.outputDir;
-            scriptshpath = Settings.scriptsHFile;
+            scriptshpath = Settings.PathScriptsHFile;
             InitializeComponent();
             cbDebug.Checked = Settings.showDebug;
             cbLogo.Checked = Settings.showLogo;
@@ -31,8 +31,8 @@ namespace ScriptEditor
 
         private void SetLabelText()
         {
-            label2.Text = outpath == null ? "<unset>" : outpath;
-            label3.Text = scriptshpath == null ? "<unset>" : scriptshpath;
+            textBox2.Text = outpath == null ? "<unset>" : outpath;
+            textBox1.Text = scriptshpath == null ? "<unset>" : scriptshpath;
         }
 
         private void SettingsDialog_FormClosing(object sender, FormClosingEventArgs e)
@@ -45,7 +45,7 @@ namespace ScriptEditor
             Settings.multiThreaded = cbMultiThread.Checked;
             Settings.outputDir = outpath;
             Settings.autoOpenMsgs = cbAutoOpenMessages.Checked;
-            Settings.scriptsHFile = scriptshpath;
+            Settings.PathScriptsHFile = scriptshpath;
             Settings.language = tbLanguage.Text.Length == 0 ? "english" : tbLanguage.Text;
             Settings.tabsToSpaces = cbTabsToSpaces.Checked;
             try {
@@ -73,7 +73,7 @@ namespace ScriptEditor
         private void bScriptsH_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {
-                scriptshpath = openFileDialog1.FileName;
+                scriptshpath = System.IO.Path.GetDirectoryName(openFileDialog1.FileName);
                 SetLabelText();
             }
         }

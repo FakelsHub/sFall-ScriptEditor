@@ -58,6 +58,31 @@ namespace ScriptEditor.CodeTranslation
 
         private int lastStatus = 1;
 
+        public string[] GetAllIncludes(string file)
+        {
+            int n = 0;
+            string[] include = new string[0];
+            string[] lines = File.ReadAllLines(file);
+            string dir = Path.GetDirectoryName(file);
+            for (int i = 0; i < lines.Length; i++){
+                lines[i] = lines[i].Trim();
+                if (lines[i].StartsWith("#include ")){
+                    string[] text = lines[i].Split('"');
+                    if (text.Length < 2)
+                        continue;
+                    if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                        continue;
+                    if (!Path.IsPathRooted(text[1])) {
+                        text[1] = Path.Combine(dir, text[1]);
+                    }
+                    Array.Resize(ref include, n+1);
+                    include[n] = text[1];
+                    n++;
+                }
+            }
+            return include;
+        }
+
         private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;

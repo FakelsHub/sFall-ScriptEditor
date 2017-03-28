@@ -32,11 +32,9 @@
             this.cbLogo = new System.Windows.Forms.CheckBox();
             this.bChange = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.label2 = new System.Windows.Forms.Label();
             this.cbWarnFailedCompile = new System.Windows.Forms.CheckBox();
             this.cbMultiThread = new System.Windows.Forms.CheckBox();
             this.cbAutoOpenMessages = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.bScriptsH = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tbLanguage = new System.Windows.Forms.TextBox();
@@ -52,6 +50,9 @@
             this.cbAutocomplete = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
@@ -70,11 +71,11 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(6, 73);
+            label4.Location = new System.Drawing.Point(6, 55);
             label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(93, 13);
+            label4.Size = new System.Drawing.Size(154, 13);
             label4.TabIndex = 11;
-            label4.Text = "Location scripts.h:";
+            label4.Text = "Location folder of headers files:";
             // 
             // cbWarnings
             // 
@@ -108,11 +109,12 @@
             // 
             // bChange
             // 
-            this.bChange.Location = new System.Drawing.Point(6, 45);
+            this.bChange.Image = ((System.Drawing.Image)(resources.GetObject("bChange.Image")));
+            this.bChange.Location = new System.Drawing.Point(439, 29);
             this.bChange.Name = "bChange";
-            this.bChange.Size = new System.Drawing.Size(110, 23);
+            this.bChange.Size = new System.Drawing.Size(30, 25);
             this.bChange.TabIndex = 4;
-            this.bChange.Text = "Change";
+            this.toolTip.SetToolTip(this.bChange, "Change folder");
             this.bChange.UseVisualStyleBackColor = true;
             this.bChange.Click += new System.EventHandler(this.bChange_Click);
             // 
@@ -120,15 +122,6 @@
             // 
             this.folderBrowserDialog1.Description = "Select compiled scripts folder";
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 29);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "label2";
             // 
             // cbWarnFailedCompile
             // 
@@ -160,22 +153,14 @@
             this.cbAutoOpenMessages.Text = "Auto-open message files";
             this.cbAutoOpenMessages.UseVisualStyleBackColor = true;
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 86);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "label3";
-            // 
             // bScriptsH
             // 
-            this.bScriptsH.Location = new System.Drawing.Point(6, 102);
+            this.bScriptsH.Image = ((System.Drawing.Image)(resources.GetObject("bScriptsH.Image")));
+            this.bScriptsH.Location = new System.Drawing.Point(439, 68);
             this.bScriptsH.Name = "bScriptsH";
-            this.bScriptsH.Size = new System.Drawing.Size(110, 23);
+            this.bScriptsH.Size = new System.Drawing.Size(30, 25);
             this.bScriptsH.TabIndex = 10;
-            this.bScriptsH.Text = "Change";
+            this.toolTip.SetToolTip(this.bScriptsH, "Change folder");
             this.bScriptsH.UseVisualStyleBackColor = true;
             this.bScriptsH.Click += new System.EventHandler(this.bScriptsH_Click);
             // 
@@ -185,7 +170,7 @@
             this.openFileDialog1.FileName = "scripts.h";
             this.openFileDialog1.Filter = "Header files|*.h";
             this.openFileDialog1.RestoreDirectory = true;
-            this.openFileDialog1.Title = "Select scripts.h";
+            this.openFileDialog1.Title = "Select Header scripts.h";
             // 
             // tbLanguage
             // 
@@ -318,24 +303,52 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.textBox1);
             this.groupBox2.Controls.Add(label1);
             this.groupBox2.Controls.Add(this.bChange);
-            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.bScriptsH);
             this.groupBox2.Controls.Add(label4);
-            this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Location = new System.Drawing.Point(12, 132);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(475, 137);
+            this.groupBox2.Size = new System.Drawing.Size(475, 104);
             this.groupBox2.TabIndex = 23;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Path";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(6, 71);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(427, 20);
+            this.textBox1.TabIndex = 13;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(6, 32);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(427, 20);
+            this.textBox2.TabIndex = 13;
+            // 
+            // button1
+            // 
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Location = new System.Drawing.Point(412, 242);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "OK";
+            this.toolTip.SetToolTip(this.button1, "Close and save settings");
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(499, 281);
+            this.ClientSize = new System.Drawing.Size(499, 272);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cbAutocomplete);
@@ -377,11 +390,9 @@
         private System.Windows.Forms.CheckBox cbLogo;
         private System.Windows.Forms.Button bChange;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox cbWarnFailedCompile;
         private System.Windows.Forms.CheckBox cbMultiThread;
         private System.Windows.Forms.CheckBox cbAutoOpenMessages;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button bScriptsH;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.TextBox tbLanguage;
@@ -390,5 +401,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button1;
     }
 }

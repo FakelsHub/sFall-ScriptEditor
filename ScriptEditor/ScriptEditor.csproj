@@ -49,7 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -99,6 +99,12 @@
     <Compile Include="GoToLine.Designer.cs">
       <DependentUpon>GoToLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Headers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Headers.Designer.cs">
+      <DependentUpon>Headers.cs</DependentUpon>
+    </Compile>
     <Compile Include="SingleInstanceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CodeTranslation\ProgramInfo.cs" />
@@ -146,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GoToLine.resx">
       <DependentUpon>GoToLine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Headers.resx">
+      <DependentUpon>Headers.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

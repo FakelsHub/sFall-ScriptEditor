@@ -24,7 +24,6 @@ namespace ScriptEditor {
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextEditor));
             this.panel1 = new System.Windows.Forms.Panel();
             this.lbAutocomplete = new System.Windows.Forms.ListBox();
@@ -80,6 +79,9 @@ namespace ScriptEditor {
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.editRegisteredScriptsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Headers_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.openAllIncludesScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openHeaderFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.MSG_toolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -96,9 +98,8 @@ namespace ScriptEditor {
             this.Help_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.showLogWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.cmsTabControls = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -116,12 +117,12 @@ namespace ScriptEditor {
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.UpperCaseToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.LowerCaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.findReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findDeclerationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
-            toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -141,11 +142,6 @@ namespace ScriptEditor {
             this.cmsTabControls.SuspendLayout();
             this.editorMenuStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new System.Drawing.Size(208, 6);
             // 
             // panel1
             // 
@@ -195,7 +191,7 @@ namespace ScriptEditor {
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.Panel2MinSize = 125;
             this.splitContainer2.Size = new System.Drawing.Size(896, 682);
-            this.splitContainer2.SplitterDistance = 704;
+            this.splitContainer2.SplitterDistance = 701;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 4;
             // 
@@ -218,7 +214,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel2.Controls.Add(this.minimizelog_button);
             this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Size = new System.Drawing.Size(704, 682);
+            this.splitContainer1.Size = new System.Drawing.Size(701, 682);
             this.splitContainer1.SplitterDistance = 550;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
@@ -229,11 +225,11 @@ namespace ScriptEditor {
             this.TabClose_button.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.TabClose_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TabClose_button.ForeColor = System.Drawing.Color.DarkRed;
-            this.TabClose_button.Location = new System.Drawing.Point(683, 22);
+            this.TabClose_button.Image = ((System.Drawing.Image)(resources.GetObject("TabClose_button.Image")));
+            this.TabClose_button.Location = new System.Drawing.Point(680, 22);
             this.TabClose_button.Name = "TabClose_button";
             this.TabClose_button.Size = new System.Drawing.Size(18, 18);
             this.TabClose_button.TabIndex = 0;
-            this.TabClose_button.Text = "X";
             this.TabClose_button.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.toolTipAC.SetToolTip(this.TabClose_button, "Close this document");
             this.TabClose_button.UseVisualStyleBackColor = true;
@@ -249,7 +245,7 @@ namespace ScriptEditor {
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(704, 550);
+            this.tabControl1.Size = new System.Drawing.Size(701, 550);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
@@ -260,16 +256,15 @@ namespace ScriptEditor {
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "107619_LowPriorityNote_16x16.png");
-            this.imageList1.Images.SetKeyName(1, "107597_HighPriorityNote_16x16.png");
+            this.imageList1.Images.SetKeyName(0, "save.png");
+            this.imageList1.Images.SetKeyName(1, "nosave.png");
             // 
             // minimizelog_button
             // 
             this.minimizelog_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.minimizelog_button.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.minimizelog_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.minimizelog_button.Image = ((System.Drawing.Image)(resources.GetObject("minimizelog_button.Image")));
-            this.minimizelog_button.Location = new System.Drawing.Point(683, 1);
+            this.minimizelog_button.Location = new System.Drawing.Point(678, 0);
             this.minimizelog_button.Name = "minimizelog_button";
             this.minimizelog_button.Size = new System.Drawing.Size(20, 20);
             this.minimizelog_button.TabIndex = 6;
@@ -288,7 +283,7 @@ namespace ScriptEditor {
             this.tabControl2.Multiline = true;
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(704, 130);
+            this.tabControl2.Size = new System.Drawing.Size(701, 130);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl2_MouseClick);
             // 
@@ -297,7 +292,7 @@ namespace ScriptEditor {
             this.tabPage1.Controls.Add(this.tbOutput);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(696, 104);
+            this.tabPage1.Size = new System.Drawing.Size(693, 104);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Build output";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -310,7 +305,7 @@ namespace ScriptEditor {
             this.tbOutput.Multiline = true;
             this.tbOutput.Name = "tbOutput";
             this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutput.Size = new System.Drawing.Size(696, 104);
+            this.tbOutput.Size = new System.Drawing.Size(693, 104);
             this.tbOutput.TabIndex = 0;
             // 
             // tabPage2
@@ -318,7 +313,7 @@ namespace ScriptEditor {
             this.tabPage2.Controls.Add(this.dgvErrors);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(696, 104);
+            this.tabPage2.Size = new System.Drawing.Size(693, 104);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Errors";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -343,7 +338,7 @@ namespace ScriptEditor {
             this.dgvErrors.ReadOnly = true;
             this.dgvErrors.RowHeadersVisible = false;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvErrors.Size = new System.Drawing.Size(696, 104);
+            this.dgvErrors.Size = new System.Drawing.Size(693, 104);
             this.dgvErrors.TabIndex = 0;
             this.dgvErrors.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
             // 
@@ -379,7 +374,7 @@ namespace ScriptEditor {
             this.tabPage3.Controls.Add(this.tbOutputParse);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(696, 104);
+            this.tabPage3.Size = new System.Drawing.Size(693, 104);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Parser output";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -393,7 +388,7 @@ namespace ScriptEditor {
             this.tbOutputParse.Multiline = true;
             this.tbOutputParse.Name = "tbOutputParse";
             this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutputParse.Size = new System.Drawing.Size(696, 104);
+            this.tbOutputParse.Size = new System.Drawing.Size(693, 104);
             this.tbOutputParse.TabIndex = 1;
             // 
             // tabControl3
@@ -405,7 +400,7 @@ namespace ScriptEditor {
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(189, 682);
+            this.tabControl3.Size = new System.Drawing.Size(192, 682);
             this.tabControl3.TabIndex = 1;
             // 
             // tabPage4
@@ -417,7 +412,7 @@ namespace ScriptEditor {
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(181, 656);
+            this.tabPage4.Size = new System.Drawing.Size(184, 656);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
             // 
@@ -428,7 +423,7 @@ namespace ScriptEditor {
             this.ProcTree.Name = "ProcTree";
             this.ProcTree.ShowNodeToolTips = true;
             this.ProcTree.ShowRootLines = false;
-            this.ProcTree.Size = new System.Drawing.Size(175, 650);
+            this.ProcTree.Size = new System.Drawing.Size(178, 650);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             // 
@@ -439,7 +434,7 @@ namespace ScriptEditor {
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(181, 656);
+            this.tabPage6.Size = new System.Drawing.Size(184, 656);
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "Functions";
             // 
@@ -448,7 +443,7 @@ namespace ScriptEditor {
             this.FunctionsTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FunctionsTree.Location = new System.Drawing.Point(3, 3);
             this.FunctionsTree.Name = "FunctionsTree";
-            this.FunctionsTree.Size = new System.Drawing.Size(175, 650);
+            this.FunctionsTree.Size = new System.Drawing.Size(178, 650);
             this.FunctionsTree.TabIndex = 0;
             // 
             // ToolStrip
@@ -472,6 +467,7 @@ namespace ScriptEditor {
             this.Goto_toolStripButton,
             this.toolStripSeparator10,
             this.Script_toolStripSplitButton,
+            this.Headers_toolStripSplitButton,
             this.toolStripSeparator16,
             this.toolStripButton3,
             this.MSG_toolStripButton,
@@ -616,6 +612,7 @@ namespace ScriptEditor {
             // 
             // saveAsTemplateToolStripMenuItem
             // 
+            this.saveAsTemplateToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveAsTemplateToolStripMenuItem.Image")));
             this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
             this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
@@ -708,6 +705,7 @@ namespace ScriptEditor {
             this.Goto_toolStripButton.Name = "Goto_toolStripButton";
             this.Goto_toolStripButton.Size = new System.Drawing.Size(23, 22);
             this.Goto_toolStripButton.Text = "Goto Line";
+            this.Goto_toolStripButton.ToolTipText = "Goto text line";
             this.Goto_toolStripButton.Click += new System.EventHandler(this.GoToLineToolStripMenuItemClick);
             // 
             // toolStripSeparator10
@@ -735,6 +733,41 @@ namespace ScriptEditor {
             this.editRegisteredScriptsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.editRegisteredScriptsToolStripMenuItem.Text = "Edit registered Scripts";
             this.editRegisteredScriptsToolStripMenuItem.Click += new System.EventHandler(this.editRegisteredScriptsToolStripMenuItem_Click);
+            // 
+            // Headers_toolStripSplitButton
+            // 
+            this.Headers_toolStripSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Headers_toolStripSplitButton.DropDownButtonWidth = 12;
+            this.Headers_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openAllIncludesScriptToolStripMenuItem,
+            this.openHeaderFileToolStripMenuItem});
+            this.Headers_toolStripSplitButton.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Headers_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Headers_toolStripSplitButton.Image")));
+            this.Headers_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Headers_toolStripSplitButton.MergeAction = System.Windows.Forms.MergeAction.Remove;
+            this.Headers_toolStripSplitButton.Name = "Headers_toolStripSplitButton";
+            this.Headers_toolStripSplitButton.Size = new System.Drawing.Size(33, 22);
+            this.Headers_toolStripSplitButton.Text = "Headers";
+            this.Headers_toolStripSplitButton.ToolTipText = "Quick open header files";
+            this.Headers_toolStripSplitButton.ButtonClick += new System.EventHandler(this.Headers_toolStripSplitButton_ButtonClick);
+            // 
+            // openAllIncludesScriptToolStripMenuItem
+            // 
+            this.openAllIncludesScriptToolStripMenuItem.Enabled = false;
+            this.openAllIncludesScriptToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openAllIncludesScriptToolStripMenuItem.Image")));
+            this.openAllIncludesScriptToolStripMenuItem.Name = "openAllIncludesScriptToolStripMenuItem";
+            this.openAllIncludesScriptToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.openAllIncludesScriptToolStripMenuItem.Text = "Open all include files";
+            this.openAllIncludesScriptToolStripMenuItem.ToolTipText = "Open all include file in this script.";
+            this.openAllIncludesScriptToolStripMenuItem.Click += new System.EventHandler(this.openIncludesScriptToolStripMenuItem_Click);
+            // 
+            // openHeaderFileToolStripMenuItem
+            // 
+            this.openHeaderFileToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openHeaderFileToolStripMenuItem.Image")));
+            this.openHeaderFileToolStripMenuItem.Name = "openHeaderFileToolStripMenuItem";
+            this.openHeaderFileToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.openHeaderFileToolStripMenuItem.Text = "Open Header file";
+            this.openHeaderFileToolStripMenuItem.Click += new System.EventHandler(this.openHeaderFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator16
             // 
@@ -793,6 +826,7 @@ namespace ScriptEditor {
             // 
             // CompileAllOpen_ToolStripMenuItem
             // 
+            this.CompileAllOpen_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("CompileAllOpen_ToolStripMenuItem.Image")));
             this.CompileAllOpen_ToolStripMenuItem.Name = "CompileAllOpen_ToolStripMenuItem";
             this.CompileAllOpen_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.CompileAllOpen_ToolStripMenuItem.Text = "Compile All Open";
@@ -800,6 +834,7 @@ namespace ScriptEditor {
             // 
             // MassCompile_ToolStripMenuItem
             // 
+            this.MassCompile_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("MassCompile_ToolStripMenuItem.Image")));
             this.MassCompile_ToolStripMenuItem.Name = "MassCompile_ToolStripMenuItem";
             this.MassCompile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.MassCompile_ToolStripMenuItem.Text = "Mass Compile";
@@ -862,9 +897,8 @@ namespace ScriptEditor {
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSeparator1,
             this.Settings_ToolStripMenuItem,
-            this.toolStripSeparator2,
+            this.toolStripSeparator1,
             this.showLogWindowToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -872,22 +906,17 @@ namespace ScriptEditor {
             this.toolStripDropDownButton2.Size = new System.Drawing.Size(73, 22);
             this.toolStripDropDownButton2.Text = "Options";
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(169, 6);
-            // 
             // Settings_ToolStripMenuItem
             // 
             this.Settings_ToolStripMenuItem.Name = "Settings_ToolStripMenuItem";
-            this.Settings_ToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.Settings_ToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.Settings_ToolStripMenuItem.Text = "Settings";
             this.Settings_ToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
+            // toolStripSeparator1
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(169, 6);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(140, 6);
             // 
             // showLogWindowToolStripMenuItem
             // 
@@ -895,8 +924,9 @@ namespace ScriptEditor {
             this.showLogWindowToolStripMenuItem.CheckOnClick = true;
             this.showLogWindowToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showLogWindowToolStripMenuItem.Name = "showLogWindowToolStripMenuItem";
-            this.showLogWindowToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.showLogWindowToolStripMenuItem.Text = "Show Log Window";
+            this.showLogWindowToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.showLogWindowToolStripMenuItem.Text = "Log Window";
+            this.showLogWindowToolStripMenuItem.ToolTipText = "Show/Hide log window";
             this.showLogWindowToolStripMenuItem.Click += new System.EventHandler(this.showLogWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator14
@@ -968,7 +998,7 @@ namespace ScriptEditor {
             this.toolStripSeparator6,
             this.UpperCaseToolStripMenuItem1,
             this.LowerCaseToolStripMenuItem,
-            toolStripSeparator5,
+            this.toolStripSeparator2,
             this.findReferencesToolStripMenuItem,
             this.findDeclerationToolStripMenuItem,
             this.findDefinitionToolStripMenuItem,
@@ -1026,6 +1056,11 @@ namespace ScriptEditor {
             this.LowerCaseToolStripMenuItem.Text = "Lower Case";
             this.LowerCaseToolStripMenuItem.Click += new System.EventHandler(this.LowecaseToolStripMenuItemClick);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(208, 6);
+            // 
             // findReferencesToolStripMenuItem
             // 
             this.findReferencesToolStripMenuItem.Name = "findReferencesToolStripMenuItem";
@@ -1073,6 +1108,7 @@ namespace ScriptEditor {
             this.Icon = global::ScriptEditor.Properties.Resources.Icon_1;
             this.Name = "TextEditor";
             this.Text = "sfall Script Editor";
+            this.Activated += new System.EventHandler(this.TextEditor_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TextEditor_FormClosing);
             this.Load += new System.EventHandler(this.TextEditor_Load);
             this.panel1.ResumeLayout(false);
@@ -1176,7 +1212,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem Preprocess_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem showLogWindowToolStripMenuItem;
         private System.Windows.Forms.TreeView FunctionsTree;
         private System.Windows.Forms.ToolStripButton Help_toolStripButton;
@@ -1197,5 +1232,9 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator19;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.Button TabClose_button;
+        private System.Windows.Forms.ToolStripSplitButton Headers_toolStripSplitButton;
+        private System.Windows.Forms.ToolStripMenuItem openAllIncludesScriptToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openHeaderFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }

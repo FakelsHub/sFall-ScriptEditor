@@ -28,6 +28,7 @@ namespace ScriptEditor
         private GoToLine goToLine;
         private int previousTabIndex = -1;
         private int minimizelogsize;
+        public static string sHeaderfile;
         //private bool TabCloseButton;
 
         private TreeView VarTree = new TreeView();
@@ -72,7 +73,9 @@ namespace ScriptEditor
             VarTab.Padding = new Padding(3, 3, 3, 3);
             VarTab.BackColor = System.Drawing.SystemColors.ControlLightLight;
             VarTab.Controls.Add(VarTree);
-
+            if (Settings.PathScriptsHFile == null) {
+                Headers_toolStripSplitButton.Enabled = false;
+            }
             ProgramInfo.LoadOpcodes();
         }
         
@@ -172,15 +175,17 @@ namespace ScriptEditor
 
         public enum OpenType { None, File, Text }
 
-        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false)
+        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false, bool seltab = true)
         {
             if (type == OpenType.File) {
                 if (!Path.IsPathRooted(file)) {
                     file = Path.GetFullPath(file);
                 }
-                // Check file
-                if (recent) {
-                    if (File.Exists(file)) recent = false;
+                // Check recent file
+                bool Exists = false;
+                if (File.Exists(file)) {
+                    Exists = true;
+                    recent = false; // false - delete not found file from recent list
                 }
                 //Add this file to the recent files list
                 if (addToMRU) {
@@ -188,9 +193,9 @@ namespace ScriptEditor
                     UpdateRecentList();
                     if (recent) {
                         MessageBox.Show("This file was not found.", "Error");
-                        return null;
                     }
                 }
+                if (!Exists) return null;
                 //If this is an int, decompile
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     var compiler = new Compiler();
@@ -206,7 +211,7 @@ namespace ScriptEditor
                     //Check if the file is already open
                     for (int i = 0; i < tabs.Count; i++) {
                         if (string.Compare(tabs[i].filepath, file, true) == 0) {
-                            tabControl1.SelectTab(i);
+                            if (seltab) tabControl1.SelectTab(i);
                             return tabs[i];
                         }
                     }
@@ -282,10 +287,11 @@ namespace ScriptEditor
                 }
             }
             if (tabControl1.TabPages.Count > 1) {
-                tabControl1.SelectTab(tp);
+                if (seltab) tabControl1.SelectTab(tp);
             } else {
                 splitContainer2.Panel2Collapsed = false;
                 TabClose_button.Visible = true;
+                openAllIncludesScriptToolStripMenuItem.Enabled = true;
                 tabControl1_Selected(null, null);
             }
             return ti;
@@ -745,6 +751,7 @@ namespace ScriptEditor
                 parserLabel.Text = (Settings.enableParser) ? "Parser: No file" : parseoff;
                 splitContainer2.Panel2Collapsed = true;
                 TabClose_button.Visible = false;
+                openAllIncludesScriptToolStripMenuItem.Enabled = false;
             } else {
                 if (currentTab != null) {
                     previousTabIndex = currentTab.index;
@@ -760,8 +767,8 @@ namespace ScriptEditor
                     } else {
                         tabControl3.TabPages.RemoveAt(1);
                     }
-                } else if (tabControl3.TabPages.Count < 3 && (Settings.enableParser || currentTab.parseInfo != null)) {
-                    if (currentTab.parseInfo.parseData) {
+                } else if (tabControl3.TabPages.Count < 3 && Settings.enableParser) {
+                    if (currentTab.parseInfo != null && currentTab.parseInfo.parseData) {
                         CreateTabVarTree();
                     }
                 }
@@ -1145,7 +1152,10 @@ namespace ScriptEditor
                     //if (currentTab.filepath != null) currentTab.needsParse = true;
                     tabControl1_Selected(null, null);
                 }
-            }   
+            }
+            if (Settings.PathScriptsHFile != null) {
+                Headers_toolStripSplitButton.Enabled = true;
+            }
         }
 
         private void compileToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1213,10 +1223,8 @@ namespace ScriptEditor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ofdScripts.ShowDialog() == DialogResult.OK)
-            {
-                foreach (string s in ofdScripts.FileNames)
-                {
+            if (ofdScripts.ShowDialog() == DialogResult.OK) {
+                foreach (string s in ofdScripts.FileNames) {
                     Open(s, OpenType.File);
                 }
             }
@@ -1779,6 +1787,47 @@ namespace ScriptEditor
             } else {
                 splitContainer1.Panel2Collapsed = false;
                 Settings.showlog = true;
+            }
+        }
+
+        private void Headers_toolStripSplitButton_ButtonClick(object sender, EventArgs e)
+        {
+                Headers Headfrm = new Headers();
+                Headfrm.xy_pos = Headers_toolStripSplitButton.Bounds.Location;
+                Headfrm.Show();
+        }
+
+        private void openHeaderFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofdHeaders = new OpenFileDialog();
+            ofdHeaders.Title = "Select header files to open";
+            ofdHeaders.Filter = "Header files|*.h";
+            ofdHeaders.Multiselect = true;
+            ofdHeaders.RestoreDirectory = true;
+            ofdHeaders.InitialDirectory = Settings.PathScriptsHFile;
+            if (ofdHeaders.ShowDialog() == DialogResult.OK) {
+                foreach (string s in ofdHeaders.FileNames) {
+                    Open(s, OpenType.File, false);
+                }
+            }
+            ofdHeaders.Dispose();
+        }
+
+        private void openIncludesScriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab.filepath != null) {
+                var compiler = new Compiler();
+                foreach (string s in compiler.GetAllIncludes(currentTab.filepath)) {
+                    Open(s, OpenType.File, false, false, false, false);
+                }
+            }
+        }
+
+        private void TextEditor_Activated(object sender, EventArgs e)
+        {
+            if (sHeaderfile != null && sHeaderfile.Length > 0) {
+                Open(sHeaderfile, OpenType.File, false);
+                sHeaderfile = null;
             }
         }
     }

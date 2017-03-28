@@ -116,11 +116,13 @@
             // bChange
             // 
             this.bChange.Enabled = false;
+            this.bChange.Image = ((System.Drawing.Image)(resources.GetObject("bChange.Image")));
             this.bChange.Location = new System.Drawing.Point(13, 183);
             this.bChange.Name = "bChange";
             this.bChange.Size = new System.Drawing.Size(104, 23);
             this.bChange.TabIndex = 7;
             this.bChange.Text = "Change";
+            this.bChange.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bChange.UseVisualStyleBackColor = true;
             // 
             // cbSearchSubfolders
@@ -136,11 +138,13 @@
             // 
             // bSearch
             // 
+            this.bSearch.Image = ((System.Drawing.Image)(resources.GetObject("bSearch.Image")));
             this.bSearch.Location = new System.Drawing.Point(288, 49);
             this.bSearch.Name = "bSearch";
             this.bSearch.Size = new System.Drawing.Size(104, 23);
             this.bSearch.TabIndex = 10;
             this.bSearch.Text = "Search";
+            this.bSearch.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bSearch.UseVisualStyleBackColor = true;
             // 
             // fbdSearchFolder

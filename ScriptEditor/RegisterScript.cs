@@ -135,7 +135,7 @@ namespace ScriptEditor
                 MessageBox.Show("No output path selected.", "Error");
                 return;
             }
-            if (Settings.scriptsHFile == null) {
+            if (Settings.PathScriptsHFile == null) {
                 MessageBox.Show("The path to scripts.h has not been set.", "Error");
                 return;
             }
@@ -149,7 +149,7 @@ namespace ScriptEditor
                 MessageBox.Show("Could not find scrname.msg", "Error");
                 return;
             }
-            (new RegisterScript(script, lstPath, msgPath, Settings.scriptsHFile)).ShowDialog();
+            (new RegisterScript(script, lstPath, msgPath, Settings.PathScriptsHFile)).ShowDialog();
         }
 
         private void RegisterScript_FormClosing(object sender, FormClosingEventArgs e)
