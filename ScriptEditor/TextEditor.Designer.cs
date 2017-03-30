@@ -1110,7 +1110,7 @@ namespace ScriptEditor {
             this.findDeclerationToolStripMenuItem.Name = "findDeclerationToolStripMenuItem";
             this.findDeclerationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F12)));
             this.findDeclerationToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.findDeclerationToolStripMenuItem.Text = "Find decleration";
+            this.findDeclerationToolStripMenuItem.Text = "Find declaration";
             this.findDeclerationToolStripMenuItem.Click += new System.EventHandler(this.findDeclerationToolStripMenuItem_Click);
             // 
             // findDefinitionToolStripMenuItem

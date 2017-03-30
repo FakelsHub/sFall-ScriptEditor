@@ -535,6 +535,7 @@ namespace ScriptEditor
                 }
                 not_this = true;
             }
+            if (line == currentTab.textEditor.ActiveTextAreaControl.TextArea.Caret.Line+1) return;
             LineSegment ls;
             if (line > currentTab.textEditor.Document.TotalNumberOfLines) {
                 ls = currentTab.textEditor.Document.GetLineSegment(currentTab.textEditor.Document.TotalNumberOfLines - 1);
@@ -682,11 +683,7 @@ namespace ScriptEditor
         {
             WorkerArgs args = (WorkerArgs)eventArgs.Argument;
             var compiler = new Compiler();
-            if (Settings.enableParser && currentTab.shouldParse) {
-                args.tab.parseInfo = compiler.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
-            } else {
-                args.tab.parseInfo = compiler.MacroParse(args.text, args.tab.filepath, args.tab.parseInfo); //only parser macros
-            }
+            args.tab.parseInfo = compiler.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
             eventArgs.Result = args.tab;
             parserRunning = false;
         }
@@ -776,7 +773,7 @@ namespace ScriptEditor
                     } else {
                         tabControl3.TabPages.RemoveAt(1);
                     }
-                } else if (tabControl3.TabPages.Count < 3 && Settings.enableParser) {
+                } else if (tabControl3.TabPages.Count < 3 && (Settings.enableParser || currentTab.parseInfo != null)) {
                     if (currentTab.parseInfo != null && currentTab.parseInfo.parseData) {
                         CreateTabVarTree();
                     }
@@ -1595,6 +1592,7 @@ namespace ScriptEditor
             string file;
             int line;
             currentTab.parseInfo.LookupDecleration(word, currentTab.filename, tl.Line, out file, out line);
+            if (file.ToLower() == Compiler.parserPath.ToLower()) file = currentTab.filepath;
             SelectLine(file, line);
         }
 

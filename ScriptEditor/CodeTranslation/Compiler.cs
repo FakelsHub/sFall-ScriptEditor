@@ -15,7 +15,7 @@ namespace ScriptEditor.CodeTranslation
     public class Compiler
     {
         private static readonly string decompilationPath = Path.Combine(Settings.SettingsFolder, "decomp.ssl");
-        private static readonly string parserPath = Path.Combine(Settings.SettingsFolder, "parser.ssl");
+        public static readonly string parserPath = Path.Combine(Settings.SettingsFolder, "parser.ssl");
 
         #region Imports from SSLC DLL
 
@@ -148,28 +148,15 @@ namespace ScriptEditor.CodeTranslation
             return Encoding.ASCII.GetString(namelist, name - 4, strlen).TrimEnd('\0');
         }
 
-        // Parse disabled, get only macros
-        public ProgramInfo MacroParse(string file, string path, ProgramInfo previnfo)
-        {
-            File.WriteAllText(parserPath, file);
-            ProgramInfo pi = new ProgramInfo(0, 0);
-            if (!Settings.enableParser && previnfo != null && previnfo.parseData) { // store parse info
-                    pi = previnfo;
-                    pi.parsed = false;
-                    pi.macros.Clear();
-            }
-            GetMacros(parserPath, Path.GetDirectoryName(path), pi.macros);
-            return pi;
-        }
-
         public ProgramInfo Parse(string file, string path, ProgramInfo previnfo)
         {
             File.WriteAllText(parserPath, file);
+            // Parse disabled, get only macros
             if (Settings.enableParser) lastStatus = parse_main(parserPath, path, Path.GetDirectoryName(path));
             ProgramInfo pi = (lastStatus >= 1)
                             ? new ProgramInfo(0, 0)
                             : new ProgramInfo(numProcs(), numVars());
-            if (lastStatus == 1 && previnfo != null && previnfo.parseData) { // preprocess error - store previous data Procs/Vars
+            if (lastStatus >= 1 && previnfo != null && previnfo.parseData) { // preprocess error - store previous data Procs/Vars
                 pi = previnfo;
                 pi.parsed = false;
                 pi.macros.Clear();
@@ -208,7 +195,6 @@ namespace ScriptEditor.CodeTranslation
                             break;
                     }
                 }
-
                 if (pi.vars[i].d.fdeclared != IntPtr.Zero) {
                     pi.vars[i].fdeclared = Path.GetFullPath(Marshal.PtrToStringAnsi(pi.vars[i].d.fdeclared));
                     pi.vars[i].filename = Path.GetFileName(pi.vars[i].fdeclared).ToLowerInvariant();
