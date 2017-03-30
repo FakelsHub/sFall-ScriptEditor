@@ -291,6 +291,8 @@ namespace ScriptEditor
             } else {
                 splitContainer2.Panel2Collapsed = false;
                 TabClose_button.Visible = true;
+                Split_button.Visible = true;
+                splitDocumentToolStripMenuItem.Enabled = true;
                 openAllIncludesScriptToolStripMenuItem.Enabled = true;
                 tabControl1_Selected(null, null);
             }
@@ -525,9 +527,13 @@ namespace ScriptEditor
         // Go to script text of selected Variable or Procedure in treeview
         private void SelectLine(string file, int line, int column = -1)
         {
-            if (Open(file, OpenType.File, false) == null) {
-                MessageBox.Show("Could not open file '" + file + "'", "Error");
-                return;
+            bool not_this = false;
+            if (file != currentTab.filepath) {
+                if (Open(file, OpenType.File, false) == null) {
+                    MessageBox.Show("Could not open file '" + file + "'", "Error");
+                    return;
+                }
+                not_this = true;
             }
             LineSegment ls;
             if (line > currentTab.textEditor.Document.TotalNumberOfLines) {
@@ -556,7 +562,8 @@ namespace ScriptEditor
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
             currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start; 
             currentTab.textEditor.ActiveTextAreaControl.ScrollTo(start.Line-2);
-            currentTab.textEditor.ActiveTextAreaControl.Focus(); // bug - Focus does not on control
+            if (!not_this) currentTab.textEditor.ActiveTextAreaControl.Focus(); // fix bug - Focus does not on control
+            currentTab.textEditor.Focus();
         }
 
         private void KeyPressed(object sender, KeyPressEventArgs e)
@@ -752,6 +759,8 @@ namespace ScriptEditor
                 splitContainer2.Panel2Collapsed = true;
                 TabClose_button.Visible = false;
                 openAllIncludesScriptToolStripMenuItem.Enabled = false;
+                Split_button.Visible = false;
+                splitDocumentToolStripMenuItem.Enabled = false;
             } else {
                 if (currentTab != null) {
                     previousTabIndex = currentTab.index;
@@ -787,6 +796,8 @@ namespace ScriptEditor
                 // Update parse info
                 timerNext = DateTime.Now + TimeSpan.FromSeconds(1);
                 if (!timer.Enabled) timer.Start(); // Parser begin
+                // text editor set focus 
+                currentTab.textEditor.ActiveTextAreaControl.Select();
             }
         }
 #endregion
@@ -1828,6 +1839,15 @@ namespace ScriptEditor
             if (sHeaderfile != null && sHeaderfile.Length > 0) {
                 Open(sHeaderfile, OpenType.File, false);
                 sHeaderfile = null;
+            }
+        }
+
+        private void SplitDoc_Click(object sender, EventArgs e)
+        {
+            if (currentTab != null){
+                currentTab.textEditor.Split();
+                currentTab.textEditor.Focus();
+                currentTab.textEditor.Select();
             }
         }
     }
