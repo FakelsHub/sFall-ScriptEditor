@@ -29,7 +29,7 @@ namespace ScriptEditor
         private int previousTabIndex = -1;
         private int minimizelogsize;
         public static string sHeaderfile;
-        //private bool TabCloseButton;
+        private PositionType PosChangeType;
 
         private TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
@@ -242,6 +242,7 @@ namespace ScriptEditor
             te.ActiveTextAreaControl.TextArea.KeyPress += KeyPressed;
             te.HorizontalScroll.Visible = false;
             te.ActiveTextAreaControl.TextArea.PreviewKeyDown += delegate(object sender, PreviewKeyDownEventArgs a2) {
+                PosChangeType = PositionType.SaveChange; // Save position change for navigation, if key was pressed
                 if (lbAutocomplete.Visible) {
                     if ((a2.KeyCode == Keys.Down || a2.KeyCode == Keys.Up || a2.KeyCode == Keys.Tab)) {
                         lbAutocomplete.Focus();
@@ -254,8 +255,10 @@ namespace ScriptEditor
                         toolTipAC.Hide(panel1);
                 }
             };
-
+            te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
             TabInfo ti = new TabInfo();
+            ti.history.linePosition = new int[0];
+            ti.history.pointerCur = -1;
             ti.textEditor = te;
             ti.changed = false;
             if (type == OpenType.File && !alwaysNew) { 
@@ -745,6 +748,7 @@ namespace ScriptEditor
                 }
             }
         }
+#endregion
 
         // Called when creating a new document and when switching tabs
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
@@ -753,11 +757,7 @@ namespace ScriptEditor
             if (tabControl1.SelectedIndex == -1) {
                 currentTab = null;
                 parserLabel.Text = (Settings.enableParser) ? "Parser: No file" : parseoff;
-                splitContainer2.Panel2Collapsed = true;
-                TabClose_button.Visible = false;
-                openAllIncludesScriptToolStripMenuItem.Enabled = false;
-                Split_button.Visible = false;
-                splitDocumentToolStripMenuItem.Enabled = false;
+                SetFormControlsOff();
             } else {
                 if (currentTab != null) {
                     previousTabIndex = currentTab.index;
@@ -795,9 +795,19 @@ namespace ScriptEditor
                 if (!timer.Enabled) timer.Start(); // Parser begin
                 // text editor set focus 
                 currentTab.textEditor.ActiveTextAreaControl.Select();
+                SetBackForwardButtonState();
             }
         }
-#endregion
+
+        private void SetFormControlsOff() {
+            splitContainer2.Panel2Collapsed = true;
+            TabClose_button.Visible = false;
+            openAllIncludesScriptToolStripMenuItem.Enabled = false;
+            Split_button.Visible = false;
+            splitDocumentToolStripMenuItem.Enabled = false;
+            Back_toolStripButton.Enabled = false;
+            Forward_toolStripButton.Enabled = false;
+        }
 
 # region SearchFunction
         private bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)
@@ -1848,5 +1858,77 @@ namespace ScriptEditor
                 currentTab.textEditor.Select();
             }
         }
+
+#region Function Back/Forward
+        private enum PositionType {AddPos, NoChange, SaveChange}
+
+        private void SetBackForwardButtonState() 
+        {
+            if (currentTab.history.pointerCur > 0) {
+                Back_toolStripButton.Enabled = true;
+            } else {
+                Back_toolStripButton.Enabled = false;
+            }
+            if (currentTab.history.pointerCur == currentTab.history.pointerEnd || currentTab.history.pointerCur < 0) {
+                Forward_toolStripButton.Enabled = false;
+            } else if (currentTab.history.pointerCur > 0 || currentTab.history.pointerCur < currentTab.history.pointerEnd) { 
+                Forward_toolStripButton.Enabled = true;
+            }
+        }
+
+        private void Caret_PositionChanged(object sender, EventArgs e)
+        {
+            int curLine = currentTab.textEditor.ActiveTextAreaControl.Caret.Line;
+            curLine++;
+            if (PosChangeType >= PositionType.NoChange) {
+                if (PosChangeType == PositionType.SaveChange) {
+                    currentTab.history.linePosition[currentTab.history.pointerCur] = curLine;
+                }
+                PosChangeType = PositionType.AddPos; // set default
+                return;
+            }
+            if (curLine != currentTab.history.prevPosition) {
+                currentTab.history.pointerCur++;
+                if (currentTab.history.pointerCur >= currentTab.history.linePosition.Length) {
+                    Array.Resize(ref currentTab.history.linePosition, currentTab.history.linePosition.Length + 1); 
+                }
+                currentTab.history.linePosition[currentTab.history.pointerCur] = curLine;
+                currentTab.history.prevPosition = curLine;
+                currentTab.history.pointerEnd = currentTab.history.pointerCur;
+            }
+            SetBackForwardButtonState();  
+        }
+
+        private void Back_toolStripButton_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null || currentTab.history.pointerCur == 0) return;
+            currentTab.history.pointerCur--;
+            GotoViewLine(); 
+        }
+
+        private void Forward_toolStripButton_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null || currentTab.history.pointerCur >= currentTab.history.pointerEnd) return;
+            currentTab.history.pointerCur++;
+            GotoViewLine();
+        }
+
+        private void GotoViewLine()
+        {
+            PosChangeType = PositionType.NoChange;
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Line = currentTab.history.linePosition[currentTab.history.pointerCur] - 1;
+            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, 0);
+            currentTab.textEditor.Focus();
+            //currentTab.textEditor.Select();
+            SetBackForwardButtonState();
+        }
+#endregion
+
+#if DEBUG
+        void DEBUGINFO(string line)
+        {
+            tbOutput.Text = line + "\r\n" + tbOutput.Text;
+        }
+#endif
     }
 }

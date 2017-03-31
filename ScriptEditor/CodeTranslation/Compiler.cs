@@ -152,7 +152,7 @@ namespace ScriptEditor.CodeTranslation
         {
             File.WriteAllText(parserPath, file);
             // Parse disabled, get only macros
-            if (Settings.enableParser) lastStatus = parse_main(parserPath, path, Path.GetDirectoryName(path));
+            if (Settings.enableParser && path != null) lastStatus = parse_main(parserPath, path, Path.GetDirectoryName(path));
             ProgramInfo pi = (lastStatus >= 1)
                             ? new ProgramInfo(0, 0)
                             : new ProgramInfo(numProcs(), numVars());

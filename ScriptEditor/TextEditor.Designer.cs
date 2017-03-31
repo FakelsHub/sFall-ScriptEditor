@@ -74,8 +74,8 @@ namespace ScriptEditor {
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.Searh_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.Back_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.Forward_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Goto_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
@@ -481,8 +481,8 @@ namespace ScriptEditor {
             this.toolStripSeparator11,
             this.Searh_toolStripButton,
             this.toolStripSeparator12,
-            this.toolStripButton1,
-            this.toolStripButton2,
+            this.Back_toolStripButton,
+            this.Forward_toolStripButton,
             this.Goto_toolStripButton,
             this.toolStripSeparator10,
             this.Script_toolStripSplitButton,
@@ -698,23 +698,27 @@ namespace ScriptEditor {
             this.toolStripSeparator12.Name = "toolStripSeparator12";
             this.toolStripSeparator12.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripButton1
+            // Back_toolStripButton
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "Back";
+            this.Back_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Back_toolStripButton.Enabled = false;
+            this.Back_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Back_toolStripButton.Image")));
+            this.Back_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Back_toolStripButton.Name = "Back_toolStripButton";
+            this.Back_toolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.Back_toolStripButton.Text = "Back Position";
+            this.Back_toolStripButton.Click += new System.EventHandler(this.Back_toolStripButton_Click);
             // 
-            // toolStripButton2
+            // Forward_toolStripButton
             // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton2.Text = "Forward";
+            this.Forward_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Forward_toolStripButton.Enabled = false;
+            this.Forward_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Forward_toolStripButton.Image")));
+            this.Forward_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Forward_toolStripButton.Name = "Forward_toolStripButton";
+            this.Forward_toolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.Forward_toolStripButton.Text = "Forward Position";
+            this.Forward_toolStripButton.Click += new System.EventHandler(this.Forward_toolStripButton_Click);
             // 
             // Goto_toolStripButton
             // 
@@ -1189,7 +1193,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.FolderBrowserDialog fbdMassCompile;
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TextBox tbOutput;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.DataGridView dgvErrors;
         private System.Windows.Forms.DataGridViewTextBoxColumn cType;
@@ -1228,8 +1231,8 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripButton Searh_toolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripButton Back_toolStripButton;
+        private System.Windows.Forms.ToolStripButton Forward_toolStripButton;
         private System.Windows.Forms.ToolStripButton Goto_toolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
@@ -1276,5 +1279,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.Button Split_button;
         private System.Windows.Forms.ToolStripMenuItem splitDocumentToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.TextBox tbOutput;
     }
 }

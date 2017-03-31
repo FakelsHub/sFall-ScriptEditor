@@ -6,6 +6,14 @@ using ScriptEditor.CodeTranslation;
 
 namespace ScriptEditor.TextEditorUI
 {
+    public struct Position
+    {
+        public int[] linePosition;
+        public int prevPosition;
+        public int pointerCur;
+        public int pointerEnd;
+    }
+
     /// <summary>
     /// Represents opened document tab.
     /// </summary>
@@ -43,6 +51,11 @@ namespace ScriptEditor.TextEditorUI
         /// Indicates whether this tab is pending parsing (eg. after text change).
         /// </summary>
         public bool needsParse;
+
+        /// <summary>
+        /// Storing history of navigation to document for function Back/Forward.
+        /// </summary>
+        public Position history;
 
         public ProgramInfo parseInfo;
     }
