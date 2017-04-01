@@ -109,6 +109,11 @@ namespace ScriptEditor
             // set it back to whatever it was
             TopMost = top;
         }
+#else
+        void DEBUGINFO(string line)
+        {
+            tbOutput.Text = line + "\r\n" + tbOutput.Text;
+        }
 #endif
 
         private void TextEditor_Load(object sender, EventArgs e)
@@ -257,7 +262,7 @@ namespace ScriptEditor
             };
             te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
             TabInfo ti = new TabInfo();
-            ti.history.linePosition = new int[0];
+            ti.history.linePosition = new TextLocation[0];
             ti.history.pointerCur = -1;
             ti.textEditor = te;
             ti.changed = false;
@@ -1137,7 +1142,6 @@ namespace ScriptEditor
                 }
             }
         }
-
 /*
  * 
  * 
@@ -1147,7 +1151,6 @@ namespace ScriptEditor
  * 
  * 
  */
-
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             (new SettingsDialog()).ShowDialog();
@@ -1665,8 +1668,8 @@ namespace ScriptEditor
             goToLine.tbLine.Select(0, 1);
             goToLine.bGo.Click += delegate(object a1, EventArgs a2) {
                 TextAreaControl tac = currentTab.textEditor.ActiveTextAreaControl;
-                tac.Caret.Line = Convert.ToInt32(goToLine.tbLine.Value - 1);
                 tac.Caret.Column = 0;
+                tac.Caret.Line = Convert.ToInt32(goToLine.tbLine.Value - 1);
                 tac.CenterViewOn(tac.Caret.Line, 0);
                 goToLine.tbLine.Select();
             };
@@ -1876,21 +1879,24 @@ namespace ScriptEditor
 
         private void Caret_PositionChanged(object sender, EventArgs e)
         {
-            int curLine = currentTab.textEditor.ActiveTextAreaControl.Caret.Line;
-            curLine++;
+            TextLocation _position = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
+            int curLine = _position.Line + 1;
+            LineStripStatusLabel.Text = "Line: " + curLine;
+            ColStripStatusLabel.Text = "Col: " + (_position.Column + 1);
             if (PosChangeType >= PositionType.NoChange) {
                 if (PosChangeType == PositionType.SaveChange) {
-                    currentTab.history.linePosition[currentTab.history.pointerCur] = curLine;
+                    currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
                 }
                 PosChangeType = PositionType.AddPos; // set default
                 return;
             }
             if (curLine != currentTab.history.prevPosition) {
                 currentTab.history.pointerCur++;
-                if (currentTab.history.pointerCur >= currentTab.history.linePosition.Length) {
-                    Array.Resize(ref currentTab.history.linePosition, currentTab.history.linePosition.Length + 1); 
+                int size = currentTab.history.linePosition.Length;
+                if (currentTab.history.pointerCur >= size) {
+                    Array.Resize(ref currentTab.history.linePosition, size + 1); 
                 }
-                currentTab.history.linePosition[currentTab.history.pointerCur] = curLine;
+                currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
                 currentTab.history.prevPosition = curLine;
                 currentTab.history.pointerEnd = currentTab.history.pointerCur;
             }
@@ -1914,19 +1920,12 @@ namespace ScriptEditor
         private void GotoViewLine()
         {
             PosChangeType = PositionType.NoChange;
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Line = currentTab.history.linePosition[currentTab.history.pointerCur] - 1;
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = currentTab.history.linePosition[currentTab.history.pointerCur];
             currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, 0);
             currentTab.textEditor.Focus();
             //currentTab.textEditor.Select();
             SetBackForwardButtonState();
         }
 #endregion
-
-#if DEBUG
-        void DEBUGINFO(string line)
-        {
-            tbOutput.Text = line + "\r\n" + tbOutput.Text;
-        }
-#endif
     }
 }

@@ -8,7 +8,7 @@ namespace ScriptEditor.TextEditorUI
 {
     public struct Position
     {
-        public int[] linePosition;
+        public TextLocation[] linePosition;
         public int prevPosition;
         public int pointerCur;
         public int pointerEnd;
