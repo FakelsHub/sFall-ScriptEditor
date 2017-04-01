@@ -31,7 +31,6 @@ namespace ScriptEditor {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Split_button = new System.Windows.Forms.Button();
             this.TabClose_button = new System.Windows.Forms.Button();
-            this.tabControl1 = new DraggableTabControl();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
@@ -76,7 +75,6 @@ namespace ScriptEditor {
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.Back_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Forward_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.Goto_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.editRegisteredScriptsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -126,6 +124,9 @@ namespace ScriptEditor {
             this.findDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
+            this.Goto_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.gotoToLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabControl1 = new DraggableTabControl();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -254,22 +255,6 @@ namespace ScriptEditor {
             this.TabClose_button.UseVisualStyleBackColor = true;
             this.TabClose_button.Visible = false;
             this.TabClose_button.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ImageList = this.imageList1;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(701, 550);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // imageList1
             // 
@@ -720,17 +705,6 @@ namespace ScriptEditor {
             this.Forward_toolStripButton.Text = "Forward Position";
             this.Forward_toolStripButton.Click += new System.EventHandler(this.Forward_toolStripButton_Click);
             // 
-            // Goto_toolStripButton
-            // 
-            this.Goto_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Goto_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Goto_toolStripButton.Image")));
-            this.Goto_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Goto_toolStripButton.Name = "Goto_toolStripButton";
-            this.Goto_toolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.Goto_toolStripButton.Text = "Goto Line";
-            this.Goto_toolStripButton.ToolTipText = "Goto text line";
-            this.Goto_toolStripButton.Click += new System.EventHandler(this.GoToLineToolStripMenuItemClick);
-            // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
@@ -1139,6 +1113,43 @@ namespace ScriptEditor {
             this.toolTipAC.InitialDelay = 500;
             this.toolTipAC.ReshowDelay = 100;
             // 
+            // Goto_toolStripButton
+            // 
+            this.Goto_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Goto_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gotoToLineToolStripMenuItem});
+            this.Goto_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Goto_toolStripButton.Image")));
+            this.Goto_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Goto_toolStripButton.Name = "Goto_toolStripButton";
+            this.Goto_toolStripButton.Size = new System.Drawing.Size(32, 22);
+            this.Goto_toolStripButton.Text = "Goto Procedure";
+            this.Goto_toolStripButton.ToolTipText = "Goto procedure under cursor";
+            // 
+            // gotoToLineToolStripMenuItem
+            // 
+            this.gotoToLineToolStripMenuItem.Name = "gotoToLineToolStripMenuItem";
+            this.gotoToLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
+            this.gotoToLineToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.gotoToLineToolStripMenuItem.Text = "Goto Line";
+            this.gotoToLineToolStripMenuItem.ToolTipText = "Goto line document";
+            this.gotoToLineToolStripMenuItem.Click += new System.EventHandler(this.GoToLineToolStripMenuItemClick);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(701, 550);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
+            // 
             // TextEditor
             // 
             this.AllowDrop = true;
@@ -1233,7 +1244,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripButton Back_toolStripButton;
         private System.Windows.Forms.ToolStripButton Forward_toolStripButton;
-        private System.Windows.Forms.ToolStripButton Goto_toolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
         private System.Windows.Forms.ToolStripSplitButton New_toolStripDropDownButton;
@@ -1280,5 +1290,7 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem splitDocumentToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.TextBox tbOutput;
+        private System.Windows.Forms.ToolStripSplitButton Goto_toolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem gotoToLineToolStripMenuItem;
     }
 }

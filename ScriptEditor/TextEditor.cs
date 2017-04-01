@@ -1658,22 +1658,20 @@ namespace ScriptEditor
 
         void GoToLineToolStripMenuItemClick(object sender, EventArgs e)
         {
-            if (currentTab == null || sf != null) {
-                return;
-            }
+            if (currentTab == null || goToLine != null) return;
             goToLine = new GoToLine();
             AddOwnedForm(goToLine);
-            goToLine.tbLine.Tag = currentTab.textEditor.Document.TotalNumberOfLines;
-            goToLine.tbLine.Text = "1";
-            goToLine.tbLine.SelectAll();
+            goToLine.tbLine.Maximum = currentTab.textEditor.Document.TotalNumberOfLines;
+            goToLine.tbLine.Select(0, 1);
             goToLine.bGo.Click += delegate(object a1, EventArgs a2) {
                 TextAreaControl tac = currentTab.textEditor.ActiveTextAreaControl;
-                tac.Caret.Line = goToLine.GetLineNumber() - 1;
+                tac.Caret.Line = Convert.ToInt32(goToLine.tbLine.Value - 1);
                 tac.Caret.Column = 0;
-                tac.ScrollToCaret();
-                goToLine.Close();
+                tac.CenterViewOn(tac.Caret.Line, 0);
+                goToLine.tbLine.Select();
             };
-            goToLine.ShowDialog();
+            goToLine.FormClosed += delegate(object a1, FormClosedEventArgs a2) { goToLine = null; };
+            goToLine.Show();
         }
 
         void UPPERCASEToolStripMenuItemClick(object sender, EventArgs e)
