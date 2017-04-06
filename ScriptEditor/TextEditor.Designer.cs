@@ -830,12 +830,14 @@ namespace ScriptEditor {
             this.GotoProc_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.GotoProc_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gotoToLineToolStripMenuItem});
+            this.GotoProc_toolStripButton.Enabled = false;
             this.GotoProc_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("GotoProc_toolStripButton.Image")));
             this.GotoProc_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.GotoProc_toolStripButton.Name = "GotoProc_toolStripButton";
             this.GotoProc_toolStripButton.Size = new System.Drawing.Size(32, 22);
             this.GotoProc_toolStripButton.Text = "Goto Procedure";
             this.GotoProc_toolStripButton.ToolTipText = "Goto procedure under cursor";
+            this.GotoProc_toolStripButton.ButtonClick += new System.EventHandler(this.GotoProc_toolStripButton_ButtonClick);
             // 
             // gotoToLineToolStripMenuItem
             // 

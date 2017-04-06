@@ -303,6 +303,7 @@ namespace ScriptEditor
                 Split_button.Visible = true;
                 splitDocumentToolStripMenuItem.Enabled = true;
                 openAllIncludesScriptToolStripMenuItem.Enabled = true;
+                GotoProc_toolStripButton.Enabled = true;
                 tabControl1_Selected(null, null);
             }
             return ti;
@@ -832,6 +833,7 @@ namespace ScriptEditor
             splitDocumentToolStripMenuItem.Enabled = false;
             Back_toolStripButton.Enabled = false;
             Forward_toolStripButton.Enabled = false;
+            GotoProc_toolStripButton.Enabled = false;
         }
 
 # region SearchFunction
@@ -2095,6 +2097,18 @@ namespace ScriptEditor
               //ProcMnContext.Items[3].Enabled = true; //disabled
                 ProcMnContext.Items[4].Enabled = true;
             }
+        }
+
+        private void GotoProc_toolStripButton_ButtonClick(object sender, EventArgs e)
+        {
+            TextLocation textloc = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
+            string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(textloc));
+            int findLine = Parser.GetLinePpocedureBegin(word);
+            if (findLine > -1 && findLine != currentTab.textEditor.ActiveTextAreaControl.Caret.Line) {
+                currentTab.textEditor.ActiveTextAreaControl.Caret.Column = 0;
+                currentTab.textEditor.ActiveTextAreaControl.Caret.Line = findLine;
+                currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(findLine, 0);
+            } else System.Media.SystemSounds.Question.Play();
         }
     }
 #endregion

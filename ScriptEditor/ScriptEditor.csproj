@@ -17,7 +17,7 @@
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <ApplicationIcon>Icon_1.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon_1.ico</ApplicationIcon>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
@@ -218,7 +218,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon_1.ico" />
+    <Content Include="Resources\Icon_1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
