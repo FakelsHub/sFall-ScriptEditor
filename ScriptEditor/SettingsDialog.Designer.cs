@@ -48,15 +48,23 @@
             this.cbShortCircuit = new System.Windows.Forms.CheckBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.cbAutocomplete = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.HintLang_comboBox = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Highlight_comboBox = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -80,7 +88,7 @@
             // cbWarnings
             // 
             this.cbWarnings.AutoSize = true;
-            this.cbWarnings.Location = new System.Drawing.Point(6, 19);
+            this.cbWarnings.Location = new System.Drawing.Point(6, 21);
             this.cbWarnings.Name = "cbWarnings";
             this.cbWarnings.Size = new System.Drawing.Size(101, 17);
             this.cbWarnings.TabIndex = 0;
@@ -90,7 +98,7 @@
             // cbDebug
             // 
             this.cbDebug.AutoSize = true;
-            this.cbDebug.Location = new System.Drawing.Point(6, 42);
+            this.cbDebug.Location = new System.Drawing.Point(6, 44);
             this.cbDebug.Name = "cbDebug";
             this.cbDebug.Size = new System.Drawing.Size(119, 17);
             this.cbDebug.TabIndex = 1;
@@ -100,12 +108,13 @@
             // cbLogo
             // 
             this.cbLogo.AutoSize = true;
-            this.cbLogo.Location = new System.Drawing.Point(150, 42);
+            this.cbLogo.Location = new System.Drawing.Point(150, 12);
             this.cbLogo.Name = "cbLogo";
             this.cbLogo.Size = new System.Drawing.Size(111, 17);
             this.cbLogo.TabIndex = 3;
             this.cbLogo.Text = "Show startup logo";
             this.cbLogo.UseVisualStyleBackColor = true;
+            this.cbLogo.Visible = false;
             // 
             // bChange
             // 
@@ -126,7 +135,7 @@
             // cbWarnFailedCompile
             // 
             this.cbWarnFailedCompile.AutoSize = true;
-            this.cbWarnFailedCompile.Location = new System.Drawing.Point(6, 65);
+            this.cbWarnFailedCompile.Location = new System.Drawing.Point(6, 67);
             this.cbWarnFailedCompile.Name = "cbWarnFailedCompile";
             this.cbWarnFailedCompile.Size = new System.Drawing.Size(134, 17);
             this.cbWarnFailedCompile.TabIndex = 7;
@@ -136,7 +145,7 @@
             // cbMultiThread
             // 
             this.cbMultiThread.AutoSize = true;
-            this.cbMultiThread.Location = new System.Drawing.Point(150, 65);
+            this.cbMultiThread.Location = new System.Drawing.Point(150, 44);
             this.cbMultiThread.Name = "cbMultiThread";
             this.cbMultiThread.Size = new System.Drawing.Size(156, 17);
             this.cbMultiThread.TabIndex = 8;
@@ -146,7 +155,7 @@
             // cbAutoOpenMessages
             // 
             this.cbAutoOpenMessages.AutoSize = true;
-            this.cbAutoOpenMessages.Location = new System.Drawing.Point(337, 35);
+            this.cbAutoOpenMessages.Location = new System.Drawing.Point(18, 227);
             this.cbAutoOpenMessages.Name = "cbAutoOpenMessages";
             this.cbAutoOpenMessages.Size = new System.Drawing.Size(141, 17);
             this.cbAutoOpenMessages.TabIndex = 9;
@@ -174,7 +183,7 @@
             // 
             // tbLanguage
             // 
-            this.tbLanguage.Location = new System.Drawing.Point(337, 54);
+            this.tbLanguage.Location = new System.Drawing.Point(263, 225);
             this.tbLanguage.MaxLength = 8;
             this.tbLanguage.Name = "tbLanguage";
             this.tbLanguage.Size = new System.Drawing.Size(95, 20);
@@ -183,11 +192,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(438, 58);
+            this.label5.Location = new System.Drawing.Point(178, 228);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(49, 13);
+            this.label5.Size = new System.Drawing.Size(79, 13);
             this.label5.TabIndex = 14;
-            this.label5.Text = "msg lang";
+            this.label5.Text = "Msg folder lang";
             // 
             // cbOptimize
             // 
@@ -207,15 +216,16 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(251, 20);
+            this.label6.Location = new System.Drawing.Point(249, 21);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(64, 13);
             this.label6.TabIndex = 16;
             this.label6.Text = "Optimization";
+            this.toolTip.SetToolTip(this.label6, "Compile optimization script");
             // 
             // tbTabSize
             // 
-            this.tbTabSize.Location = new System.Drawing.Point(337, 101);
+            this.tbTabSize.Location = new System.Drawing.Point(337, 88);
             this.tbTabSize.MaxLength = 8;
             this.tbTabSize.Name = "tbTabSize";
             this.tbTabSize.Size = new System.Drawing.Size(40, 20);
@@ -225,7 +235,7 @@
             // cbTabsToSpaces
             // 
             this.cbTabsToSpaces.AutoSize = true;
-            this.cbTabsToSpaces.Location = new System.Drawing.Point(337, 80);
+            this.cbTabsToSpaces.Location = new System.Drawing.Point(337, 67);
             this.cbTabsToSpaces.Name = "cbTabsToSpaces";
             this.cbTabsToSpaces.Size = new System.Drawing.Size(135, 17);
             this.cbTabsToSpaces.TabIndex = 18;
@@ -235,7 +245,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(383, 104);
+            this.label7.Location = new System.Drawing.Point(383, 91);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(91, 13);
             this.label7.TabIndex = 19;
@@ -244,7 +254,7 @@
             // cbEnableParser
             // 
             this.cbEnableParser.AutoSize = true;
-            this.cbEnableParser.Location = new System.Drawing.Point(6, 88);
+            this.cbEnableParser.Location = new System.Drawing.Point(337, 21);
             this.cbEnableParser.Name = "cbEnableParser";
             this.cbEnableParser.Size = new System.Drawing.Size(91, 17);
             this.cbEnableParser.TabIndex = 8;
@@ -257,7 +267,7 @@
             // cbShortCircuit
             // 
             this.cbShortCircuit.AutoSize = true;
-            this.cbShortCircuit.Location = new System.Drawing.Point(150, 88);
+            this.cbShortCircuit.Location = new System.Drawing.Point(150, 67);
             this.cbShortCircuit.Name = "cbShortCircuit";
             this.cbShortCircuit.Size = new System.Drawing.Size(134, 17);
             this.cbShortCircuit.TabIndex = 20;
@@ -274,7 +284,7 @@
             // cbAutocomplete
             // 
             this.cbAutocomplete.AutoSize = true;
-            this.cbAutocomplete.Location = new System.Drawing.Point(337, 12);
+            this.cbAutocomplete.Location = new System.Drawing.Point(337, 44);
             this.cbAutocomplete.Name = "cbAutocomplete";
             this.cbAutocomplete.Size = new System.Drawing.Size(126, 17);
             this.cbAutocomplete.TabIndex = 21;
@@ -283,20 +293,29 @@
                     "tants and macros as you type.");
             this.cbAutocomplete.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button1.Location = new System.Drawing.Point(412, 324);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "OK";
+            this.toolTip.SetToolTip(this.button1, "Close and save settings");
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.cbShortCircuit);
             this.groupBox1.Controls.Add(this.cbWarnings);
             this.groupBox1.Controls.Add(this.cbDebug);
-            this.groupBox1.Controls.Add(this.cbLogo);
             this.groupBox1.Controls.Add(this.cbWarnFailedCompile);
             this.groupBox1.Controls.Add(this.cbMultiThread);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.cbOptimize);
-            this.groupBox1.Controls.Add(this.cbEnableParser);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(319, 114);
+            this.groupBox1.Size = new System.Drawing.Size(319, 96);
             this.groupBox1.TabIndex = 22;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Compiling";
@@ -304,25 +323,18 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.cbLogo);
             this.groupBox2.Controls.Add(this.textBox1);
             this.groupBox2.Controls.Add(label1);
             this.groupBox2.Controls.Add(this.bChange);
             this.groupBox2.Controls.Add(this.bScriptsH);
             this.groupBox2.Controls.Add(label4);
-            this.groupBox2.Location = new System.Drawing.Point(12, 132);
+            this.groupBox2.Location = new System.Drawing.Point(12, 114);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(475, 104);
             this.groupBox2.TabIndex = 23;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Path";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(6, 71);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(427, 20);
-            this.textBox1.TabIndex = 13;
             // 
             // textBox2
             // 
@@ -332,38 +344,115 @@
             this.textBox2.Size = new System.Drawing.Size(427, 20);
             this.textBox2.TabIndex = 13;
             // 
-            // button1
+            // textBox1
             // 
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(412, 242);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 24;
-            this.button1.Text = "OK";
-            this.toolTip.SetToolTip(this.button1, "Close and save settings");
-            this.button1.UseVisualStyleBackColor = true;
+            this.textBox1.Location = new System.Drawing.Point(6, 71);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(427, 20);
+            this.textBox1.TabIndex = 13;
+            // 
+            // HintLang_comboBox
+            // 
+            this.HintLang_comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.HintLang_comboBox.FormattingEnabled = true;
+            this.HintLang_comboBox.Items.AddRange(new object[] {
+            "English",
+            "Russian",
+            "Chinese"});
+            this.HintLang_comboBox.Location = new System.Drawing.Point(412, 247);
+            this.HintLang_comboBox.Name = "HintLang_comboBox";
+            this.HintLang_comboBox.Size = new System.Drawing.Size(75, 21);
+            this.HintLang_comboBox.TabIndex = 25;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(403, 228);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 13);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Language Hints:";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.listView1);
+            this.groupBox3.Location = new System.Drawing.Point(12, 247);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(387, 100);
+            this.groupBox3.TabIndex = 27;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "MSG Files Path";
+            // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.listView1.FullRowSelect = true;
+            this.listView1.GridLines = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listView1.Location = new System.Drawing.Point(6, 19);
+            this.listView1.Name = "listView1";
+            this.listView1.ShowGroups = false;
+            this.listView1.Size = new System.Drawing.Size(375, 75);
+            this.listView1.TabIndex = 15;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 360;
+            // 
+            // Highlight_comboBox
+            // 
+            this.Highlight_comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.Highlight_comboBox.FormattingEnabled = true;
+            this.Highlight_comboBox.Items.AddRange(new object[] {
+            "Original",
+            "F-Geck"});
+            this.Highlight_comboBox.Location = new System.Drawing.Point(412, 287);
+            this.Highlight_comboBox.Name = "Highlight_comboBox";
+            this.Highlight_comboBox.Size = new System.Drawing.Size(76, 21);
+            this.Highlight_comboBox.TabIndex = 28;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(409, 271);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(75, 13);
+            this.label3.TabIndex = 29;
+            this.label3.Text = "Highlight Text:";
             // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(499, 272);
+            this.ClientSize = new System.Drawing.Size(498, 359);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.Highlight_comboBox);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.tbLanguage);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.HintLang_comboBox);
+            this.Controls.Add(this.cbAutoOpenMessages);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cbAutocomplete);
+            this.Controls.Add(this.cbEnableParser);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.cbTabsToSpaces);
             this.Controls.Add(this.tbTabSize);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.tbLanguage);
-            this.Controls.Add(this.cbAutoOpenMessages);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SettingsDialog";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsDialog_FormClosing);
@@ -371,6 +460,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -404,5 +494,12 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ComboBox HintLang_comboBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ComboBox Highlight_comboBox;
+        private System.Windows.Forms.Label label3;
     }
 }

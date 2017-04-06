@@ -40,7 +40,9 @@ namespace ScriptEditor
         public static bool enableParser = true;
         public static bool shortCircuit = false;
         public static bool autocomplete = true;
-        public static bool showlog = true;
+        public static bool showLog = true;
+        public static byte hintsLang = 0;
+        public static byte highlight = 0;
 
         public static void SetupWindowPosition(SavedWindows window, System.Windows.Forms.Form f)
         {
@@ -90,41 +92,48 @@ namespace ScriptEditor
 
         private static void LoadInternal(BinaryReader br)
         {
-            int version = br.ReadInt32(); // not used
-            optimize = br.ReadByte();
-            showWarnings = br.ReadBoolean();
-            showDebug = br.ReadBoolean();
-            showLogo = br.ReadBoolean();
-            outputDir = br.ReadString();
-            if (outputDir.Length == 0)
-                outputDir = null;
-            int recentItems = br.ReadByte();
-            for (int i = 0; i < recentItems; i++)
-                recent.Add(br.ReadString());
-            warnOnFailedCompile = br.ReadBoolean();
-            multiThreaded = br.ReadBoolean();
-            lastMassCompile = br.ReadString();
-            if (lastMassCompile.Length == 0)
-                lastMassCompile = null;
-            lastSearchPath = br.ReadString();
-            if (lastSearchPath.Length == 0)
-                lastSearchPath = null;
-            LoadWindowPos(br, 0);
-            editorSplitterPosition = br.ReadInt32(); // reseved
-            autoOpenMsgs = br.ReadBoolean();
-            editorSplitterPosition2 = br.ReadInt32();
-            PathScriptsHFile = br.ReadString();
-            if (PathScriptsHFile.Length == 0)
-                PathScriptsHFile = null;
-            language = br.ReadString();
-            if (language.Length == 0)
-                language = "english";
-            tabsToSpaces = br.ReadBoolean();
-            tabSize = br.ReadInt32();
-            enableParser = br.ReadBoolean();
-            shortCircuit = br.ReadBoolean();
-            autocomplete = br.ReadBoolean();
-            showlog=br.ReadBoolean();
+            try {
+                byte version = br.ReadByte();     // not used
+                hintsLang = br.ReadByte();
+                highlight = br.ReadByte();
+                byte reserved = br.ReadByte();    // reserved
+                optimize = br.ReadByte();
+                showWarnings = br.ReadBoolean();
+                showDebug = br.ReadBoolean();
+                showLogo = br.ReadBoolean();      // not used
+                outputDir = br.ReadString();
+                if (outputDir.Length == 0)
+                    outputDir = null;
+                int recentItems = br.ReadByte();
+                for (int i = 0; i < recentItems; i++)
+                    recent.Add(br.ReadString());
+                warnOnFailedCompile = br.ReadBoolean();
+                multiThreaded = br.ReadBoolean();
+                lastMassCompile = br.ReadString();
+                if (lastMassCompile.Length == 0)
+                    lastMassCompile = null;
+                lastSearchPath = br.ReadString();
+                if (lastSearchPath.Length == 0)
+                    lastSearchPath = null;
+                LoadWindowPos(br, 0);
+                editorSplitterPosition = br.ReadInt32(); // reserved
+                autoOpenMsgs = br.ReadBoolean();
+                editorSplitterPosition2 = br.ReadInt32();
+                PathScriptsHFile = br.ReadString();
+                if (PathScriptsHFile.Length == 0)
+                    PathScriptsHFile = null;
+                language = br.ReadString();
+                if (language.Length == 0)
+                    language = "english";
+                tabsToSpaces = br.ReadBoolean();
+                tabSize = br.ReadInt32();
+                enableParser = br.ReadBoolean();
+                shortCircuit = br.ReadBoolean();
+                autocomplete = br.ReadBoolean();
+                showLog = br.ReadBoolean();
+            } catch {
+                return;
+            }
         }
 
         public static void Load()
@@ -161,7 +170,10 @@ namespace ScriptEditor
             if (!Directory.Exists(SettingsFolder))
                 Directory.CreateDirectory(SettingsFolder);
             BinaryWriter bw = new BinaryWriter(File.Create(SettingsPath));
-            bw.Write(0);         // not used
+            bw.Write((byte)0);
+            bw.Write(hintsLang);
+            bw.Write(highlight);
+            bw.Write((byte)0);  // reserved
             bw.Write(optimize);
             bw.Write(showWarnings);
             bw.Write(showDebug);
@@ -175,7 +187,7 @@ namespace ScriptEditor
             bw.Write(lastMassCompile == null ? "" : lastMassCompile);
             bw.Write(lastSearchPath == null ? "" : lastSearchPath);
             WriteWindowPos(bw, 0);
-            bw.Write(editorSplitterPosition); // reseved
+            bw.Write(editorSplitterPosition); // reserved
             bw.Write(autoOpenMsgs);
             bw.Write(editorSplitterPosition2);
             bw.Write(PathScriptsHFile == null ? "" : PathScriptsHFile);
@@ -185,7 +197,7 @@ namespace ScriptEditor
             bw.Write(enableParser);
             bw.Write(shortCircuit);
             bw.Write(autocomplete);
-            bw.Write(showlog);
+            bw.Write(showLog);
             bw.Close();
         }
 

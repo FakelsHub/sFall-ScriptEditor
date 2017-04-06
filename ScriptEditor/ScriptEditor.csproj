@@ -67,8 +67,10 @@
       <HintPath>.\icsharpcode.texteditor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutBox.cs">
@@ -77,7 +79,14 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="AutoCompleteItem.cs" />
+    <Compile Include="CodeTranslation\Parser.cs" />
+    <Compile Include="ProcForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProcForm.Designer.cs">
+      <DependentUpon>ProcForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextEditorUI\AutoCompleteItem.cs" />
     <Compile Include="BatchCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,6 +148,7 @@
     <Compile Include="TextEditor.Designer.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextEditorUI\HandlerProcedure.cs" />
     <Compile Include="TextEditorUI\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
     <Compile Include="TextEditorUI\TabInfo.cs" />
@@ -155,6 +165,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Headers.resx">
       <DependentUpon>Headers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProcForm.resx">
+      <DependentUpon>ProcForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -175,6 +188,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Resources\ProcHandlers.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ProcHandlers_rus.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="SyntaxRules\msgSyntaxRules.xshd" />
     <None Include="packages.config" />
     <None Include="SyntaxRules\sslSyntaxRules.xshd">

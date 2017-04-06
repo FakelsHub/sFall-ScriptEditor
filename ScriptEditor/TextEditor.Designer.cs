@@ -48,6 +48,12 @@ namespace ScriptEditor {
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.ProcTree = new System.Windows.Forms.TreeView();
+            this.ProcMnContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createProcedureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameProcedureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator20 = new System.Windows.Forms.ToolStripSeparator();
+            this.moveProcedureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteProcedureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.FunctionsTree = new System.Windows.Forms.TreeView();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -145,6 +151,7 @@ namespace ScriptEditor {
             this.tabPage3.SuspendLayout();
             this.tabControl3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.ProcMnContext.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
@@ -444,7 +451,9 @@ namespace ScriptEditor {
             // 
             // ProcTree
             // 
+            this.ProcTree.ContextMenuStrip = this.ProcMnContext;
             this.ProcTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcTree.HideSelection = false;
             this.ProcTree.Location = new System.Drawing.Point(3, 3);
             this.ProcTree.Name = "ProcTree";
             this.ProcTree.ShowNodeToolTips = true;
@@ -452,6 +461,53 @@ namespace ScriptEditor {
             this.ProcTree.Size = new System.Drawing.Size(178, 628);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
+            // 
+            // ProcMnContext
+            // 
+            this.ProcMnContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createProcedureToolStripMenuItem,
+            this.renameProcedureToolStripMenuItem,
+            this.toolStripSeparator20,
+            this.moveProcedureToolStripMenuItem,
+            this.deleteProcedureToolStripMenuItem});
+            this.ProcMnContext.Name = "ProcMnContext";
+            this.ProcMnContext.Size = new System.Drawing.Size(177, 120);
+            this.ProcMnContext.Opening += new System.ComponentModel.CancelEventHandler(this.ProcMnContext_Opening);
+            // 
+            // createProcedureToolStripMenuItem
+            // 
+            this.createProcedureToolStripMenuItem.Name = "createProcedureToolStripMenuItem";
+            this.createProcedureToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.createProcedureToolStripMenuItem.Text = "Create Procedure";
+            this.createProcedureToolStripMenuItem.Click += new System.EventHandler(this.createProcedureToolStripMenuItem_Click);
+            // 
+            // renameProcedureToolStripMenuItem
+            // 
+            this.renameProcedureToolStripMenuItem.Enabled = false;
+            this.renameProcedureToolStripMenuItem.Name = "renameProcedureToolStripMenuItem";
+            this.renameProcedureToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.renameProcedureToolStripMenuItem.Text = "Rename Procedure";
+            this.renameProcedureToolStripMenuItem.Click += new System.EventHandler(this.renameProcedureToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator20
+            // 
+            this.toolStripSeparator20.Name = "toolStripSeparator20";
+            this.toolStripSeparator20.Size = new System.Drawing.Size(173, 6);
+            // 
+            // moveProcedureToolStripMenuItem
+            // 
+            this.moveProcedureToolStripMenuItem.Enabled = false;
+            this.moveProcedureToolStripMenuItem.Name = "moveProcedureToolStripMenuItem";
+            this.moveProcedureToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.moveProcedureToolStripMenuItem.Text = "Move Procedure";
+            // 
+            // deleteProcedureToolStripMenuItem
+            // 
+            this.deleteProcedureToolStripMenuItem.Enabled = false;
+            this.deleteProcedureToolStripMenuItem.Name = "deleteProcedureToolStripMenuItem";
+            this.deleteProcedureToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.deleteProcedureToolStripMenuItem.Text = "Delete Procedure";
+            this.deleteProcedureToolStripMenuItem.Click += new System.EventHandler(this.deleteProcedureToolStripMenuItem_Click);
             // 
             // tabPage6
             // 
@@ -1229,6 +1285,7 @@ namespace ScriptEditor {
             this.tabPage3.PerformLayout();
             this.tabControl3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
+            this.ProcMnContext.ResumeLayout(false);
             this.tabPage6.ResumeLayout(false);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
@@ -1348,5 +1405,11 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripStatusLabel LineStripStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel ColStripStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ContextMenuStrip ProcMnContext;
+        private System.Windows.Forms.ToolStripMenuItem createProcedureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renameProcedureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveProcedureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator20;
+        private System.Windows.Forms.ToolStripMenuItem deleteProcedureToolStripMenuItem;
     }
 }

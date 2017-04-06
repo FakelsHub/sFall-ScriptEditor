@@ -26,6 +26,8 @@ namespace ScriptEditor
             cbEnableParser.Checked = Settings.enableParser;
             cbShortCircuit.Checked = Settings.shortCircuit;
             cbAutocomplete.Checked = Settings.autocomplete;
+            Highlight_comboBox.SelectedIndex = Settings.highlight;
+            HintLang_comboBox.SelectedIndex = Settings.hintsLang;
             SetLabelText();
         }
 
@@ -59,6 +61,8 @@ namespace ScriptEditor
             Settings.enableParser = cbEnableParser.Checked;
             Settings.shortCircuit = cbShortCircuit.Checked;
             Settings.autocomplete = cbAutocomplete.Checked;
+            Settings.highlight = (byte)Highlight_comboBox.SelectedIndex;
+            Settings.hintsLang = (byte)HintLang_comboBox.SelectedIndex;
             Settings.Save();
         }
 
