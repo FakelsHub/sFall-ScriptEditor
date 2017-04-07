@@ -76,10 +76,10 @@ namespace ScriptEditor.CodeTranslation
                 file[i] = file[i].Trim();
                 if (file[i].StartsWith("//")) continue;
                 if (file[i].StartsWith("/*") && _comm == 0) {
-                    _comm++;
+                    if ( file[i].IndexOf("*/") < 0) _comm++;
                     continue;
                 } else if (_comm > 0) {
-                    if (file[i].IndexOf("*/") > 0) {
+                    if (file[i].IndexOf("*/") > 0 || file[i].StartsWith("*/")) {
                         _comm--;
                     } else continue;
                 }
@@ -127,10 +127,11 @@ namespace ScriptEditor.CodeTranslation
                 file[i] = file[i].Trim();
                 if (file[i].StartsWith("//")) continue;
                 if (file[i].StartsWith("/*") && _comm == 0) {
+                    if (file[i].IndexOf("*/") < 0) _comm++;
                     _comm++;
                     continue;
                 } else if (_comm > 0) {
-                    if (file[i].IndexOf("*/") > 0) {
+                    if (file[i].IndexOf("*/") > 0 || file[i].StartsWith("*/")) {
                     _comm--;
                     } else continue;  
                 }
