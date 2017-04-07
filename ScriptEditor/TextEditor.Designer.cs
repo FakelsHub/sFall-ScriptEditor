@@ -115,6 +115,7 @@ namespace ScriptEditor {
             this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.showLogWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textLineNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.cmsTabControls = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -471,7 +472,7 @@ namespace ScriptEditor {
             this.moveProcedureToolStripMenuItem,
             this.deleteProcedureToolStripMenuItem});
             this.ProcMnContext.Name = "ProcMnContext";
-            this.ProcMnContext.Size = new System.Drawing.Size(177, 120);
+            this.ProcMnContext.Size = new System.Drawing.Size(177, 98);
             this.ProcMnContext.Opening += new System.ComponentModel.CancelEventHandler(this.ProcMnContext_Opening);
             // 
             // createProcedureToolStripMenuItem
@@ -1041,7 +1042,8 @@ namespace ScriptEditor {
             this.toolStripSeparator1,
             this.Settings_ToolStripMenuItem,
             this.toolStripSeparator5,
-            this.showLogWindowToolStripMenuItem});
+            this.showLogWindowToolStripMenuItem,
+            this.textLineNumberToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -1086,6 +1088,17 @@ namespace ScriptEditor {
             this.showLogWindowToolStripMenuItem.Text = "Log Window";
             this.showLogWindowToolStripMenuItem.ToolTipText = "Show/Hide log window";
             this.showLogWindowToolStripMenuItem.Click += new System.EventHandler(this.showLogWindowToolStripMenuItem_Click);
+            // 
+            // textLineNumberToolStripMenuItem
+            // 
+            this.textLineNumberToolStripMenuItem.Checked = true;
+            this.textLineNumberToolStripMenuItem.CheckOnClick = true;
+            this.textLineNumberToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.textLineNumberToolStripMenuItem.Name = "textLineNumberToolStripMenuItem";
+            this.textLineNumberToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.textLineNumberToolStripMenuItem.Text = "Line Numbers";
+            this.textLineNumberToolStripMenuItem.ToolTipText = "Show/Hide line text numbers.";
+            this.textLineNumberToolStripMenuItem.Click += new System.EventHandler(this.ShowLineNumbers);
             // 
             // toolStripSeparator14
             // 
@@ -1413,5 +1426,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem moveProcedureToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator20;
         private System.Windows.Forms.ToolStripMenuItem deleteProcedureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem textLineNumberToolStripMenuItem;
     }
 }

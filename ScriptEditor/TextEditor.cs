@@ -16,7 +16,7 @@ namespace ScriptEditor
     partial class TextEditor : Form
     {
         private const string parseoff = "Parser: Disabled";
-        private const string unsaved = "<unsaved>";
+        private const string unsaved = "unsaved.ssl";
         private DateTime timerNext;
         private Timer timer;
         private readonly List<TabInfo> tabs = new List<TabInfo>();
@@ -284,9 +284,9 @@ namespace ScriptEditor
             tp.Controls.Add(te);
             te.Dock = DockStyle.Fill;
             tabControl1.TabPages.Add(tp);
-
-            if (type == OpenType.File && !alwaysNew) { 
-                tp.ToolTipText = ti.filepath;
+            if (tabControl1.TabPages.Count == 1) EnableFormControls();
+            if (type == OpenType.File) { 
+                if (!alwaysNew) tp.ToolTipText = ti.filepath;
                 System.String ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
                     ti.shouldParse = true;
@@ -298,15 +298,18 @@ namespace ScriptEditor
             if (tabControl1.TabPages.Count > 1) {
                 if (seltab) tabControl1.SelectTab(tp);
             } else {
-                splitContainer2.Panel2Collapsed = false;
-                TabClose_button.Visible = true;
-                Split_button.Visible = true;
-                splitDocumentToolStripMenuItem.Enabled = true;
-                openAllIncludesScriptToolStripMenuItem.Enabled = true;
-                GotoProc_toolStripButton.Enabled = true;
                 tabControl1_Selected(null, null);
             }
             return ti;
+        }
+
+        private void EnableFormControls()
+        {
+            TabClose_button.Visible = true;
+            Split_button.Visible = true;
+            splitDocumentToolStripMenuItem.Enabled = true;
+            openAllIncludesScriptToolStripMenuItem.Enabled = true;
+            GotoProc_toolStripButton.Enabled = true;
         }
 
         // Tooltip for opcodes and macros
@@ -695,11 +698,11 @@ namespace ScriptEditor
         // Timer for parsing
         void timer_Tick(object sender, EventArgs e)
         {
-            if (currentTab == null /*|| !currentTab.shouldParse || !Settings.enableParser */ )
+            if (currentTab == null || !currentTab.shouldParse) {
+                timer.Stop();
                 return;
-
-            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy)
-            {
+            }
+            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy){
                 parserLabel.Text = (Settings.enableParser) ? "Parser: Working" : "Parser: Get only macros";
                 parserRunning = true;
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentTab.textEditor.Document.TextContent, currentTab));
@@ -821,10 +824,12 @@ namespace ScriptEditor
                 if (!timer.Enabled) timer.Start(); // Parser begin
                 // text editor set focus 
                 currentTab.textEditor.ActiveTextAreaControl.Select();
+                ShowLineNumbers(null, null);
                 SetBackForwardButtonState();
             }
         }
 
+        // No selected text tabs
         private void SetFormControlsOff() {
             splitContainer2.Panel2Collapsed = true;
             TabClose_button.Visible = false;
@@ -1868,8 +1873,27 @@ namespace ScriptEditor
             }
         }
 
+        private void ShowLineNumbers(object sender, EventArgs e)
+        {
+            string ext;
+            try { 
+                ext = Path.GetExtension(currentTab.filename).ToLower(); 
+            } catch { 
+                ext = "";
+            }
+            PosChangeType = PositionType.AddPos;
+            if (ext != ".ssl" && ext != ".h") {
+                currentTab.textEditor.TextEditorProperties.ShowLineNumbers = false;
+                PosChangeType = PositionType.Disabled;
+                splitContainer2.Panel2Collapsed = true;
+            } else {
+                splitContainer2.Panel2Collapsed = false;
+                currentTab.textEditor.TextEditorProperties.ShowLineNumbers = textLineNumberToolStripMenuItem.Checked;
+            }
+        }
+
 #region Function Back/Forward
-        private enum PositionType {AddPos, NoSave, SaveChange, Disabled}
+        private enum PositionType { AddPos, NoSave, SaveChange, Disabled }
         // AddPos - При перемещении добавлять новую позицию в историю.
         // NoSave - Не сохранять следующее перемещение в историю.
         // SaveChange - Изменить следующее перемещение в текущей позиции истории.
@@ -1891,6 +1915,9 @@ namespace ScriptEditor
 
         private void Caret_PositionChanged(object sender, EventArgs e)
         {
+            string ext = Path.GetExtension(currentTab.filename).ToLower();
+            if (ext != ".ssl" && ext != ".h") return;
+
             TextLocation _position = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
             int curLine = _position.Line + 1;
             LineStripStatusLabel.Text = "Line: " + curLine;
@@ -2101,6 +2128,8 @@ namespace ScriptEditor
 
         private void GotoProc_toolStripButton_ButtonClick(object sender, EventArgs e)
         {
+            if (!currentTab.shouldParse) return;
+            Parser.UpdateParseSSL(currentTab.textEditor.Text);
             TextLocation textloc = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
             string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(textloc));
             int findLine = Parser.GetLinePpocedureBegin(word);
