@@ -61,6 +61,8 @@ namespace ScriptEditor {
             this.LineStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ColStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.New_toolStripDropDownButton = new System.Windows.Forms.ToolStripSplitButton();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TemplateScript_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,7 +88,7 @@ namespace ScriptEditor {
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.Back_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Forward_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.GotoProc_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.GotoProc_StripButton = new System.Windows.Forms.ToolStripSplitButton();
             this.gotoToLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
@@ -95,8 +97,9 @@ namespace ScriptEditor {
             this.openAllIncludesScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openHeaderFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.MSG_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.MSG_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.previewDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.msgFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.qCompile_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.Compile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -454,9 +457,9 @@ namespace ScriptEditor {
             // 
             this.ProcTree.ContextMenuStrip = this.ProcMnContext;
             this.ProcTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ProcTree.HideSelection = false;
             this.ProcTree.Location = new System.Drawing.Point(3, 3);
             this.ProcTree.Name = "ProcTree";
+            this.ProcTree.ShowLines = false;
             this.ProcTree.ShowNodeToolTips = true;
             this.ProcTree.ShowRootLines = false;
             this.ProcTree.Size = new System.Drawing.Size(178, 628);
@@ -576,6 +579,8 @@ namespace ScriptEditor {
             // 
             this.ToolStrip.AutoSize = false;
             this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripSeparator21,
             this.New_toolStripDropDownButton,
             this.toolStripSeparator7,
             this.Open_toolStripSplitButton,
@@ -590,12 +595,11 @@ namespace ScriptEditor {
             this.toolStripSeparator12,
             this.Back_toolStripButton,
             this.Forward_toolStripButton,
-            this.GotoProc_toolStripButton,
+            this.GotoProc_StripButton,
             this.toolStripSeparator10,
             this.Script_toolStripSplitButton,
             this.Headers_toolStripSplitButton,
             this.toolStripSeparator16,
-            this.toolStripButton3,
             this.MSG_toolStripButton,
             this.toolStripSeparator9,
             this.qCompile_toolStripSplitButton,
@@ -611,9 +615,25 @@ namespace ScriptEditor {
             this.ToolStrip.TabIndex = 2;
             this.ToolStrip.Text = "toolStrip2";
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.CheckOnClick = true;
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Enabled = false;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "Function Tree";
+            this.toolStripButton1.ToolTipText = "Show/Hide function tree";
+            // 
+            // toolStripSeparator21
+            // 
+            this.toolStripSeparator21.Name = "toolStripSeparator21";
+            this.toolStripSeparator21.Size = new System.Drawing.Size(6, 25);
+            // 
             // New_toolStripDropDownButton
             // 
-            this.New_toolStripDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.New_toolStripDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.TemplateScript_ToolStripMenuItem,
@@ -621,8 +641,8 @@ namespace ScriptEditor {
             this.New_toolStripDropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("New_toolStripDropDownButton.Image")));
             this.New_toolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.New_toolStripDropDownButton.Name = "New_toolStripDropDownButton";
-            this.New_toolStripDropDownButton.Size = new System.Drawing.Size(32, 22);
-            this.New_toolStripDropDownButton.Text = "CreateNew";
+            this.New_toolStripDropDownButton.Size = new System.Drawing.Size(60, 22);
+            this.New_toolStripDropDownButton.Text = "New";
             this.New_toolStripDropDownButton.ToolTipText = "Create new script [Ctrl+N]";
             this.New_toolStripDropDownButton.ButtonClick += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -826,19 +846,20 @@ namespace ScriptEditor {
             this.Forward_toolStripButton.Text = "Forward Position";
             this.Forward_toolStripButton.Click += new System.EventHandler(this.Forward_toolStripButton_Click);
             // 
-            // GotoProc_toolStripButton
+            // GotoProc_StripButton
             // 
-            this.GotoProc_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.GotoProc_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.GotoProc_StripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.GotoProc_StripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gotoToLineToolStripMenuItem});
-            this.GotoProc_toolStripButton.Enabled = false;
-            this.GotoProc_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("GotoProc_toolStripButton.Image")));
-            this.GotoProc_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.GotoProc_toolStripButton.Name = "GotoProc_toolStripButton";
-            this.GotoProc_toolStripButton.Size = new System.Drawing.Size(32, 22);
-            this.GotoProc_toolStripButton.Text = "Goto Procedure";
-            this.GotoProc_toolStripButton.ToolTipText = "Goto procedure under cursor";
-            this.GotoProc_toolStripButton.ButtonClick += new System.EventHandler(this.GotoProc_toolStripButton_ButtonClick);
+            this.GotoProc_StripButton.Enabled = false;
+            this.GotoProc_StripButton.Image = ((System.Drawing.Image)(resources.GetObject("GotoProc_StripButton.Image")));
+            this.GotoProc_StripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.GotoProc_StripButton.Name = "GotoProc_StripButton";
+            this.GotoProc_StripButton.Size = new System.Drawing.Size(32, 22);
+            this.GotoProc_StripButton.Tag = "Button";
+            this.GotoProc_StripButton.Text = "Goto Procedure";
+            this.GotoProc_StripButton.ToolTipText = "Goto procedure under cursor";
+            this.GotoProc_StripButton.ButtonClick += new System.EventHandler(this.findDefinitionToolStripMenuItem_Click);
             // 
             // gotoToLineToolStripMenuItem
             // 
@@ -915,24 +936,32 @@ namespace ScriptEditor {
             this.toolStripSeparator16.Name = "toolStripSeparator16";
             this.toolStripSeparator16.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton3.Text = "View Dialog";
-            // 
             // MSG_toolStripButton
             // 
-            this.MSG_toolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MSG_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.previewDialogToolStripMenuItem,
+            this.msgFileEditorToolStripMenuItem});
             this.MSG_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("MSG_toolStripButton.Image")));
             this.MSG_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MSG_toolStripButton.Name = "MSG_toolStripButton";
-            this.MSG_toolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.MSG_toolStripButton.Text = "View MSG File";
+            this.MSG_toolStripButton.Size = new System.Drawing.Size(58, 22);
+            this.MSG_toolStripButton.Text = "Msg";
+            this.MSG_toolStripButton.ToolTipText = "Open associate MSG file";
             this.MSG_toolStripButton.Click += new System.EventHandler(this.associateMsgToolStripMenuItem_Click);
+            // 
+            // previewDialogToolStripMenuItem
+            // 
+            this.previewDialogToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("previewDialogToolStripMenuItem.Image")));
+            this.previewDialogToolStripMenuItem.Name = "previewDialogToolStripMenuItem";
+            this.previewDialogToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.previewDialogToolStripMenuItem.Text = "Preview Dialog";
+            // 
+            // msgFileEditorToolStripMenuItem
+            // 
+            this.msgFileEditorToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("msgFileEditorToolStripMenuItem.Image")));
+            this.msgFileEditorToolStripMenuItem.Name = "msgFileEditorToolStripMenuItem";
+            this.msgFileEditorToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.msgFileEditorToolStripMenuItem.Text = "Msg file editor";
             // 
             // toolStripSeparator9
             // 
@@ -1279,7 +1308,7 @@ namespace ScriptEditor {
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TextEditor";
-            this.Text = "sfall Script Editor";
+            this.Text = "Sfall Script Editor";
             this.Activated += new System.EventHandler(this.TextEditor_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TextEditor_FormClosing);
             this.Load += new System.EventHandler(this.TextEditor_Load);
@@ -1396,8 +1425,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripMenuItem saveAsTemplateToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
-        private System.Windows.Forms.ToolStripButton toolStripButton3;
-        private System.Windows.Forms.ToolStripButton MSG_toolStripButton;
         private System.Windows.Forms.ToolStripMenuItem roundtripToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton Outline_toolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator17;
@@ -1414,7 +1441,7 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem splitDocumentToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.TextBox tbOutput;
-        private System.Windows.Forms.ToolStripSplitButton GotoProc_toolStripButton;
+        private System.Windows.Forms.ToolStripSplitButton GotoProc_StripButton;
         private System.Windows.Forms.ToolStripMenuItem gotoToLineToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel LineStripStatusLabel;
@@ -1427,5 +1454,10 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator20;
         private System.Windows.Forms.ToolStripMenuItem deleteProcedureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem textLineNumberToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator21;
+        private System.Windows.Forms.ToolStripSplitButton MSG_toolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem previewDialogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem msgFileEditorToolStripMenuItem;
     }
 }
