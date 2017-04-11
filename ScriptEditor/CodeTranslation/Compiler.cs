@@ -58,6 +58,18 @@ namespace ScriptEditor.CodeTranslation
 
         private int lastStatus = 1;
 
+        // Override includes path
+        private void includePath(ref string iPath, string dir)
+        {
+            if (!Path.IsPathRooted(iPath)) {
+                if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
+                    iPath = Path.Combine(Settings.PathScriptsHFile, iPath);
+                } else iPath = Path.Combine(dir, iPath);
+            } else if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
+                iPath = Path.Combine(Settings.PathScriptsHFile, Path.GetFileName(iPath));
+            }
+        }
+
         private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
@@ -95,8 +107,7 @@ namespace ScriptEditor.CodeTranslation
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    if (!Path.IsPathRooted(text[1]))
-                        text[1] = Path.Combine(dir, text[1]);
+                    includePath(ref text[1], dir);
                     GetMacros(text[1], null, macros);
                 } else if (lines[i].StartsWith("#define ")) {
                     if (lines[i].EndsWith("\\")) {

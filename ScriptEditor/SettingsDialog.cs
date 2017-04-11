@@ -14,7 +14,7 @@ namespace ScriptEditor
             scriptshpath = Settings.PathScriptsHFile;
             InitializeComponent();
             cbDebug.Checked = Settings.showDebug;
-            cbLogo.Checked = Settings.showLogo;
+            cbIncludePath.Checked = Settings.overrideIncludesPath;
             cbOptimize.SelectedIndex = (Settings.optimize == 255 ? 1 : Settings.optimize);
             cbWarnings.Checked = Settings.showWarnings;
             cbWarnFailedCompile.Checked = Settings.warnOnFailedCompile;
@@ -40,7 +40,7 @@ namespace ScriptEditor
         private void SettingsDialog_FormClosing(object sender, FormClosingEventArgs e)
         {
             Settings.showDebug = cbDebug.Checked;
-            Settings.showLogo = cbLogo.Checked;
+            Settings.overrideIncludesPath = cbIncludePath.Checked;
             Settings.optimize = (byte)cbOptimize.SelectedIndex;
             Settings.showWarnings = cbWarnings.Checked;
             Settings.warnOnFailedCompile = cbWarnFailedCompile.Checked;

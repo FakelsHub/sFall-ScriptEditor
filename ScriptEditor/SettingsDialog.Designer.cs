@@ -29,7 +29,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
             this.cbWarnings = new System.Windows.Forms.CheckBox();
             this.cbDebug = new System.Windows.Forms.CheckBox();
-            this.cbLogo = new System.Windows.Forms.CheckBox();
+            this.cbIncludePath = new System.Windows.Forms.CheckBox();
             this.bChange = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.cbWarnFailedCompile = new System.Windows.Forms.CheckBox();
@@ -105,16 +105,16 @@
             this.cbDebug.Text = "Show debug output";
             this.cbDebug.UseVisualStyleBackColor = true;
             // 
-            // cbLogo
+            // cbIncludePath
             // 
-            this.cbLogo.AutoSize = true;
-            this.cbLogo.Location = new System.Drawing.Point(150, 12);
-            this.cbLogo.Name = "cbLogo";
-            this.cbLogo.Size = new System.Drawing.Size(111, 17);
-            this.cbLogo.TabIndex = 3;
-            this.cbLogo.Text = "Show startup logo";
-            this.cbLogo.UseVisualStyleBackColor = true;
-            this.cbLogo.Visible = false;
+            this.cbIncludePath.AutoSize = true;
+            this.cbIncludePath.Location = new System.Drawing.Point(295, 54);
+            this.cbIncludePath.Name = "cbIncludePath";
+            this.cbIncludePath.Size = new System.Drawing.Size(138, 17);
+            this.cbIncludePath.TabIndex = 3;
+            this.cbIncludePath.Text = "Override Includes paths";
+            this.toolTip.SetToolTip(this.cbIncludePath, "Override path of header files in script, to this selected path.");
+            this.cbIncludePath.UseVisualStyleBackColor = true;
             // 
             // bChange
             // 
@@ -279,6 +279,7 @@
             // 
             this.toolTip.AutoPopDelay = 30000;
             this.toolTip.InitialDelay = 500;
+            this.toolTip.IsBalloon = true;
             this.toolTip.ReshowDelay = 100;
             // 
             // cbAutocomplete
@@ -323,7 +324,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.textBox2);
-            this.groupBox2.Controls.Add(this.cbLogo);
+            this.groupBox2.Controls.Add(this.cbIncludePath);
             this.groupBox2.Controls.Add(this.textBox1);
             this.groupBox2.Controls.Add(label1);
             this.groupBox2.Controls.Add(this.bChange);
@@ -477,7 +478,7 @@
 
         private System.Windows.Forms.CheckBox cbWarnings;
         private System.Windows.Forms.CheckBox cbDebug;
-        private System.Windows.Forms.CheckBox cbLogo;
+        private System.Windows.Forms.CheckBox cbIncludePath;
         private System.Windows.Forms.Button bChange;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.CheckBox cbWarnFailedCompile;

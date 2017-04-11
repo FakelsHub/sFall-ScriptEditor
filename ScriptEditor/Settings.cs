@@ -22,7 +22,7 @@ namespace ScriptEditor
         public static byte optimize = 1;
         public static bool showWarnings = true;
         public static bool showDebug = true;
-        public static bool showLogo = true;
+        public static bool overrideIncludesPath = true;
         public static bool warnOnFailedCompile = true;
         public static bool multiThreaded = true;
         public static bool autoOpenMsgs = true;
@@ -100,7 +100,7 @@ namespace ScriptEditor
                 optimize = br.ReadByte();
                 showWarnings = br.ReadBoolean();
                 showDebug = br.ReadBoolean();
-                showLogo = br.ReadBoolean();      // not used
+                overrideIncludesPath = br.ReadBoolean();
                 outputDir = br.ReadString();
                 if (outputDir.Length == 0)
                     outputDir = null;
@@ -177,7 +177,7 @@ namespace ScriptEditor
             bw.Write(optimize);
             bw.Write(showWarnings);
             bw.Write(showDebug);
-            bw.Write(showLogo);
+            bw.Write(overrideIncludesPath);
             bw.Write(outputDir == null ? "" : outputDir);
             bw.Write((byte)recent.Count);
             for (int i = 0; i < recent.Count; i++)
@@ -221,7 +221,7 @@ namespace ScriptEditor
                 optimize?"-O":"--",
                 showWarnings?"--":"-n ",
                 showDebug?"-d":"--",
-                showLogo?"":"-l",
+                "-l", /* no logo */
                 Path.GetFileName(infile),
                 "-o",
                 preprocess?preprocessPath:GetOutputPath(infile),
@@ -234,7 +234,7 @@ namespace ScriptEditor
                 + ("-O" + optimize + " ")
                 + (showWarnings ? "" : "-n ")
                 + (showDebug ? "-d " : "")
-                + (showLogo ? "" : "-l ")
+                + ("-l ") /* always no logo */
                 + (shortCircuit ? "-s " : "")
                 + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? PreprocessPath : GetOutputPath(infile)) + "\"";
 #endif
