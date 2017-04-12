@@ -436,15 +436,17 @@ namespace ScriptEditor
                 return;
             string path = Path.Combine(Settings.outputDir, "..\\text\\" + Settings.language + "\\dialog\\");
             if (!Directory.Exists(path)) {
-                MessageBox.Show("Failed to open or create associated message file; directory data\\text\\" + Settings.language + "\\dialog does not exist", "Error");
+                MessageBox.Show("Failed to open or create associated message file in directory\r\n" + path, "Error: Directory does not exist");
                 return;
             }
             path = Path.Combine(path, Path.ChangeExtension(tab.filename, ".msg"));
             if (!File.Exists(path)) {
-                if (!create)
-                    return;
-                else
-                    File.Create(path).Close();
+                if (!create) return;
+                else {
+                    if (MessageBox.Show("The associated message file this script could not be found.\r\nDo you want to create a new file?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes) {
+                        File.Create(path).Close();
+                    } 
+                }       
             }
             tab.msgFileTab = Open(path, OpenType.File, false);
         }
@@ -454,20 +456,22 @@ namespace ScriptEditor
             msg = "";
             if (Settings.outputDir == null) {
                 if (showMessages)
-                    MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Error");
+                    MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Compile Error");
                 return false;
             }
-            Save(tab);
+            if (tab.changed) Save(tab);
             if (tab.changed || tab.filepath == null)
                 return false;
-            if (string.Compare(Path.GetExtension(tab.filename), ".msg", true) == 0) {
+            if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
                 if (showMessages)
-                    MessageBox.Show("You cannot compile message files");
+                    MessageBox.Show("You cannot compile this file.", "Compile Error");
                 return false;
             }
             List<Error> errors = new List<Error>();
             var compiler = new Compiler();
-            bool success = compiler.Compile(currentTab.filepath, out msg, errors, preprocess);
+            string file = compiler.OverrideIncludeSSLCompile(tab.filepath);
+            bool success = compiler.Compile(file, out msg, errors, preprocess);
+            if (Settings.overrideIncludesPath) File.Delete(Settings.SettingsFolder + '\\' + Path.GetFileName(file));
             foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
                 foreach (Error e in errors) {
                     if (e.type == et)
@@ -476,12 +480,12 @@ namespace ScriptEditor
             }
             if (!success) {
                 tabControl2.SelectedIndex = 1;
+                maximize_log();
+                if (showMessages && Settings.warnOnFailedCompile) {
+                    MessageBox.Show("Script " + tab.filename + " failed to compile.\r\nSee the output window for details", "Compile Script Error");
+                } else parserLabel.Text = "Failed to compiled: " + currentTab.filename;
             } else {
-                parserLabel.Text = "Successfully compiled " + currentTab.filename + " at " + DateTime.Now.ToString();
-            }
-            if (!success && Settings.warnOnFailedCompile) {
-                if (showMessages)
-                    MessageBox.Show("Script " + tab.filename + " failed to compile. See the output window for details", "Error");
+                parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString();
             }
             return success;
         }
@@ -604,8 +608,10 @@ namespace ScriptEditor
             end = new TextLocation(ls.Length, ls.LineNumber);
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
             currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start;
-            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line + 10, 0);
-            if (!not_this) currentTab.textEditor.ActiveTextAreaControl.Focus(); // fix bug - Focus does not on control
+            if (!not_this) { // fix bug - Focus does not on control
+                currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line + 10, 0);
+                currentTab.textEditor.ActiveTextAreaControl.Focus();
+            } else currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line - 15, 0); 
             currentTab.textEditor.Focus();
         }
 
@@ -1651,6 +1657,9 @@ namespace ScriptEditor
             dgv.Dock = DockStyle.Fill;
             tabControl2.TabPages.Add(tp);
             tabControl2.SelectTab(tp);
+            maximize_log();
+            currentTab.textEditor.Select();
+            currentTab.textEditor.Focus();
         }
 
         private void findDeclerationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1855,7 +1864,7 @@ namespace ScriptEditor
                 minimizelogsize = splitContainer1.SplitterDistance; 
                 splitContainer1.SplitterDistance = Size.Height;
             } else {
-                int hs = Size.Height-(Size.Height/5);
+                int hs = Size.Height-(Size.Height/4);
                 if (minimizelogsize > hs) {
                     splitContainer1.SplitterDistance = hs; 
                 } else {
@@ -1863,6 +1872,12 @@ namespace ScriptEditor
                 }
                 minimizelogsize = 0;
             }
+        }
+        
+        private void maximize_log()
+        {
+                int hs = Size.Height - (Size.Height / 4);
+                splitContainer1.SplitterDistance = hs;
         }
 
         private void showLogWindowToolStripMenuItem_Click(object sender, EventArgs e)

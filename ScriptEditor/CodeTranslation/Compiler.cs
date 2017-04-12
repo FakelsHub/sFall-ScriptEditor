@@ -58,18 +58,6 @@ namespace ScriptEditor.CodeTranslation
 
         private int lastStatus = 1;
 
-        // Override includes path
-        private void includePath(ref string iPath, string dir)
-        {
-            if (!Path.IsPathRooted(iPath)) {
-                if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
-                    iPath = Path.Combine(Settings.PathScriptsHFile, iPath);
-                } else iPath = Path.Combine(dir, iPath);
-            } else if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
-                iPath = Path.Combine(Settings.PathScriptsHFile, Path.GetFileName(iPath));
-            }
-        }
-
         private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
@@ -101,15 +89,15 @@ namespace ScriptEditor.CodeTranslation
                 dir = Path.GetDirectoryName(file);
             for (int i = 0; i < lines.Length; i++) {
                 lines[i] = lines[i].Trim();
-                if (lines[i].StartsWith("#include ")) {
+                if (lines[i].StartsWith(Parser.INCLUDE)) {
                     string[] text = lines[i].Split('"');
                     if (text.Length < 2)
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    includePath(ref text[1], dir);
+                    Parser.includePath(ref text[1], dir);
                     GetMacros(text[1], null, macros);
-                } else if (lines[i].StartsWith("#define ")) {
+                } else if (lines[i].StartsWith(Parser.DEFINE)) {
                     if (lines[i].EndsWith("\\")) {
                         var sb = new StringBuilder();
                         int lineno = i;
@@ -133,23 +121,46 @@ namespace ScriptEditor.CodeTranslation
             int strlen = (namelist[name - 5] << 8) + namelist[name - 6];
             return Encoding.ASCII.GetString(namelist, name - 4, strlen).TrimEnd('\0');
         }
-
-        public ProgramInfo Parse(string file, string path, ProgramInfo previnfo)
+        
+        public void ParseOverrideIncludes(string text)
         {
-            File.WriteAllText(parserPath, file);
+            if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
+                string[] linetext = text.Split('\n');
+                for (int i = 0; i < linetext.Length; i++)
+                {
+                    linetext[i] = linetext[i].Replace('\r', ' ').TrimEnd();
+                    if (linetext[i].ToLower().TrimStart().StartsWith(Parser.INCLUDE)) {
+                        string[] str = linetext[i].Split('"');
+                        if (str.Length < 2)
+                            continue;
+                        if (str[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                            continue;
+                        Parser.includePath(ref str[1], parserPath);
+                        linetext[i] = str[0] + '"' + str[1] + '"';
+                    }
+                }
+                text = String.Join("\n",linetext);
+            }
+            File.WriteAllText(parserPath, text);
+        }
+        
+        public ProgramInfo Parse(string text, string filepath, ProgramInfo prev_pi)
+        {
             // Parse disabled, get only macros
-            if (Settings.enableParser && path != null) lastStatus = parse_main(parserPath, path, Path.GetDirectoryName(path));
+            ParseOverrideIncludes(text);
+            if (Settings.enableParser && filepath != null) lastStatus = parse_main(parserPath, filepath, Path.GetDirectoryName(filepath));
             ProgramInfo pi = (lastStatus >= 1)
                             ? new ProgramInfo(0, 0)
                             : new ProgramInfo(numProcs(), numVars());
-            if (lastStatus >= 1 && previnfo != null) { // preprocess error - store previous data Procs/Vars
-                if (previnfo.parseData) pi = Parser.UpdateProcsPI(previnfo, file, path);
-                else pi = previnfo;
+            if (lastStatus >= 1 && prev_pi != null) { // preprocess error - store previous data Procs/Vars
+                if (prev_pi.parseData) pi = Parser.UpdateProcsPI(prev_pi, text, filepath);
+                else pi = prev_pi;
                 pi.parsed = false;
                 pi.macros.Clear();
-            } 
+            }
+            if (Settings.overrideIncludesPath) File.WriteAllText(parserPath, text); // restore
             // Macros
-            GetMacros(parserPath, Path.GetDirectoryName(path), pi.macros);
+            GetMacros(parserPath, Path.GetDirectoryName(filepath), pi.macros);
             if (lastStatus >= 1) return pi; // parse failed, return macros and previous data Procs/Vars
             //
             // Getting data of variables/procedures
@@ -258,6 +269,30 @@ namespace ScriptEditor.CodeTranslation
             }
             pi.BuildDictionaries();
             return pi;
+        }
+
+        public string OverrideIncludeSSLCompile(string file)
+        { 
+            if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null){
+                string[] text = File.ReadAllLines(file);
+                for (int i = 0; i < text.Length; i++)
+                {
+                    text[i] = text[i].Trim();
+                    if (text[i].ToLower().StartsWith(Parser.INCLUDE)) {
+                        string[] str = text[i].Split('"');
+                        if (str.Length < 2)
+                            continue;
+                        if (str[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
+                            continue;
+                        Parser.includePath(ref str[1], file);
+                        text[i]= str[0] + '"' + str[1] + '"';
+                    }
+                }
+                string cfile = Settings.SettingsFolder + '\\' + Path.GetFileName(file);
+                File.WriteAllLines(cfile, text);
+                file = cfile;
+            } 
+            return file;
         }
 
 #if DLL_COMPILER

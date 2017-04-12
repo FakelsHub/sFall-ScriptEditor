@@ -947,7 +947,7 @@ namespace ScriptEditor {
             this.MSG_toolStripButton.Size = new System.Drawing.Size(58, 22);
             this.MSG_toolStripButton.Text = "Msg";
             this.MSG_toolStripButton.ToolTipText = "Open associate MSG file";
-            this.MSG_toolStripButton.Click += new System.EventHandler(this.associateMsgToolStripMenuItem_Click);
+            this.MSG_toolStripButton.ButtonClick += new System.EventHandler(this.associateMsgToolStripMenuItem_Click);
             // 
             // previewDialogToolStripMenuItem
             // 

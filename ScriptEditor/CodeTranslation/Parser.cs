@@ -25,7 +25,8 @@ namespace ScriptEditor.CodeTranslation
         const string PROCEDURE = "procedure ";
         const string BEGIN = "begin";
         const string END = "end";
-        const string INCLUDE = "#include ";
+        public const string INCLUDE = "#include ";
+        public const string DEFINE = "#define ";
         
         public static void InternalParser(TabInfo _ti)
         {
@@ -106,9 +107,9 @@ namespace ScriptEditor.CodeTranslation
                     //извлеч имя процедуры
                     string s = file[i].Substring(PROC_LEN, file[i].Length - PROC_LEN);
                     // удалить Begin и другую информацию из имени процедуры
-                    int z = s.IndexOf(";");
+                    int z = s.IndexOf(';');
                     if (z > 0) s = s.Remove(z).TrimEnd();
-                    z = s.IndexOf("(");
+                    z = s.IndexOf('(');
                     if (z > 0) s = s.Remove(z).TrimEnd();
                     z = s.IndexOf(BEGIN);
                     if (z > 0) s = s.Remove(z).TrimEnd();
@@ -360,6 +361,20 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
             return include;
+        }
+
+        // Override includes path
+        public static void includePath(ref string iPath, string dir)
+        {
+            if (!Path.IsPathRooted(iPath)) {
+                if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
+                    iPath = Path.Combine(Settings.PathScriptsHFile, iPath);
+                }
+                else iPath = Path.Combine(dir, iPath);
+            } // переопределять и неотносительные пути, но тогда все header файлы должны лежать в одной папке.  
+            else if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
+                iPath = Path.Combine(Settings.PathScriptsHFile, Path.GetFileName(iPath));
+            }
         }
     }
 }
