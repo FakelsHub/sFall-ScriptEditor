@@ -456,7 +456,10 @@ namespace ScriptEditor {
             // ProcTree
             // 
             this.ProcTree.ContextMenuStrip = this.ProcMnContext;
+            this.ProcTree.Cursor = System.Windows.Forms.Cursors.Default;
             this.ProcTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcTree.HotTracking = true;
+            this.ProcTree.Indent = 20;
             this.ProcTree.Location = new System.Drawing.Point(3, 3);
             this.ProcTree.Name = "ProcTree";
             this.ProcTree.ShowLines = false;
@@ -465,6 +468,8 @@ namespace ScriptEditor {
             this.ProcTree.Size = new System.Drawing.Size(178, 628);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
+            this.ProcTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseClick);
+            this.ProcTree.MouseLeave += new System.EventHandler(this.ProcTree_MouseLeave);
             // 
             // ProcMnContext
             // 
@@ -504,6 +509,7 @@ namespace ScriptEditor {
             this.moveProcedureToolStripMenuItem.Name = "moveProcedureToolStripMenuItem";
             this.moveProcedureToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.moveProcedureToolStripMenuItem.Text = "Move Procedure";
+            this.moveProcedureToolStripMenuItem.Click += new System.EventHandler(this.moveProcedureToolStripMenuItem_Click);
             // 
             // deleteProcedureToolStripMenuItem
             // 

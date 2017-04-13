@@ -10,6 +10,7 @@ using Directory = System.IO.Directory;
 using SearchOption = System.IO.SearchOption;
 using ScriptEditor.CodeTranslation;
 using ScriptEditor.TextEditorUI;
+using System.Drawing;
 
 namespace ScriptEditor
 {
@@ -17,6 +18,9 @@ namespace ScriptEditor
     {
         private const string parseoff = "Parser: Disabled";
         private const string unsaved = "unsaved.ssl";
+        private readonly List<string> TREEPROCEDURES = new List<string>{ "Global Procedures", "Local Script Procedures" };
+        private readonly List<string> TREEVARIABLES = new List<string>{ "Global Variables", "Local Script Variables" };
+
         private DateTime timerNext;
         private DateTime timer2Next;
         private Timer timer;
@@ -32,6 +36,7 @@ namespace ScriptEditor
         private int minimizelogsize;
         public static string sHeaderfile;
         private PositionType PosChangeType;
+        private int moveActive = -1;
 
         private TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
@@ -45,7 +50,7 @@ namespace ScriptEditor
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
             // folding timer
             timer = new Timer();
-            timer.Interval = 1000;
+            timer.Interval = 100;
             timer.Tick += new EventHandler(timer_Tick);
             timer2 = new Timer();
             timer2.Interval = 10;
@@ -76,7 +81,7 @@ namespace ScriptEditor
             VarTree.AfterSelect += TreeView_AfterSelect;
             VarTree.Dock = DockStyle.Fill;
             VarTab.Padding = new Padding(3, 3, 3, 3);
-            VarTab.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            VarTab.BackColor = SystemColors.ControlLightLight;
             VarTab.Controls.Add(VarTree);
             if (Settings.PathScriptsHFile == null) {
                 Headers_toolStripSplitButton.Enabled = false;
@@ -500,9 +505,10 @@ namespace ScriptEditor
             VarTree.Nodes.Clear();
             if (currentTab.parseInfo != null && currentTab.shouldParse) {
                 TreeNode rootNode;
-                foreach (var s in new List<string> { "Global Procedures", "Local Script Procedures" }) {
+                foreach (var s in TREEPROCEDURES) {
                     rootNode = ProcTree.Nodes.Add(s);
-                    rootNode.NodeFont = new System.Drawing.Font("Arial", 9, System.Drawing.FontStyle.Bold);
+                    rootNode.ForeColor = Color.DarkBlue;
+                    rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
                 }
                 foreach (Procedure p in currentTab.parseInfo.procs) {
                     TreeNode tn = new TreeNode(p.name); //TreeNode(p.ToString(false));
@@ -526,9 +532,10 @@ namespace ScriptEditor
                 if (!Settings.enableParser && !currentTab.parseInfo.parseData) {
                     ProcTree.Nodes.RemoveAt(0);
                 } else {
-                    foreach (var s in new List<string> { "Global Variables", "Local Script Variables" }) {
+                    foreach (var s in TREEVARIABLES) {
                         rootNode = VarTree.Nodes.Add(s);
-                        rootNode.NodeFont = new System.Drawing.Font("Arial", 9, System.Drawing.FontStyle.Bold);
+                        rootNode.ForeColor = Color.DarkBlue;
+                        rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
                     }
                     foreach (Variable var in currentTab.parseInfo.vars) {
                         TreeNode tn = new TreeNode(var.name);
@@ -548,7 +555,7 @@ namespace ScriptEditor
             VarTree.EndUpdate();
             ProcTree.EndUpdate();
             if (ProcTree.Nodes.Count > 0) {
-                ProcTree.Nodes[0].EnsureVisible();
+                ProcTree.Nodes[1].EnsureVisible();
             }
         }
 
@@ -1087,13 +1094,13 @@ namespace ScriptEditor
                 dgv.Name = "dgv";
                 dgv.AllowUserToAddRows = false;
                 dgv.AllowUserToDeleteRows = false;
-                dgv.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+                dgv.BackgroundColor = SystemColors.ControlLight;
                 dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
                 dgv.Columns.Add(c1);
                 dgv.Columns.Add(c2);
                 dgv.Columns.Add(c3);
                 dgv.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-                dgv.GridColor = System.Drawing.SystemColors.ControlLight;
+                dgv.GridColor = SystemColors.ControlLight;
                 dgv.MultiSelect = false;
                 dgv.ReadOnly = true;
                 dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
@@ -1630,13 +1637,13 @@ namespace ScriptEditor
             DataGridView dgv = new DataGridView();
             dgv.AllowUserToAddRows = false;
             dgv.AllowUserToDeleteRows = false;
-            dgv.BackgroundColor = System.Drawing.SystemColors.ControlLight;
+            dgv.BackgroundColor = SystemColors.ControlLight;
             dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgv.Columns.Add(c1);
             dgv.Columns.Add(c2);
             dgv.Columns.Add(c3);
             dgv.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            dgv.GridColor = System.Drawing.SystemColors.ControlLight;
+            dgv.GridColor = SystemColors.ControlLight;
             dgv.MultiSelect = false;
             dgv.ReadOnly = true;
             dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
@@ -2075,10 +2082,6 @@ namespace ScriptEditor
             ProcBlock block = new ProcBlock();
             if (CreateProcFrm.checkBox1.Checked || CreateProcFrm.radioButton2.Checked) {
                 block = Parser.GetProcBeginEndBlock(ProcTree.SelectedNode.Text);
-                //for external parser.dll
-                //Procedure data = (Procedure)ProcTree.SelectedNode.Tag;
-                //block.begin = data.d.start;
-                //block.end = data.d.end;
                 block.copy = CreateProcFrm.checkBox1.Checked;
             }
             InsertProcedure(CreateProcFrm.ProcedureName.Text, block, CreateProcFrm.radioButton2.Checked);
@@ -2166,20 +2169,26 @@ namespace ScriptEditor
         {
             if (MessageBox.Show("Are you sure you want to delete \"" + ProcTree.SelectedNode.Text + "\" procedure?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No) return;
             Parser.UpdateParseSSL(currentTab.textEditor.Text);
-            string procName = ProcTree.SelectedNode.Text;
-            int declarLine = Parser.GetDeclarationProcedureLine(procName);
-            int len = TextUtilities.GetLineAsString(currentTab.textEditor.Document, declarLine).Length;
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new TextLocation(0, declarLine), new TextLocation(len, declarLine));
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.RemoveSelectedText();
-            ProcBlock block = Parser.GetProcBeginEndBlock(procName);
-            block.begin = Parser.GetPocedureLine(procName);
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new TextLocation(0, block.begin), new TextLocation(1000, block.end));
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.RemoveSelectedText();
-            int offset = currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.PositionToOffset(new TextLocation(0, block.begin+1));
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.Remove(offset, 2);
+            string def_poc;
+            DeleteProcedure(ProcTree.SelectedNode.Text, out def_poc);
             SetFocusDocument();
         }
-        
+
+        private void DeleteProcedure(string procName, out string def_poc) 
+        {
+            int declarLine = Parser.GetDeclarationProcedureLine(procName);
+            int len = TextUtilities.GetLineAsString(currentTab.textEditor.Document, declarLine).Length;
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(0, declarLine), new TextLocation(len, declarLine));
+            def_poc = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
+            ProcBlock block = Parser.GetProcBeginEndBlock(procName);
+            block.begin = Parser.GetPocedureLine(procName);
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(0, block.begin), new TextLocation(1000, block.end));
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
+            int offset = currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.PositionToOffset(new TextLocation(0, block.begin + 1));
+            currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.Remove(offset, 2);
+        }
+
         private string GetSelectBlockText(int _begin, int _end, int _ecol = 1000, int _bcol = 0)
         {
             currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new TextLocation(_bcol, _begin), new TextLocation(_ecol, _end));
@@ -2205,7 +2214,7 @@ namespace ScriptEditor
         {
             if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) {
                 ProcMnContext.Items[1].Enabled = true;
-                //ProcMnContext.Items[3].Enabled = true; // moved disabled
+                ProcMnContext.Items[3].Enabled = true; // moved disabled
                 ProcMnContext.Items[4].Enabled = true;
                 ProcMnContext.Items[4].Text = "Delete: " + ProcTree.SelectedNode.Text;
             } else {
@@ -2213,6 +2222,81 @@ namespace ScriptEditor
                 ProcMnContext.Items[3].Enabled = false;
                 ProcMnContext.Items[4].Enabled = false;
                 ProcMnContext.Items[4].Text = "Delete procedure";
+            }
+        }
+
+        private void MoveProcedure(int sIndex)
+        {
+            int root = ProcTree.Nodes.Count - 1;
+            Parser.UpdateParseSSL(currentTab.textEditor.Text);
+            string moveName = ProcTree.Nodes[root].Nodes[moveActive].Text;
+            ProcBlock block = Parser.GetProcBeginEndBlock(moveName);
+            block.begin = Parser.GetPocedureLine(moveName);
+            string copy_procbody = GetSelectBlockText(block.begin, block.end, 1000);
+            string copy_defproc;
+            DeleteProcedure(moveName, out copy_defproc);
+            // insert declration
+            Parser.UpdateParseSSL(currentTab.textEditor.Text);
+            string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
+            int p_def = Parser.GetDeclarationProcedureLine(name);
+            int p_begin = Parser.GetPocedureLine(name) + 1;
+            //paste proc block
+            int offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_def));
+            currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, copy_defproc + Environment.NewLine);
+            offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_begin));
+            currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, copy_procbody + "\r\n\r\n");
+            //
+            TreeNode nd = ProcTree.Nodes[root].Nodes[moveActive];
+            ProcTree.Nodes[root].Nodes.RemoveAt(moveActive);
+            ProcTree.Nodes[root].Nodes.Insert(sIndex, nd);
+            ProcTree.SelectedNode = ProcTree.Nodes[root].Nodes[sIndex];
+            ProcTree.Focus();
+            ProcTree.Select();
+            Parser.UpdateProcInfo(ref currentTab.parseInfo, currentTab.textEditor.Text, currentTab.filepath);
+            currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, currentTab.parseInfo);
+            currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+        }
+
+        private void moveProcedureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (moveActive == -1) {
+                moveActive = ProcTree.SelectedNode.Index;
+                ProcTree.SelectedNode.ForeColor = Color.Red;
+                ProcTree.SelectedNode = ProcTree.Nodes[0];
+                ProcTree.Cursor = Cursors.Hand;
+                ProcTree.AfterSelect -= TreeView_AfterSelect;
+                ProcTree.AfterSelect += new TreeViewEventHandler(ProcTree_AfterSelect);
+            }
+        }
+
+        private void ProcTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Parent == null || e.Node.Parent.Text != TREEPROCEDURES[1]) return;
+            ProcTree.AfterSelect -= ProcTree_AfterSelect;
+            currentTab.textEditor.TextChanged -= textChanged;
+            MoveProcedure(e.Node.Index);
+            currentTab.textEditor.TextChanged += textChanged;
+            ProcTree.AfterSelect += TreeView_AfterSelect;
+            ProcTree.SelectedNode.ForeColor = Color.Black;
+            ProcTree.Cursor = Cursors.Default;
+            moveActive = -1;
+        }
+
+        private void ProcTree_MouseLeave(object sender, EventArgs e)
+        {
+            if (moveActive != -1) {
+                ProcTree.AfterSelect -= ProcTree_AfterSelect;
+                ProcTree.AfterSelect += TreeView_AfterSelect;
+                ProcTree.Nodes[ProcTree.Nodes.Count - 1].Nodes[moveActive].ForeColor = Color.Black;
+                ProcTree.Cursor = Cursors.Default;
+                moveActive = -1;
+            }
+        }
+
+        private void ProcTree_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right) {
+                ProcTree_MouseLeave(null, null);
             }
         }
     }

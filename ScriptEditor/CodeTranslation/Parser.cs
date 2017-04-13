@@ -90,6 +90,21 @@ namespace ScriptEditor.CodeTranslation
                 _pi.parsed = true;
             }
             return _pi;
+        }
+
+        // Обновить данные begin...end блоков процедур
+        public static void UpdateProcInfo(ref ProgramInfo _pi, string text, string scriptFile)
+        {
+            ProcBlock be_block = new ProcBlock();
+            UpdateParseSSL(text);
+            for (int i = 0; i < _pi.procs.Length; i++)
+            {
+                if (_pi.procs[i].fdeclared != scriptFile) continue;
+                _pi.procs[i].d.declared = GetDeclarationProcedureLine(_pi.procs[i].name) + 1;
+                be_block = GetProcBeginEndBlock(_pi.procs[i].name);
+                _pi.procs[i].d.start = be_block.begin + 1;
+                _pi.procs[i].d.end = be_block.end + 1;
+            }
         } 
 
         // Получить список всех процедур из скрипта
