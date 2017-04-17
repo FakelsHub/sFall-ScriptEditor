@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Path = System.IO.Path;
@@ -15,6 +16,7 @@ namespace ScriptEditor
             public string desc;
             public string name;
             public int vars;
+            public string msglip;
 
             public Entry(int row, string line)
             {
@@ -31,17 +33,18 @@ namespace ScriptEditor
 
             public string GetMsgAsString()
             {
-                return ("{" + (row + 101) + "}{}{" + name + "}").PadRight(40) + "# " + script.PadRight(16) + "; " + desc;
-            }
-
-            public override string ToString()
-            {
-                return script;
+                return ("{" + (row + 101) + "}{" + msglip + "}{" + name + "}").PadRight(60) + "# " + script.PadRight(16) + "; " + desc;
             }
         }
 
-        private readonly int editingLine = -1;
-        private readonly int editingLineMsg = -1;
+        private struct cell
+        {
+            public int row;
+            public int col;
+        }
+
+        cell SelectLine = new cell();
+
         private readonly List<string> lines;
         private readonly List<string> linesMsg;
 
@@ -50,10 +53,17 @@ namespace ScriptEditor
         private readonly string headerPath;
         private bool cancel = false;
         private bool doAdd = false;
+        private int scriptNumb = -1;
+        private bool returnLine;
+
+        const string DESCMSG = "#\r\n#   This file was built using Sfall Script Editor.\r\n#";
+        const string SCRIPT_H = "SCRIPT_";
+
+        private Encoding enc = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
         private void AddRow(Entry e)
         {
-            dgvScripts.Rows.Add(e.row + 1, e, e.name, e.desc, e.vars);
+            dgvScripts.Rows.Add(e, e.row + 1, e.script, e.desc, e.vars, e.name);
         }
 
         private RegisterScript(string script, string lst, string msg, string header)
@@ -62,56 +72,39 @@ namespace ScriptEditor
             msgPath = msg;
             headerPath = header;
             InitializeComponent();
-            lines = new List<string>(File.ReadAllLines(lst));
-            linesMsg = new List<string>(File.ReadAllLines(msg));
+            dgvScripts.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
             char[] space = new char[] { ' ' };
+            lines = new List<string>(File.ReadAllLines(lst));
             if (script != null) {
-                Entry e = null;
-                for (int i = 0; i < lines.Count; i++) {
+                DefinetextBox.Text = SCRIPT_H + Path.GetFileNameWithoutExtension(script).ToUpper();
+                for (int i = 0; i < lines.Count; i++)
+                {
                     if (string.Compare(lines[i].Split(space, StringSplitOptions.RemoveEmptyEntries)[0], script, true) == 0) {
-                        editingLine = i;
-                        e = new Entry(i, lines[i]);
+                        scriptNumb = i;
                         break;
                     }
-                }
-                if (editingLine == -1) {
-                    editingLine = lines.Count;
+                }   // new reg script
+                if (scriptNumb == -1) {
+                    scriptNumb = lines.Count;
+                    lines.Add(script.PadRight(16) + ";".PadRight(48) + "# local_vars=0");
                     doAdd = true;
-                    lines.Add(script.PadRight(16) + "; [description] ".PadRight(48) + "# local_vars=0");
-                    e = new Entry(editingLine, lines[lines.Count - 1]);
+                    AllowCheckBox.Checked = Settings.allowDefine;
+                    Save_button.ImageIndex = 1;
                 }
-                for (int i = 0; i < linesMsg.Count; i++) {
-                    string[] line = linesMsg[i].Split('}');
-                    if (line.Length != 4)
-                        continue;
-                    line[0] = line[0].TrimStart(' ', '{');
-                    int lineno;
-                    if (!int.TryParse(line[0], out lineno))
-                        continue;
-                    if (lineno == editingLine + 101) {
-                        editingLineMsg = lineno;
-                        e.name = line[2].TrimStart(' ', '{');
-                        break;
-                    }
-                }
-                if (editingLineMsg == -1) {
-                    e.name = "";
-                    editingLineMsg = linesMsg.Count;
-                    linesMsg.Add(e.GetMsgAsString());
-                }
-                AddRow(e);
+                AllowCheckBox.Enabled = true;
+                DefinetextBox.Enabled = true;
             } else {
-                dgvScripts.RowHeadersVisible = true;
-                dgvScripts.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
-                //dgvScripts.AllowUserToDeleteRows=true;
-                //dgvScripts.AllowUserToAddRows=true;
-                //cScript.ReadOnly=false;
-                Entry[] entries = new Entry[lines.Count];
-                for (int i = 0; i < lines.Count; i++) {
-                    entries[i] = new Entry(i, lines[i]);
-                }
-                lines.Clear();
-                for (int i = 0; i < linesMsg.Count; i++) {
+                Addbutton.Enabled = true;
+                Delbutton.Enabled = true;
+            }
+            Entry[] entries = new Entry[lines.Count];
+            for (int i = 0; i < lines.Count; i++)
+                entries[i] = new Entry(i, lines[i]);
+            lines.Clear();
+            if (msgPath != null) {
+                linesMsg = new List<string>(File.ReadAllLines(msg, enc));
+                for (int i = 0; i < linesMsg.Count; i++)
+                {
                     string[] line = linesMsg[i].Split('}');
                     if (line.Length != 4)
                         continue;
@@ -120,23 +113,25 @@ namespace ScriptEditor
                     if (!int.TryParse(line[0], out lineno) || lineno > entries.Length + 101)
                         continue;
                     entries[lineno - 101].name = line[2].TrimStart(' ', '{');
+                    entries[lineno - 101].msglip = line[1].TrimStart(' ', '{');
                 }
                 linesMsg.Clear();
-                for (int i = 0; i < entries.Length; i++) {
-                    AddRow(entries[i]);
-                }
+            }
+            for (int i = 0; i < entries.Length; i++)
+            {
+                AddRow(entries[i]);
+            }
+            if (scriptNumb != -1) {
+                dgvScripts.FirstDisplayedScrollingRowIndex = (scriptNumb <= 5) ? scriptNumb : scriptNumb - 5;
+                dgvScripts.Rows[scriptNumb].Selected = true;
             }
             dgvScripts.CellValueChanged += dgvScripts_CellValueChanged;
         }
 
-        public static void EditRegistration(string script)
+        public static void Registration(string script)
         {
             if (Settings.outputDir == null) {
                 MessageBox.Show("No output path selected.", "Error");
-                return;
-            }
-            if (Settings.PathScriptsHFile == null) {
-                MessageBox.Show("The path to scripts.h has not been set.", "Error");
                 return;
             }
             string lstPath = Path.Combine(Settings.outputDir, "scripts.lst");
@@ -146,39 +141,69 @@ namespace ScriptEditor
             }
             string msgPath = Path.Combine(Settings.outputDir, "../text/english/game/scrname.msg");
             if (!File.Exists(msgPath)) {
-                MessageBox.Show("Could not find scrname.msg", "Error");
-                return;
+                if (Settings.showWarnings) MessageBox.Show("Could not find file scrname.msg", "Warning");
+                msgPath = null;
             }
-            (new RegisterScript(script, lstPath, msgPath, Settings.PathScriptsHFile)).ShowDialog();
+            string scriptH = null;
+            if (Settings.PathScriptsHFile == null) {
+                if (Settings.showWarnings) MessageBox.Show("The path to scripts.h has not been set.", "Warning");
+            } else {
+                scriptH = Settings.PathScriptsHFile + "\\SCRIPTS.H";
+                if (!File.Exists(scriptH)) scriptH = null;
+            } // Show form
+            (new RegisterScript(script, lstPath, msgPath, scriptH)).ShowDialog();
         }
 
         private void RegisterScript_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (cancel)
                 return;
-            if (editingLine == -1) {
-                for (int i = 0; i < dgvScripts.Rows.Count; i++) {
-                    Entry entry = (Entry)dgvScripts.Rows[i].Cells[1].Value;
-                    lines.Add(entry.GetAsString());
-                    linesMsg.Add(entry.GetMsgAsString());
-                }
-            } else {
-                Entry entry = (Entry)dgvScripts.Rows[0].Cells[1].Value;
-                lines[editingLine] = entry.GetAsString();
-                linesMsg[editingLineMsg] = entry.GetMsgAsString();
-                if (doAdd) {
-                    List<string> hlines = new List<string>(File.ReadAllLines(headerPath));
-                    for (int j = hlines.Count - 1; j >= 0; j++) {
-                        if (hlines[j].IndexOf('#') != -1 || j == 0) {
-                            hlines.Insert(j, ("#define SCRIPT_" + Path.GetFileNameWithoutExtension(entry.script).ToUpperInvariant()).PadRight(31) + " (" + (editingLine + 1) + ") // " + entry.script.PadRight(16) + "; " + entry.desc);
-                            break;
-                        }
-                    }
-                    File.WriteAllLines(headerPath, hlines.ToArray());
+            if (Save_button.ImageIndex > 0) {
+                if (MessageBox.Show("Save all changed to files?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes) {
+                    Save_button_Click(null, null);
                 }
             }
+        }
+
+        private void Save_button_Click(object sender, EventArgs e)
+        {
+            if (Save_button.ImageIndex == 0) 
+                return;
+            Entry[] entries = new Entry[dgvScripts.Rows.Count];
+            for (int i = 0; i < entries.Length; i++)
+            {
+                int index = (int)dgvScripts.Rows[i].Cells[1].Value;
+                entries[index - 1] = (Entry)dgvScripts.Rows[i].Cells[0].Value;
+            }
+            foreach (Entry entry in entries) 
+                lines.Add(entry.GetAsString());
             File.WriteAllLines(lstPath, lines.ToArray());
-            File.WriteAllLines(msgPath, linesMsg.ToArray());
+            lines.Clear();
+            if (msgPath != null) {
+                linesMsg.Add(DESCMSG);
+                foreach (Entry entry in entries) 
+                    linesMsg.Add(entry.GetMsgAsString());
+                File.WriteAllLines(msgPath, linesMsg.ToArray(), enc);
+                linesMsg.Clear();
+            }
+            Save_button.ImageIndex = 0;
+            if (AllowCheckBox.Checked && headerPath == null) {
+                MessageBox.Show("The definition was not added in header file.\nCould not find file scripts.h", "Script header error");
+                return;
+            }
+            if (doAdd && AllowCheckBox.Checked) {
+                Entry entry = entries[scriptNumb];
+                List<string> hlines = new List<string>(File.ReadAllLines(headerPath));
+                for (int j = hlines.Count - 1; j >= 0; j--)
+                {
+                    if (hlines[j].IndexOf('#') != -1 || j == 0) {
+                        hlines.Insert(j, ("#define " + DefinetextBox.Text.ToUpperInvariant()).PadRight(32) + ("(" + (entry.row + 1) + ")").PadRight(8) + "// " + entry.script.PadRight(16) + "; " + entry.desc);
+                        break;
+                    }
+                }
+                File.WriteAllLines(headerPath, hlines.ToArray());
+                doAdd = false;
+            }
         }
 
         private void RegisterScript_KeyDown(object sender, KeyEventArgs e)
@@ -192,25 +217,109 @@ namespace ScriptEditor
 
         private void dgvScripts_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1 || e.ColumnIndex == -1)
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || returnLine)
                 return;
             DataGridViewCell cell = dgvScripts.Rows[e.RowIndex].Cells[e.ColumnIndex];
-            Entry entry = (Entry)dgvScripts.Rows[e.RowIndex].Cells[1].Value;
+            Entry entry = (Entry)dgvScripts.Rows[e.RowIndex].Cells[0].Value;
             string val = (string)cell.Value;
+            if (val == null) val = "";
             switch (e.ColumnIndex) {
                 case 2:
-                    if (val.IndexOfAny(new char[] { '{', '}' }) == -1)
-                        entry.name = val;
+                    if (Path.GetFileNameWithoutExtension(val).Length > 8) {
+                        MessageBox.Show("Script file names must be 8 characters.", "Name Error");
+                        returnLine = true;
+                        cell.Value = entry.script;
+                        returnLine = false;
+                        break;
+                    }
+                    entry.script = val;
+                    Save_button.ImageIndex = 1;
                     break;
                 case 3:
                     if (val.Length > 64 - 20)
                         val = val.Remove(64 - 20);
                     entry.desc = val;
+                    Save_button.ImageIndex = 1;
                     break;
                 case 4:
                     int.TryParse(val, out entry.vars);
+                    Save_button.ImageIndex = 1;
+                    break;
+                case 5:
+                    if (val.IndexOfAny(new char[] { '{', '}' }) == -1)
+                        entry.name = val;
+                    Save_button.ImageIndex = 1;
                     break;
             }
         }
+
+        private cell Finds(int rowStart, int colStart, int rev = 1)
+        {
+            cell cell = new cell();
+            string find_str = FindtextBox.Text.Trim();
+            if (find_str.Length == 0) return cell; 
+            if (rev == -1 && rowStart == 0) rowStart = dgvScripts.RowCount - 1;
+            for (int row = rowStart; row < dgvScripts.RowCount; row += rev)
+            {
+                if (row < 0) break; 
+                for (int col = colStart; col < dgvScripts.ColumnCount; col++)
+                {
+                    if (dgvScripts.Rows[row].Cells[col].Value == null) 
+                        continue;
+                    string value = dgvScripts.Rows[row].Cells[col].Value.ToString();
+                    if (value.IndexOf(find_str, 0, StringComparison.OrdinalIgnoreCase) != -1) {
+                        cell.row = row;
+                        cell.col = col;
+                        break;
+                    }
+                }
+                if (cell.col != 0) break;
+                colStart = 1;
+            }
+            if (cell.col != 0) {
+                dgvScripts.FirstDisplayedScrollingRowIndex = (cell.row <= 5) ? cell.row : cell.row - 5;
+                dgvScripts.Rows[cell.row].Cells[cell.col].Selected = true;
+            }
+            return cell;
+        }
+
+        private void Addbutton_Click(object sender, EventArgs e)
+        {
+            dgvScripts.Sort(dgvScripts.Columns[1], System.ComponentModel.ListSortDirection.Ascending);
+            Entry[] entries = new Entry[1];
+            entries[0] = new Entry(dgvScripts.RowCount, "none.int".PadRight(80));
+            AddRow(entries[0]);
+            dgvScripts.FirstDisplayedScrollingRowIndex = dgvScripts.RowCount - 1;
+            Save_button.ImageIndex = 1;
+        }
+
+        private void Delbutton_Click(object sender, EventArgs e)
+        {
+            dgvScripts.Sort(dgvScripts.Columns[1], System.ComponentModel.ListSortDirection.Ascending);
+            dgvScripts.Rows.RemoveAt(dgvScripts.RowCount - 1);
+            dgvScripts.FirstDisplayedScrollingRowIndex = dgvScripts.RowCount - 1;
+            Save_button.ImageIndex = 1;
+        }
+
+        private void Downbutton_Click(object sender, EventArgs e)
+        {
+            cell curfind = Finds(SelectLine.row, SelectLine.col + 1);
+            if (curfind.col == 0) MessageBox.Show("Nothing found.");
+            else SelectLine = curfind;
+        }
+
+        private void Upbutton_Click(object sender, EventArgs e)
+        {
+            cell curfind = Finds(SelectLine.row, SelectLine.col + 1, -1);
+            if (curfind.col == 0) MessageBox.Show("Nothing found.");
+            else SelectLine = curfind;
+        }
+
+        private void dgvScripts_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            SelectLine.col = e.ColumnIndex;
+            SelectLine.row = e.RowIndex;
+        }
+
     }
 }

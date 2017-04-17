@@ -45,6 +45,10 @@ namespace ScriptEditor
         {
             InitializeComponent();
             Settings.SetupWindowPosition(SavedWindows.Main, this);
+            SearchTextComboBox.Items.AddRange(File.ReadAllLines(Settings.SearchHistoryPath));
+            SearchToolStrip.Visible = false;
+            defineToolStripMenuItem.Checked = Settings.allowDefine;
+            if (Settings.encoding == 1) EncodingDOSmenuItem.Checked = true;
             // highlighting
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(Settings.ResourcesFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
@@ -67,6 +71,7 @@ namespace ScriptEditor
             // Parser
             parserLabel = new ToolStripLabel((Settings.enableParser) ? "Parser: No file" : parseoff);
             parserLabel.Alignment = ToolStripItemAlignment.Right;
+            parserLabel.TextChanged += delegate(object sender, EventArgs e) { parserLabel.ForeColor = Color.Black; };
             ToolStrip.Items.Add(parserLabel);
             tabControl1.tabsSwapped += delegate(object sender, TabsSwappedEventArgs e) {
                 TabInfo tmp = tabs[e.aIndex];
@@ -89,7 +94,7 @@ namespace ScriptEditor
             HandlerProcedure.CreateProcHandlers(ProcMnContext, this);
             ProgramInfo.LoadOpcodes();
         }
-        
+
         private void CreateTabVarTree()
         {
             tabControl3.TabPages.Insert(1, VarTab);
@@ -147,6 +152,9 @@ namespace ScriptEditor
             if (sf != null) {
                 sf.Close();
             }
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(Settings.SearchHistoryPath);
+            foreach (var item in SearchTextComboBox.Items) sw.WriteLine(item.ToString());
+            sw.Close();
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
             Settings.SaveWindowPosition(SavedWindows.Main, this);
             Settings.Save();
@@ -241,14 +249,15 @@ namespace ScriptEditor
             te.ConvertTabsToSpaces = Settings.tabsToSpaces;
             te.TabIndent = Settings.tabSize;
             te.Document.TextEditorProperties.IndentationSize = Settings.tabSize;
+            if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0) {
+                te.SetHighlighting("msg");
+                if (Settings.encoding == 1) te.Document.TextEditorProperties.Encoding = System.Text.Encoding.GetEncoding("cp866");
+            } else
+                te.SetHighlighting("ssl"); // Activate the highlighting, use the name from the SyntaxDefinition node.
             if (type == OpenType.File)
                 te.LoadFile(file, false, true);
             else if (type == OpenType.Text)
                 te.Text = file;
-            if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0)
-                te.SetHighlighting("msg");
-            else
-                te.SetHighlighting("ssl"); // Activate the highlighting, use the name from the SyntaxDefinition node.
             te.TextChanged += textChanged;
             te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object a1, MouseEventArgs a2) {
                 if (a2.Button == MouseButtons.Left)
@@ -326,6 +335,7 @@ namespace ScriptEditor
             splitDocumentToolStripMenuItem.Enabled = true;
             openAllIncludesScriptToolStripMenuItem.Enabled = true;
             GotoProc_StripButton.Enabled = true;
+            Search_toolStripButton.Enabled = true;
         }
 
         // Tooltip for opcodes and macros
@@ -488,9 +498,13 @@ namespace ScriptEditor
                 maximize_log();
                 if (showMessages && Settings.warnOnFailedCompile) {
                     MessageBox.Show("Script " + tab.filename + " failed to compile.\r\nSee the output window for details", "Compile Script Error");
-                } else parserLabel.Text = "Failed to compiled: " + currentTab.filename;
+                } else {
+                    parserLabel.Text = "Failed to compiled: " + currentTab.filename;
+                    parserLabel.ForeColor = Color.Firebrick;
+                }
             } else {
                 parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString();
+                parserLabel.ForeColor = Color.DarkGreen;
             }
             return success;
         }
@@ -896,47 +910,39 @@ namespace ScriptEditor
             Back_toolStripButton.Enabled = false;
             Forward_toolStripButton.Enabled = false;
             GotoProc_StripButton.Enabled = false;
+            Search_toolStripButton.Enabled = false;
+            if (SearchToolStrip.Visible) Search_Panel(null, null);
         }
 
 # region SearchFunction
         private bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)
         {
-            if (start >= text.Length)
-                start = 0;
+            if (start >= text.Length) start = 0;
             mstart = 0;
             mlen = str.Length;
-            if (regex != null)
-            {
+            if (regex != null) {
                 Match m = regex.Match(text, start);
-                if (m.Success)
-                {
+                if (m.Success) {
                     mstart = m.Index;
                     mlen = m.Length;
                     return true;
                 }
-                if (!restart)
-                    return false;
+                if (!restart) return false;
                 m = regex.Match(text);
-                if (m.Success)
-                {
+                if (m.Success) {
                     mstart = m.Index;
                     mlen = m.Length;
                     return true;
                 }
-            }
-            else
-            {
+            } else {
                 int i = text.IndexOf(str, start, StringComparison.OrdinalIgnoreCase);
-                if (i != -1)
-                {
+                if (i != -1) {
                     mstart = i;
                     return true;
                 }
-                if (!restart)
-                    return false;
+                if (!restart) return false;
                 i = text.IndexOf(str, StringComparison.OrdinalIgnoreCase);
-                if (i != -1)
-                {
+                if (i != -1) {
                     mstart = i;
                     return true;
                 }
@@ -946,13 +952,10 @@ namespace ScriptEditor
 
         private bool Search(string text, string str, Regex regex)
         {
-            if (regex != null)
-            {
+            if (regex != null) {
                 if (regex.IsMatch(text))
                     return true;
-            }
-            else
-            {
+            } else {
                 if (text.IndexOf(str, StringComparison.OrdinalIgnoreCase) != -1)
                     return true;
             }
@@ -962,18 +965,28 @@ namespace ScriptEditor
         private bool SearchAndScroll(TabInfo tab, Regex regex)
         {
             int start, len;
-            if (Search(tab.textEditor.Text, sf.tbSearch.Text, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, out start, out len))
-            {
-                TextLocation locstart = tab.textEditor.Document.OffsetToPosition(start);
-                TextLocation locend = tab.textEditor.Document.OffsetToPosition(start + len);
-                tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
-                tab.textEditor.ActiveTextAreaControl.Caret.Position = locstart;
-                tab.textEditor.ActiveTextAreaControl.ScrollToCaret();
+            if (Search(tab.textEditor.Text, sf.tbSearch.Text, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, out start, out len)) {
+                FindSelected(tab, start, len);
                 return true;
             }
             return false;
         }
 
+        private void FindSelected(TabInfo tab, int start, int len, string replace = null)
+        {
+            PosChangeType = PositionType.NoSave;
+            TextLocation locstart = tab.textEditor.Document.OffsetToPosition(start);
+            TextLocation locend = tab.textEditor.Document.OffsetToPosition(start + len);
+            tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
+            if (replace != null) {
+                tab.textEditor.ActiveTextAreaControl.Document.Replace(start, len, replace);
+                locend = tab.textEditor.Document.OffsetToPosition(start + replace.Length);
+                tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
+            }
+            tab.textEditor.ActiveTextAreaControl.Caret.Position = locstart;
+            tab.textEditor.ActiveTextAreaControl.CenterViewOn(locstart.Line, 0);
+        }
+        
         private void SearchForAll(TabInfo tab, Regex regex, DataGridView dgv, List<int> offsets, List<int> lengths)
         {
             int start, len, line, lastline = -1;
@@ -982,35 +995,31 @@ namespace ScriptEditor
             {
                 offset = start + 1;
                 line = tab.textEditor.Document.OffsetToPosition(start).Line;
-                if (offsets != null)
-                {
+                if (offsets != null) {
                     offsets.Add(start);
                     lengths.Add(len);
                 }
-                if (line != lastline)
-                {
+                if (line != lastline) {
                     lastline = line;
                     var message = TextUtilities.GetLineAsString(tab.textEditor.Document, line);
                     Error error = new Error(message, tab.filepath, line + 1);
                     dgv.Rows.Add(tab.filename, error.line.ToString(), error);
+                    maximize_log();
                 }
             }
         }
+
         private void SearchForAll(string[] text, string file, Regex regex, DataGridView dgv)
         {
             bool matched;
             for (int i = 0; i < text.Length; i++)
             {
-                if (regex != null)
-                {
+                if (regex != null) {
                     matched = regex.IsMatch(text[i]);
-                }
-                else
-                {
+                } else {
                     matched = text[i].IndexOf(sf.tbSearch.Text, StringComparison.OrdinalIgnoreCase) != -1;
                 }
-                if (matched)
-                {
+                if (matched) {
                     Error error = new Error(text[i], file, i + 1);
                     dgv.Rows.Add(Path.GetFileName(file), (i + 1).ToString(), error);
                 }
@@ -1137,6 +1146,19 @@ namespace ScriptEditor
                 tabControl2.SelectTab(tp);
                 return true;
             }
+        }
+
+        private int SearchPanel(string text, string find, int start, bool icase, bool back = false)
+        {
+            int z = -1;
+            if (!icase) {
+                if (back) z = text.LastIndexOf(find, start, StringComparison.OrdinalIgnoreCase); 
+                else z = text.IndexOf(find, start, StringComparison.OrdinalIgnoreCase);
+            } else {
+                if (back) z = text.LastIndexOf(find, start);
+                else z= text.IndexOf(find, start);
+            }
+            return z; 
         }
 #endregion
 
@@ -1465,7 +1487,12 @@ namespace ScriptEditor
                 MessageBox.Show("You cannot register an unsaved script.", "Error");
                 return;
             }
-            string fName = Path.ChangeExtension(currentTab.filename, "int");
+            string fName = Path.GetExtension(currentTab.filename).ToLower();
+            if (fName != ".ssl" && fName != ".int") {
+                MessageBox.Show("You cannot register this file.", "Error");
+                return;
+            }
+            fName = Path.ChangeExtension(currentTab.filename, "int");
             if (fName.Length > 12) {
                 MessageBox.Show("Script file names must be 8 characters or under to be registered.", "Error");
                 return;
@@ -1481,7 +1508,7 @@ namespace ScriptEditor
                 MessageBox.Show("Cannot register a script name that contains a space.", "Error");
                 return;
             }
-            RegisterScript.EditRegistration(fName);
+            RegisterScript.Registration(fName);
         }
 #endregion
 
@@ -1555,6 +1582,54 @@ namespace ScriptEditor
                 currentTab.textEditor.Document.Replace(selected.Offset, selected.Length, sf.tbReplace.Text);
             }
         }
+
+        // Search for quick panel
+        private void FindForwardButton_Click(object sender, EventArgs e)
+        {
+            string find = SearchTextComboBox.Text.Trim();
+            int z = SearchPanel(currentTab.textEditor.Text, find, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, CaseButton.Checked);
+            if (z != -1) FindSelected(currentTab, z, find.Length);
+            addSearchTextComboBox(find);
+        }
+
+        private void FindBackButton_Click(object sender, EventArgs e)
+        {
+            string find = SearchTextComboBox.Text.Trim();
+            int offset = currentTab.textEditor.ActiveTextAreaControl.Caret.Offset;
+            string text = currentTab.textEditor.Text.Remove(offset);
+            int z = SearchPanel(text, find, offset - 1, CaseButton.Checked, true);
+            if (z != -1) FindSelected(currentTab, z, find.Length);
+            addSearchTextComboBox(find);
+        }
+
+        private void ReplaceButton_Click(object sender, EventArgs e)
+        {
+            string replace = ReplaceTextBox.Text.Trim();
+            string find = SearchTextComboBox.Text.Trim();
+            int z = SearchPanel(currentTab.textEditor.Text, find, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset, CaseButton.Checked);
+            if (z != -1) FindSelected(currentTab, z, find.Length, replace);
+            addSearchTextComboBox(find);
+        }
+
+        private void ReplaceAllButton_Click(object sender, EventArgs e)
+        {
+            string replace = ReplaceTextBox.Text.Trim();
+            string find = SearchTextComboBox.Text.Trim();
+            int z, offset = 0;
+            do {
+                z = SearchPanel(currentTab.textEditor.Text, find, offset, CaseButton.Checked);
+                if (z != -1) currentTab.textEditor.ActiveTextAreaControl.Document.Replace(z, find.Length, replace);
+                offset = z + 1;
+            } while (z != -1);
+            addSearchTextComboBox(find);
+        }
+
+        private void SendtoolStripButton_Click(object sender, EventArgs e)
+        {
+            string word = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
+            if (word == string.Empty) word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset);
+            if (word != string.Empty) SearchTextComboBox.Text = word;
+        }
 #endregion
 
         private void dgvErrors_DoubleClick(object sender, EventArgs e)
@@ -1600,7 +1675,7 @@ namespace ScriptEditor
 
         private void editRegisteredScriptsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RegisterScript.EditRegistration(null);
+            RegisterScript.Registration(null);
         }
 
         private void associateMsgToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1962,6 +2037,12 @@ namespace ScriptEditor
             }
         }
 
+        private void Search_Panel(object sender, EventArgs e)
+        {
+            SearchToolStrip.Visible = !SearchToolStrip.Visible;
+            TabClose_button.Top += (SearchToolStrip.Visible) ? 25 : -25;
+        }
+
 #region Function Back/Forward
         private enum PositionType { AddPos, NoSave, SaveChange, Disabled }
         // AddPos - ѕри перемещении добавл€ть новую позицию в историю.
@@ -2299,6 +2380,31 @@ namespace ScriptEditor
                 ProcTree_MouseLeave(null, null);
             }
         }
-    }
 #endregion
+
+        private void EncodingMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.encoding = 0;
+            if (EncodingDOSmenuItem.Checked) Settings.encoding = 1;
+        }
+
+        private void defineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.allowDefine = defineToolStripMenuItem.Checked;
+        }
+
+        private void addSearchTextComboBox(string world)
+        {
+            if (world.Length == 0) return;
+            bool addSearchText = true;
+            foreach (var item in SearchTextComboBox.Items)
+            {
+                if (world == item.ToString()){
+                    addSearchText = false;
+                    break;
+                }
+            }
+            if (addSearchText) SearchTextComboBox.Items.Add(world);
+        }
+    }
 }

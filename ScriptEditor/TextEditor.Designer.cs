@@ -33,6 +33,18 @@ namespace ScriptEditor {
             this.TabClose_button = new System.Windows.Forms.Button();
             this.tabControl1 = new DraggableTabControl();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.SearchToolStrip = new System.Windows.Forms.ToolStrip();
+            this.CaseButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator23 = new System.Windows.Forms.ToolStripSeparator();
+            this.SendtoolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.SearchTextComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.FindBackButton = new System.Windows.Forms.ToolStripButton();
+            this.FindForwardButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
+            this.ReplaceButton = new System.Windows.Forms.ToolStripButton();
+            this.ReplaceTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.ReplaceAllButton = new System.Windows.Forms.ToolStripButton();
+            this.SearchHideStripButton = new System.Windows.Forms.ToolStripButton();
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -84,7 +96,8 @@ namespace ScriptEditor {
             this.Undo_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Redo_ToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            this.Searh_toolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.Search_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.Back_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Forward_toolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -93,6 +106,8 @@ namespace ScriptEditor {
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.Script_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.editRegisteredScriptsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
+            this.defineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Headers_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.openAllIncludesScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openHeaderFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -100,6 +115,11 @@ namespace ScriptEditor {
             this.MSG_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
             this.previewDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.msgFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
+            this.EncodingDOSmenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.encodingLKrusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
+            this.msgOpenEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.qCompile_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.Compile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +168,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.SearchToolStrip.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -228,6 +249,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel1.Controls.Add(this.Split_button);
             this.splitContainer1.Panel1.Controls.Add(this.TabClose_button);
             this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
+            this.splitContainer1.Panel1.Controls.Add(this.SearchToolStrip);
             this.splitContainer1.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer1.Panel1MinSize = 500;
             // 
@@ -246,12 +268,12 @@ namespace ScriptEditor {
             this.Split_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Split_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Split_button.ForeColor = System.Drawing.Color.DarkRed;
+            this.Split_button.Image = ((System.Drawing.Image)(resources.GetObject("Split_button.Image")));
             this.Split_button.Location = new System.Drawing.Point(681, 530);
             this.Split_button.Name = "Split_button";
             this.Split_button.Size = new System.Drawing.Size(16, 16);
             this.Split_button.TabIndex = 2;
-            this.Split_button.Text = "^";
-            this.toolTipAC.SetToolTip(this.Split_button, "Split document viewer");
+            this.toolTipAC.SetToolTip(this.Split_button, "Split document");
             this.Split_button.UseVisualStyleBackColor = true;
             this.Split_button.Visible = false;
             this.Split_button.Click += new System.EventHandler(this.SplitDoc_Click);
@@ -278,11 +300,11 @@ namespace ScriptEditor {
             this.tabControl1.AllowDrop = true;
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.ImageList = this.imageList1;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Location = new System.Drawing.Point(0, 25);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(701, 550);
+            this.tabControl1.Size = new System.Drawing.Size(701, 525);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
@@ -295,6 +317,123 @@ namespace ScriptEditor {
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "save.png");
             this.imageList1.Images.SetKeyName(1, "nosave.png");
+            // 
+            // SearchToolStrip
+            // 
+            this.SearchToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CaseButton,
+            this.toolStripSeparator23,
+            this.SendtoolStripButton,
+            this.SearchTextComboBox,
+            this.FindBackButton,
+            this.FindForwardButton,
+            this.toolStripSeparator22,
+            this.ReplaceButton,
+            this.ReplaceTextBox,
+            this.ReplaceAllButton,
+            this.SearchHideStripButton});
+            this.SearchToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.SearchToolStrip.Name = "SearchToolStrip";
+            this.SearchToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.SearchToolStrip.Size = new System.Drawing.Size(701, 25);
+            this.SearchToolStrip.TabIndex = 3;
+            // 
+            // CaseButton
+            // 
+            this.CaseButton.CheckOnClick = true;
+            this.CaseButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.CaseButton.Image = ((System.Drawing.Image)(resources.GetObject("CaseButton.Image")));
+            this.CaseButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.CaseButton.Name = "CaseButton";
+            this.CaseButton.Size = new System.Drawing.Size(23, 22);
+            this.CaseButton.Text = "Match case";
+            // 
+            // toolStripSeparator23
+            // 
+            this.toolStripSeparator23.Name = "toolStripSeparator23";
+            this.toolStripSeparator23.Size = new System.Drawing.Size(6, 25);
+            // 
+            // SendtoolStripButton
+            // 
+            this.SendtoolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SendtoolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("SendtoolStripButton.Image")));
+            this.SendtoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SendtoolStripButton.Name = "SendtoolStripButton";
+            this.SendtoolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.SendtoolStripButton.ToolTipText = "Send word under cursor.";
+            this.SendtoolStripButton.Click += new System.EventHandler(this.SendtoolStripButton_Click);
+            // 
+            // SearchTextComboBox
+            // 
+            this.SearchTextComboBox.BackColor = System.Drawing.SystemColors.Info;
+            this.SearchTextComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
+            this.SearchTextComboBox.MaxDropDownItems = 16;
+            this.SearchTextComboBox.Name = "SearchTextComboBox";
+            this.SearchTextComboBox.Size = new System.Drawing.Size(280, 25);
+            this.SearchTextComboBox.ToolTipText = "Search text";
+            // 
+            // FindBackButton
+            // 
+            this.FindBackButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FindBackButton.Image = ((System.Drawing.Image)(resources.GetObject("FindBackButton.Image")));
+            this.FindBackButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FindBackButton.Name = "FindBackButton";
+            this.FindBackButton.Size = new System.Drawing.Size(23, 22);
+            this.FindBackButton.Text = "Find Back";
+            this.FindBackButton.Click += new System.EventHandler(this.FindBackButton_Click);
+            // 
+            // FindForwardButton
+            // 
+            this.FindForwardButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.FindForwardButton.Image = ((System.Drawing.Image)(resources.GetObject("FindForwardButton.Image")));
+            this.FindForwardButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FindForwardButton.Name = "FindForwardButton";
+            this.FindForwardButton.Size = new System.Drawing.Size(23, 22);
+            this.FindForwardButton.Text = "Find Forward";
+            this.FindForwardButton.Click += new System.EventHandler(this.FindForwardButton_Click);
+            // 
+            // toolStripSeparator22
+            // 
+            this.toolStripSeparator22.Name = "toolStripSeparator22";
+            this.toolStripSeparator22.Size = new System.Drawing.Size(6, 25);
+            // 
+            // ReplaceButton
+            // 
+            this.ReplaceButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ReplaceButton.Image = ((System.Drawing.Image)(resources.GetObject("ReplaceButton.Image")));
+            this.ReplaceButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.ReplaceButton.Name = "ReplaceButton";
+            this.ReplaceButton.Size = new System.Drawing.Size(23, 22);
+            this.ReplaceButton.Text = "Replace";
+            this.ReplaceButton.Click += new System.EventHandler(this.ReplaceButton_Click);
+            // 
+            // ReplaceTextBox
+            // 
+            this.ReplaceTextBox.BackColor = System.Drawing.SystemColors.Info;
+            this.ReplaceTextBox.Name = "ReplaceTextBox";
+            this.ReplaceTextBox.Size = new System.Drawing.Size(250, 25);
+            this.ReplaceTextBox.ToolTipText = "Replace text";
+            // 
+            // ReplaceAllButton
+            // 
+            this.ReplaceAllButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ReplaceAllButton.Image = ((System.Drawing.Image)(resources.GetObject("ReplaceAllButton.Image")));
+            this.ReplaceAllButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ReplaceAllButton.Name = "ReplaceAllButton";
+            this.ReplaceAllButton.Size = new System.Drawing.Size(23, 20);
+            this.ReplaceAllButton.Text = "Replace All";
+            this.ReplaceAllButton.Click += new System.EventHandler(this.ReplaceAllButton_Click);
+            // 
+            // SearchHideStripButton
+            // 
+            this.SearchHideStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SearchHideStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.SearchHideStripButton.Image = ((System.Drawing.Image)(resources.GetObject("SearchHideStripButton.Image")));
+            this.SearchHideStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SearchHideStripButton.Name = "SearchHideStripButton";
+            this.SearchHideStripButton.Size = new System.Drawing.Size(23, 20);
+            this.SearchHideStripButton.Text = "Hide panel";
+            this.SearchHideStripButton.Click += new System.EventHandler(this.Search_Panel);
             // 
             // minimizelog_button
             // 
@@ -597,7 +736,7 @@ namespace ScriptEditor {
             this.Undo_toolStripButton,
             this.Redo_ToolStripButton,
             this.toolStripSeparator11,
-            this.Searh_toolStripButton,
+            this.Search_toolStripButton,
             this.toolStripSeparator12,
             this.Back_toolStripButton,
             this.Forward_toolStripButton,
@@ -815,15 +954,28 @@ namespace ScriptEditor {
             this.toolStripSeparator11.Name = "toolStripSeparator11";
             this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
             // 
-            // Searh_toolStripButton
+            // Search_toolStripButton
             // 
-            this.Searh_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Searh_toolStripButton.Image")));
-            this.Searh_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Searh_toolStripButton.Name = "Searh_toolStripButton";
-            this.Searh_toolStripButton.Size = new System.Drawing.Size(47, 22);
-            this.Searh_toolStripButton.Text = "Find";
-            this.Searh_toolStripButton.ToolTipText = "Search & Replace";
-            this.Searh_toolStripButton.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            this.Search_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.searchToolStripMenuItem});
+            this.Search_toolStripButton.Enabled = false;
+            this.Search_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("Search_toolStripButton.Image")));
+            this.Search_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Search_toolStripButton.Name = "Search_toolStripButton";
+            this.Search_toolStripButton.Size = new System.Drawing.Size(59, 22);
+            this.Search_toolStripButton.Text = "Find";
+            this.Search_toolStripButton.ToolTipText = "Search & Replace";
+            this.Search_toolStripButton.ButtonClick += new System.EventHandler(this.Search_Panel);
+            // 
+            // searchToolStripMenuItem
+            // 
+            this.searchToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("searchToolStripMenuItem.Image")));
+            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+            this.searchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.searchToolStripMenuItem.Text = "Advanced Search";
+            this.searchToolStripMenuItem.ToolTipText = "Advanced Search and Replace.";
+            this.searchToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
             // toolStripSeparator12
             // 
@@ -885,12 +1037,15 @@ namespace ScriptEditor {
             // 
             this.Script_toolStripSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.Script_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editRegisteredScriptsToolStripMenuItem});
+            this.editRegisteredScriptsToolStripMenuItem,
+            this.toolStripSeparator26,
+            this.defineToolStripMenuItem});
             this.Script_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Script_toolStripSplitButton.Image")));
             this.Script_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Script_toolStripSplitButton.Name = "Script_toolStripSplitButton";
             this.Script_toolStripSplitButton.Size = new System.Drawing.Size(32, 22);
             this.Script_toolStripSplitButton.Text = "Register Script";
+            this.Script_toolStripSplitButton.ToolTipText = "Register this selected script.";
             this.Script_toolStripSplitButton.ButtonClick += new System.EventHandler(this.registerScriptToolStripMenuItem_Click);
             // 
             // editRegisteredScriptsToolStripMenuItem
@@ -898,9 +1053,24 @@ namespace ScriptEditor {
             this.editRegisteredScriptsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("editRegisteredScriptsToolStripMenuItem.Image")));
             this.editRegisteredScriptsToolStripMenuItem.Name = "editRegisteredScriptsToolStripMenuItem";
             this.editRegisteredScriptsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-            this.editRegisteredScriptsToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.editRegisteredScriptsToolStripMenuItem.Text = "Edit registered Scripts";
+            this.editRegisteredScriptsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.editRegisteredScriptsToolStripMenuItem.Text = "Scripts List Editor";
+            this.editRegisteredScriptsToolStripMenuItem.ToolTipText = "Open script registered editor.";
             this.editRegisteredScriptsToolStripMenuItem.Click += new System.EventHandler(this.editRegisteredScriptsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator26
+            // 
+            this.toolStripSeparator26.Name = "toolStripSeparator26";
+            this.toolStripSeparator26.Size = new System.Drawing.Size(183, 6);
+            // 
+            // defineToolStripMenuItem
+            // 
+            this.defineToolStripMenuItem.CheckOnClick = true;
+            this.defineToolStripMenuItem.Name = "defineToolStripMenuItem";
+            this.defineToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.defineToolStripMenuItem.Text = "Define to Scripts.h";
+            this.defineToolStripMenuItem.ToolTipText = "Also register definitions for script in the file \"Scripts.h\".";
+            this.defineToolStripMenuItem.Click += new System.EventHandler(this.defineToolStripMenuItem_Click);
             // 
             // Headers_toolStripSplitButton
             // 
@@ -946,7 +1116,12 @@ namespace ScriptEditor {
             // 
             this.MSG_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.previewDialogToolStripMenuItem,
-            this.msgFileEditorToolStripMenuItem});
+            this.msgFileEditorToolStripMenuItem,
+            this.toolStripSeparator24,
+            this.EncodingDOSmenuItem,
+            this.encodingLKrusToolStripMenuItem,
+            this.toolStripSeparator25,
+            this.msgOpenEditorToolStripMenuItem});
             this.MSG_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("MSG_toolStripButton.Image")));
             this.MSG_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MSG_toolStripButton.Name = "MSG_toolStripButton";
@@ -959,15 +1134,46 @@ namespace ScriptEditor {
             // 
             this.previewDialogToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("previewDialogToolStripMenuItem.Image")));
             this.previewDialogToolStripMenuItem.Name = "previewDialogToolStripMenuItem";
-            this.previewDialogToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.previewDialogToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.previewDialogToolStripMenuItem.Text = "Preview Dialog";
             // 
             // msgFileEditorToolStripMenuItem
             // 
             this.msgFileEditorToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("msgFileEditorToolStripMenuItem.Image")));
             this.msgFileEditorToolStripMenuItem.Name = "msgFileEditorToolStripMenuItem";
-            this.msgFileEditorToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.msgFileEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.msgFileEditorToolStripMenuItem.Text = "Msg file editor";
+            // 
+            // toolStripSeparator24
+            // 
+            this.toolStripSeparator24.Name = "toolStripSeparator24";
+            this.toolStripSeparator24.Size = new System.Drawing.Size(174, 6);
+            // 
+            // EncodingDOSmenuItem
+            // 
+            this.EncodingDOSmenuItem.CheckOnClick = true;
+            this.EncodingDOSmenuItem.Name = "EncodingDOSmenuItem";
+            this.EncodingDOSmenuItem.Size = new System.Drawing.Size(177, 22);
+            this.EncodingDOSmenuItem.Text = "Encoding: DOS";
+            this.EncodingDOSmenuItem.Click += new System.EventHandler(this.EncodingMenuItem_Click);
+            // 
+            // encodingLKrusToolStripMenuItem
+            // 
+            this.encodingLKrusToolStripMenuItem.Enabled = false;
+            this.encodingLKrusToolStripMenuItem.Name = "encodingLKrusToolStripMenuItem";
+            this.encodingLKrusToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.encodingLKrusToolStripMenuItem.Text = "Encoding: LK (Ru)";
+            // 
+            // toolStripSeparator25
+            // 
+            this.toolStripSeparator25.Name = "toolStripSeparator25";
+            this.toolStripSeparator25.Size = new System.Drawing.Size(174, 6);
+            // 
+            // msgOpenEditorToolStripMenuItem
+            // 
+            this.msgOpenEditorToolStripMenuItem.Name = "msgOpenEditorToolStripMenuItem";
+            this.msgOpenEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.msgOpenEditorToolStripMenuItem.Text = "Auto open in editor";
             // 
             // toolStripSeparator9
             // 
@@ -1324,8 +1530,11 @@ namespace ScriptEditor {
             this.splitContainer2.Panel2.PerformLayout();
             this.splitContainer2.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
+            this.SearchToolStrip.ResumeLayout(false);
+            this.SearchToolStrip.PerformLayout();
             this.tabControl2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -1399,7 +1608,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem SaveAll_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
-        private System.Windows.Forms.ToolStripButton Searh_toolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripButton Back_toolStripButton;
         private System.Windows.Forms.ToolStripButton Forward_toolStripButton;
@@ -1465,5 +1673,26 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSplitButton MSG_toolStripButton;
         private System.Windows.Forms.ToolStripMenuItem previewDialogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem msgFileEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip SearchToolStrip;
+        private System.Windows.Forms.ToolStripButton CaseButton;
+        private System.Windows.Forms.ToolStripButton FindForwardButton;
+        private System.Windows.Forms.ToolStripButton FindBackButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
+        private System.Windows.Forms.ToolStripButton ReplaceButton;
+        private System.Windows.Forms.ToolStripTextBox ReplaceTextBox;
+        private System.Windows.Forms.ToolStripButton ReplaceAllButton;
+        private System.Windows.Forms.ToolStripSplitButton Search_toolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton SearchHideStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
+        private System.Windows.Forms.ToolStripComboBox SearchTextComboBox;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
+        private System.Windows.Forms.ToolStripMenuItem EncodingDOSmenuItem;
+        private System.Windows.Forms.ToolStripMenuItem encodingLKrusToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
+        private System.Windows.Forms.ToolStripMenuItem msgOpenEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
+        private System.Windows.Forms.ToolStripMenuItem defineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton SendtoolStripButton;
     }
 }

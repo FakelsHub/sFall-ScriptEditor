@@ -16,6 +16,7 @@ namespace ScriptEditor
 
         private static readonly string SettingsPath = Path.Combine(SettingsFolder, "settings.dat");
         private static readonly string PreprocessPath = Path.Combine(SettingsFolder, "preprocess.ssl");
+        public static readonly string SearchHistoryPath = Path.Combine(SettingsFolder, "SearchHistory.ini");
 
         const int MAX_RECENT = 30;
 
@@ -43,6 +44,8 @@ namespace ScriptEditor
         public static bool showLog = true;
         public static byte hintsLang = 0;
         public static byte highlight = 0;
+        public static byte encoding = 0; // 0 = DEFAULT, 1 = DOS(cp866)
+        public static bool allowDefine = true;
 
         public static void SetupWindowPosition(SavedWindows window, System.Windows.Forms.Form f)
         {
@@ -93,10 +96,10 @@ namespace ScriptEditor
         private static void LoadInternal(BinaryReader br)
         {
             try {
-                byte version = br.ReadByte();     // not used
+                allowDefine = br.ReadBoolean();
                 hintsLang = br.ReadByte();
                 highlight = br.ReadByte();
-                byte reserved = br.ReadByte();    // reserved
+                encoding = br.ReadByte();
                 optimize = br.ReadByte();
                 showWarnings = br.ReadBoolean();
                 showDebug = br.ReadBoolean();
@@ -170,10 +173,10 @@ namespace ScriptEditor
             if (!Directory.Exists(SettingsFolder))
                 Directory.CreateDirectory(SettingsFolder);
             BinaryWriter bw = new BinaryWriter(File.Create(SettingsPath));
-            bw.Write((byte)0);
+            bw.Write(allowDefine);
             bw.Write(hintsLang);
             bw.Write(highlight);
-            bw.Write((byte)0);  // reserved
+            bw.Write(encoding);
             bw.Write(optimize);
             bw.Write(showWarnings);
             bw.Write(showDebug);

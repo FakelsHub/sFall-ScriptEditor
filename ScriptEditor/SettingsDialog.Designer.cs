@@ -183,20 +183,21 @@
             // 
             // tbLanguage
             // 
-            this.tbLanguage.Location = new System.Drawing.Point(263, 225);
+            this.tbLanguage.Location = new System.Drawing.Point(224, 225);
             this.tbLanguage.MaxLength = 8;
             this.tbLanguage.Name = "tbLanguage";
-            this.tbLanguage.Size = new System.Drawing.Size(95, 20);
+            this.tbLanguage.Size = new System.Drawing.Size(90, 20);
             this.tbLanguage.TabIndex = 13;
+            this.toolTip.SetToolTip(this.tbLanguage, "Msg files folder language, default \'english\'.");
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(178, 228);
+            this.label5.Location = new System.Drawing.Point(165, 228);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(79, 13);
+            this.label5.Size = new System.Drawing.Size(53, 13);
             this.label5.TabIndex = 14;
-            this.label5.Text = "Msg folder lang";
+            this.label5.Text = "Msg lang:";
             // 
             // cbOptimize
             // 
@@ -361,7 +362,7 @@
             "English",
             "Russian",
             "Chinese"});
-            this.HintLang_comboBox.Location = new System.Drawing.Point(412, 247);
+            this.HintLang_comboBox.Location = new System.Drawing.Point(412, 224);
             this.HintLang_comboBox.Name = "HintLang_comboBox";
             this.HintLang_comboBox.Size = new System.Drawing.Size(75, 21);
             this.HintLang_comboBox.TabIndex = 25;
@@ -369,7 +370,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(403, 228);
+            this.label2.Location = new System.Drawing.Point(321, 228);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 13);
             this.label2.TabIndex = 26;
@@ -412,7 +413,7 @@
             this.Highlight_comboBox.Items.AddRange(new object[] {
             "Original",
             "F-Geck"});
-            this.Highlight_comboBox.Location = new System.Drawing.Point(412, 287);
+            this.Highlight_comboBox.Location = new System.Drawing.Point(411, 266);
             this.Highlight_comboBox.Name = "Highlight_comboBox";
             this.Highlight_comboBox.Size = new System.Drawing.Size(76, 21);
             this.Highlight_comboBox.TabIndex = 28;
@@ -420,11 +421,12 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(409, 271);
+            this.label3.Location = new System.Drawing.Point(411, 250);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(75, 13);
+            this.label3.Size = new System.Drawing.Size(74, 13);
             this.label3.TabIndex = 29;
-            this.label3.Text = "Highlight Text:";
+            this.label3.Text = "SSL Highlight:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // SettingsDialog
             // 
