@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
@@ -37,6 +38,8 @@ namespace ScriptEditor
         public static string sHeaderfile;
         private PositionType PosChangeType;
         private int moveActive = -1;
+
+        private Encoding EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
         private TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
@@ -249,9 +252,9 @@ namespace ScriptEditor
             te.ConvertTabsToSpaces = Settings.tabsToSpaces;
             te.TabIndent = Settings.tabSize;
             te.Document.TextEditorProperties.IndentationSize = Settings.tabSize;
+            if (Settings.encoding == 1) te.Document.TextEditorProperties.Encoding = System.Text.Encoding.GetEncoding("cp866");
             if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0) {
                 te.SetHighlighting("msg");
-                if (Settings.encoding == 1) te.Document.TextEditorProperties.Encoding = System.Text.Encoding.GetEncoding("cp866");
             } else
                 te.SetHighlighting("ssl"); // Activate the highlighting, use the name from the SyntaxDefinition node.
             if (type == OpenType.File)
@@ -377,7 +380,7 @@ namespace ScriptEditor
                 while (parserRunning) {
                     System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
                 }
-                System.IO.File.WriteAllText(tab.filepath, tab.textEditor.Text, System.Text.Encoding.ASCII);
+                File.WriteAllText(tab.filepath, tab.textEditor.Text, EncCodePage);
                 tab.changed = false;
                 SetTabText(tab.index);
             }
@@ -391,14 +394,11 @@ namespace ScriptEditor
                 Save(tab);
                 Settings.AddRecentFile(tab.filepath);
                 System.String ext = Path.GetExtension(tab.filepath).ToLower();
-                if (Settings.enableParser && (ext == ".ssl" || ext == ".h"))
-                {
+                if (Settings.enableParser && (ext == ".ssl" || ext == ".h")) {
                     tab.shouldParse = true;
                     tab.needsParse = true;
-                    parserLabel.Text = "Parser: Out of date";
-                    timerNext = DateTime.Now + TimeSpan.FromSeconds(1);
-                    if (!timer.Enabled)
-                        timer.Start();
+                    parserLabel.Text = "Parser: Wait for update";
+                    ParseScript();
                 }
             }
         }
@@ -568,7 +568,7 @@ namespace ScriptEditor
             }
             VarTree.EndUpdate();
             ProcTree.EndUpdate();
-            if (ProcTree.Nodes.Count > 0) {
+            if (ProcTree.Nodes.Count > 1) {
                 ProcTree.Nodes[1].EnsureVisible();
             }
         }
@@ -890,13 +890,27 @@ namespace ScriptEditor
                     //UpdateNames();
                 }
                 UpdateNames();
-                if (currentTab.parseInfo != null && currentTab.parseInfo.procs.Length > 0) {
-                    Outline_toolStripButton.Enabled = true;
-                } else Outline_toolStripButton.Enabled = false;
                 // text editor set focus 
                 currentTab.textEditor.ActiveTextAreaControl.Select();
                 ShowLineNumbers(null, null);
-                SetBackForwardButtonState();
+                ControlFormStateOn_Off();
+            }
+        }
+
+        private void ControlFormStateOn_Off()
+        {
+            if (currentTab.parseInfo != null && currentTab.parseInfo.procs.Length > 0) {
+                Outline_toolStripButton.Enabled = true;
+            } else Outline_toolStripButton.Enabled = false; SetBackForwardButtonState();
+            string ext = Path.GetExtension(currentTab.filename).ToLower();
+            if (ext == ".ssl" || ext == ".h") {
+                DecIndentStripButton.Enabled = true;
+                CommentStripButton.Enabled = true;
+                UnCommentStripButton.Enabled = true;
+            } else {
+                DecIndentStripButton.Enabled = false;
+                CommentStripButton.Enabled = false;
+                UnCommentStripButton.Enabled = false;
             }
         }
 
@@ -912,6 +926,9 @@ namespace ScriptEditor
             GotoProc_StripButton.Enabled = false;
             Search_toolStripButton.Enabled = false;
             if (SearchToolStrip.Visible) Search_Panel(null, null);
+            DecIndentStripButton.Enabled = false;
+            CommentStripButton.Enabled = false;
+            UnCommentStripButton.Enabled = false;
         }
 
 # region SearchFunction
@@ -1363,6 +1380,21 @@ namespace ScriptEditor
             SaveAs(currentTab);
         }
 
+        private void saveAsTemplateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null || Path.GetExtension(currentTab.filepath).ToLower() != ".ssl") return;
+            SaveFileDialog sfdTemplate = new SaveFileDialog();
+            sfdTemplate.Title = "Enter file name for script template";
+            sfdTemplate.Filter = "Template file|*.ssl";
+            string path = Path.Combine(Settings.ResourcesFolder, "templates");
+            sfdTemplate.InitialDirectory = path;
+            if (sfdTemplate.ShowDialog() == DialogResult.OK) {
+                string fname = Path.GetFileName(sfdTemplate.FileName);
+                File.WriteAllText(path + "\\" + fname, currentTab.textEditor.Text, System.Text.Encoding.ASCII);
+            }
+            sfdTemplate.Dispose();
+        }
+
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close(tabs[tabControl1.SelectedIndex]);
@@ -1759,7 +1791,7 @@ namespace ScriptEditor
         {
             string word, file = currentTab.filepath;
             int line;
-            if (((ToolStripDropDownItem)sender).Tag.ToString() == "Button") {
+            if (((ToolStripDropDownItem)sender).Tag != null) { //.ToString() == "Button"
                 if (!currentTab.shouldParse) return;
                 Parser.UpdateParseSSL(currentTab.textEditor.Text);
                 TextLocation tl = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
@@ -2386,6 +2418,7 @@ namespace ScriptEditor
         {
             Settings.encoding = 0;
             if (EncodingDOSmenuItem.Checked) Settings.encoding = 1;
+            EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
         }
 
         private void defineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2405,6 +2438,118 @@ namespace ScriptEditor
                 }
             }
             if (addSearchText) SearchTextComboBox.Items.Add(world);
+        }
+
+        private void DecIndentStripButton_Click(object sender, EventArgs e)
+        {
+            int len;
+            int indent = Settings.tabSize;
+            string ReplaceText = string.Empty;
+            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
+                {
+                    if (ReplaceText != string.Empty) ReplaceText += "\n";
+                    if (SubDecIndent(i, ref indent, ref ReplaceText, out len)) return;
+                }
+                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[position.StartPosition.Line].Offset;
+                int offset_end = currentTab.textEditor.Document.PositionToOffset(new TextLocation(currentTab.textEditor.Document.LineSegmentCollection[position.EndPosition.Line].Length, position.EndPosition.Line));
+                int lenBlock = offset_end - offset_str;
+                currentTab.textEditor.Document.Replace(offset_str, lenBlock, ReplaceText);
+                TextLocation srtSel = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].StartPosition;
+                TextLocation endSel = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].EndPosition;
+                srtSel.Column -= indent;
+                endSel.Column -= indent;
+                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(srtSel, endSel);
+            } else {
+                if (SubDecIndent(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, ref indent, ref ReplaceText, out len)) return;
+                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[currentTab.textEditor.ActiveTextAreaControl.Caret.Line].Offset;
+                currentTab.textEditor.Document.Replace(offset_str, len, ReplaceText);
+                
+            }
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Column -= indent;
+            currentTab.textEditor.Refresh();
+        }
+
+        private bool SubDecIndent(int line, ref int indent, ref string ReplaceText, out int len)
+        {
+            string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, line);
+            len = LineText.Length;
+            int start = (len - LineText.TrimStart().Length);
+            if (start < indent) {
+                int z = LineText.Length;
+                ReplaceText += LineText.TrimStart();
+                if (z == ReplaceText.Length) return true;
+                indent = z - ReplaceText.Length;
+            } else ReplaceText += LineText.Remove(start - indent, indent);
+            return false;
+        }
+
+        private void CommentTextStripButton_Click(object sender, EventArgs e)
+        {
+            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                currentTab.textEditor.Document.UndoStack.StartUndoGroup();
+                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++) 
+                {
+                    string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, i);
+                    if (LineText.TrimStart().StartsWith(Parser.COMMENT)) continue;
+                    int offset = currentTab.textEditor.Document.LineSegmentCollection[i].Offset;
+                    currentTab.textEditor.Document.Insert(offset, Parser.COMMENT); 
+                }
+                currentTab.textEditor.Document.UndoStack.EndUndoGroup();
+                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            } else {
+                string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Line);
+                if (LineText.TrimStart().StartsWith(Parser.COMMENT)) return;
+                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[currentTab.textEditor.ActiveTextAreaControl.Caret.Line].Offset;
+                currentTab.textEditor.Document.Insert(offset_str, Parser.COMMENT);
+            }
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Column += 2;
+        }
+
+        private void UnCommentTextStripButton_Click(object sender, EventArgs e)
+        {
+            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                currentTab.textEditor.Document.UndoStack.StartUndoGroup();
+                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
+                {
+                    string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, i);
+                    if (!LineText.TrimStart().StartsWith(Parser.COMMENT)) continue;
+                    int n = LineText.IndexOf(Parser.COMMENT);
+                    int offset_str = currentTab.textEditor.Document.LineSegmentCollection[i].Offset;
+                    currentTab.textEditor.Document.Remove(offset_str + n, 2);
+                }
+                currentTab.textEditor.Document.UndoStack.EndUndoGroup();
+                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            } else {
+                string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Line);
+                if (!LineText.TrimStart().StartsWith(Parser.COMMENT)) return;
+                int n = LineText.IndexOf(Parser.COMMENT);
+                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[currentTab.textEditor.ActiveTextAreaControl.Caret.Line].Offset;
+                currentTab.textEditor.Document.Remove(offset_str + n, 2);
+            }
+            currentTab.textEditor.ActiveTextAreaControl.Caret.Column -= 2;
+        }
+
+        private void AlignToLeftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, position.StartPosition.Line);
+                int Align = LineText.Length - LineText.TrimStart().Length; // узнаем длину отступа
+                currentTab.textEditor.Document.UndoStack.StartUndoGroup();
+                for (int i = position.StartPosition.Line + 1; i <= position.EndPosition.Line; i++)
+                {
+                    LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, i);
+                    int len = LineText.Length - LineText.TrimStart().Length;
+                    if (len == 0 || len <= Align) continue;
+                    int offset = currentTab.textEditor.Document.LineSegmentCollection[i].Offset;
+                    currentTab.textEditor.Document.Remove(offset, len-Align);
+                }
+                currentTab.textEditor.Document.UndoStack.EndUndoGroup();
+            }
         }
     }
 }

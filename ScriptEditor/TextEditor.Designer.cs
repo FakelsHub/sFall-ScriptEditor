@@ -74,7 +74,7 @@ namespace ScriptEditor {
             this.ColStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator27 = new System.Windows.Forms.ToolStripSeparator();
             this.New_toolStripDropDownButton = new System.Windows.Forms.ToolStripSplitButton();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TemplateScript_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,9 +92,13 @@ namespace ScriptEditor {
             this.saveAsTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.Outline_toolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.Undo_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Redo_ToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator17 = new System.Windows.Forms.ToolStripSeparator();
+            this.DecIndentStripButton = new System.Windows.Forms.ToolStripButton();
+            this.CommentStripButton = new System.Windows.Forms.ToolStripButton();
+            this.UnCommentStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.Search_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
             this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,12 +117,9 @@ namespace ScriptEditor {
             this.openHeaderFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
             this.MSG_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
-            this.previewDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.msgFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previewDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
-            this.EncodingDOSmenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.encodingLKrusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
             this.msgOpenEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.qCompile_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
@@ -137,9 +138,14 @@ namespace ScriptEditor {
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.EncodingDOSmenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.encodingTextRUSLKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator30 = new System.Windows.Forms.ToolStripSeparator();
             this.showLogWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textLineNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.decIndentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsTabControls = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -156,9 +162,12 @@ namespace ScriptEditor {
             this.UpperCaseToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.LowerCaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.AlignToLeftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator29 = new System.Windows.Forms.ToolStripSeparator();
             this.findReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findDeclerationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findDefinitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
@@ -725,16 +734,20 @@ namespace ScriptEditor {
             this.ToolStrip.AutoSize = false;
             this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
-            this.toolStripSeparator21,
+            this.toolStripSeparator27,
             this.New_toolStripDropDownButton,
             this.toolStripSeparator7,
             this.Open_toolStripSplitButton,
             this.Save_toolStripSplitButton,
             this.toolStripSeparator8,
             this.Outline_toolStripButton,
-            this.toolStripSeparator17,
+            this.toolStripSeparator21,
             this.Undo_toolStripButton,
             this.Redo_ToolStripButton,
+            this.toolStripSeparator17,
+            this.DecIndentStripButton,
+            this.CommentStripButton,
+            this.UnCommentStripButton,
             this.toolStripSeparator11,
             this.Search_toolStripButton,
             this.toolStripSeparator12,
@@ -753,7 +766,8 @@ namespace ScriptEditor {
             this.Help_toolStripButton,
             this.toolStripSeparator4,
             this.toolStripDropDownButton2,
-            this.toolStripSeparator14});
+            this.toolStripSeparator14,
+            this.toolStripDropDownButton1});
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(896, 25);
@@ -772,10 +786,10 @@ namespace ScriptEditor {
             this.toolStripButton1.Text = "Function Tree";
             this.toolStripButton1.ToolTipText = "Show/Hide function tree";
             // 
-            // toolStripSeparator21
+            // toolStripSeparator27
             // 
-            this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator27.Name = "toolStripSeparator27";
+            this.toolStripSeparator27.Size = new System.Drawing.Size(6, 25);
             // 
             // New_toolStripDropDownButton
             // 
@@ -906,6 +920,7 @@ namespace ScriptEditor {
             this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
             this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
+            this.saveAsTemplateToolStripMenuItem.Click += new System.EventHandler(this.saveAsTemplateToolStripMenuItem_Click);
             // 
             // toolStripSeparator8
             // 
@@ -924,10 +939,10 @@ namespace ScriptEditor {
             this.Outline_toolStripButton.ToolTipText = "Outline Expand/Collapse";
             this.Outline_toolStripButton.Click += new System.EventHandler(this.outlineToolStripMenuItem_Click);
             // 
-            // toolStripSeparator17
+            // toolStripSeparator21
             // 
-            this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator21.Name = "toolStripSeparator21";
+            this.toolStripSeparator21.Size = new System.Drawing.Size(6, 25);
             // 
             // Undo_toolStripButton
             // 
@@ -937,6 +952,7 @@ namespace ScriptEditor {
             this.Undo_toolStripButton.Name = "Undo_toolStripButton";
             this.Undo_toolStripButton.Size = new System.Drawing.Size(23, 22);
             this.Undo_toolStripButton.Text = "Undo";
+            this.Undo_toolStripButton.ToolTipText = "Undo [Ctrl+Z]";
             this.Undo_toolStripButton.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // Redo_ToolStripButton
@@ -947,7 +963,46 @@ namespace ScriptEditor {
             this.Redo_ToolStripButton.Name = "Redo_ToolStripButton";
             this.Redo_ToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.Redo_ToolStripButton.Text = "Redo";
+            this.Redo_ToolStripButton.ToolTipText = "Redo [Ctrl+Y]";
             this.Redo_ToolStripButton.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator17
+            // 
+            this.toolStripSeparator17.Name = "toolStripSeparator17";
+            this.toolStripSeparator17.Size = new System.Drawing.Size(6, 25);
+            // 
+            // DecIndentStripButton
+            // 
+            this.DecIndentStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.DecIndentStripButton.Enabled = false;
+            this.DecIndentStripButton.Image = ((System.Drawing.Image)(resources.GetObject("DecIndentStripButton.Image")));
+            this.DecIndentStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.DecIndentStripButton.Name = "DecIndentStripButton";
+            this.DecIndentStripButton.Size = new System.Drawing.Size(23, 22);
+            this.DecIndentStripButton.ToolTipText = "Decrease indent text [Alt+Q]";
+            this.DecIndentStripButton.Click += new System.EventHandler(this.DecIndentStripButton_Click);
+            // 
+            // CommentStripButton
+            // 
+            this.CommentStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.CommentStripButton.Enabled = false;
+            this.CommentStripButton.Image = ((System.Drawing.Image)(resources.GetObject("CommentStripButton.Image")));
+            this.CommentStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.CommentStripButton.Name = "CommentStripButton";
+            this.CommentStripButton.Size = new System.Drawing.Size(23, 22);
+            this.CommentStripButton.ToolTipText = "Comment out selected text";
+            this.CommentStripButton.Click += new System.EventHandler(this.CommentTextStripButton_Click);
+            // 
+            // UnCommentStripButton
+            // 
+            this.UnCommentStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.UnCommentStripButton.Enabled = false;
+            this.UnCommentStripButton.Image = ((System.Drawing.Image)(resources.GetObject("UnCommentStripButton.Image")));
+            this.UnCommentStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.UnCommentStripButton.Name = "UnCommentStripButton";
+            this.UnCommentStripButton.Size = new System.Drawing.Size(23, 22);
+            this.UnCommentStripButton.ToolTipText = "Uncomment selected text";
+            this.UnCommentStripButton.Click += new System.EventHandler(this.UnCommentTextStripButton_Click);
             // 
             // toolStripSeparator11
             // 
@@ -1115,12 +1170,9 @@ namespace ScriptEditor {
             // MSG_toolStripButton
             // 
             this.MSG_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.previewDialogToolStripMenuItem,
             this.msgFileEditorToolStripMenuItem,
+            this.previewDialogToolStripMenuItem,
             this.toolStripSeparator24,
-            this.EncodingDOSmenuItem,
-            this.encodingLKrusToolStripMenuItem,
-            this.toolStripSeparator25,
             this.msgOpenEditorToolStripMenuItem});
             this.MSG_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("MSG_toolStripButton.Image")));
             this.MSG_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1130,13 +1182,6 @@ namespace ScriptEditor {
             this.MSG_toolStripButton.ToolTipText = "Open associate MSG file";
             this.MSG_toolStripButton.ButtonClick += new System.EventHandler(this.associateMsgToolStripMenuItem_Click);
             // 
-            // previewDialogToolStripMenuItem
-            // 
-            this.previewDialogToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("previewDialogToolStripMenuItem.Image")));
-            this.previewDialogToolStripMenuItem.Name = "previewDialogToolStripMenuItem";
-            this.previewDialogToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.previewDialogToolStripMenuItem.Text = "Preview Dialog";
-            // 
             // msgFileEditorToolStripMenuItem
             // 
             this.msgFileEditorToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("msgFileEditorToolStripMenuItem.Image")));
@@ -1144,33 +1189,21 @@ namespace ScriptEditor {
             this.msgFileEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.msgFileEditorToolStripMenuItem.Text = "Msg file editor";
             // 
+            // previewDialogToolStripMenuItem
+            // 
+            this.previewDialogToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("previewDialogToolStripMenuItem.Image")));
+            this.previewDialogToolStripMenuItem.Name = "previewDialogToolStripMenuItem";
+            this.previewDialogToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.previewDialogToolStripMenuItem.Text = "Preview Dialog";
+            // 
             // toolStripSeparator24
             // 
             this.toolStripSeparator24.Name = "toolStripSeparator24";
             this.toolStripSeparator24.Size = new System.Drawing.Size(174, 6);
             // 
-            // EncodingDOSmenuItem
-            // 
-            this.EncodingDOSmenuItem.CheckOnClick = true;
-            this.EncodingDOSmenuItem.Name = "EncodingDOSmenuItem";
-            this.EncodingDOSmenuItem.Size = new System.Drawing.Size(177, 22);
-            this.EncodingDOSmenuItem.Text = "Encoding: DOS";
-            this.EncodingDOSmenuItem.Click += new System.EventHandler(this.EncodingMenuItem_Click);
-            // 
-            // encodingLKrusToolStripMenuItem
-            // 
-            this.encodingLKrusToolStripMenuItem.Enabled = false;
-            this.encodingLKrusToolStripMenuItem.Name = "encodingLKrusToolStripMenuItem";
-            this.encodingLKrusToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.encodingLKrusToolStripMenuItem.Text = "Encoding: LK (Ru)";
-            // 
-            // toolStripSeparator25
-            // 
-            this.toolStripSeparator25.Name = "toolStripSeparator25";
-            this.toolStripSeparator25.Size = new System.Drawing.Size(174, 6);
-            // 
             // msgOpenEditorToolStripMenuItem
             // 
+            this.msgOpenEditorToolStripMenuItem.CheckOnClick = true;
             this.msgOpenEditorToolStripMenuItem.Name = "msgOpenEditorToolStripMenuItem";
             this.msgOpenEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.msgOpenEditorToolStripMenuItem.Text = "Auto open in editor";
@@ -1283,6 +1316,9 @@ namespace ScriptEditor {
             this.toolStripSeparator1,
             this.Settings_ToolStripMenuItem,
             this.toolStripSeparator5,
+            this.EncodingDOSmenuItem,
+            this.encodingTextRUSLKToolStripMenuItem,
+            this.toolStripSeparator30,
             this.showLogWindowToolStripMenuItem,
             this.textLineNumberToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
@@ -1297,7 +1333,7 @@ namespace ScriptEditor {
             this.splitDocumentToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("splitDocumentToolStripMenuItem.Image")));
             this.splitDocumentToolStripMenuItem.Name = "splitDocumentToolStripMenuItem";
             this.splitDocumentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.splitDocumentToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.splitDocumentToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.splitDocumentToolStripMenuItem.Text = "Split Document";
             this.splitDocumentToolStripMenuItem.ToolTipText = "Split document viewer";
             this.splitDocumentToolStripMenuItem.Click += new System.EventHandler(this.SplitDoc_Click);
@@ -1305,19 +1341,39 @@ namespace ScriptEditor {
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(232, 6);
             // 
             // Settings_ToolStripMenuItem
             // 
             this.Settings_ToolStripMenuItem.Name = "Settings_ToolStripMenuItem";
-            this.Settings_ToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.Settings_ToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.Settings_ToolStripMenuItem.Text = "Settings";
             this.Settings_ToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(232, 6);
+            // 
+            // EncodingDOSmenuItem
+            // 
+            this.EncodingDOSmenuItem.CheckOnClick = true;
+            this.EncodingDOSmenuItem.Name = "EncodingDOSmenuItem";
+            this.EncodingDOSmenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EncodingDOSmenuItem.Text = "Encoding Text: DOS (OEM 866)";
+            this.EncodingDOSmenuItem.Click += new System.EventHandler(this.EncodingMenuItem_Click);
+            // 
+            // encodingTextRUSLKToolStripMenuItem
+            // 
+            this.encodingTextRUSLKToolStripMenuItem.Enabled = false;
+            this.encodingTextRUSLKToolStripMenuItem.Name = "encodingTextRUSLKToolStripMenuItem";
+            this.encodingTextRUSLKToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.encodingTextRUSLKToolStripMenuItem.Text = "Encoding Text: RUS/LK";
+            // 
+            // toolStripSeparator30
+            // 
+            this.toolStripSeparator30.Name = "toolStripSeparator30";
+            this.toolStripSeparator30.Size = new System.Drawing.Size(232, 6);
             // 
             // showLogWindowToolStripMenuItem
             // 
@@ -1325,7 +1381,7 @@ namespace ScriptEditor {
             this.showLogWindowToolStripMenuItem.CheckOnClick = true;
             this.showLogWindowToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showLogWindowToolStripMenuItem.Name = "showLogWindowToolStripMenuItem";
-            this.showLogWindowToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.showLogWindowToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.showLogWindowToolStripMenuItem.Text = "Log Window";
             this.showLogWindowToolStripMenuItem.ToolTipText = "Show/Hide log window";
             this.showLogWindowToolStripMenuItem.Click += new System.EventHandler(this.showLogWindowToolStripMenuItem_Click);
@@ -1336,7 +1392,7 @@ namespace ScriptEditor {
             this.textLineNumberToolStripMenuItem.CheckOnClick = true;
             this.textLineNumberToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.textLineNumberToolStripMenuItem.Name = "textLineNumberToolStripMenuItem";
-            this.textLineNumberToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.textLineNumberToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.textLineNumberToolStripMenuItem.Text = "Line Numbers";
             this.textLineNumberToolStripMenuItem.ToolTipText = "Show/Hide line text numbers.";
             this.textLineNumberToolStripMenuItem.Click += new System.EventHandler(this.ShowLineNumbers);
@@ -1345,6 +1401,27 @@ namespace ScriptEditor {
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
             this.toolStripSeparator14.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripDropDownButton1
+            // 
+            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.decIndentToolStripMenuItem});
+            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
+            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 22);
+            this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
+            this.toolStripDropDownButton1.Visible = false;
+            this.toolStripDropDownButton1.Click += new System.EventHandler(this.DecIndentStripButton_Click);
+            // 
+            // decIndentToolStripMenuItem
+            // 
+            this.decIndentToolStripMenuItem.Name = "decIndentToolStripMenuItem";
+            this.decIndentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Q)));
+            this.decIndentToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.decIndentToolStripMenuItem.Text = "DecIndent";
+            this.decIndentToolStripMenuItem.Click += new System.EventHandler(this.DecIndentStripButton_Click);
             // 
             // cmsTabControls
             // 
@@ -1411,12 +1488,15 @@ namespace ScriptEditor {
             this.UpperCaseToolStripMenuItem1,
             this.LowerCaseToolStripMenuItem,
             this.toolStripSeparator2,
+            this.AlignToLeftToolStripMenuItem,
+            this.toolStripSeparator29,
             this.findReferencesToolStripMenuItem,
             this.findDeclerationToolStripMenuItem,
             this.findDefinitionToolStripMenuItem,
+            this.toolStripSeparator28,
             this.openIncludeToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip1";
-            this.editorMenuStrip.Size = new System.Drawing.Size(212, 214);
+            this.editorMenuStrip.Size = new System.Drawing.Size(212, 248);
             this.editorMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.editorMenuStrip_Opening);
             // 
             // cutToolStripMenuItem1
@@ -1473,6 +1553,21 @@ namespace ScriptEditor {
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(208, 6);
             // 
+            // AlignToLeftToolStripMenuItem
+            // 
+            this.AlignToLeftToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("AlignToLeftToolStripMenuItem.Image")));
+            this.AlignToLeftToolStripMenuItem.Name = "AlignToLeftToolStripMenuItem";
+            this.AlignToLeftToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this.AlignToLeftToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.AlignToLeftToolStripMenuItem.Text = "Align selected text";
+            this.AlignToLeftToolStripMenuItem.ToolTipText = "Align selected block text to left.";
+            this.AlignToLeftToolStripMenuItem.Click += new System.EventHandler(this.AlignToLeftToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator29
+            // 
+            this.toolStripSeparator29.Name = "toolStripSeparator29";
+            this.toolStripSeparator29.Size = new System.Drawing.Size(208, 6);
+            // 
             // findReferencesToolStripMenuItem
             // 
             this.findReferencesToolStripMenuItem.Name = "findReferencesToolStripMenuItem";
@@ -1496,10 +1591,15 @@ namespace ScriptEditor {
             this.findDefinitionToolStripMenuItem.Text = "Find definition";
             this.findDefinitionToolStripMenuItem.Click += new System.EventHandler(this.findDefinitionToolStripMenuItem_Click);
             // 
+            // toolStripSeparator28
+            // 
+            this.toolStripSeparator28.Name = "toolStripSeparator28";
+            this.toolStripSeparator28.Size = new System.Drawing.Size(208, 6);
+            // 
             // openIncludeToolStripMenuItem
             // 
             this.openIncludeToolStripMenuItem.Name = "openIncludeToolStripMenuItem";
-            this.openIncludeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
+            this.openIncludeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.G)));
             this.openIncludeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.openIncludeToolStripMenuItem.Text = "Open include";
             this.openIncludeToolStripMenuItem.Click += new System.EventHandler(this.openIncludeToolStripMenuItem_Click);
@@ -1687,12 +1787,21 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
         private System.Windows.Forms.ToolStripComboBox SearchTextComboBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
-        private System.Windows.Forms.ToolStripMenuItem EncodingDOSmenuItem;
-        private System.Windows.Forms.ToolStripMenuItem encodingLKrusToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
         private System.Windows.Forms.ToolStripMenuItem msgOpenEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripMenuItem defineToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton SendtoolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator27;
+        private System.Windows.Forms.ToolStripButton DecIndentStripButton;
+        private System.Windows.Forms.ToolStripButton CommentStripButton;
+        private System.Windows.Forms.ToolStripMenuItem AlignToLeftToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator29;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator28;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator30;
+        private System.Windows.Forms.ToolStripMenuItem EncodingDOSmenuItem;
+        private System.Windows.Forms.ToolStripMenuItem encodingTextRUSLKToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
+        private System.Windows.Forms.ToolStripMenuItem decIndentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton UnCommentStripButton;
     }
 }

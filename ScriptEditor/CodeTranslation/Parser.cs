@@ -27,6 +27,7 @@ namespace ScriptEditor.CodeTranslation
         const string END = "end";
         public const string INCLUDE = "#include ";
         public const string DEFINE = "#define ";
+        public const string COMMENT = "//";
         
         public static void InternalParser(TabInfo _ti)
         {
@@ -128,7 +129,7 @@ namespace ScriptEditor.CodeTranslation
                     if (z > 0) s = s.Remove(z).TrimEnd();
                     z = s.IndexOf(BEGIN);
                     if (z > 0) s = s.Remove(z).TrimEnd();
-                    z = s.IndexOf("//");
+                    z = s.IndexOf(COMMENT);
                     if (z < 0) z = s.IndexOf("/*");
                     if (z > 0) s = s.Remove(z).TrimEnd();
                     //
@@ -175,8 +176,8 @@ namespace ScriptEditor.CodeTranslation
             {
                 file[i] = file[i].Trim();
                 if (CommentBlockParse(file[i], ref _comm)) continue;
-                
-                int z = file[i].IndexOf("//"); // убираем лишнее
+
+                int z = file[i].IndexOf(COMMENT); // убираем лишнее
                 if (z < 0) z = file[i].IndexOf("/*");
                 if (z > 0) file[i] = file[i].Remove(z).TrimEnd();
                 
@@ -213,7 +214,7 @@ namespace ScriptEditor.CodeTranslation
                     _proc++; //совпадает, проверяем это процедура или ее объявление
                     
                     // убираем лишнее
-                    int z = file[i].IndexOf("//", PROC_LEN + pLen);
+                    int z = file[i].IndexOf(COMMENT, PROC_LEN + pLen);
                     if (z < 0) z = file[i].IndexOf("/*", PROC_LEN + pLen);
                     if (z > 0) file[i] = file[i].Remove(z).TrimEnd();
 
@@ -258,7 +259,7 @@ namespace ScriptEditor.CodeTranslation
                     _proc++; //совпадает, проверяем это процедура или ее объявление
 
                     // убираем лишнее
-                    int z = file[i].IndexOf("//", PROC_LEN + pLen);
+                    int z = file[i].IndexOf(COMMENT, PROC_LEN + pLen);
                     if (z < 0) z = file[i].IndexOf("/*", PROC_LEN + pLen);
                     if (z > 0) file[i] = file[i].Remove(z).TrimEnd();
 
@@ -326,7 +327,7 @@ namespace ScriptEditor.CodeTranslation
         // Comment block parse
         private static bool CommentBlockParse(string sLine, ref int _comm)
         {
-            if (sLine.StartsWith("//")) return true;
+            if (sLine.StartsWith(COMMENT)) return true;
             if (sLine.StartsWith("/*") && _comm == 0) {
                 if (sLine.IndexOf("*/") < 0) _comm++;
                 return true;
