@@ -14,6 +14,7 @@ namespace ScriptEditor
         public static readonly string SettingsFolder = Path.Combine(ProgramFolder, "settings");
         public static readonly string ResourcesFolder = Path.Combine(ProgramFolder, "resources");
 
+        private static readonly string RecentPath = Path.Combine(SettingsFolder, "recent.dat");
         private static readonly string SettingsPath = Path.Combine(SettingsFolder, "settings.dat");
         private static readonly string PreprocessPath = Path.Combine(SettingsFolder, "preprocess.ssl");
         public static readonly string SearchHistoryPath = Path.Combine(SettingsFolder, "SearchHistory.ini");
@@ -108,7 +109,7 @@ namespace ScriptEditor
             windowPositions[i].height = br.ReadInt32();
         }
 
-        private static void LoadInternal(BinaryReader br)
+        private static void LoadInternal(BinaryReader br, BinaryReader brRecent)
         {
             try {
                 allowDefine = br.ReadBoolean();
@@ -122,9 +123,6 @@ namespace ScriptEditor
                 outputDir = br.ReadString();
                 if (outputDir.Length == 0)
                     outputDir = null;
-                int recentItems = br.ReadByte();
-                for (int i = 0; i < recentItems; i++)
-                    recent.Add(br.ReadString());
                 warnOnFailedCompile = br.ReadBoolean();
                 multiThreaded = br.ReadBoolean();
                 lastMassCompile = br.ReadString();
@@ -149,12 +147,16 @@ namespace ScriptEditor
                 shortCircuit = br.ReadBoolean();
                 autocomplete = br.ReadBoolean();
                 showLog = br.ReadBoolean();
-                recentItems = br.ReadByte();
-                for (int i = 0; i < recentItems; i++)
-                    recentMsg.Add(br.ReadString());
-            } catch {
-                return;
-            }
+            } catch { }
+            // Recent files
+            if (brRecent == null) return;
+            int recentItems = brRecent.ReadByte();
+            int recentMsgItems = brRecent.ReadByte();
+            for (int i = 0; i < recentItems; i++)
+                recent.Add(brRecent.ReadString());
+            for (int i = 0; i < recentMsgItems; i++)
+                recentMsg.Add(brRecent.ReadString());
+            brRecent.Close();
         }
 
         public static void Load()
@@ -170,10 +172,14 @@ namespace ScriptEditor
                 Directory.CreateDirectory(templatesFolder);
             }
             if (File.Exists(SettingsPath)) {
-                recent.Clear();
-                BinaryReader br = new BinaryReader(File.OpenRead(SettingsPath));
-                LoadInternal(br);
-                br.Close();
+                //recent.Clear();
+                BinaryReader brRecent = null;
+                if (File.Exists(RecentPath)) {
+                   brRecent = new BinaryReader(File.OpenRead(RecentPath));
+                }
+                BinaryReader brSettings = new BinaryReader(File.OpenRead(SettingsPath));
+                LoadInternal(brSettings, brRecent);
+                brSettings.Close(); 
             }
             if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath);
         }
@@ -201,9 +207,6 @@ namespace ScriptEditor
             bw.Write(showDebug);
             bw.Write(overrideIncludesPath);
             bw.Write(outputDir == null ? "" : outputDir);
-            bw.Write((byte)recent.Count);
-            for (int i = 0; i < recent.Count; i++)
-                bw.Write(recent[i]);
             bw.Write(warnOnFailedCompile);
             bw.Write(multiThreaded);
             bw.Write(lastMassCompile == null ? "" : lastMassCompile);
@@ -220,10 +223,16 @@ namespace ScriptEditor
             bw.Write(shortCircuit);
             bw.Write(autocomplete);
             bw.Write(showLog);
-            bw.Write((byte)recentMsg.Count);
-            for (int i = 0; i < recentMsg.Count; i++)
-                bw.Write(recentMsg[i]);
             bw.Close();
+            // Recent files
+            BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));
+            bwRecent.Write((byte)recent.Count);
+            bwRecent.Write((byte)recentMsg.Count);
+            for (int i = 0; i < recent.Count; i++)
+                bwRecent.Write(recent[i]); 
+            for (int i = 0; i < recentMsg.Count; i++)
+                bwRecent.Write(recentMsg[i]);
+            bwRecent.Close();
         }
 
         public static string GetPreprocessedFile()
