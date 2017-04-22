@@ -21,7 +21,6 @@ namespace ScriptEditor
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Settings.Load();
-                if (!File.Exists(Settings.SearchHistoryPath)) File.Create(Settings.SearchHistoryPath);
                 TextEditor te = new TextEditor();
                 // open documents passed from command line
                 foreach (string s in args) {

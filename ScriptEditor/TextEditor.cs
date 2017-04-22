@@ -355,7 +355,7 @@ namespace ScriptEditor
                 return;
             string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(e.LogicalPosition));
             if (word.Length == 0 ) return;
-            if (currentTab.msgFileTab != null) {
+            if (currentTab.messages != null) { //msgFileTab
                 int msg;
                 if (int.TryParse(word, out msg) && currentTab.messages.ContainsKey(msg)) {
                     e.ShowToolTip(currentTab.messages[msg]);
@@ -449,7 +449,7 @@ namespace ScriptEditor
         {
             if (Settings.outputDir == null || tab.filepath == null || tab.msgFileTab != null)
                 return;
-            string path = Path.Combine(Settings.outputDir, "..\\text\\" + Settings.language + "\\dialog\\");
+            string path = Path.Combine(Settings.outputDir, MessageEditor.MessageTextSubPath);
             if (!Directory.Exists(path)) {
                 MessageBox.Show("Failed to open or create associated message file in directory\r\n" + path, "Error: Directory does not exist");
                 return;
@@ -463,7 +463,10 @@ namespace ScriptEditor
                     } 
                 }       
             }
-            tab.msgFileTab = Open(path, OpenType.File, false);
+            if (Settings.autoOpenMsgs && msgAutoOpenEditorStripMenuItem.Checked && !create) {
+                MessageEditor.MessageEditorInit(tab, this);
+                Focus();
+            } else tab.msgFileTab = Open(path, OpenType.File, false);
         }
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false)
@@ -2549,6 +2552,20 @@ namespace ScriptEditor
                     currentTab.textEditor.Document.Remove(offset, len-Align);
                 }
                 currentTab.textEditor.Document.UndoStack.EndUndoGroup();
+            }
+        }
+
+        private void msgFileEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab != null) MessageEditor.MessageEditorInit(currentTab, this);
+            else MessageEditor.MessageEditorInit(null, this);
+        }
+
+        public void AcceptMsgLine(string line)
+        {
+            if (currentTab != null) {
+                currentTab.textEditor.ActiveTextAreaControl.TextArea.InsertString(line);
+                this.Focus();
             }
         }
     }

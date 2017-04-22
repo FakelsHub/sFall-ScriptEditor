@@ -152,6 +152,12 @@
     <Compile Include="TextEditorUI\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
     <Compile Include="TextEditorUI\TabInfo.cs" />
+    <Compile Include="MessageEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageEditor.Designer.cs">
+      <DependentUpon>MessageEditor.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutBox.resx">
@@ -184,6 +190,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TextEditor.resx">
       <DependentUpon>TextEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageEditor.resx">
+      <DependentUpon>MessageEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -31,7 +31,6 @@ namespace ScriptEditor {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Split_button = new System.Windows.Forms.Button();
             this.TabClose_button = new System.Windows.Forms.Button();
-            this.tabControl1 = new DraggableTabControl();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.SearchToolStrip = new System.Windows.Forms.ToolStrip();
             this.CaseButton = new System.Windows.Forms.ToolStripButton();
@@ -120,7 +119,7 @@ namespace ScriptEditor {
             this.msgFileEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.previewDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator24 = new System.Windows.Forms.ToolStripSeparator();
-            this.msgOpenEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.msgAutoOpenEditorStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.qCompile_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.Compile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -170,6 +169,7 @@ namespace ScriptEditor {
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
+            this.tabControl1 = new DraggableTabControl();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -303,22 +303,6 @@ namespace ScriptEditor {
             this.TabClose_button.UseVisualStyleBackColor = true;
             this.TabClose_button.Visible = false;
             this.TabClose_button.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ImageList = this.imageList1;
-            this.tabControl1.Location = new System.Drawing.Point(0, 25);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(701, 525);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // imageList1
             // 
@@ -894,6 +878,7 @@ namespace ScriptEditor {
             // 
             // SaveAs_ToolStripMenuItem
             // 
+            this.SaveAs_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("SaveAs_ToolStripMenuItem.Image")));
             this.SaveAs_ToolStripMenuItem.Name = "SaveAs_ToolStripMenuItem";
             this.SaveAs_ToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.SaveAs_ToolStripMenuItem.Text = "Save Script as";
@@ -1046,6 +1031,7 @@ namespace ScriptEditor {
             this.Back_toolStripButton.Name = "Back_toolStripButton";
             this.Back_toolStripButton.Size = new System.Drawing.Size(23, 22);
             this.Back_toolStripButton.Text = "Back Position";
+            this.Back_toolStripButton.ToolTipText = "Back Navigation Position";
             this.Back_toolStripButton.Click += new System.EventHandler(this.Back_toolStripButton_Click);
             // 
             // Forward_toolStripButton
@@ -1057,6 +1043,7 @@ namespace ScriptEditor {
             this.Forward_toolStripButton.Name = "Forward_toolStripButton";
             this.Forward_toolStripButton.Size = new System.Drawing.Size(23, 22);
             this.Forward_toolStripButton.Text = "Forward Position";
+            this.Forward_toolStripButton.ToolTipText = "Forward Navigation Position";
             this.Forward_toolStripButton.Click += new System.EventHandler(this.Forward_toolStripButton_Click);
             // 
             // GotoProc_StripButton
@@ -1076,6 +1063,7 @@ namespace ScriptEditor {
             // 
             // gotoToLineToolStripMenuItem
             // 
+            this.gotoToLineToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("gotoToLineToolStripMenuItem.Image")));
             this.gotoToLineToolStripMenuItem.Name = "gotoToLineToolStripMenuItem";
             this.gotoToLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
             this.gotoToLineToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
@@ -1173,7 +1161,7 @@ namespace ScriptEditor {
             this.msgFileEditorToolStripMenuItem,
             this.previewDialogToolStripMenuItem,
             this.toolStripSeparator24,
-            this.msgOpenEditorToolStripMenuItem});
+            this.msgAutoOpenEditorStripMenuItem});
             this.MSG_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("MSG_toolStripButton.Image")));
             this.MSG_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MSG_toolStripButton.Name = "MSG_toolStripButton";
@@ -1187,7 +1175,8 @@ namespace ScriptEditor {
             this.msgFileEditorToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("msgFileEditorToolStripMenuItem.Image")));
             this.msgFileEditorToolStripMenuItem.Name = "msgFileEditorToolStripMenuItem";
             this.msgFileEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.msgFileEditorToolStripMenuItem.Text = "Msg file editor";
+            this.msgFileEditorToolStripMenuItem.Text = "Message file editor";
+            this.msgFileEditorToolStripMenuItem.Click += new System.EventHandler(this.msgFileEditorToolStripMenuItem_Click);
             // 
             // previewDialogToolStripMenuItem
             // 
@@ -1201,12 +1190,15 @@ namespace ScriptEditor {
             this.toolStripSeparator24.Name = "toolStripSeparator24";
             this.toolStripSeparator24.Size = new System.Drawing.Size(174, 6);
             // 
-            // msgOpenEditorToolStripMenuItem
+            // msgAutoOpenEditorStripMenuItem
             // 
-            this.msgOpenEditorToolStripMenuItem.CheckOnClick = true;
-            this.msgOpenEditorToolStripMenuItem.Name = "msgOpenEditorToolStripMenuItem";
-            this.msgOpenEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.msgOpenEditorToolStripMenuItem.Text = "Auto open in editor";
+            this.msgAutoOpenEditorStripMenuItem.Checked = true;
+            this.msgAutoOpenEditorStripMenuItem.CheckOnClick = true;
+            this.msgAutoOpenEditorStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.msgAutoOpenEditorStripMenuItem.Name = "msgAutoOpenEditorStripMenuItem";
+            this.msgAutoOpenEditorStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.msgAutoOpenEditorStripMenuItem.Text = "Auto open in editor";
+            this.msgAutoOpenEditorStripMenuItem.ToolTipText = "Automatically open in message editor instead of a text document.";
             // 
             // toolStripSeparator9
             // 
@@ -1410,7 +1402,7 @@ namespace ScriptEditor {
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 22);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Visible = false;
             this.toolStripDropDownButton1.Click += new System.EventHandler(this.DecIndentStripButton_Click);
@@ -1611,6 +1603,22 @@ namespace ScriptEditor {
             this.toolTipAC.IsBalloon = true;
             this.toolTipAC.ReshowDelay = 100;
             // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
+            this.tabControl1.Location = new System.Drawing.Point(0, 25);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(701, 525);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
+            // 
             // TextEditor
             // 
             this.AllowDrop = true;
@@ -1787,7 +1795,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
         private System.Windows.Forms.ToolStripComboBox SearchTextComboBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
-        private System.Windows.Forms.ToolStripMenuItem msgOpenEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripMenuItem defineToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton SendtoolStripButton;
@@ -1803,5 +1810,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem decIndentToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton UnCommentStripButton;
+        protected internal System.Windows.Forms.ToolStripMenuItem msgAutoOpenEditorStripMenuItem;
     }
 }

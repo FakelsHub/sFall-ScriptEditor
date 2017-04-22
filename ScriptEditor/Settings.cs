@@ -31,7 +31,8 @@ namespace ScriptEditor
         public static string PathScriptsHFile;
         public static string lastMassCompile;
         public static string lastSearchPath;
-        private static readonly List<string> recent = new List<string>();
+        private static /*readonly*/ List<string> recent = new List<string>();
+        private static List<string> recentMsg = new List<string>();
         private static readonly WindowPos[] windowPositions = new WindowPos[(int)SavedWindows.Count];
         public static int editorSplitterPosition = -1;
         public static int editorSplitterPosition2 = -1;
@@ -46,6 +47,9 @@ namespace ScriptEditor
         public static byte highlight = 0;
         public static byte encoding = 0; // 0 = DEFAULT, 1 = DOS(cp866)
         public static bool allowDefine = true;
+
+        // no saved settings
+        public static bool msgLipColumn = true;
 
         public static void SetupWindowPosition(SavedWindows window, System.Windows.Forms.Form f)
         {
@@ -71,7 +75,17 @@ namespace ScriptEditor
             windowPositions[(int)window] = wp;
         }
 
+        public static void AddMsgRecentFile(string s, bool b = false)
+        {
+            SubRecentFile(ref recentMsg, s, b);
+        }
+
         public static void AddRecentFile(string s, bool b = false)
+        {
+            SubRecentFile(ref recent, s, b);
+        }
+
+        public static void SubRecentFile(ref List<string> recent, string s, bool b)
         {
             for (int i = 0; i < recent.Count; i++) {
                 if (string.Compare(recent[i], s, true) == 0)
@@ -83,6 +97,7 @@ namespace ScriptEditor
         }
 
         public static string[] GetRecent() { return recent.ToArray(); }
+        public static string[] GetMsgRecent() { return recentMsg.ToArray(); }
 
         private static void LoadWindowPos(BinaryReader br, int i)
         {
@@ -134,6 +149,9 @@ namespace ScriptEditor
                 shortCircuit = br.ReadBoolean();
                 autocomplete = br.ReadBoolean();
                 showLog = br.ReadBoolean();
+                recentItems = br.ReadByte();
+                for (int i = 0; i < recentItems; i++)
+                    recentMsg.Add(br.ReadString());
             } catch {
                 return;
             }
@@ -157,6 +175,7 @@ namespace ScriptEditor
                 LoadInternal(br);
                 br.Close();
             }
+            if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath);
         }
 
         private static void WriteWindowPos(BinaryWriter bw, int i)
@@ -201,6 +220,9 @@ namespace ScriptEditor
             bw.Write(shortCircuit);
             bw.Write(autocomplete);
             bw.Write(showLog);
+            bw.Write((byte)recentMsg.Count);
+            for (int i = 0; i < recentMsg.Count; i++)
+                bw.Write(recentMsg[i]);
             bw.Close();
         }
 
