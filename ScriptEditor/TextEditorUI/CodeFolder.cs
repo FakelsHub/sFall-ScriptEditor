@@ -18,7 +18,7 @@ namespace ScriptEditor.TextEditorUI
 
             fileName = fileName.ToLowerInvariant();
             for (int i = 0; i < pi.procs.Length; i++) {
-                if (pi.procs[i].filename != fileName)
+                if (pi.procs[i].filename != fileName || pi.procs[i].d.start == pi.procs[i].d.end)
                     continue;
                 list.Add(new FoldMarker(document, pi.procs[i].d.start - 1, 0, pi.procs[i].d.end - 1, 0, FoldType.MemberBody));
             }
