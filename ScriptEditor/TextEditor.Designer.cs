@@ -31,6 +31,7 @@ namespace ScriptEditor {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Split_button = new System.Windows.Forms.Button();
             this.TabClose_button = new System.Windows.Forms.Button();
+            this.tabControl1 = new DraggableTabControl();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.SearchToolStrip = new System.Windows.Forms.ToolStrip();
             this.CaseButton = new System.Windows.Forms.ToolStripButton();
@@ -169,7 +170,6 @@ namespace ScriptEditor {
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
-            this.tabControl1 = new DraggableTabControl();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -303,6 +303,22 @@ namespace ScriptEditor {
             this.TabClose_button.UseVisualStyleBackColor = true;
             this.TabClose_button.Visible = false;
             this.TabClose_button.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
+            this.tabControl1.Location = new System.Drawing.Point(0, 25);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(701, 525);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // imageList1
             // 
@@ -1402,7 +1418,7 @@ namespace ScriptEditor {
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 22);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
             this.toolStripDropDownButton1.Visible = false;
             this.toolStripDropDownButton1.Click += new System.EventHandler(this.DecIndentStripButton_Click);
@@ -1603,22 +1619,6 @@ namespace ScriptEditor {
             this.toolTipAC.IsBalloon = true;
             this.toolTipAC.ReshowDelay = 100;
             // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ImageList = this.imageList1;
-            this.tabControl1.Location = new System.Drawing.Point(0, 25);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(701, 525);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
-            // 
             // TextEditor
             // 
             this.AllowDrop = true;
@@ -1665,7 +1665,6 @@ namespace ScriptEditor {
         }
         private System.Windows.Forms.ToolTip toolTipAC;
         private System.Windows.Forms.ListBox lbAutocomplete;
-        private System.Windows.Forms.TextBox tbOutputParse;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.ToolStripMenuItem closeAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllButThisToolStripMenuItem;
@@ -1811,5 +1810,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem decIndentToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton UnCommentStripButton;
         protected internal System.Windows.Forms.ToolStripMenuItem msgAutoOpenEditorStripMenuItem;
+        private System.Windows.Forms.TextBox tbOutputParse;
     }
 }

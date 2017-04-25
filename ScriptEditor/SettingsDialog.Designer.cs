@@ -49,6 +49,7 @@
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.cbAutocomplete = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.cbParserWarn = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -93,6 +94,7 @@
             this.cbWarnings.Size = new System.Drawing.Size(101, 17);
             this.cbWarnings.TabIndex = 0;
             this.cbWarnings.Text = "Show Warnings";
+            this.toolTip.SetToolTip(this.cbWarnings, "Show compiler warning messages.");
             this.cbWarnings.UseVisualStyleBackColor = true;
             // 
             // cbDebug
@@ -108,18 +110,18 @@
             // cbIncludePath
             // 
             this.cbIncludePath.AutoSize = true;
-            this.cbIncludePath.Location = new System.Drawing.Point(295, 54);
+            this.cbIncludePath.Location = new System.Drawing.Point(303, 54);
             this.cbIncludePath.Name = "cbIncludePath";
-            this.cbIncludePath.Size = new System.Drawing.Size(138, 17);
+            this.cbIncludePath.Size = new System.Drawing.Size(137, 17);
             this.cbIncludePath.TabIndex = 3;
-            this.cbIncludePath.Text = "Override Includes paths";
+            this.cbIncludePath.Text = "Override includes paths";
             this.toolTip.SetToolTip(this.cbIncludePath, "Override path of header files in script, to this selected path.");
             this.cbIncludePath.UseVisualStyleBackColor = true;
             // 
             // bChange
             // 
             this.bChange.Image = ((System.Drawing.Image)(resources.GetObject("bChange.Image")));
-            this.bChange.Location = new System.Drawing.Point(439, 29);
+            this.bChange.Location = new System.Drawing.Point(446, 29);
             this.bChange.Name = "bChange";
             this.bChange.Size = new System.Drawing.Size(30, 25);
             this.bChange.TabIndex = 4;
@@ -140,12 +142,13 @@
             this.cbWarnFailedCompile.Size = new System.Drawing.Size(134, 17);
             this.cbWarnFailedCompile.TabIndex = 7;
             this.cbWarnFailedCompile.Text = "Warn on failed compile";
+            this.toolTip.SetToolTip(this.cbWarnFailedCompile, "Show message that script compilation was not successful.");
             this.cbWarnFailedCompile.UseVisualStyleBackColor = true;
             // 
             // cbMultiThread
             // 
             this.cbMultiThread.AutoSize = true;
-            this.cbMultiThread.Location = new System.Drawing.Point(150, 44);
+            this.cbMultiThread.Location = new System.Drawing.Point(146, 44);
             this.cbMultiThread.Name = "cbMultiThread";
             this.cbMultiThread.Size = new System.Drawing.Size(156, 17);
             this.cbMultiThread.TabIndex = 8;
@@ -165,7 +168,7 @@
             // bScriptsH
             // 
             this.bScriptsH.Image = ((System.Drawing.Image)(resources.GetObject("bScriptsH.Image")));
-            this.bScriptsH.Location = new System.Drawing.Point(439, 68);
+            this.bScriptsH.Location = new System.Drawing.Point(446, 68);
             this.bScriptsH.Name = "bScriptsH";
             this.bScriptsH.Size = new System.Drawing.Size(30, 25);
             this.bScriptsH.TabIndex = 10;
@@ -208,7 +211,7 @@
             "Basic",
             "Full",
             "Experimental"});
-            this.cbOptimize.Location = new System.Drawing.Point(150, 17);
+            this.cbOptimize.Location = new System.Drawing.Point(146, 17);
             this.cbOptimize.Name = "cbOptimize";
             this.cbOptimize.Size = new System.Drawing.Size(95, 21);
             this.cbOptimize.TabIndex = 15;
@@ -217,7 +220,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(249, 21);
+            this.label6.Location = new System.Drawing.Point(245, 21);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(64, 13);
             this.label6.TabIndex = 16;
@@ -264,11 +267,12 @@
                     " references\" and similar functions,\r\nas well as right panel with program globals" +
                     ".");
             this.cbEnableParser.UseVisualStyleBackColor = true;
+            this.cbEnableParser.CheckedChanged += new System.EventHandler(this.cbEnableParser_CheckedChanged);
             // 
             // cbShortCircuit
             // 
             this.cbShortCircuit.AutoSize = true;
-            this.cbShortCircuit.Location = new System.Drawing.Point(150, 67);
+            this.cbShortCircuit.Location = new System.Drawing.Point(146, 67);
             this.cbShortCircuit.Name = "cbShortCircuit";
             this.cbShortCircuit.Size = new System.Drawing.Size(134, 17);
             this.cbShortCircuit.TabIndex = 20;
@@ -298,13 +302,24 @@
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(412, 324);
+            this.button1.Location = new System.Drawing.Point(419, 324);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 24;
             this.button1.Text = "OK";
             this.toolTip.SetToolTip(this.button1, "Close and save settings");
             this.button1.UseVisualStyleBackColor = true;
+            // 
+            // cbParserWarn
+            // 
+            this.cbParserWarn.AutoSize = true;
+            this.cbParserWarn.Location = new System.Drawing.Point(434, 21);
+            this.cbParserWarn.Name = "cbParserWarn";
+            this.cbParserWarn.Size = new System.Drawing.Size(66, 17);
+            this.cbParserWarn.TabIndex = 30;
+            this.cbParserWarn.Text = "Warning";
+            this.toolTip.SetToolTip(this.cbParserWarn, "Show parser warnings in log messages.");
+            this.cbParserWarn.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -333,7 +348,7 @@
             this.groupBox2.Controls.Add(label4);
             this.groupBox2.Location = new System.Drawing.Point(12, 114);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(475, 104);
+            this.groupBox2.Size = new System.Drawing.Size(482, 104);
             this.groupBox2.TabIndex = 23;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Path";
@@ -343,7 +358,7 @@
             this.textBox2.Location = new System.Drawing.Point(6, 32);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(427, 20);
+            this.textBox2.Size = new System.Drawing.Size(434, 20);
             this.textBox2.TabIndex = 13;
             // 
             // textBox1
@@ -351,7 +366,7 @@
             this.textBox1.Location = new System.Drawing.Point(6, 71);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(427, 20);
+            this.textBox1.Size = new System.Drawing.Size(434, 20);
             this.textBox1.TabIndex = 13;
             // 
             // HintLang_comboBox
@@ -362,7 +377,7 @@
             "English",
             "Russian",
             "Chinese"});
-            this.HintLang_comboBox.Location = new System.Drawing.Point(412, 224);
+            this.HintLang_comboBox.Location = new System.Drawing.Point(419, 224);
             this.HintLang_comboBox.Name = "HintLang_comboBox";
             this.HintLang_comboBox.Size = new System.Drawing.Size(75, 21);
             this.HintLang_comboBox.TabIndex = 25;
@@ -370,7 +385,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(321, 228);
+            this.label2.Location = new System.Drawing.Point(328, 228);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 13);
             this.label2.TabIndex = 26;
@@ -382,7 +397,7 @@
             this.groupBox3.Controls.Add(this.listView1);
             this.groupBox3.Location = new System.Drawing.Point(12, 247);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(387, 100);
+            this.groupBox3.Size = new System.Drawing.Size(400, 100);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "MSG Files Path";
@@ -397,7 +412,7 @@
             this.listView1.Location = new System.Drawing.Point(6, 19);
             this.listView1.Name = "listView1";
             this.listView1.ShowGroups = false;
-            this.listView1.Size = new System.Drawing.Size(375, 75);
+            this.listView1.Size = new System.Drawing.Size(388, 75);
             this.listView1.TabIndex = 15;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -413,7 +428,7 @@
             this.Highlight_comboBox.Items.AddRange(new object[] {
             "Original",
             "F-Geck"});
-            this.Highlight_comboBox.Location = new System.Drawing.Point(411, 266);
+            this.Highlight_comboBox.Location = new System.Drawing.Point(418, 266);
             this.Highlight_comboBox.Name = "Highlight_comboBox";
             this.Highlight_comboBox.Size = new System.Drawing.Size(76, 21);
             this.Highlight_comboBox.TabIndex = 28;
@@ -421,7 +436,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(411, 250);
+            this.label3.Location = new System.Drawing.Point(418, 250);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 13);
             this.label3.TabIndex = 29;
@@ -432,7 +447,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(498, 359);
+            this.ClientSize = new System.Drawing.Size(506, 359);
+            this.Controls.Add(this.cbParserWarn);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.Highlight_comboBox);
             this.Controls.Add(this.label2);
@@ -504,5 +520,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ComboBox Highlight_comboBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox cbParserWarn;
     }
 }

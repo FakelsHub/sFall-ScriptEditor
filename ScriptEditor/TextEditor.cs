@@ -527,6 +527,7 @@ namespace ScriptEditor
                     rootNode.ForeColor = Color.DarkBlue;
                     rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
                 }
+                ProcTree.Nodes[1].ToolTipText = "Goto beginning of script";
                 foreach (Procedure p in currentTab.parseInfo.procs) {
                     TreeNode tn = new TreeNode(p.name); //TreeNode(p.ToString(false));
                     tn.Tag = p;
@@ -579,9 +580,13 @@ namespace ScriptEditor
         // Click on node tree Procedures/Variables
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (e.Action == TreeViewAction.Unknown) return;
             string file = null;
             int line = 0;
-            if (e.Node.Tag is Variable) {
+            if (e.Node.Text == TREEPROCEDURES[1]) {
+                file = currentTab.filepath;
+                line++;
+            } else if (e.Node.Tag is Variable) {
                 Variable var = (Variable)e.Node.Tag;
                 file = var.fdeclared;
                 line = var.d.declared;
@@ -590,14 +595,13 @@ namespace ScriptEditor
                 file = proc.fstart;
                 line = proc.d.start;
             }
-            if (file != null && line != -1) {
-                SelectLine(file, line);
-            }
+            if (file != null) SelectLine(file, line);
         }
 
         // Goto script text of selected Variable or Procedure in treeview
         private void SelectLine(string file, int line, int column = -1)
         {
+            if (line <= 0) return;
             bool not_this = false;
             if (file != currentTab.filepath) {
                 if (Open(file, OpenType.File, false) == null) {
@@ -700,12 +704,19 @@ namespace ScriptEditor
         }
 
 #region ParseFunction
+        public void intParserPrint(string info) { tbOutputParse.Text = info + tbOutputParse.Text; }
+
         // Parse first open script
         private void FirstParseScript(TabInfo cTab)
         {
-            Parser.InternalParser(cTab);
+            tbOutputParse.Text = string.Empty;
+            Parser.InternalParser(cTab, this);
             cTab.textEditor.Document.FoldingManager.UpdateFoldings(cTab.filename, cTab.parseInfo);
             cTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+            if (tbOutputParse.Text.Length > 0) {
+                tabControl2.SelectedIndex = 2;
+                //maximize_log();
+            }
         }
 
         private void ParseScript(int delay = 1)
@@ -727,7 +738,10 @@ namespace ScriptEditor
             }
             if (DateTime.Now > timer2Next) {
                 timer2.Stop();
-                Parser.InternalParser(currentTab);
+                parserRunning = true; // internal parse work
+                tbOutputParse.Text = string.Empty;
+                Parser.InternalParser(currentTab, this);
+                parserRunning = false;
                 currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, currentTab.parseInfo);
                 currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
                 UpdateNames();
@@ -776,7 +790,7 @@ namespace ScriptEditor
                 timer.Stop();
                 return;
             }
-            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy){
+            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy && !parserRunning) {
                 parserLabel.Text = (Settings.enableParser) ? "Parser: Working" : "Parser: Get only macros";
                 parserRunning = true;
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentTab.textEditor.Document.TextContent, currentTab));
@@ -798,7 +812,7 @@ namespace ScriptEditor
         private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (File.Exists("errors.txt")){
-                tbOutputParse.Text = File.ReadAllText("errors.txt");
+                tbOutputParse.Text = ParseError.ParserLog(File.ReadAllText("errors.txt"), currentTab.filename) + tbOutputParse.Text;
                 File.Delete("errors.txt");
             }
             if (!(e.Result is TabInfo)) {
@@ -1286,7 +1300,7 @@ namespace ScriptEditor
                 if (tabControl3.TabPages.Count > 2 ) {
                     if (currentTab == null) {
                         tabControl3.TabPages.RemoveAt(1);
-                    } else if (!currentTab.parseInfo.parseData) {
+                    } else if (!currentTab.parseInfo.parseData) { //here bug
                         tabControl3.TabPages.RemoveAt(1);
                     }
                 }
@@ -1794,12 +1808,12 @@ namespace ScriptEditor
         {
             string word, file = currentTab.filepath;
             int line;
-            if (((ToolStripDropDownItem)sender).Tag != null) { //.ToString() == "Button"
+            if (((ToolStripDropDownItem)sender).Tag != null) { // "Button"
                 if (!currentTab.shouldParse) return;
                 Parser.UpdateParseSSL(currentTab.textEditor.Text);
                 TextLocation tl = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
                 word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
-                line = Parser.GetPocedureLine(word);
+                line = Parser.GetProcBeginEndBlock(word, 0, true).begin;
                 if (line != -1) line++; else return;
             } else {
                 TextLocation tl = (TextLocation)editorMenuStrip.Tag;
@@ -1995,6 +2009,7 @@ namespace ScriptEditor
         {
                 int hs = Size.Height - (Size.Height / 4);
                 splitContainer1.SplitterDistance = hs;
+                minimizelogsize = 0;
         }
 
         private void showLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2166,7 +2181,9 @@ namespace ScriptEditor
             ProcForm CreateProcFrm = new ProcForm();
             CreateProcFrm.ProcedureName.Text = name;
             CreateProcFrm.ProcedureName.ReadOnly = true;
-            CreateProcFrm.checkBox1.Enabled = false;
+            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) {
+                CreateProcFrm.checkBox1.Enabled = false;
+            } else CreateProcFrm.groupBox1.Enabled = false;
             ProcTree.HideSelection = false;
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
                 ProcTree.HideSelection = true;
@@ -2195,19 +2212,21 @@ namespace ScriptEditor
                 return;
             }
             Parser.UpdateParseSSL(currentTab.textEditor.Text);
+            string name = CreateProcFrm.ProcedureName.Text;
+            if (Parser.CheckExistsProcedureName(name)) return;
             ProcBlock block = new ProcBlock();
             if (CreateProcFrm.checkBox1.Checked || CreateProcFrm.radioButton2.Checked) {
                 block = Parser.GetProcBeginEndBlock(ProcTree.SelectedNode.Text);
                 block.copy = CreateProcFrm.checkBox1.Checked;
             }
-            InsertProcedure(CreateProcFrm.ProcedureName.Text, block, CreateProcFrm.radioButton2.Checked);
+            InsertProcedure(name, block, CreateProcFrm.radioButton2.Checked);
             CreateProcFrm.Dispose();
         }
 
         // Create procedure block
         private void InsertProcedure(string name, ProcBlock block, bool after = false, byte overrides = 0)
         {
-            if (Parser.CheckExistsProcedureName(name)) return;
+            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
             int findLine, caretline = 3;
             string procbody;
             //Copy from procedure
@@ -2218,7 +2237,7 @@ namespace ScriptEditor
             string procblock = (overrides > 0)
                        ? "\r\nprocedure " + name + "\r\nbegin\r\n" + procbody + "end\r\n"
                        : "\r\nprocedure " + name + "\r\nbegin\r\n\r\nend\r\n";
-            if (after)findLine = Parser.GetDeclarationProcedureLine(ProcTree.SelectedNode.Text) + 1; 
+            if (after) findLine = Parser.GetDeclarationProcedureLine(ProcTree.SelectedNode.Text) + 1;
                 else findLine = Parser.GetEndLineProcDeclaration(); 
             if (findLine == -1) MessageBox.Show("The declaration procedure is written to beginning of script.", "Warning");
             currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
@@ -2237,6 +2256,7 @@ namespace ScriptEditor
             currentTab.textEditor.ActiveTextAreaControl.Caret.Column = 0;
             currentTab.textEditor.ActiveTextAreaControl.Caret.Line = findLine + (caretline + overrides);
             currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(findLine + (caretline + overrides), 0);
+            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
             SetFocusDocument();
         }
 
@@ -2266,6 +2286,7 @@ namespace ScriptEditor
             Regex s_regex = new Regex(search, option);
             MatchCollection matches = s_regex.Matches(currentTab.textEditor.Text);
             int rename_count = 0;
+            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
             foreach (Match m in matches)
             {
                 int offset_replace = differ * rename_count;
@@ -2276,6 +2297,7 @@ namespace ScriptEditor
                 currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset_replace + (m.Index + 1), newName);
                 rename_count++;
             }
+            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
             CreateProcFrm.Dispose();
             SetFocusDocument();
         }
@@ -2286,19 +2308,23 @@ namespace ScriptEditor
             if (MessageBox.Show("Are you sure you want to delete \"" + ProcTree.SelectedNode.Text + "\" procedure?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No) return;
             Parser.UpdateParseSSL(currentTab.textEditor.Text);
             string def_poc;
-            DeleteProcedure(ProcTree.SelectedNode.Text, out def_poc);
+            string procName = ProcTree.SelectedNode.Text;
+            ProcBlock block = Parser.GetProcBeginEndBlock(procName, 0, true);
+            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
+            DeleteProcedure(procName, block, out def_poc);
+            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
             SetFocusDocument();
         }
 
-        private void DeleteProcedure(string procName, out string def_poc) 
+        private void DeleteProcedure(string procName, ProcBlock block, out string def_poc)
         {
             int declarLine = Parser.GetDeclarationProcedureLine(procName);
+            if (declarLine != block.begin & declarLine > -1) {
             int len = TextUtilities.GetLineAsString(currentTab.textEditor.Document, declarLine).Length;
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(0, declarLine), new TextLocation(len, declarLine));
             def_poc = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
-            ProcBlock block = Parser.GetProcBeginEndBlock(procName);
-            block.begin = Parser.GetPocedureLine(procName);
+            } else def_poc = null;
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(0, block.begin), new TextLocation(1000, block.end));
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
             int offset = currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.PositionToOffset(new TextLocation(0, block.begin + 1));
@@ -2346,22 +2372,29 @@ namespace ScriptEditor
             int root = ProcTree.Nodes.Count - 1;
             Parser.UpdateParseSSL(currentTab.textEditor.Text);
             string moveName = ProcTree.Nodes[root].Nodes[moveActive].Text;
-            ProcBlock block = Parser.GetProcBeginEndBlock(moveName);
-            block.begin = Parser.GetPocedureLine(moveName);
+            // copy body
+            ProcBlock block = Parser.GetProcBeginEndBlock(moveName, 0, true);
             string copy_procbody = GetSelectBlockText(block.begin, block.end, 1000);
             string copy_defproc;
-            DeleteProcedure(moveName, out copy_defproc);
-            // insert declration
+            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
+            //
+            DeleteProcedure(moveName, block, out copy_defproc);
             Parser.UpdateParseSSL(currentTab.textEditor.Text);
             string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
+            // insert declration
+            int offset;
+            if (copy_defproc != null) {
             int p_def = Parser.GetDeclarationProcedureLine(name);
-            int p_begin = Parser.GetPocedureLine(name) + 1;
-            //paste proc block
-            int offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_def));
+
+            offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_def));
             currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, copy_defproc + Environment.NewLine);
+            }
+            //paste proc block
+            int p_begin = Parser.GetProcBeginEndBlock(name, 0, true).begin;
             offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_begin));
             currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, copy_procbody + "\r\n\r\n");
             //
+            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
             TreeNode nd = ProcTree.Nodes[root].Nodes[moveActive];
             ProcTree.Nodes[root].Nodes.RemoveAt(moveActive);
             ProcTree.Nodes[root].Nodes.Insert(sIndex, nd);
@@ -2378,9 +2411,9 @@ namespace ScriptEditor
             if (moveActive == -1) {
                 moveActive = ProcTree.SelectedNode.Index;
                 ProcTree.SelectedNode.ForeColor = Color.Red;
-                ProcTree.SelectedNode = ProcTree.Nodes[0];
                 ProcTree.Cursor = Cursors.Hand;
                 ProcTree.AfterSelect -= TreeView_AfterSelect;
+                ProcTree.SelectedNode = ProcTree.Nodes[0];
                 ProcTree.AfterSelect += new TreeViewEventHandler(ProcTree_AfterSelect);
             }
         }
@@ -2443,6 +2476,7 @@ namespace ScriptEditor
             if (addSearchText) SearchTextComboBox.Items.Add(world);
         }
 
+#region Script text utilites
         private void DecIndentStripButton_Click(object sender, EventArgs e)
         {
             int len;
@@ -2554,6 +2588,7 @@ namespace ScriptEditor
                 currentTab.textEditor.Document.UndoStack.EndUndoGroup();
             }
         }
+#endregion
 
         private void msgFileEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {

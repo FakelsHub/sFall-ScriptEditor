@@ -38,4 +38,35 @@ namespace ScriptEditor.TextEditorUI
             return message;
         }
     }
+
+    public class ParseError
+    {
+        public static string ParserLog(string log, string filename)
+        {
+            bool warn = false;
+            string[] sLog = log.Split('\n');
+            log = string.Empty;
+            for (int i = 0; i < sLog.Length; i++)
+            {
+                sLog[i] = sLog[i].Replace("\r", string.Empty);
+                if (sLog[i].StartsWith("[Error]")) {
+                    if (log.Length > 0) log += Environment.NewLine;
+                    warn = false;
+                }
+                if (sLog[i].StartsWith("[Warning]")) {
+                    if (!Settings.parserWarn){
+                    warn = true;
+                    continue;
+                    }
+                    if (log.Length > 0) log += Environment.NewLine;
+                }
+                if (!warn) log += sLog[i] + Environment.NewLine;
+            }
+            if (log.Length > 2)
+                log = " ////// Script: " + filename
+                + " <Parse Time: " + DateTime.Now.Hour + ":" + DateTime.Now.Minute 
+                + "> //////" + Environment.NewLine + log;
+            return log;
+        }
+    }
 }

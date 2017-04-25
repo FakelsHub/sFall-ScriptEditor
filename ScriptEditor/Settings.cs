@@ -48,6 +48,7 @@ namespace ScriptEditor
         public static byte highlight = 0;
         public static byte encoding = 0; // 0 = DEFAULT, 1 = DOS(cp866)
         public static bool allowDefine = true;
+        public static bool parserWarn = true;
 
         // no saved settings
         public static bool msgLipColumn = true;
@@ -147,6 +148,7 @@ namespace ScriptEditor
                 shortCircuit = br.ReadBoolean();
                 autocomplete = br.ReadBoolean();
                 showLog = br.ReadBoolean();
+                parserWarn = br.ReadBoolean();
             } catch { }
             // Recent files
             if (brRecent == null) return;
@@ -223,6 +225,7 @@ namespace ScriptEditor
             bw.Write(shortCircuit);
             bw.Write(autocomplete);
             bw.Write(showLog);
+            bw.Write(parserWarn);
             bw.Close();
             // Recent files
             BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));

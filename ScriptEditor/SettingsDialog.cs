@@ -28,6 +28,8 @@ namespace ScriptEditor
             cbAutocomplete.Checked = Settings.autocomplete;
             Highlight_comboBox.SelectedIndex = Settings.highlight;
             HintLang_comboBox.SelectedIndex = Settings.hintsLang;
+            if (!Settings.enableParser) cbParserWarn.Enabled = false;
+            cbParserWarn.Checked = Settings.parserWarn;
             SetLabelText();
         }
 
@@ -63,6 +65,7 @@ namespace ScriptEditor
             Settings.autocomplete = cbAutocomplete.Checked;
             Settings.highlight = (byte)Highlight_comboBox.SelectedIndex;
             Settings.hintsLang = (byte)HintLang_comboBox.SelectedIndex;
+            Settings.parserWarn = cbParserWarn.Checked;
             Settings.Save();
         }
 
@@ -94,6 +97,11 @@ namespace ScriptEditor
                 n = 3;
             }
             tbTabSize.Text = Convert.ToString(n);
+        }
+
+        private void cbEnableParser_CheckedChanged(object sender, EventArgs e)
+        {
+            cbParserWarn.Enabled = cbEnableParser.Checked;
         }
     }
 }
