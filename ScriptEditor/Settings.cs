@@ -13,10 +13,10 @@ namespace ScriptEditor
         public static readonly string ProgramFolder = Path.GetDirectoryName(Application.ExecutablePath);
         public static readonly string SettingsFolder = Path.Combine(ProgramFolder, "settings");
         public static readonly string ResourcesFolder = Path.Combine(ProgramFolder, "resources");
+        public static readonly string scriptTempPath = Path.Combine(ProgramFolder, "scrTemp");
 
         private static readonly string RecentPath = Path.Combine(SettingsFolder, "recent.dat");
         private static readonly string SettingsPath = Path.Combine(SettingsFolder, "settings.dat");
-        private static readonly string PreprocessPath = Path.Combine(SettingsFolder, "preprocess.ssl");
         public static readonly string SearchHistoryPath = Path.Combine(SettingsFolder, "SearchHistory.ini");
 
         const int MAX_RECENT = 30;
@@ -163,6 +163,9 @@ namespace ScriptEditor
 
         public static void Load()
         {
+            if (!Directory.Exists(scriptTempPath)) {
+                Directory.CreateDirectory(scriptTempPath);
+            } else foreach (string file in Directory.GetFiles(scriptTempPath)) File.Delete(file);
             if (!Directory.Exists(SettingsFolder)) {
                 Directory.CreateDirectory(SettingsFolder);
             }
@@ -236,45 +239,6 @@ namespace ScriptEditor
             for (int i = 0; i < recentMsg.Count; i++)
                 bwRecent.Write(recentMsg[i]);
             bwRecent.Close();
-        }
-
-        public static string GetPreprocessedFile()
-        {
-            if (!File.Exists(PreprocessPath))
-                return null;
-            return File.ReadAllText(PreprocessPath);
-        }
-
-        public static string GetOutputPath(string infile)
-        {
-            return Path.Combine(outputDir, Path.GetFileNameWithoutExtension(infile)) + ".int";
-        }
-
-#if DLL_COMPILER
-        public static string[] GetSslcCommandLine(string infile, bool preprocess) {
-            return new string[] {
-                "--", "-q",
-                preprocess?"-P":"-p",
-                optimize?"-O":"--",
-                showWarnings?"--":"-n ",
-                showDebug?"-d":"--",
-                "-l", /* no logo */
-                Path.GetFileName(infile),
-                "-o",
-                preprocess?preprocessPath:GetOutputPath(infile),
-                null
-            };
-#else
-        public static string GetSslcCommandLine(string infile, bool preprocess)
-        {
-            return (preprocess ? "-P " : "-p ")
-                + ("-O" + optimize + " ")
-                + (showWarnings ? "" : "-n ")
-                + (showDebug ? "-d " : "")
-                + ("-l ") /* always no logo */
-                + (shortCircuit ? "-s " : "")
-                + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? PreprocessPath : GetOutputPath(infile)) + "\"";
-#endif
         }
 
         struct WindowPos

@@ -5,10 +5,7 @@ using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using System.Text.RegularExpressions;
-using Path = System.IO.Path;
-using File = System.IO.File;
-using Directory = System.IO.Directory;
-using SearchOption = System.IO.SearchOption;
+using System.IO;
 using ScriptEditor.CodeTranslation;
 using ScriptEditor.TextEditorUI;
 using System.Drawing;
@@ -152,15 +149,6 @@ namespace ScriptEditor
 
         private void TextEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (sf != null) {
-                sf.Close();
-            }
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(Settings.SearchHistoryPath);
-            foreach (var item in SearchTextComboBox.Items) sw.WriteLine(item.ToString());
-            sw.Close();
-            Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
-            Settings.SaveWindowPosition(SavedWindows.Main, this);
-            Settings.Save();
             for (int i = 0; i < tabs.Count; i++) {
                 if (tabs[i].changed) {
                     switch (MessageBox.Show("Save changes to " + tabs[i].filename + "?", "Message", MessageBoxButtons.YesNoCancel)) {
@@ -179,6 +167,14 @@ namespace ScriptEditor
                     }
                 }
             }
+            if (sf != null) sf.Close();
+            StreamWriter sw = new StreamWriter(Settings.SearchHistoryPath);
+            foreach (var item in SearchTextComboBox.Items) sw.WriteLine(item.ToString());
+            sw.Close();
+            Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
+            Settings.SaveWindowPosition(SavedWindows.Main, this);
+            Settings.Save();
+            Directory.Delete(Settings.scriptTempPath, true);
         }
 
         private void UpdateRecentList()
@@ -193,12 +189,7 @@ namespace ScriptEditor
             }
         }
 
-        private void SetTabText(int i)
-        {
-            //tabControl1.TabPages[i].Text = tabs[i].filename + (tabs[i].changed ? " *" : "");
-            tabControl1.TabPages[i].ToolTipText = tabs[i].filepath;
-            tabControl1.TabPages[i].ImageIndex = (tabs[i].changed ? 1 : 0);
-        }
+        private void SetTabTextChange(int i) { tabControl1.TabPages[i].ImageIndex = (tabs[i].changed ? 1 : 0); }
 
         public enum OpenType { None, File, Text }
 
@@ -219,7 +210,7 @@ namespace ScriptEditor
                     Settings.AddRecentFile(file, recent);
                     UpdateRecentList();
                     if (recent) {
-                        MessageBox.Show("This file was not found.", "Error");
+                        MessageBox.Show("This file was not found.", "Open file error");
                     }
                 }
                 if (!Exists) return null;
@@ -230,10 +221,7 @@ namespace ScriptEditor
                     if (decomp == null) {
                         MessageBox.Show("Decompilation of '" + file + "' was not successful", "Error");
                         return null;
-                    } else {
-                        file = decomp;
-                        type = OpenType.Text;
-                    }
+                    } else file = decomp;
                 } else {
                     //Check if the file is already open
                     for (int i = 0; i < tabs.Count; i++) {
@@ -288,10 +276,16 @@ namespace ScriptEditor
             ti.history.linePosition = new TextLocation[0];
             ti.history.pointerCur = -1;
             ti.textEditor = te;
-            ti.changed = false;
+            if (type == OpenType.None) { // only for new create script
+                if (sfdScripts.ShowDialog() == DialogResult.OK) {
+                    file = sfdScripts.FileName;
+                    type = OpenType.File;
+                    ti.changed = true;
+                } else return null; 
+            } else ti.changed = false;
             if (type == OpenType.File ) { //&& !alwaysNew
                 if (alwaysNew) {
-                    string temp = Path.Combine(Settings.SettingsFolder, unsaved);
+                    string temp = Path.Combine(Settings.scriptTempPath, unsaved);
                     File.Copy(file, temp, true); 
                     file = temp;
                 }
@@ -382,7 +376,7 @@ namespace ScriptEditor
                 }
                 File.WriteAllText(tab.filepath, tab.textEditor.Text, EncCodePage);
                 tab.changed = false;
-                SetTabText(tab.index);
+                SetTabTextChange(tab.index);
             }
         }
 
@@ -391,9 +385,11 @@ namespace ScriptEditor
             if (tab != null && sfdScripts.ShowDialog() == DialogResult.OK) {
                 tab.filepath = sfdScripts.FileName;
                 tab.filename = System.IO.Path.GetFileName(tab.filepath);
+                tabControl1.TabPages[tab.index].Text = tabs[tab.index].filename;
+                tabControl1.TabPages[tab.index].ToolTipText = tabs[tab.index].filepath;
                 Save(tab);
                 Settings.AddRecentFile(tab.filepath);
-                System.String ext = Path.GetExtension(tab.filepath).ToLower();
+                string ext = Path.GetExtension(tab.filepath).ToLower();
                 if (Settings.enableParser && (ext == ".ssl" || ext == ".h")) {
                     tab.shouldParse = true;
                     tab.needsParse = true;
@@ -824,7 +820,7 @@ namespace ScriptEditor
                     if (tab.parseInfo.parsed) {
                         currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
                         currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-                        Outline_toolStripButton.Enabled = true;
+                        if (currentTab.parseInfo.procs.Length > 0) Outline_toolStripButton.Enabled = true;
                         UpdateNames(); // Update Tree Variables/Pocedures
                         parserLabel.Text = (Settings.enableParser) ? "Parser: Complete": parseoff + " [only macros]";
                         currentTab.needsParse = false;
@@ -842,7 +838,7 @@ namespace ScriptEditor
         {
             if (!currentTab.changed) {
                 currentTab.changed = true;
-                SetTabText(currentTab.index);
+                SetTabTextChange(currentTab.index);
             }
             if (currentTab.shouldParse /*&& Settings.enableParser*/) { // if the parser is disabled then nothing
                 if (currentTab.shouldParse && !currentTab.needsParse) {
@@ -918,7 +914,8 @@ namespace ScriptEditor
         {
             if (currentTab.parseInfo != null && currentTab.parseInfo.procs.Length > 0) {
                 Outline_toolStripButton.Enabled = true;
-            } else Outline_toolStripButton.Enabled = false; SetBackForwardButtonState();
+            } else Outline_toolStripButton.Enabled = false;
+            SetBackForwardButtonState();
             string ext = Path.GetExtension(currentTab.filename).ToLower();
             if (ext == ".ssl" || ext == ".h") {
                 DecIndentStripButton.Enabled = true;
@@ -933,6 +930,7 @@ namespace ScriptEditor
 
         // No selected text tabs
         private void SetFormControlsOff() {
+            Outline_toolStripButton.Enabled = false;
             splitContainer2.Panel2Collapsed = true;
             TabClose_button.Visible = false;
             openAllIncludesScriptToolStripMenuItem.Enabled = false;
@@ -1702,9 +1700,9 @@ namespace ScriptEditor
             tbOutput.Text = msg;
             if (!result)
                 return;
-            string text = Settings.GetPreprocessedFile();
-            if (text != null)
-                Open(text, OpenType.Text, false);
+            string file = Compiler.GetPreprocessedFile(currentTab.filename);
+            if (file != null)
+                Open(file, OpenType.File, false);
             else {
                 MessageBox.Show("Failed to fetch preprocessed file");
             }
@@ -1719,7 +1717,7 @@ namespace ScriptEditor
             bool result = Compile(currentTab, out msg);
             tbOutput.Text = msg;
             if (result)
-                Open(Settings.GetOutputPath(currentTab.filepath), OpenType.File, false);
+                Open(Compiler.GetOutputPath(currentTab.filepath), OpenType.File, false);
         }
 
         private void editRegisteredScriptsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2125,7 +2123,7 @@ namespace ScriptEditor
             ColStripStatusLabel.Text = "Col: " + (_position.Column + 1);
             if (PosChangeType >= PositionType.Disabled) return;
             if (PosChangeType >= PositionType.NoSave) {
-                if (PosChangeType == PositionType.SaveChange) {
+                if (PosChangeType == PositionType.SaveChange && currentTab.history.pointerCur != -1) {
                     currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
                 }
                 PosChangeType = PositionType.AddPos; // set default
@@ -2331,8 +2329,9 @@ namespace ScriptEditor
             currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.Remove(offset, 2);
         }
 
-        private string GetSelectBlockText(int _begin, int _end, int _ecol = 1000, int _bcol = 0)
+        private string GetSelectBlockText(int _begin, int _end, int _ecol = -1, int _bcol = 0)
         {
+            if (_ecol == -1) _ecol = TextUtilities.GetLineAsString(currentTab.textEditor.Document, _end).Length;
             currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new TextLocation(_bcol, _begin), new TextLocation(_ecol, _end));
             return currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
         }

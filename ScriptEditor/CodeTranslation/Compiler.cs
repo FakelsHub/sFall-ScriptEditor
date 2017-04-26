@@ -14,8 +14,9 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public class Compiler
     {
-        private static readonly string decompilationPath = Path.Combine(Settings.SettingsFolder, "decomp.ssl");
-        public static readonly string parserPath = Path.Combine(Settings.SettingsFolder, "parser.ssl");
+        private static readonly string decompilationPath = Path.Combine(Settings.scriptTempPath, "decomp.ssl");
+        public static readonly string parserPath = Path.Combine(Settings.scriptTempPath, "parser.ssl");
+        private static readonly string preprocessPath = Path.Combine(Settings.scriptTempPath, "preprocess.ssl");
 
         #region Imports from SSLC DLL
 
@@ -295,6 +296,49 @@ namespace ScriptEditor.CodeTranslation
             return file;
         }
 
+        public static string GetPreprocessedFile(string sName)
+        {
+            if (!File.Exists(preprocessPath)) return null;
+            
+            sName = Path.GetFileNameWithoutExtension(sName) + "_preproc.ssl";
+            sName = Path.Combine(Settings.scriptTempPath, sName);
+            File.Delete(sName);
+            File.Move(preprocessPath, sName);
+            return sName;   
+        }
+
+        public static string GetOutputPath(string infile)
+        {
+            return Path.Combine(Settings.outputDir, Path.GetFileNameWithoutExtension(infile)) + ".int";
+        }
+
+#if DLL_COMPILER
+        public static string[] GetSslcCommandLine(string infile, bool preprocess) {
+            return new string[] {
+                "--", "-q",
+                preprocess?"-P":"-p",
+                optimize?"-O":"--",
+                showWarnings?"--":"-n ",
+                showDebug?"-d":"--",
+                "-l", /* no logo */
+                Path.GetFileName(infile),
+                "-o",
+                preprocess?preprocessPath:GetOutputPath(infile),
+                null
+            };
+#else
+        public static string GetSslcCommandLine(string infile, bool preprocess)
+        {
+            return (preprocess ? "-P " : "-p ")
+                + ("-O" + Settings.optimize + " ")
+                + (Settings.showWarnings ? "" : "-n ")
+                + (Settings.showDebug ? "-d " : "")
+                + ("-l ") /* always no logo */
+                + (Settings.shortCircuit ? "-s " : "")
+                + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile)) + "\"";
+#endif
+        }
+
 #if DLL_COMPILER
         [System.Runtime.InteropServices.DllImport("resources\\sslc.dll")]
         private static extern int compile_main(int argc, string[] argv);
@@ -322,7 +366,7 @@ namespace ScriptEditor.CodeTranslation
 #else
 
             var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
-            ProcessStartInfo psi = new ProcessStartInfo(exePath, Settings.GetSslcCommandLine(infile, preprocessOnly));
+            ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly));
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;
@@ -381,8 +425,9 @@ namespace ScriptEditor.CodeTranslation
             if (!File.Exists(decompilationPath)) {
                 return null;
             }
-            string result = File.ReadAllText(decompilationPath);
-            File.Delete(decompilationPath);
+            string result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_decomp.ssl");
+            File.Delete(result);
+            File.Move(decompilationPath, result);
             return result;
         }
     }
