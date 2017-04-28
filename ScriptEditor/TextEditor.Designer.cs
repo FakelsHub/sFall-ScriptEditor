@@ -1522,6 +1522,7 @@ namespace ScriptEditor {
             // 
             this.fbdMassCompile.Description = "Select folder to compile";
             this.fbdMassCompile.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            this.fbdMassCompile.ShowNewFolderButton = false;
             // 
             // bwSyntaxParser
             // 

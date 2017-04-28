@@ -1458,6 +1458,8 @@ namespace ScriptEditor
                 MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Error");
                 return;
             }
+            bool option = Settings.ignoreCompPath;
+            Settings.ignoreCompPath = false;
             if (Settings.lastMassCompile != null) {
                 fbdMassCompile.SelectedPath = Settings.lastMassCompile;
             }
@@ -1466,6 +1468,7 @@ namespace ScriptEditor
             }
             Settings.lastMassCompile = fbdMassCompile.SelectedPath;
             BatchCompiler.CompileFolder(fbdMassCompile.SelectedPath);
+            Settings.ignoreCompPath = option;
         }
 
         private void compileAllOpenToolStripMenuItem_Click(object sender, EventArgs e)

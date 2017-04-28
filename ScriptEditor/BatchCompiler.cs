@@ -7,6 +7,7 @@ namespace ScriptEditor
 {
     public partial class BatchCompiler : Form
     {
+        private int found;
         private int failed;
         private int compiled;
         private readonly BackgroundWorker[] workers;
@@ -15,9 +16,10 @@ namespace ScriptEditor
         private BatchCompiler(string[] files)
         {
             InitializeComponent();
-            progressBar1.Maximum = files.Length;
+            found = files.Length;
+            progressBar1.Maximum = found;
             label1.Text = "Fail count: 0";
-            workers = new BackgroundWorker[Settings.multiThreaded ? Math.Min(Environment.ProcessorCount, files.Length) : 1];
+            workers = new BackgroundWorker[Settings.multiThreaded ? Math.Min(Environment.ProcessorCount, found) : 1];
             for (int i = 0; i < workers.Length; i++) {
                 workers[i] = new BackgroundWorker();
                 workers[i].ProgressChanged += new ProgressChangedEventHandler(BatchCompiler_ProgressChanged);
@@ -29,8 +31,8 @@ namespace ScriptEditor
             if (workers.Length == 1) {
                 workers[0].RunWorkerAsync(files);
             } else {
-                int threadswithextras = files.Length % workers.Length;
-                int filesperthread = (files.Length - (threadswithextras)) / workers.Length;
+                int threadswithextras = found % workers.Length;
+                int filesperthread = (found - (threadswithextras)) / workers.Length;
                 int upto = 0;
                 for (int i = 0; i < workers.Length; i++) {
                     string[] subblock = new string[filesperthread + (i < threadswithextras ? 1 : 0)];
@@ -57,14 +59,19 @@ namespace ScriptEditor
                     failed = 0;
                 else
                     failed = 1;
-                worker.ReportProgress(failed);
+                worker.ReportProgress(failed, s);
             }
         }
 
         void BatchCompiler_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (++completed == workers.Length)
-                Close();
+            if (++completed == workers.Length) {
+                bCancel.Visible = false;
+                bClose.Visible = true;
+                int skipped = found - (failed + compiled);
+                textBox.Text += "-------------------\r\n";
+                textBox.Text += String.Format("{0} scripts found.\r\n{1} successfully compiled.\r\n{2} failed to compile.\r\n{3} skipped.", found, compiled, failed, skipped);
+            }
         }
 
         void BatchCompiler_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -73,6 +80,7 @@ namespace ScriptEditor
             if (e.ProgressPercentage == 1) {
                 failed++;
                 label1.Text = "Fail count: " + failed;
+                textBox.Text += "Failed: " + System.IO.Path.GetFileName(e.UserState.ToString()) + "\r\n";
             } else
                 compiled++;
         }
@@ -86,11 +94,6 @@ namespace ScriptEditor
             }
             BatchCompiler bc = new BatchCompiler(infiles);
             bc.ShowDialog();
-            int found = infiles.Length;
-            int failed = bc.failed;
-            int compiled = bc.compiled;
-            int skipped = found - (failed + compiled);
-            MessageBox.Show(String.Format("{0} scripts found.\n{1} successfully compiled\n{2} failed to compile\n{3} skipped", found, compiled, failed, skipped));
         }
 
         private void bCancel_Click(object sender, EventArgs e)
@@ -98,6 +101,11 @@ namespace ScriptEditor
             for (int i = 0; i < workers.Length; i++)
                 workers[i].CancelAsync();
             bCancel.Enabled = false;
+        }
+
+        private void bClose_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
