@@ -18,13 +18,14 @@ namespace ScriptEditor
         private static readonly string RecentPath = Path.Combine(SettingsFolder, "recent.dat");
         private static readonly string SettingsPath = Path.Combine(SettingsFolder, "settings.dat");
         public static readonly string SearchHistoryPath = Path.Combine(SettingsFolder, "SearchHistory.ini");
+        public static readonly string PreprocDefPath = Path.Combine(SettingsFolder, "PreprocDefine.ini");
 
         const int MAX_RECENT = 30;
 
         public static byte optimize = 1;
         public static bool showWarnings = true;
         public static bool showDebug = true;
-        public static bool overrideIncludesPath = true;
+        public static bool overrideIncludesPath = false;
         public static bool warnOnFailedCompile = true;
         public static bool multiThreaded = true;
         public static bool autoOpenMsgs = true;
@@ -49,27 +50,30 @@ namespace ScriptEditor
         public static byte encoding = 0; // 0 = DEFAULT, 1 = DOS(cp866)
         public static bool allowDefine = true;
         public static bool parserWarn = true;
+        public static bool useWatcom = false;
+        public static string preprocDef = "---";
+        public static bool ignoreCompPath = true;
 
         // no saved settings
         public static bool msgLipColumn = true;
 
-        public static void SetupWindowPosition(SavedWindows window, System.Windows.Forms.Form f)
+        public static void SetupWindowPosition(SavedWindows window, Form f)
         {
             WindowPos wp = windowPositions[(int)window];
             if (wp.width == 0)
                 return;
             f.Location = new System.Drawing.Point(wp.x, wp.y);
             if (wp.maximized)
-                f.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                f.WindowState = FormWindowState.Maximized;
             else
                 f.ClientSize = new System.Drawing.Size(wp.width, wp.height);
-            f.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            f.StartPosition = FormStartPosition.Manual;
         }
 
-        public static void SaveWindowPosition(SavedWindows window, System.Windows.Forms.Form f)
+        public static void SaveWindowPosition(SavedWindows window, Form f)
         {
             WindowPos wp = new WindowPos();
-            wp.maximized = f.WindowState == System.Windows.Forms.FormWindowState.Maximized;
+            wp.maximized = f.WindowState == FormWindowState.Maximized;
             wp.x = f.Location.X;
             wp.y = f.Location.Y;
             wp.width = f.ClientSize.Width;
@@ -149,6 +153,9 @@ namespace ScriptEditor
                 autocomplete = br.ReadBoolean();
                 showLog = br.ReadBoolean();
                 parserWarn = br.ReadBoolean();
+                useWatcom = br.ReadBoolean();
+                preprocDef = br.ReadString();
+                ignoreCompPath = br.ReadBoolean();
             } catch { }
             // Recent files
             if (brRecent == null) return;
@@ -187,6 +194,7 @@ namespace ScriptEditor
                 brSettings.Close(); 
             }
             if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath);
+            if (!File.Exists(PreprocDefPath)) File.Create(PreprocDefPath);
         }
 
         private static void WriteWindowPos(BinaryWriter bw, int i)
@@ -229,6 +237,9 @@ namespace ScriptEditor
             bw.Write(autocomplete);
             bw.Write(showLog);
             bw.Write(parserWarn);
+            bw.Write(useWatcom);
+            bw.Write(preprocDef);
+            bw.Write(ignoreCompPath);
             bw.Close();
             // Recent files
             BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));
@@ -239,6 +250,15 @@ namespace ScriptEditor
             for (int i = 0; i < recentMsg.Count; i++)
                 bwRecent.Write(recentMsg[i]);
             bwRecent.Close();
+        }
+
+        public static void SaveUserData(Form mainfrm)
+        {
+            TextEditor frm = mainfrm as TextEditor;
+            StreamWriter sw = new StreamWriter(Settings.SearchHistoryPath);
+            foreach (var item in frm.SearchTextComboBox.Items)
+                sw.WriteLine(item.ToString());
+            sw.Close();
         }
 
         struct WindowPos

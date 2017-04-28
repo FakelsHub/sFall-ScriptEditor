@@ -203,6 +203,9 @@
     <None Include="Resources\ProcHandlers_rus.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\wcc.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="SyntaxRules\msgSyntaxRules.xshd" />
     <None Include="packages.config" />
     <None Include="SyntaxRules\sslSyntaxRules.xshd">

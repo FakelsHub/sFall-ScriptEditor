@@ -63,9 +63,9 @@ namespace ScriptEditor.TextEditorUI
                 if (!warn) log += sLog[i] + Environment.NewLine;
             }
             if (log.Length > 2)
-                log = " ////// Script: " + filename
-                + " <Parse Time: " + DateTime.Now.Hour + ":" + DateTime.Now.Minute 
-                + "> //////" + Environment.NewLine + log;
+                log = "------ Script: " + filename
+                + " < Parse Time: " + DateTime.Now.ToString("HH:mm:ss")
+                + " > ------" + Environment.NewLine + log;
             return log;
         }
     }

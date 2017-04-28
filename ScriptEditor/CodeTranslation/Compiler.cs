@@ -299,27 +299,29 @@ namespace ScriptEditor.CodeTranslation
         public static string GetPreprocessedFile(string sName)
         {
             if (!File.Exists(preprocessPath)) return null;
-            
-            sName = Path.GetFileNameWithoutExtension(sName) + "_preproc.ssl";
-            sName = Path.Combine(Settings.scriptTempPath, sName);
+            sName = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(sName) + "_[preproc].ssl");
             File.Delete(sName);
             File.Move(preprocessPath, sName);
             return sName;   
         }
 
-        public static string GetOutputPath(string infile)
-        {
-            return Path.Combine(Settings.outputDir, Path.GetFileNameWithoutExtension(infile)) + ".int";
+        public static string GetOutputPath(string infile, string sourceDir = "")
+        { 
+            string outputFile = Path.GetFileNameWithoutExtension(infile);
+            if (sourceDir.Length != 0 && Settings.useWatcom) outputFile = outputFile.Remove(outputFile.Length - 6);
+            outputFile = outputFile + ".int";
+            if (Settings.ignoreCompPath && sourceDir.Length == 0) sourceDir = Path.GetDirectoryName(infile);
+            return (Settings.ignoreCompPath) ? Path.Combine(sourceDir, outputFile) : Path.Combine(Settings.outputDir, outputFile);
         }
 
 #if DLL_COMPILER
         public static string[] GetSslcCommandLine(string infile, bool preprocess) {
             return new string[] {
                 "--", "-q",
-                preprocess?"-P":"-p",
-                optimize?"-O":"--",
-                showWarnings?"--":"-n ",
-                showDebug?"-d":"--",
+                Settings.preprocess?"-P":"-p",
+                Settings.optimize?"-O":"--",
+                Settings.showWarnings?"--":"-n ",
+                Settings.showDebug?"-d":"--",
                 "-l", /* no logo */
                 Path.GetFileName(infile),
                 "-o",
@@ -327,15 +329,22 @@ namespace ScriptEditor.CodeTranslation
                 null
             };
 #else
-        public static string GetSslcCommandLine(string infile, bool preprocess)
+        private static string GetSslcCommandLine(string infile, bool preprocess, string sourceDir)
         {
-            return (preprocess ? "-P " : "-p ")
+            string usePreprocess = string.Empty;
+            if (!Settings.useWatcom) usePreprocess = preprocess ? "-P " : "-p ";
+            return (usePreprocess)
                 + ("-O" + Settings.optimize + " ")
                 + (Settings.showWarnings ? "" : "-n ")
                 + (Settings.showDebug ? "-d " : "")
                 + ("-l ") /* always no logo */
                 + (Settings.shortCircuit ? "-s " : "")
-                + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile)) + "\"";
+                + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile, sourceDir)) + "\"";
+        }
+
+        private static string GetWccCommandLine(string infile, string outfile) {
+            string def = (Settings.preprocDef != "---" ? "/d" + Settings.preprocDef : string.Empty);
+            return (infile + " ..\\scrTemp\\" + outfile + " " + def);
 #endif
         }
 
@@ -356,6 +365,29 @@ namespace ScriptEditor.CodeTranslation
                 return false;
             }
             infile = Path.GetFullPath(infile);
+            bool success;
+            output = string.Empty;
+            string sourceDir = Path.GetDirectoryName(infile);
+            if (Settings.useWatcom) {
+                string wccPath = Path.Combine(Settings.ResourcesFolder, "wcc.bat");
+                string outfile = "preprocess.ssl";
+                ProcessStartInfo wpsi = new ProcessStartInfo(wccPath, GetWccCommandLine(infile, outfile));
+                wpsi.RedirectStandardOutput = true;
+                wpsi.UseShellExecute = false;
+                wpsi.CreateNoWindow = true;
+                wpsi.WorkingDirectory = Settings.ResourcesFolder;
+                Process wp = Process.Start(wpsi);
+                output = wp.StandardOutput.ReadToEnd();
+                wp.WaitForExit(1000);
+                success = wp.ExitCode == 0;
+                wp.Dispose();
+                if (!success || preprocessOnly) return success;
+                infile = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[wcc].ssl");
+                File.Delete(infile);
+                File.Move(Path.Combine(Settings.scriptTempPath, outfile), infile);
+                output += Environment.NewLine;
+            }
+
 #if DLL_COMPILER
             string origpath=Directory.GetCurrentDirectory();
             Directory.SetCurrentDirectory(Path.GetDirectoryName(infile));
@@ -366,7 +398,7 @@ namespace ScriptEditor.CodeTranslation
 #else
 
             var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
-            ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly));
+            ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir));
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardInput = true;
             psi.UseShellExecute = false;
@@ -374,10 +406,10 @@ namespace ScriptEditor.CodeTranslation
             psi.WorkingDirectory = Path.GetDirectoryName(infile);
             Process p = Process.Start(psi);
             p.StandardInput.WriteLine();
-            output = p.StandardOutput.ReadToEnd();
+            output += p.StandardOutput.ReadToEnd();
             p.StandardInput.WriteLine();
             p.WaitForExit(1000);
-            bool success = p.ExitCode == 0;
+            success = p.ExitCode == 0;
             p.Dispose();
 #endif
             if (errors != null) {
@@ -391,14 +423,13 @@ namespace ScriptEditor.CodeTranslation
                         } else {
                             error.type = ErrorType.Message;
                         }
-
                         Match m = Regex.Match(s, @"\[\w+\]\s*\<([^\>]+)\>\s*\:(\-?\d+):?(\-?\d+)?\:\s*(.*)");
                         error.fileName = m.Groups[1].Value;
                         error.line = int.Parse(m.Groups[2].Value);
                         if (m.Groups[3].Value.Length > 0) {
                             error.column = int.Parse(m.Groups[3].Value);
                         }
-                        error.message = m.Groups[4].Value;
+                        error.message = m.Groups[4].Value.Replace("\r", string.Empty);
                         if (error.fileName != "none" && !Path.IsPathRooted(error.fileName)) {
                             error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(infile), error.fileName));
                         }
@@ -425,7 +456,7 @@ namespace ScriptEditor.CodeTranslation
             if (!File.Exists(decompilationPath)) {
                 return null;
             }
-            string result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_decomp.ssl");
+            string result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
             File.Delete(result);
             File.Move(decompilationPath, result);
             return result;

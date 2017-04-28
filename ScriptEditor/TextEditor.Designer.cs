@@ -25,12 +25,15 @@ namespace ScriptEditor {
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextEditor));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.Split_button = new System.Windows.Forms.Button();
             this.TabClose_button = new System.Windows.Forms.Button();
+            this.tabControl1 = new DraggableTabControl();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.SearchToolStrip = new System.Windows.Forms.ToolStrip();
             this.CaseButton = new System.Windows.Forms.ToolStripButton();
@@ -46,16 +49,16 @@ namespace ScriptEditor {
             this.SearchHideStripButton = new System.Windows.Forms.ToolStripButton();
             this.minimizelog_button = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tbOutput = new System.Windows.Forms.TextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPageParse = new System.Windows.Forms.TabPage();
+            this.tbOutputParse = new System.Windows.Forms.TextBox();
+            this.tabPageError = new System.Windows.Forms.TabPage();
             this.dgvErrors = new System.Windows.Forms.DataGridView();
             this.cType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cMessage = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tbOutputParse = new System.Windows.Forms.TextBox();
+            this.tabPageBuild = new System.Windows.Forms.TabPage();
+            this.tbOutput = new System.Windows.Forms.TextBox();
             this.tabControl3 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.ProcTree = new System.Windows.Forms.TreeView();
@@ -128,6 +131,8 @@ namespace ScriptEditor {
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.roundtripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Preprocess_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
+            this.pDefineStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.About_toolStripButton = new System.Windows.Forms.ToolStripButton();
             this.Help_toolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -169,7 +174,6 @@ namespace ScriptEditor {
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
-            this.tabControl1 = new DraggableTabControl();
             this.panel1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -179,10 +183,10 @@ namespace ScriptEditor {
             this.splitContainer1.SuspendLayout();
             this.SearchToolStrip.SuspendLayout();
             this.tabControl2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tabPageParse.SuspendLayout();
+            this.tabPageError.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvErrors)).BeginInit();
-            this.tabPage3.SuspendLayout();
+            this.tabPageBuild.SuspendLayout();
             this.tabControl3.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.ProcMnContext.SuspendLayout();
@@ -260,7 +264,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
             this.splitContainer1.Panel1.Controls.Add(this.SearchToolStrip);
             this.splitContainer1.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Panel1MinSize = 500;
+            this.splitContainer1.Panel1MinSize = 200;
             // 
             // splitContainer1.Panel2
             // 
@@ -303,6 +307,22 @@ namespace ScriptEditor {
             this.TabClose_button.UseVisualStyleBackColor = true;
             this.TabClose_button.Visible = false;
             this.TabClose_button.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
+            this.tabControl1.Location = new System.Drawing.Point(0, 25);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(701, 525);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // imageList1
             // 
@@ -444,55 +464,62 @@ namespace ScriptEditor {
             // 
             // tabControl2
             // 
-            this.tabControl2.Controls.Add(this.tabPage1);
-            this.tabControl2.Controls.Add(this.tabPage2);
-            this.tabControl2.Controls.Add(this.tabPage3);
+            this.tabControl2.Controls.Add(this.tabPageParse);
+            this.tabControl2.Controls.Add(this.tabPageBuild);
+            this.tabControl2.Controls.Add(this.tabPageError);
             this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl2.Location = new System.Drawing.Point(0, 0);
-            this.tabControl2.Multiline = true;
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
             this.tabControl2.Size = new System.Drawing.Size(701, 130);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl2_MouseClick);
             // 
-            // tabPage1
+            // tabPageParse
             // 
-            this.tabPage1.Controls.Add(this.tbOutput);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(693, 104);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Build output";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPageParse.Controls.Add(this.tbOutputParse);
+            this.tabPageParse.Location = new System.Drawing.Point(4, 22);
+            this.tabPageParse.Name = "tabPageParse";
+            this.tabPageParse.Size = new System.Drawing.Size(693, 104);
+            this.tabPageParse.TabIndex = 2;
+            this.tabPageParse.Text = "Parser output";
+            this.tabPageParse.UseVisualStyleBackColor = true;
             // 
-            // tbOutput
+            // tbOutputParse
             // 
-            this.tbOutput.AcceptsReturn = true;
-            this.tbOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbOutput.Location = new System.Drawing.Point(0, 0);
-            this.tbOutput.Multiline = true;
-            this.tbOutput.Name = "tbOutput";
-            this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutput.Size = new System.Drawing.Size(693, 104);
-            this.tbOutput.TabIndex = 0;
+            this.tbOutputParse.AcceptsReturn = true;
+            this.tbOutputParse.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+            this.tbOutputParse.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbOutputParse.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbOutputParse.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.tbOutputParse.Location = new System.Drawing.Point(0, 0);
+            this.tbOutputParse.Margin = new System.Windows.Forms.Padding(0);
+            this.tbOutputParse.Multiline = true;
+            this.tbOutputParse.Name = "tbOutputParse";
+            this.tbOutputParse.ReadOnly = true;
+            this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbOutputParse.Size = new System.Drawing.Size(693, 104);
+            this.tbOutputParse.TabIndex = 1;
             // 
-            // tabPage2
+            // tabPageError
             // 
-            this.tabPage2.Controls.Add(this.dgvErrors);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(693, 104);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Errors";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPageError.Controls.Add(this.dgvErrors);
+            this.tabPageError.Location = new System.Drawing.Point(4, 22);
+            this.tabPageError.Name = "tabPageError";
+            this.tabPageError.Size = new System.Drawing.Size(693, 104);
+            this.tabPageError.TabIndex = 1;
+            this.tabPageError.Text = "Errors";
+            this.tabPageError.UseVisualStyleBackColor = true;
             // 
             // dgvErrors
             // 
             this.dgvErrors.AllowUserToAddRows = false;
             this.dgvErrors.AllowUserToDeleteRows = false;
-            this.dgvErrors.BackgroundColor = System.Drawing.SystemColors.ControlLight;
-            this.dgvErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvErrors.AllowUserToResizeRows = false;
+            this.dgvErrors.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dgvErrors.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dgvErrors.ColumnHeadersHeight = 20;
+            this.dgvErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvErrors.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.cType,
             this.cFile,
@@ -500,12 +527,12 @@ namespace ScriptEditor {
             this.cMessage});
             this.dgvErrors.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvErrors.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dgvErrors.GridColor = System.Drawing.SystemColors.ControlLight;
             this.dgvErrors.Location = new System.Drawing.Point(0, 0);
             this.dgvErrors.MultiSelect = false;
             this.dgvErrors.Name = "dgvErrors";
             this.dgvErrors.ReadOnly = true;
             this.dgvErrors.RowHeadersVisible = false;
+            this.dgvErrors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvErrors.Size = new System.Drawing.Size(693, 104);
             this.dgvErrors.TabIndex = 0;
@@ -513,10 +540,12 @@ namespace ScriptEditor {
             // 
             // cType
             // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cType.DefaultCellStyle = dataGridViewCellStyle3;
             this.cType.HeaderText = "Type";
             this.cType.Name = "cType";
             this.cType.ReadOnly = true;
-            this.cType.Width = 80;
+            this.cType.Width = 55;
             // 
             // cFile
             // 
@@ -526,6 +555,8 @@ namespace ScriptEditor {
             // 
             // cLine
             // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cLine.DefaultCellStyle = dataGridViewCellStyle4;
             this.cLine.HeaderText = "Line";
             this.cLine.Name = "cLine";
             this.cLine.ReadOnly = true;
@@ -538,27 +569,30 @@ namespace ScriptEditor {
             this.cMessage.Name = "cMessage";
             this.cMessage.ReadOnly = true;
             // 
-            // tabPage3
+            // tabPageBuild
             // 
-            this.tabPage3.Controls.Add(this.tbOutputParse);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(693, 104);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Parser output";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPageBuild.Controls.Add(this.tbOutput);
+            this.tabPageBuild.Location = new System.Drawing.Point(4, 22);
+            this.tabPageBuild.Name = "tabPageBuild";
+            this.tabPageBuild.Size = new System.Drawing.Size(693, 104);
+            this.tabPageBuild.TabIndex = 0;
+            this.tabPageBuild.Text = "Build output";
+            this.tabPageBuild.UseVisualStyleBackColor = true;
             // 
-            // tbOutputParse
+            // tbOutput
             // 
-            this.tbOutputParse.AcceptsReturn = true;
-            this.tbOutputParse.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbOutputParse.Location = new System.Drawing.Point(0, 0);
-            this.tbOutputParse.Margin = new System.Windows.Forms.Padding(0);
-            this.tbOutputParse.Multiline = true;
-            this.tbOutputParse.Name = "tbOutputParse";
-            this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutputParse.Size = new System.Drawing.Size(693, 104);
-            this.tbOutputParse.TabIndex = 1;
+            this.tbOutput.AcceptsReturn = true;
+            this.tbOutput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(16)))), ((int)(((byte)(16)))), ((int)(((byte)(16)))));
+            this.tbOutput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbOutput.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbOutput.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.tbOutput.Location = new System.Drawing.Point(0, 0);
+            this.tbOutput.Multiline = true;
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.ReadOnly = true;
+            this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbOutput.Size = new System.Drawing.Size(693, 104);
+            this.tbOutput.TabIndex = 0;
             // 
             // tabControl3
             // 
@@ -852,7 +886,6 @@ namespace ScriptEditor {
             // 
             // Save_toolStripSplitButton
             // 
-            this.Save_toolStripSplitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.Save_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Save_ToolStripMenuItem,
             this.SaveAs_ToolStripMenuItem,
@@ -862,18 +895,18 @@ namespace ScriptEditor {
             this.Save_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Save_toolStripSplitButton.Image")));
             this.Save_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Save_toolStripSplitButton.Name = "Save_toolStripSplitButton";
-            this.Save_toolStripSplitButton.Size = new System.Drawing.Size(32, 22);
-            this.Save_toolStripSplitButton.Text = "Quick Save";
+            this.Save_toolStripSplitButton.Size = new System.Drawing.Size(63, 22);
+            this.Save_toolStripSplitButton.Text = "Save";
             this.Save_toolStripSplitButton.ToolTipText = "Quick save script [Ctrl+S]";
             this.Save_toolStripSplitButton.ButtonClick += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // Save_ToolStripMenuItem
             // 
+            this.Save_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("Save_ToolStripMenuItem.Image")));
             this.Save_ToolStripMenuItem.Name = "Save_ToolStripMenuItem";
             this.Save_ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.Save_ToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
             this.Save_ToolStripMenuItem.Text = "Save";
-            this.Save_ToolStripMenuItem.Visible = false;
             this.Save_ToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // SaveAs_ToolStripMenuItem
@@ -1213,7 +1246,9 @@ namespace ScriptEditor {
             this.MassCompile_ToolStripMenuItem,
             this.toolStripSeparator3,
             this.roundtripToolStripMenuItem,
-            this.Preprocess_ToolStripMenuItem});
+            this.Preprocess_ToolStripMenuItem,
+            this.toolStripSeparator25,
+            this.pDefineStripComboBox});
             this.qCompile_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("qCompile_toolStripSplitButton.Image")));
             this.qCompile_toolStripSplitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.qCompile_toolStripSplitButton.Name = "qCompile_toolStripSplitButton";
@@ -1224,18 +1259,19 @@ namespace ScriptEditor {
             // 
             // Compile_ToolStripMenuItem
             // 
+            this.Compile_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("Compile_ToolStripMenuItem.Image")));
             this.Compile_ToolStripMenuItem.Name = "Compile_ToolStripMenuItem";
+            this.Compile_ToolStripMenuItem.ShortcutKeyDisplayString = "";
             this.Compile_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.Compile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-            this.Compile_ToolStripMenuItem.Text = "Compile";
-            this.Compile_ToolStripMenuItem.Visible = false;
+            this.Compile_ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.Compile_ToolStripMenuItem.Text = "Compile Script";
             this.Compile_ToolStripMenuItem.Click += new System.EventHandler(this.compileToolStripMenuItem1_Click);
             // 
             // CompileAllOpen_ToolStripMenuItem
             // 
             this.CompileAllOpen_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("CompileAllOpen_ToolStripMenuItem.Image")));
             this.CompileAllOpen_ToolStripMenuItem.Name = "CompileAllOpen_ToolStripMenuItem";
-            this.CompileAllOpen_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.CompileAllOpen_ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.CompileAllOpen_ToolStripMenuItem.Text = "Compile All Open";
             this.CompileAllOpen_ToolStripMenuItem.Click += new System.EventHandler(this.compileAllOpenToolStripMenuItem_Click);
             // 
@@ -1243,20 +1279,20 @@ namespace ScriptEditor {
             // 
             this.MassCompile_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("MassCompile_ToolStripMenuItem.Image")));
             this.MassCompile_ToolStripMenuItem.Name = "MassCompile_ToolStripMenuItem";
-            this.MassCompile_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.MassCompile_ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.MassCompile_ToolStripMenuItem.Text = "Mass Compile";
             this.MassCompile_ToolStripMenuItem.Click += new System.EventHandler(this.massCompileToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(162, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(178, 6);
             // 
             // roundtripToolStripMenuItem
             // 
             this.roundtripToolStripMenuItem.Name = "roundtripToolStripMenuItem";
             this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.roundtripToolStripMenuItem.Text = "Roundtrip";
             this.roundtripToolStripMenuItem.ToolTipText = "Compile script into output folder and open decompiled script file.";
             this.roundtripToolStripMenuItem.Click += new System.EventHandler(this.roundtripToolStripMenuItem_Click);
@@ -1265,10 +1301,30 @@ namespace ScriptEditor {
             // 
             this.Preprocess_ToolStripMenuItem.Name = "Preprocess_ToolStripMenuItem";
             this.Preprocess_ToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.Preprocess_ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.Preprocess_ToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.Preprocess_ToolStripMenuItem.Text = "Preprocess";
             this.Preprocess_ToolStripMenuItem.ToolTipText = "Open script file after preprocessor.";
             this.Preprocess_ToolStripMenuItem.Click += new System.EventHandler(this.preprocessToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator25
+            // 
+            this.toolStripSeparator25.Name = "toolStripSeparator25";
+            this.toolStripSeparator25.Size = new System.Drawing.Size(178, 6);
+            // 
+            // pDefineStripComboBox
+            // 
+            this.pDefineStripComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.pDefineStripComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
+            this.pDefineStripComboBox.Items.AddRange(new object[] {
+            "---",
+            "DEBUG",
+            "RELEASE"});
+            this.pDefineStripComboBox.Name = "pDefineStripComboBox";
+            this.pDefineStripComboBox.Size = new System.Drawing.Size(121, 21);
+            this.pDefineStripComboBox.ToolTipText = "Definition of conditional compilation constant for preprocessor #if directives (t" +
+                "his only used with Open Watcom preprosessor).\r\nYou can add user defines in file " +
+                "PreprocDefine.ini\r\n";
+            this.pDefineStripComboBox.SelectedIndexChanged += new System.EventHandler(this.pDefineStripComboBox_SelectedIndexChanged);
             // 
             // toolStripSeparator13
             // 
@@ -1605,22 +1661,6 @@ namespace ScriptEditor {
             this.toolTipAC.IsBalloon = true;
             this.toolTipAC.ReshowDelay = 100;
             // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ImageList = this.imageList1;
-            this.tabControl1.Location = new System.Drawing.Point(0, 25);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(701, 525);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
-            // 
             // TextEditor
             // 
             this.AllowDrop = true;
@@ -1646,12 +1686,12 @@ namespace ScriptEditor {
             this.SearchToolStrip.ResumeLayout(false);
             this.SearchToolStrip.PerformLayout();
             this.tabControl2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
+            this.tabPageParse.ResumeLayout(false);
+            this.tabPageParse.PerformLayout();
+            this.tabPageError.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvErrors)).EndInit();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
+            this.tabPageBuild.ResumeLayout(false);
+            this.tabPageBuild.PerformLayout();
             this.tabControl3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.ProcMnContext.ResumeLayout(false);
@@ -1667,7 +1707,7 @@ namespace ScriptEditor {
         }
         private System.Windows.Forms.ToolTip toolTipAC;
         private System.Windows.Forms.ListBox lbAutocomplete;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPageParse;
         private System.Windows.Forms.ToolStripMenuItem closeAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllButThisToolStripMenuItem;
 
@@ -1680,13 +1720,9 @@ namespace ScriptEditor {
         private DraggableTabControl tabControl1;
         private System.Windows.Forms.FolderBrowserDialog fbdMassCompile;
         private System.Windows.Forms.TabControl tabControl2;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPageBuild;
+        private System.Windows.Forms.TabPage tabPageError;
         private System.Windows.Forms.DataGridView dgvErrors;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cFile;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cLine;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cMessage;
         private System.ComponentModel.BackgroundWorker bwSyntaxParser;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TreeView ProcTree;
@@ -1794,7 +1830,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton SearchHideStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
-        private System.Windows.Forms.ToolStripComboBox SearchTextComboBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator24;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripMenuItem defineToolStripMenuItem;
@@ -1813,5 +1848,12 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripButton UnCommentStripButton;
         protected internal System.Windows.Forms.ToolStripMenuItem msgAutoOpenEditorStripMenuItem;
         private System.Windows.Forms.TextBox tbOutputParse;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator25;
+        protected internal System.Windows.Forms.ToolStripComboBox SearchTextComboBox;
+        private System.Windows.Forms.ToolStripComboBox pDefineStripComboBox;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cType;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cFile;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cLine;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cMessage;
     }
 }

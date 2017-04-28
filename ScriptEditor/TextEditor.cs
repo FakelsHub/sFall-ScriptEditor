@@ -45,6 +45,8 @@ namespace ScriptEditor
         {
             InitializeComponent();
             Settings.SetupWindowPosition(SavedWindows.Main, this);
+            pDefineStripComboBox.Items.AddRange(File.ReadAllLines(Settings.PreprocDefPath));
+            pDefineStripComboBox.Text = Settings.preprocDef;
             SearchTextComboBox.Items.AddRange(File.ReadAllLines(Settings.SearchHistoryPath));
             SearchToolStrip.Visible = false;
             defineToolStripMenuItem.Checked = Settings.allowDefine;
@@ -139,7 +141,9 @@ namespace ScriptEditor
                 splitContainer1.Panel2Collapsed = true;
             }
             splitContainer1.SplitterDistance = Size.Height;
-            minimizelogsize = Size.Height-(Size.Height/5);
+            if (Settings.editorSplitterPosition == -1) {
+                minimizelogsize = Size.Height - (Size.Height / 5);
+            } else minimizelogsize = Settings.editorSplitterPosition;
             if (Settings.editorSplitterPosition2 != -1) {
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
             }
@@ -168,10 +172,8 @@ namespace ScriptEditor
                 }
             }
             if (sf != null) sf.Close();
-            StreamWriter sw = new StreamWriter(Settings.SearchHistoryPath);
-            foreach (var item in SearchTextComboBox.Items) sw.WriteLine(item.ToString());
-            sw.Close();
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
+            Settings.SaveUserData(this);
             Settings.SaveWindowPosition(SavedWindows.Main, this);
             Settings.Save();
             Directory.Delete(Settings.scriptTempPath, true);
@@ -467,20 +469,17 @@ namespace ScriptEditor
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false)
         {
-            msg = "";
-            if (Settings.outputDir == null) {
-                if (showMessages)
-                    MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Compile Error");
+            msg = string.Empty;
+            if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
+                if (showMessages) MessageBox.Show("You cannot compile this file.", "Compile Error");
+                return false;
+            }
+            if (!Settings.ignoreCompPath && !preprocess && Settings.outputDir == null) {
+                if (showMessages) MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Compile Error");
                 return false;
             }
             if (tab.changed) Save(tab);
-            if (tab.changed || tab.filepath == null)
-                return false;
-            if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
-                if (showMessages)
-                    MessageBox.Show("You cannot compile this file.", "Compile Error");
-                return false;
-            }
+            if (tab.changed || tab.filepath == null) return false;
             List<Error> errors = new List<Error>();
             var compiler = new Compiler();
             string file = compiler.OverrideIncludeSSLCompile(tab.filepath);
@@ -488,12 +487,16 @@ namespace ScriptEditor
             if (Settings.overrideIncludesPath) File.Delete(Settings.SettingsFolder + '\\' + Path.GetFileName(file));
             foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
                 foreach (Error e in errors) {
-                    if (e.type == et)
+                    if (e.type == et) {
                         dgvErrors.Rows.Add(e.type.ToString(), Path.GetFileName(e.fileName), e.line, e);
+                        if (et == ErrorType.Error)
+                            dgvErrors.Rows[dgvErrors.Rows.Count - 1].Cells[0].Style.ForeColor = Color.Red;
+                    }
                 }
             }
+            if (dgvErrors.RowCount > 0) dgvErrors.Rows[0].Cells[0].Selected = false;
             if (!success) {
-                tabControl2.SelectedIndex = 1;
+                tabControl2.SelectedIndex = 2;
                 maximize_log();
                 if (showMessages && Settings.warnOnFailedCompile) {
                     MessageBox.Show("Script " + tab.filename + " failed to compile.\r\nSee the output window for details", "Compile Script Error");
@@ -502,7 +505,7 @@ namespace ScriptEditor
                     parserLabel.ForeColor = Color.Firebrick;
                 }
             } else {
-                parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString();
+                parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
                 parserLabel.ForeColor = Color.DarkGreen;
             }
             return success;
@@ -709,10 +712,8 @@ namespace ScriptEditor
             Parser.InternalParser(cTab, this);
             cTab.textEditor.Document.FoldingManager.UpdateFoldings(cTab.filename, cTab.parseInfo);
             cTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-            if (tbOutputParse.Text.Length > 0) {
-                tabControl2.SelectedIndex = 2;
-                //maximize_log();
-            }
+            if (tbOutputParse.Text.Length > 0)
+                tabControl2.SelectedIndex = 0;
         }
 
         private void ParseScript(int delay = 1)
@@ -1353,9 +1354,15 @@ namespace ScriptEditor
             if (e.Button != MouseButtons.Left) {
                 for (int i = 3; i < tabControl2.TabPages.Count; i++) {
                     if (tabControl2.GetTabRect(i).Contains(e.X, e.Y)) {
-                        if (e.Button == MouseButtons.Middle)
+                        if (e.Button == MouseButtons.Middle) {
+                            int stbi = tabControl2.SelectedIndex;
+                            if (stbi == i) tabControl2.Hide();
                             tabControl2.TabPages.RemoveAt(i--);
-                        else if (e.Button == MouseButtons.Right) {
+                            if (stbi == i + 1) {
+                                tabControl2.SelectedIndex = (stbi == tabControl2.TabCount) ? stbi - 1 : stbi;
+                                tabControl2.Show();
+                            }
+                        } else if (e.Button == MouseButtons.Right) {
                             cmsTabControls.Tag = i ^ 0x10000000;
                             foreach (ToolStripItem item in cmsTabControls.Items) {
                                 item.Visible = (item.Text == "Close");
@@ -1463,11 +1470,11 @@ namespace ScriptEditor
 
         private void compileAllOpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Text.StringBuilder FullMsg = new System.Text.StringBuilder();
+            StringBuilder FullMsg = new StringBuilder();
             dgvErrors.Rows.Clear();
             string msg;
             for (int i = 0; i < tabs.Count; i++) {
-                FullMsg.AppendLine("*** " + tabs[i].filename);
+                //FullMsg.AppendLine("*** " + tabs[i].filename);
                 Compile(tabs[i], out msg, false);
                 FullMsg.AppendLine(msg);
                 FullMsg.AppendLine();
@@ -1992,22 +1999,25 @@ namespace ScriptEditor
             if (minimizelogsize == 0) {
                 minimizelogsize = splitContainer1.SplitterDistance; 
                 splitContainer1.SplitterDistance = Size.Height;
+                Settings.editorSplitterPosition = minimizelogsize;
             } else {
-                int hs = Size.Height-(Size.Height/4);
-                if (minimizelogsize > hs) {
+                int hs = Size.Height - (Size.Height / 4);
+                if (Settings.editorSplitterPosition == -1)
+                    Settings.editorSplitterPosition = hs;
+                if (minimizelogsize > (hs + 100))
                     splitContainer1.SplitterDistance = hs; 
-                } else {
-                    splitContainer1.SplitterDistance = minimizelogsize;       
-                }
+                else splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
                 minimizelogsize = 0;
             }
         }
         
         private void maximize_log()
         {
-                int hs = Size.Height - (Size.Height / 4);
-                splitContainer1.SplitterDistance = hs;
-                minimizelogsize = 0;
+            if (minimizelogsize == 0) return;
+            if (Settings.editorSplitterPosition == -1)
+                Settings.editorSplitterPosition = Size.Height - (Size.Height / 4);
+            splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
+            minimizelogsize = 0;
         }
 
         private void showLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2601,6 +2611,11 @@ namespace ScriptEditor
                 currentTab.textEditor.ActiveTextAreaControl.TextArea.InsertString(line);
                 this.Focus();
             }
+        }
+
+        private void pDefineStripComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Settings.preprocDef = pDefineStripComboBox.SelectedItem.ToString();
         }
     }
 }

@@ -30,6 +30,8 @@ namespace ScriptEditor
             HintLang_comboBox.SelectedIndex = Settings.hintsLang;
             if (!Settings.enableParser) cbParserWarn.Enabled = false;
             cbParserWarn.Checked = Settings.parserWarn;
+            cbWatcom.Checked = Settings.useWatcom;
+            cbCompilePath.Checked = Settings.ignoreCompPath;
             SetLabelText();
         }
 
@@ -66,6 +68,8 @@ namespace ScriptEditor
             Settings.highlight = (byte)Highlight_comboBox.SelectedIndex;
             Settings.hintsLang = (byte)HintLang_comboBox.SelectedIndex;
             Settings.parserWarn = cbParserWarn.Checked;
+            Settings.useWatcom = cbWatcom.Checked;
+            Settings.ignoreCompPath = cbCompilePath.Checked;
             Settings.Save();
         }
 
@@ -84,10 +88,7 @@ namespace ScriptEditor
                 SetLabelText();
             }
         }
-        void TbTabSizeKeyPress(object sender, KeyPressEventArgs e)
-        {
 
-        }
         void TbTabSizeTextChanged(object sender, EventArgs e)
         {
             int n;
