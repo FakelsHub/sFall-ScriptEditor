@@ -51,6 +51,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.cbParserWarn = new System.Windows.Forms.CheckBox();
             this.cbWatcom = new System.Windows.Forms.CheckBox();
+            this.cbCompilePath = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -58,17 +59,23 @@
             this.HintLang_comboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.msgPathlistView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.MsgcontextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deletePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Highlight_comboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.cbCompilePath = new System.Windows.Forms.CheckBox();
             label1 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.MsgcontextMenu.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -306,7 +313,7 @@
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(419, 348);
+            this.button1.Location = new System.Drawing.Point(419, 342);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 24;
@@ -336,6 +343,17 @@
             this.cbWatcom.Text = "Use Watcom preprocessor";
             this.toolTip.SetToolTip(this.cbWatcom, "Use preprocessor OpenWatcom before compiling script.");
             this.cbWatcom.UseVisualStyleBackColor = true;
+            // 
+            // cbCompilePath
+            // 
+            this.cbCompilePath.AutoSize = true;
+            this.cbCompilePath.Location = new System.Drawing.Point(303, 15);
+            this.cbCompilePath.Name = "cbCompilePath";
+            this.cbCompilePath.Size = new System.Drawing.Size(134, 17);
+            this.cbCompilePath.TabIndex = 14;
+            this.cbCompilePath.Text = "Not use path compiling";
+            this.toolTip.SetToolTip(this.cbCompilePath, "Compile scripts into same folder where source ssl file.");
+            this.cbCompilePath.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -412,32 +430,83 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.listView1);
+            this.groupBox3.Controls.Add(this.msgPathlistView);
             this.groupBox3.Location = new System.Drawing.Point(12, 271);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(400, 100);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "MSG Files Path";
+            this.toolTip.SetToolTip(this.groupBox3, "Paths to folders in which editor will search for associated message files.");
             // 
-            // listView1
+            // msgPathlistView
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.msgPathlistView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
-            this.listView1.FullRowSelect = true;
-            this.listView1.GridLines = true;
-            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listView1.Location = new System.Drawing.Point(6, 19);
-            this.listView1.Name = "listView1";
-            this.listView1.ShowGroups = false;
-            this.listView1.Size = new System.Drawing.Size(388, 75);
-            this.listView1.TabIndex = 15;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            this.msgPathlistView.ContextMenuStrip = this.MsgcontextMenu;
+            this.msgPathlistView.FullRowSelect = true;
+            this.msgPathlistView.GridLines = true;
+            this.msgPathlistView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.msgPathlistView.Location = new System.Drawing.Point(6, 19);
+            this.msgPathlistView.MultiSelect = false;
+            this.msgPathlistView.Name = "msgPathlistView";
+            this.msgPathlistView.ShowGroups = false;
+            this.msgPathlistView.ShowItemToolTips = true;
+            this.msgPathlistView.Size = new System.Drawing.Size(388, 75);
+            this.msgPathlistView.TabIndex = 15;
+            this.msgPathlistView.UseCompatibleStateImageBehavior = false;
+            this.msgPathlistView.View = System.Windows.Forms.View.Details;
             // 
             // columnHeader1
             // 
-            this.columnHeader1.Width = 360;
+            this.columnHeader1.Width = 380;
+            // 
+            // MsgcontextMenu
+            // 
+            this.MsgcontextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addPathToolStripMenuItem,
+            this.deletePathToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.moveUpToolStripMenuItem,
+            this.modeDownToolStripMenuItem});
+            this.MsgcontextMenu.Name = "MsgcontextMenu";
+            this.MsgcontextMenu.Size = new System.Drawing.Size(201, 98);
+            // 
+            // addPathToolStripMenuItem
+            // 
+            this.addPathToolStripMenuItem.Name = "addPathToolStripMenuItem";
+            this.addPathToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.addPathToolStripMenuItem.Text = "Add path";
+            this.addPathToolStripMenuItem.Click += new System.EventHandler(this.addPathToolStripMenuItem_Click);
+            // 
+            // deletePathToolStripMenuItem
+            // 
+            this.deletePathToolStripMenuItem.Name = "deletePathToolStripMenuItem";
+            this.deletePathToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.deletePathToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.deletePathToolStripMenuItem.Text = "Delete path";
+            this.deletePathToolStripMenuItem.Click += new System.EventHandler(this.deletePathToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(197, 6);
+            // 
+            // moveUpToolStripMenuItem
+            // 
+            this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
+            this.moveUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.moveUpToolStripMenuItem.Text = "Move Up";
+            this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
+            // 
+            // modeDownToolStripMenuItem
+            // 
+            this.modeDownToolStripMenuItem.Name = "modeDownToolStripMenuItem";
+            this.modeDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.modeDownToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.modeDownToolStripMenuItem.Text = "Move Down";
+            this.modeDownToolStripMenuItem.Click += new System.EventHandler(this.modeDownToolStripMenuItem_Click);
             // 
             // Highlight_comboBox
             // 
@@ -472,17 +541,6 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Parser";
             // 
-            // cbCompilePath
-            // 
-            this.cbCompilePath.AutoSize = true;
-            this.cbCompilePath.Location = new System.Drawing.Point(303, 15);
-            this.cbCompilePath.Name = "cbCompilePath";
-            this.cbCompilePath.Size = new System.Drawing.Size(134, 17);
-            this.cbCompilePath.TabIndex = 14;
-            this.cbCompilePath.Text = "Not use path compiling";
-            this.toolTip.SetToolTip(this.cbCompilePath, "Compile scripts into same folder where source ssl file.");
-            this.cbCompilePath.UseVisualStyleBackColor = true;
-            // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -497,8 +555,8 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.HintLang_comboBox);
             this.Controls.Add(this.cbAutoOpenMessages);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cbAutocomplete);
             this.Controls.Add(this.label7);
@@ -512,13 +570,13 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
-            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsDialog_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            this.MsgcontextMenu.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
@@ -557,7 +615,7 @@
         private System.Windows.Forms.ComboBox HintLang_comboBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView msgPathlistView;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ComboBox Highlight_comboBox;
         private System.Windows.Forms.Label label3;
@@ -565,5 +623,11 @@
         private System.Windows.Forms.CheckBox cbWatcom;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox cbCompilePath;
+        private System.Windows.Forms.ContextMenuStrip MsgcontextMenu;
+        private System.Windows.Forms.ToolStripMenuItem addPathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deletePathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem moveUpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modeDownToolStripMenuItem;
     }
 }

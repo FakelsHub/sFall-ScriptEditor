@@ -39,6 +39,8 @@ namespace ScriptEditor
         {
             textBox2.Text = outpath == null ? "<unset>" : outpath;
             textBox1.Text = scriptshpath == null ? "<unset>" : scriptshpath;
+            foreach (var item in Settings.msgListPath)
+                msgPathlistView.Items.Add(item.ToString());
         }
 
         private void SettingsDialog_FormClosing(object sender, FormClosingEventArgs e)
@@ -70,6 +72,9 @@ namespace ScriptEditor
             Settings.parserWarn = cbParserWarn.Checked;
             Settings.useWatcom = cbWatcom.Checked;
             Settings.ignoreCompPath = cbCompilePath.Checked;
+            Settings.msgListPath.Clear();
+            foreach (ListViewItem item in msgPathlistView.Items)
+                Settings.msgListPath.Add(item.Text);
             Settings.Save();
         }
 
@@ -104,5 +109,49 @@ namespace ScriptEditor
         {
             cbParserWarn.Enabled = cbEnableParser.Checked;
         }
+
+        private void addPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
+                string msgPath = folderBrowserDialog1.SelectedPath;
+                if (msgPathlistView.Items.Count > 0) {
+                    msgPathlistView.Items.Insert(0, msgPath);
+                } else msgPathlistView.Items.Add(msgPath);
+                //msgPathlistView.Items[msgPathlistView.Items.Count - 1].ToolTipText = msgPath;
+            }
+        }
+
+        private void deletePathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (msgPathlistView.Items == null) return;
+            msgPathlistView.Items.RemoveAt(msgPathlistView.FocusedItem.Index);
+        }
+
+        private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (msgPathlistView.Items == null) return;
+            int sInd = msgPathlistView.FocusedItem.Index;
+            if (sInd == 0) return;
+            string iPath = msgPathlistView.Items[--sInd].Text;
+            PathItemSub(sInd, iPath);
+        }
+
+        private void modeDownToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (msgPathlistView.Items == null) return;
+            int sInd = msgPathlistView.FocusedItem.Index;
+            if (sInd == msgPathlistView.Items.Count - 1) return;
+            string iPath = msgPathlistView.Items[++sInd].Text;
+            PathItemSub(sInd, iPath);
+        }
+
+        private void PathItemSub(int sInd, string iPath)
+        {
+            msgPathlistView.Items[sInd].Text = msgPathlistView.FocusedItem.Text;
+            msgPathlistView.FocusedItem.Text = iPath;
+            msgPathlistView.Items[sInd].Selected = true;
+            msgPathlistView.Items[sInd].Focused = true;
+        }
+
     }
 }

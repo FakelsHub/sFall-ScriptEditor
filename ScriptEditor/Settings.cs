@@ -33,7 +33,8 @@ namespace ScriptEditor
         public static string PathScriptsHFile;
         public static string lastMassCompile;
         public static string lastSearchPath;
-        private static /*readonly*/ List<string> recent = new List<string>();
+        public static readonly List<string> msgListPath = new List<string>();
+        private static List<string> recent = new List<string>();
         private static List<string> recentMsg = new List<string>();
         private static readonly WindowPos[] windowPositions = new WindowPos[(int)SavedWindows.Count];
         public static int editorSplitterPosition = -1;
@@ -137,7 +138,7 @@ namespace ScriptEditor
                 if (lastSearchPath.Length == 0)
                     lastSearchPath = null;
                 LoadWindowPos(br, 0);
-                editorSplitterPosition = br.ReadInt32(); // reserved
+                editorSplitterPosition = br.ReadInt32();
                 autoOpenMsgs = br.ReadBoolean();
                 editorSplitterPosition2 = br.ReadInt32();
                 PathScriptsHFile = br.ReadString();
@@ -156,7 +157,11 @@ namespace ScriptEditor
                 useWatcom = br.ReadBoolean();
                 preprocDef = br.ReadString();
                 ignoreCompPath = br.ReadBoolean();
-            } catch { }
+                byte MsgItems = br.ReadByte();
+                for (byte i = 0; i < MsgItems; i++)
+                    msgListPath.Add(br.ReadString());
+            }
+            catch { MessageBox.Show("An error occurred while reading configuration file.\nFile setting.dat may be in wrong format.", "Setting read error"); }
             // Recent files
             if (brRecent == null) return;
             int recentItems = brRecent.ReadByte();
@@ -193,8 +198,8 @@ namespace ScriptEditor
                 LoadInternal(brSettings, brRecent);
                 brSettings.Close(); 
             }
-            if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath);
-            if (!File.Exists(PreprocDefPath)) File.Create(PreprocDefPath);
+            if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath).Close();
+            if (!File.Exists(PreprocDefPath)) File.Create(PreprocDefPath).Close();
         }
 
         private static void WriteWindowPos(BinaryWriter bw, int i)
@@ -225,7 +230,7 @@ namespace ScriptEditor
             bw.Write(lastMassCompile == null ? "" : lastMassCompile);
             bw.Write(lastSearchPath == null ? "" : lastSearchPath);
             WriteWindowPos(bw, 0);
-            bw.Write(editorSplitterPosition); // reserved
+            bw.Write(editorSplitterPosition);
             bw.Write(autoOpenMsgs);
             bw.Write(editorSplitterPosition2);
             bw.Write(PathScriptsHFile == null ? "" : PathScriptsHFile);
@@ -240,6 +245,9 @@ namespace ScriptEditor
             bw.Write(useWatcom);
             bw.Write(preprocDef);
             bw.Write(ignoreCompPath);
+            bw.Write((byte)msgListPath.Count);
+            for (int i = 0; i < msgListPath.Count; i++)
+                bw.Write(msgListPath[i]);
             bw.Close();
             // Recent files
             BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));

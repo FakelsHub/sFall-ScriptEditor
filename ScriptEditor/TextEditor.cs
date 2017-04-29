@@ -14,15 +14,14 @@ namespace ScriptEditor
 {
     partial class TextEditor : Form
     {
+        private const string SSE = "Sfall Script Editor - ";
         private const string parseoff = "Parser: Disabled";
         private const string unsaved = "unsaved.ssl";
         private readonly List<string> TREEPROCEDURES = new List<string>{ "Global Procedures", "Local Script Procedures" };
         private readonly List<string> TREEVARIABLES = new List<string>{ "Global Variables", "Local Script Variables" };
 
-        private DateTime timerNext;
-        private DateTime timer2Next;
-        private Timer timer;
-        private Timer timer2;
+        private DateTime timerNext, timer2Next;
+        private Timer timer, timer2;
         private readonly List<TabInfo> tabs = new List<TabInfo>();
         private TabInfo currentTab;
         private ToolStripLabel parserLabel;
@@ -97,10 +96,7 @@ namespace ScriptEditor
             ProgramInfo.LoadOpcodes();
         }
 
-        private void CreateTabVarTree()
-        {
-            tabControl3.TabPages.Insert(1, VarTab);
-        }
+        private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
 
 #if !DEBUG
         protected override void WndProc(ref Message m)
@@ -128,10 +124,7 @@ namespace ScriptEditor
             TopMost = top;
         }
 #else
-        void DEBUGINFO(string line)
-        {
-            tbOutput.Text = line + "\r\n" + tbOutput.Text;
-        }
+        void DEBUGINFO(string line) { tbOutput.Text = line + "\r\n" + tbOutput.Text; }
 #endif
 
         private void TextEditor_Load(object sender, EventArgs e)
@@ -379,6 +372,7 @@ namespace ScriptEditor
                 File.WriteAllText(tab.filepath, tab.textEditor.Text, EncCodePage);
                 tab.changed = false;
                 SetTabTextChange(tab.index);
+                Text = SSE + tab.filepath;
             }
         }
 
@@ -447,24 +441,13 @@ namespace ScriptEditor
         {
             if (Settings.outputDir == null || tab.filepath == null || tab.msgFileTab != null)
                 return;
-            string path = Path.Combine(Settings.outputDir, MessageEditor.MessageTextSubPath);
-            if (!Directory.Exists(path)) {
-                MessageBox.Show("Failed to open or create associated message file in directory\r\n" + path, "Error: Directory does not exist");
-                return;
+            string path;
+            if (MessageFile.Assossciate(tab, create, out path)) {
+                if (Settings.autoOpenMsgs && msgAutoOpenEditorStripMenuItem.Checked && !create) {
+                    MessageEditor.MessageEditorInit(tab, this);
+                    Focus();
+                } else tab.msgFileTab = Open(path, OpenType.File, false);
             }
-            path = Path.Combine(path, Path.ChangeExtension(tab.filename, ".msg"));
-            if (!File.Exists(path)) {
-                if (!create) return;
-                else {
-                    if (MessageBox.Show("The associated message file this script could not be found.\r\nDo you want to create a new file?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes) {
-                        File.Create(path).Close();
-                    } 
-                }       
-            }
-            if (Settings.autoOpenMsgs && msgAutoOpenEditorStripMenuItem.Checked && !create) {
-                MessageEditor.MessageEditorInit(tab, this);
-                Focus();
-            } else tab.msgFileTab = Open(path, OpenType.File, false);
         }
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false)
@@ -745,29 +728,6 @@ namespace ScriptEditor
             }
         }
 
-        private void ParseMessages(TabInfo ti)
-        {
-            ti.messages.Clear();
-            char[] split = new char[] { '}' };
-            for (int i = 0; i < ti.msgFileTab.textEditor.Document.TotalNumberOfLines; i++)
-            {
-                string[] line = ti.msgFileTab.textEditor.Document.GetText(ti.msgFileTab.textEditor.Document.GetLineSegment(i)).Split(split, StringSplitOptions.RemoveEmptyEntries);
-                if (line.Length != 3)
-                    continue;
-                for (int j = 0; j < 3; j += 2)
-                {
-                    line[j] = line[j].Trim();
-                    if (line[j].Length == 0 || line[j][0] != '{')
-                        continue;
-                    line[j] = line[j].Substring(1);
-                }
-                int index;
-                if (!int.TryParse(line[0], out index))
-                    continue;
-                ti.messages[index] = line[2];
-            }
-        }
-
         class WorkerArgs
         {
             public readonly string text;
@@ -875,7 +835,7 @@ namespace ScriptEditor
                 }
                 currentTab = tabs[tabControl1.SelectedIndex];
                 if (!Settings.enableParser && currentTab.parseInfo != null) currentTab.parseInfo.parseData = false;
-                if (currentTab.msgFileTab != null) ParseMessages(currentTab);
+                if (currentTab.msgFileTab != null) MessageFile.ParseMessages(currentTab);
                 // Create or Delete Variable treeview
                 if (!Settings.enableParser && tabControl3.TabPages.Count > 2) {
                     if (currentTab.parseInfo != null) {
@@ -908,6 +868,7 @@ namespace ScriptEditor
                 currentTab.textEditor.ActiveTextAreaControl.Select();
                 ShowLineNumbers(null, null);
                 ControlFormStateOn_Off();
+                Text = SSE + currentTab.filepath;
             }
         }
 
@@ -945,6 +906,7 @@ namespace ScriptEditor
             DecIndentStripButton.Enabled = false;
             CommentStripButton.Enabled = false;
             UnCommentStripButton.Enabled = false;
+            Text = SSE.Remove(SSE.Length - 2);
         }
 
 # region SearchFunction

@@ -10,8 +10,6 @@ namespace ScriptEditor
 {
     partial class MessageEditor : Form
     {
-        public static readonly string MessageTextSubPath = "..\\text\\" + Settings.language + "\\dialog\\";
-        
         private List<string> linesMsg;
         private string msgPath;
         private bool returnLine;
@@ -85,19 +83,11 @@ namespace ScriptEditor
 
         public static void MessageEditorInit(TabInfo ti, Form frm)
         {
-            //scriptForm = frm;
             string msgPath = null;
             if (ti != null) {
                 if (Settings.outputDir == null) {
                     MessageBox.Show("No output path selected.", "Error");
-                } else {
-                    string script = Path.ChangeExtension(ti.filename, "msg");
-                    msgPath = Path.Combine(Settings.outputDir, MessageTextSubPath + script);
-                    if (!File.Exists(msgPath)) {
-                        MessageBox.Show("Could not find msg file \n" + msgPath, "Warning");
-                        msgPath = null;
-                    }
-                }
+                } else if (!MessageFile.Assossciate(ti, true, out msgPath)) msgPath = null;
             }
             // Show form
             MessageEditor msgEdit = new MessageEditor(msgPath, ti);
@@ -236,7 +226,7 @@ namespace ScriptEditor
         private void msgOpenButton_ButtonClick(object sender, EventArgs e)
         {
             string path = msgPath;
-            if (path == null) path = Path.Combine(Settings.outputDir, MessageTextSubPath);
+            if (path == null) path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
             openFileDialog.InitialDirectory = path;
             if (openFileDialog.ShowDialog() == DialogResult.OK) {
                 msgPath = openFileDialog.FileName;
@@ -258,7 +248,7 @@ namespace ScriptEditor
         private void SaveAsStripButton_Click(object sender, EventArgs e)
         {
             string path = msgPath;
-            if (path == null) path = Path.Combine(Settings.outputDir, MessageTextSubPath);
+            if (path == null) path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
             saveFileDialog.InitialDirectory = path;
             if (saveFileDialog.ShowDialog() == DialogResult.OK) {
                 msgPath = saveFileDialog.FileName;

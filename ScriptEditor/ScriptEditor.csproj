@@ -151,6 +151,7 @@
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
     <Compile Include="TextEditorUI\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
+    <Compile Include="TextEditorUI\MessageFile.cs" />
     <Compile Include="TextEditorUI\TabInfo.cs" />
     <Compile Include="MessageEditor.cs">
       <SubType>Form</SubType>
