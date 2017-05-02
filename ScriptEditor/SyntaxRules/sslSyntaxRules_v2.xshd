@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<SyntaxDefinition name = "ssl" extensions = ".ssl">
+<SyntaxDefinition name = "ssl_v2" extensions = ".ssl">
   <Properties>
     <Property name="LineComment" value="//"/>
   </Properties>

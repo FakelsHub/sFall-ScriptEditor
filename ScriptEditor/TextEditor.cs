@@ -245,7 +245,7 @@ namespace ScriptEditor
             if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0) {
                 te.SetHighlighting("msg");
             } else
-                te.SetHighlighting("ssl"); // Activate the highlighting, use the name from the SyntaxDefinition node.
+                te.SetHighlighting((Settings.highlight == 0) ? "ssl" : "ssl_v2"); // Activate the highlighting, use the name from the SyntaxDefinition node.
             if (type == OpenType.File)
                 te.LoadFile(file, false, true);
             else if (type == OpenType.Text)

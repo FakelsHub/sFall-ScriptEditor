@@ -47,7 +47,7 @@ namespace ScriptEditor
         public static bool autocomplete = true;
         public static bool showLog = true;
         public static byte hintsLang = 0;
-        public static byte highlight = 0;
+        public static byte highlight = 1; // 0 = Original, 1 = FGeck
         public static byte encoding = 0; // 0 = DEFAULT, 1 = DOS(cp866)
         public static bool allowDefine = true;
         public static bool parserWarn = true;
