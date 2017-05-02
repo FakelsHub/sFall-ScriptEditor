@@ -60,10 +60,15 @@
       </Span>
 
       <Span name = "String" rule = "StringSet" bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black" stopateol = "true">
-        <Begin>"</Begin>
-        <End>"</End>
+        <Begin bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black">"</Begin>
+        <End bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black">"</End>
       </Span>
       
+      <Span name = "CodeFunctions" bold = "false" italic = "false" bgcolor="LightGray" color = "Black" stopateol = "true">
+        <Begin bgcolor="LightGray" color="Black">{</Begin>
+        <End bgcolor="LightGray" color="Black">}</End>
+      </Span>
+
       <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkBlue">
         <Key word = "," />
         <Key word = "." />
@@ -135,7 +140,6 @@
         <Key word = "not" />
         <Key word = "true" />
         <Key word = "false" />
-        <Key word = "floor" />
       </KeyWords>
       
       <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="DarkMagenta">
@@ -700,15 +704,15 @@
         <Key word = "path_find_to" />
         <Key word = "create_spatial" />
         <Key word = "art_exists" />
-		<Key word = "obj_is_carrying_obj" />
-		
-		<Key word = "sfall_func0" />
-		<Key word = "sfall_func1" />
-		<Key word = "sfall_func2" />
-		<Key word = "sfall_func3" />
-		<Key word = "sfall_func4" />
-		<Key word = "sfall_func5" />
-		<Key word = "sfall_func6" />
+        <Key word = "obj_is_carrying_obj" />
+
+        <Key word = "sfall_func0" />
+        <Key word = "sfall_func1" />
+        <Key word = "sfall_func2" />
+        <Key word = "sfall_func3" />
+        <Key word = "sfall_func4" />
+        <Key word = "sfall_func5" />
+        <Key word = "sfall_func6" />
       </KeyWords>
       
       <KeyWords name = "SfallMacros" bold="true" italic="false" color="BlueViolet">
@@ -756,7 +760,7 @@
         <Key word = "mstr_trait" />
         <Key word = "mstr_worldmap" />
         
-		<Key word = "spatial_radius" />
+        <Key word = "spatial_radius" />
         <Key word = "critter_inven_obj2" />
         <Key word = "intface_redraw" />
         <Key word = "intface_hide" />
@@ -765,8 +769,8 @@
         <Key word = "exec_map_update_scripts" />
       </KeyWords>
 
-      <KeyWords name = "OpKeywords" bold="true" italic="false" color="DarkBlue">
-
+      <KeyWords name = "OpKeywords" bold="true" italic="false" color="Blue">
+        <Key word = "floor" />
       </KeyWords>
       
       <KeyWords name = "Constants" bold="true" italic="false" color="PaleVioletRed">
@@ -824,8 +828,9 @@
       <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
     </RuleSet>
 
-    <RuleSet name = "StringSet" ignorecase="false">
+    <RuleSet name = "StringSet" ignorecase="false" escapecharacter="\">
       <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
     </RuleSet>
+
   </RuleSets>
 </SyntaxDefinition>

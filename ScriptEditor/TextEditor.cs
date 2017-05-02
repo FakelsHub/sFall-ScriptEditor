@@ -34,6 +34,7 @@ namespace ScriptEditor
         public static string sHeaderfile;
         private PositionType PosChangeType;
         private int moveActive = -1;
+        private int fuctionPanel = -1;
 
         private Encoding EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
@@ -84,6 +85,8 @@ namespace ScriptEditor
             //Create Variable Tab
             VarTree.ShowNodeToolTips = true;
             VarTree.ShowRootLines = false;
+            VarTree.Indent = 16;
+            VarTree.ItemHeight = 14;
             VarTree.AfterSelect += TreeView_AfterSelect;
             VarTree.Dock = DockStyle.Fill;
             VarTab.Padding = new Padding(3, 3, 3, 3);
@@ -93,6 +96,7 @@ namespace ScriptEditor
                 Headers_toolStripSplitButton.Enabled = false;
             }
             HandlerProcedure.CreateProcHandlers(ProcMnContext, this);
+            Functions.CreateTree(FunctionsTree);
             ProgramInfo.LoadOpcodes();
         }
 
@@ -129,10 +133,11 @@ namespace ScriptEditor
 
         private void TextEditor_Load(object sender, EventArgs e)
         {
-            if (!Settings.showLog){
-                showLogWindowToolStripMenuItem.Checked = Settings.showLog;
-                splitContainer1.Panel2Collapsed = true;
-            }
+            splitContainer3.Panel1Collapsed = true;
+            splitContainer2.Panel2Collapsed = true;
+            splitContainer1.Panel2Collapsed = true;
+            splitContainer2.Panel1MinSize = 800;
+            splitContainer2.Panel2MinSize = 150;
             splitContainer1.SplitterDistance = Size.Height;
             if (Settings.editorSplitterPosition == -1) {
                 minimizelogsize = Size.Height - (Size.Height / 5);
@@ -140,7 +145,7 @@ namespace ScriptEditor
             if (Settings.editorSplitterPosition2 != -1) {
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
             }
-            splitContainer2.Panel2Collapsed = true;
+            showLogWindowToolStripMenuItem.Checked = Settings.showLog;
             if (Settings.enableParser) CreateTabVarTree();
         }
 
@@ -165,6 +170,7 @@ namespace ScriptEditor
                 }
             }
             if (sf != null) sf.Close();
+            splitContainer3.Panel1Collapsed = true;
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
             Settings.SaveUserData(this);
             Settings.SaveWindowPosition(SavedWindows.Main, this);
@@ -328,6 +334,7 @@ namespace ScriptEditor
             openAllIncludesScriptToolStripMenuItem.Enabled = true;
             GotoProc_StripButton.Enabled = true;
             Search_toolStripButton.Enabled = true;
+            if (Settings.showLog) splitContainer1.Panel2Collapsed = false;
         }
 
         // Tooltip for opcodes and macros
@@ -686,7 +693,9 @@ namespace ScriptEditor
         }
 
 #region ParseFunction
-        public void intParserPrint(string info) { tbOutputParse.Text = info + tbOutputParse.Text; }
+        public void intParserPrint(string info) {
+            if (!Settings.enableParser) tbOutputParse.Text = info + tbOutputParse.Text;
+        }
 
         // Parse first open script
         private void FirstParseScript(TabInfo cTab)
@@ -1160,34 +1169,25 @@ namespace ScriptEditor
         private void UpdateEditorToolStripMenu()
         {
             openIncludeToolStripMenuItem.Enabled = false;
-            if (currentTab.parseInfo == null)
-            {
+            if (currentTab.parseInfo == null) {
                 findReferencesToolStripMenuItem.Enabled = false;
                 findDeclerationToolStripMenuItem.Enabled = false;
                 findDefinitionToolStripMenuItem.Enabled = false;
-            }
-            else
-            {
+            } else {
                 NameType nt = NameType.None;
                 IParserInfo item = null;
-                if (ProcTree.Focused)
-                {
+                if (ProcTree.Focused) {
                     TreeNode node = ProcTree.SelectedNode;
-                    if (node.Tag is Variable)
-                    {
+                    if (node.Tag is Variable) {
                         Variable var = (Variable)node.Tag;
                         nt = var.Type();
                         item = var;
-                    }
-                    else if (node.Tag is Procedure)
-                    {
+                    } else if (node.Tag is Procedure) {
                         Procedure proc = (Procedure)node.Tag;
                         nt = proc.Type();
                         item = proc;
                     }
-                }
-                else
-                {
+                } else {
                     TextLocation tl = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
                     editorMenuStrip.Tag = tl;
                     HighlightColor hc = currentTab.textEditor.Document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
@@ -1197,20 +1197,39 @@ namespace ScriptEditor
                         || hc.Color == System.Drawing.Color.DarkGreen)
                     {
                         nt = NameType.None;
-                    }
-                    else
-                    {
+                    } else {
                         string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
                         item = currentTab.parseInfo.Lookup(word, currentTab.filename, tl.Line);
-                        if (item != null)
-                        {
+                        if (item != null) {
                             nt = item.Type();
                         }
                         //nt=currentTab.parseInfo.LookupTokenType(word, currentTab.filename, tl.Line);
+                        // selected text gray region
+                        if (hc.BackgroundColor == Color.LightGray) {
+                            int sStart= tl.Column, sEnd = tl.Column + 1;
+                            for (int i = sEnd; i < (sEnd + 32); i++)
+                            {
+                                hc = currentTab.textEditor.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
+                                if (hc == null || hc.BackgroundColor != Color.LightGray) {
+                                    sEnd = i;
+                                    break;
+                                }
+                            }
+                            for (int i = sStart; i > 0; i--)
+                            {
+                                hc = currentTab.textEditor.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
+                                if (hc == null || hc.BackgroundColor != Color.LightGray) {
+                                    sStart = i + 1;
+                                    break;
+                                }
+                            }
+                            TextLocation sSel = new TextLocation(sStart, tl.Line);
+                            TextLocation eSel = new TextLocation(sEnd, tl.Line);
+                            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(sSel, eSel);
+                        }  
                     }
                     string line = TextUtilities.GetLineAsString(currentTab.textEditor.Document, tl.Line).Trim();
-                    if (line.StartsWith("#include "))
-                    {
+                    if (line.StartsWith("#include ")) {
                         openIncludeToolStripMenuItem.Enabled = true;
                     }
                 }
@@ -1223,13 +1242,11 @@ namespace ScriptEditor
                         findDefinitionToolStripMenuItem.Enabled = false;
                         break;
                     case NameType.Proc:
-                        {
-                            Procedure proc = (Procedure)item;
-                            findReferencesToolStripMenuItem.Enabled = true;
-                            findDeclerationToolStripMenuItem.Enabled = true;
-                            findDefinitionToolStripMenuItem.Enabled = !proc.IsImported();
-                            break;
-                        }
+                        Procedure proc = (Procedure)item;
+                        findReferencesToolStripMenuItem.Enabled = true;
+                        findDeclerationToolStripMenuItem.Enabled = true;
+                        findDefinitionToolStripMenuItem.Enabled = !proc.IsImported();
+                        break;
                     case NameType.Macro:
                         findReferencesToolStripMenuItem.Enabled = false;
                         findDeclerationToolStripMenuItem.Enabled = true;
@@ -1810,11 +1827,6 @@ namespace ScriptEditor
             }
         }
 #endregion
-
-        private void keyDown(object sender, KeyEventArgs e)
-        {
-            MessageBox.Show("Test " + e.KeyCode);
-        }
  
         private void editorMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -2047,6 +2059,7 @@ namespace ScriptEditor
 
         private void ShowLineNumbers(object sender, EventArgs e)
         {
+            if (currentTab == null) return;
             string ext = Path.GetExtension(currentTab.filename).ToLower(); 
             PosChangeType = PositionType.AddPos;
             if (ext != ".ssl" && ext != ".h") {
@@ -2054,7 +2067,7 @@ namespace ScriptEditor
                 PosChangeType = PositionType.Disabled;
                 splitContainer2.Panel2Collapsed = true;
             } else {
-                splitContainer2.Panel2Collapsed = false;
+                if (browserToolStripMenuItem.Checked) splitContainer2.Panel2Collapsed = false;
                 currentTab.textEditor.TextEditorProperties.ShowLineNumbers = textLineNumberToolStripMenuItem.Checked;
                 currentTab.textEditor.Refresh();
             }
@@ -2581,6 +2594,47 @@ namespace ScriptEditor
         private void pDefineStripComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Settings.preprocDef = pDefineStripComboBox.SelectedItem.ToString();
+        }
+
+        private void FunctionsTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Tag != null && currentTab != null) {
+                string code = e.Node.Tag.ToString();
+                if (code.LastIndexOf("<cr>") > 0) {
+                    code = code.Replace("<cr>", Environment.NewLine);
+                } else code += " ";
+                currentTab.textEditor.ActiveTextAreaControl.TextArea.InsertString(code);
+                currentTab.textEditor.ActiveTextAreaControl.Select();
+                currentTab.textEditor.ActiveTextAreaControl.Focus();
+            }
+        }
+
+        private void FunctionButton_Click(object sender, EventArgs e)
+        {
+            if (fuctionPanel > 0) {
+                splitContainer3.Panel1Collapsed = true;
+                fuctionPanel = 0;
+            } else {
+                if (fuctionPanel == -1) {
+                    Functions.CreateTree(FunctionTreeLeft);
+                    splitContainer3.Panel2MinSize = 900;
+                    splitContainer3.SplitterDistance = 220;
+                    fuctionPanel = 220;
+                }
+                splitContainer3.Panel1Collapsed = false;
+                fuctionPanel = splitContainer3.SplitterDistance;
+            }
+        }
+
+        private void funcToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FunctionButton.PerformClick();
+        }
+
+        private void browserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null) return;
+            splitContainer2.Panel2Collapsed = !browserToolStripMenuItem.Checked;
         }
     }
 }
