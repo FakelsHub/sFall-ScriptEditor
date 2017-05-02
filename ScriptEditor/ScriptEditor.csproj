@@ -218,6 +218,7 @@
     <None Include="SyntaxRules\sslSyntaxRules.xshd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="SyntaxRules\sslSyntaxRules_v2.xshd" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -238,11 +239,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Icon_1.ico" />
+    <Content Include="Resources\opcodes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)\SyntaxRules\*SyntaxRules.xshd" "$(TargetDir)\resources\"
-copy "$(ProjectDir)\opcodes.txt" "$(TargetDir)\resources\"</PostBuildEvent>
+copy "$(ProjectDir)\SyntaxRules\*SyntaxRules_v2.xshd" "$(TargetDir)\resources\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <BaseAddress>4194304</BaseAddress>
