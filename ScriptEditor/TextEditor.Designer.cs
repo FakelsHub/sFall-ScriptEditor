@@ -28,12 +28,14 @@ namespace ScriptEditor {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.FunctionTreeLeft = new System.Windows.Forms.TreeView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.TabClose_button = new System.Windows.Forms.Button();
             this.Split_button = new System.Windows.Forms.Button();
+            this.tabControl1 = new DraggableTabControl();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.SearchToolStrip = new System.Windows.Forms.ToolStrip();
             this.CaseButton = new System.Windows.Forms.ToolStripButton();
@@ -74,7 +76,6 @@ namespace ScriptEditor {
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.LineStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ColStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lbAutocomplete = new System.Windows.Forms.ListBox();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.FunctionButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator27 = new System.Windows.Forms.ToolStripSeparator();
@@ -168,6 +169,8 @@ namespace ScriptEditor {
             this.LowerCaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.AlignToLeftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commentTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncommentTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator29 = new System.Windows.Forms.ToolStripSeparator();
             this.findReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findDeclerationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -175,9 +178,6 @@ namespace ScriptEditor {
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.openIncludeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTipAC = new System.Windows.Forms.ToolTip(this.components);
-            this.commentTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uncommentTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl1 = new DraggableTabControl();
             this.panel1.SuspendLayout();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -206,14 +206,33 @@ namespace ScriptEditor {
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.splitContainer3);
             this.panel1.Controls.Add(this.lbAutocomplete);
+            this.panel1.Controls.Add(this.splitContainer3);
             this.panel1.Controls.Add(this.ToolStrip);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(896, 707);
             this.panel1.TabIndex = 2;
+            // 
+            // lbAutocomplete
+            // 
+            this.lbAutocomplete.BackColor = System.Drawing.SystemColors.Info;
+            this.lbAutocomplete.Cursor = System.Windows.Forms.Cursors.Help;
+            this.lbAutocomplete.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbAutocomplete.ForeColor = System.Drawing.Color.Black;
+            this.lbAutocomplete.FormattingEnabled = true;
+            this.lbAutocomplete.ItemHeight = 16;
+            this.lbAutocomplete.Location = new System.Drawing.Point(632, 56);
+            this.lbAutocomplete.Name = "lbAutocomplete";
+            this.lbAutocomplete.Size = new System.Drawing.Size(120, 20);
+            this.lbAutocomplete.TabIndex = 5;
+            this.lbAutocomplete.Visible = false;
+            this.lbAutocomplete.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lbAutocomplete_PasteOpcode);
+            this.lbAutocomplete.SelectedIndexChanged += new System.EventHandler(this.LbAutocompleteSelectedIndexChanged);
+            this.lbAutocomplete.VisibleChanged += new System.EventHandler(this.LbAutocompleteVisibleChanged);
+            this.lbAutocomplete.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LbAutocompleteKeyDown);
+            this.lbAutocomplete.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lbAutocomplete_MouseMove);
             // 
             // splitContainer3
             // 
@@ -267,7 +286,7 @@ namespace ScriptEditor {
             this.splitContainer2.Panel2.Controls.Add(this.statusStrip);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.Size = new System.Drawing.Size(867, 682);
-            this.splitContainer2.SplitterDistance = 761;
+            this.splitContainer2.SplitterDistance = 766;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 4;
             // 
@@ -292,7 +311,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel2.Controls.Add(this.minimizelog_button);
             this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Size = new System.Drawing.Size(761, 682);
+            this.splitContainer1.Size = new System.Drawing.Size(766, 682);
             this.splitContainer1.SplitterDistance = 650;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
@@ -304,7 +323,7 @@ namespace ScriptEditor {
             this.TabClose_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TabClose_button.ForeColor = System.Drawing.Color.DarkRed;
             this.TabClose_button.Image = ((System.Drawing.Image)(resources.GetObject("TabClose_button.Image")));
-            this.TabClose_button.Location = new System.Drawing.Point(741, 22);
+            this.TabClose_button.Location = new System.Drawing.Point(746, 22);
             this.TabClose_button.Name = "TabClose_button";
             this.TabClose_button.Size = new System.Drawing.Size(18, 18);
             this.TabClose_button.TabIndex = 0;
@@ -320,7 +339,7 @@ namespace ScriptEditor {
             this.Split_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Split_button.ForeColor = System.Drawing.Color.DarkRed;
             this.Split_button.Image = ((System.Drawing.Image)(resources.GetObject("Split_button.Image")));
-            this.Split_button.Location = new System.Drawing.Point(741, 630);
+            this.Split_button.Location = new System.Drawing.Point(746, 630);
             this.Split_button.Name = "Split_button";
             this.Split_button.Size = new System.Drawing.Size(16, 16);
             this.Split_button.TabIndex = 2;
@@ -328,6 +347,22 @@ namespace ScriptEditor {
             this.Split_button.UseVisualStyleBackColor = true;
             this.Split_button.Visible = false;
             this.Split_button.Click += new System.EventHandler(this.SplitDoc_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.AllowDrop = true;
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ImageList = this.imageList1;
+            this.tabControl1.Location = new System.Drawing.Point(0, 25);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(766, 625);
+            this.tabControl1.TabIndex = 1;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
+            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // imageList1
             // 
@@ -353,7 +388,7 @@ namespace ScriptEditor {
             this.SearchToolStrip.Location = new System.Drawing.Point(0, 0);
             this.SearchToolStrip.Name = "SearchToolStrip";
             this.SearchToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.SearchToolStrip.Size = new System.Drawing.Size(761, 25);
+            this.SearchToolStrip.Size = new System.Drawing.Size(766, 25);
             this.SearchToolStrip.TabIndex = 3;
             // 
             // CaseButton
@@ -458,7 +493,7 @@ namespace ScriptEditor {
             this.minimizelog_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.minimizelog_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.minimizelog_button.Image = ((System.Drawing.Image)(resources.GetObject("minimizelog_button.Image")));
-            this.minimizelog_button.Location = new System.Drawing.Point(737, -1);
+            this.minimizelog_button.Location = new System.Drawing.Point(742, -1);
             this.minimizelog_button.Name = "minimizelog_button";
             this.minimizelog_button.Size = new System.Drawing.Size(20, 20);
             this.minimizelog_button.TabIndex = 6;
@@ -477,7 +512,7 @@ namespace ScriptEditor {
             this.tabControl2.Location = new System.Drawing.Point(0, 0);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(761, 30);
+            this.tabControl2.Size = new System.Drawing.Size(766, 30);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl2_MouseClick);
             // 
@@ -486,7 +521,7 @@ namespace ScriptEditor {
             this.tabPageParse.Controls.Add(this.tbOutputParse);
             this.tabPageParse.Location = new System.Drawing.Point(4, 22);
             this.tabPageParse.Name = "tabPageParse";
-            this.tabPageParse.Size = new System.Drawing.Size(753, 4);
+            this.tabPageParse.Size = new System.Drawing.Size(758, 4);
             this.tabPageParse.TabIndex = 2;
             this.tabPageParse.Text = "Parser output";
             this.tabPageParse.UseVisualStyleBackColor = true;
@@ -505,7 +540,7 @@ namespace ScriptEditor {
             this.tbOutputParse.Name = "tbOutputParse";
             this.tbOutputParse.ReadOnly = true;
             this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutputParse.Size = new System.Drawing.Size(753, 4);
+            this.tbOutputParse.Size = new System.Drawing.Size(758, 4);
             this.tbOutputParse.TabIndex = 1;
             // 
             // tabPageBuild
@@ -513,7 +548,7 @@ namespace ScriptEditor {
             this.tabPageBuild.Controls.Add(this.tbOutput);
             this.tabPageBuild.Location = new System.Drawing.Point(4, 22);
             this.tabPageBuild.Name = "tabPageBuild";
-            this.tabPageBuild.Size = new System.Drawing.Size(753, 4);
+            this.tabPageBuild.Size = new System.Drawing.Size(757, 4);
             this.tabPageBuild.TabIndex = 0;
             this.tabPageBuild.Text = "Build output";
             this.tabPageBuild.UseVisualStyleBackColor = true;
@@ -530,7 +565,7 @@ namespace ScriptEditor {
             this.tbOutput.Name = "tbOutput";
             this.tbOutput.ReadOnly = true;
             this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutput.Size = new System.Drawing.Size(753, 4);
+            this.tbOutput.Size = new System.Drawing.Size(757, 4);
             this.tbOutput.TabIndex = 0;
             // 
             // tabPageError
@@ -538,7 +573,7 @@ namespace ScriptEditor {
             this.tabPageError.Controls.Add(this.dgvErrors);
             this.tabPageError.Location = new System.Drawing.Point(4, 22);
             this.tabPageError.Name = "tabPageError";
-            this.tabPageError.Size = new System.Drawing.Size(753, 4);
+            this.tabPageError.Size = new System.Drawing.Size(757, 4);
             this.tabPageError.TabIndex = 1;
             this.tabPageError.Text = "Errors";
             this.tabPageError.UseVisualStyleBackColor = true;
@@ -566,7 +601,7 @@ namespace ScriptEditor {
             this.dgvErrors.RowHeadersVisible = false;
             this.dgvErrors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvErrors.Size = new System.Drawing.Size(753, 4);
+            this.dgvErrors.Size = new System.Drawing.Size(757, 4);
             this.dgvErrors.TabIndex = 0;
             this.dgvErrors.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
             // 
@@ -611,7 +646,7 @@ namespace ScriptEditor {
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.SelectedIndex = 0;
-            this.tabControl3.Size = new System.Drawing.Size(103, 660);
+            this.tabControl3.Size = new System.Drawing.Size(98, 660);
             this.tabControl3.TabIndex = 1;
             // 
             // tabPage4
@@ -623,7 +658,7 @@ namespace ScriptEditor {
             this.tabPage4.Location = new System.Drawing.Point(4, 20);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(95, 636);
+            this.tabPage4.Size = new System.Drawing.Size(90, 636);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
             // 
@@ -641,7 +676,7 @@ namespace ScriptEditor {
             this.ProcTree.ShowLines = false;
             this.ProcTree.ShowNodeToolTips = true;
             this.ProcTree.ShowRootLines = false;
-            this.ProcTree.Size = new System.Drawing.Size(89, 630);
+            this.ProcTree.Size = new System.Drawing.Size(84, 630);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             this.ProcTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseClick);
@@ -702,7 +737,7 @@ namespace ScriptEditor {
             this.tabPage6.Location = new System.Drawing.Point(4, 20);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(95, 636);
+            this.tabPage6.Size = new System.Drawing.Size(91, 636);
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "Functions";
             // 
@@ -718,7 +753,7 @@ namespace ScriptEditor {
             this.FunctionsTree.Location = new System.Drawing.Point(3, 3);
             this.FunctionsTree.Name = "FunctionsTree";
             this.FunctionsTree.ShowNodeToolTips = true;
-            this.FunctionsTree.Size = new System.Drawing.Size(89, 630);
+            this.FunctionsTree.Size = new System.Drawing.Size(88, 630);
             this.FunctionsTree.TabIndex = 0;
             this.FunctionsTree.TabStop = false;
             this.FunctionsTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.FunctionsTree_NodeMouseClick);
@@ -731,7 +766,7 @@ namespace ScriptEditor {
             this.ColStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 660);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(103, 22);
+            this.statusStrip.Size = new System.Drawing.Size(98, 22);
             this.statusStrip.TabIndex = 2;
             // 
             // toolStripStatusLabel3
@@ -748,7 +783,7 @@ namespace ScriptEditor {
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.LineStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.LineStripStatusLabel.Name = "LineStripStatusLabel";
-            this.LineStripStatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.LineStripStatusLabel.Size = new System.Drawing.Size(36, 17);
             this.LineStripStatusLabel.Spring = true;
             this.LineStripStatusLabel.Text = "Line: 1";
             this.LineStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -761,29 +796,10 @@ namespace ScriptEditor {
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.ColStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.ColStripStatusLabel.Name = "ColStripStatusLabel";
-            this.ColStripStatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.ColStripStatusLabel.Size = new System.Drawing.Size(36, 17);
             this.ColStripStatusLabel.Spring = true;
             this.ColStripStatusLabel.Text = "Col: 1";
             this.ColStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            // 
-            // lbAutocomplete
-            // 
-            this.lbAutocomplete.BackColor = System.Drawing.SystemColors.Info;
-            this.lbAutocomplete.Cursor = System.Windows.Forms.Cursors.Help;
-            this.lbAutocomplete.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lbAutocomplete.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lbAutocomplete.FormattingEnabled = true;
-            this.lbAutocomplete.ItemHeight = 16;
-            this.lbAutocomplete.Location = new System.Drawing.Point(631, -6);
-            this.lbAutocomplete.Name = "lbAutocomplete";
-            this.lbAutocomplete.Size = new System.Drawing.Size(132, 20);
-            this.lbAutocomplete.TabIndex = 5;
-            this.lbAutocomplete.Visible = false;
-            this.lbAutocomplete.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lbAutocomplete_PasteOpcode);
-            this.lbAutocomplete.SelectedIndexChanged += new System.EventHandler(this.LbAutocompleteSelectedIndexChanged);
-            this.lbAutocomplete.VisibleChanged += new System.EventHandler(this.LbAutocompleteVisibleChanged);
-            this.lbAutocomplete.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LbAutocompleteKeyDown);
-            this.lbAutocomplete.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lbAutocomplete_MouseMove);
             // 
             // ToolStrip
             // 
@@ -1400,7 +1416,7 @@ namespace ScriptEditor {
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
-            this.toolStripDropDownButton2.Size = new System.Drawing.Size(73, 20);
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(73, 22);
             this.toolStripDropDownButton2.Text = "Options";
             // 
             // splitDocumentToolStripMenuItem
@@ -1666,6 +1682,24 @@ namespace ScriptEditor {
             this.AlignToLeftToolStripMenuItem.ToolTipText = "Align selected block text to left.";
             this.AlignToLeftToolStripMenuItem.Click += new System.EventHandler(this.AlignToLeftToolStripMenuItem_Click);
             // 
+            // commentTextToolStripMenuItem
+            // 
+            this.commentTextToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("commentTextToolStripMenuItem.Image")));
+            this.commentTextToolStripMenuItem.Name = "commentTextToolStripMenuItem";
+            this.commentTextToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+            this.commentTextToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.commentTextToolStripMenuItem.Text = "Comment text";
+            this.commentTextToolStripMenuItem.Click += new System.EventHandler(this.CommentTextStripButton_Click);
+            // 
+            // uncommentTextToolStripMenuItem
+            // 
+            this.uncommentTextToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("uncommentTextToolStripMenuItem.Image")));
+            this.uncommentTextToolStripMenuItem.Name = "uncommentTextToolStripMenuItem";
+            this.uncommentTextToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.X)));
+            this.uncommentTextToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.uncommentTextToolStripMenuItem.Text = "Uncomment text";
+            this.uncommentTextToolStripMenuItem.Click += new System.EventHandler(this.UnCommentTextStripButton_Click);
+            // 
             // toolStripSeparator29
             // 
             this.toolStripSeparator29.Name = "toolStripSeparator29";
@@ -1711,42 +1745,7 @@ namespace ScriptEditor {
             // 
             this.toolTipAC.AutoPopDelay = 50000;
             this.toolTipAC.InitialDelay = 500;
-            this.toolTipAC.IsBalloon = true;
             this.toolTipAC.ReshowDelay = 100;
-            // 
-            // commentTextToolStripMenuItem
-            // 
-            this.commentTextToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("commentTextToolStripMenuItem.Image")));
-            this.commentTextToolStripMenuItem.Name = "commentTextToolStripMenuItem";
-            this.commentTextToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-            this.commentTextToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.commentTextToolStripMenuItem.Text = "Comment text";
-            this.commentTextToolStripMenuItem.Click += new System.EventHandler(this.CommentTextStripButton_Click);
-            // 
-            // uncommentTextToolStripMenuItem
-            // 
-            this.uncommentTextToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("uncommentTextToolStripMenuItem.Image")));
-            this.uncommentTextToolStripMenuItem.Name = "uncommentTextToolStripMenuItem";
-            this.uncommentTextToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.X)));
-            this.uncommentTextToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.uncommentTextToolStripMenuItem.Text = "Uncomment text";
-            this.uncommentTextToolStripMenuItem.Click += new System.EventHandler(this.UnCommentTextStripButton_Click);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.AllowDrop = true;
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.ImageList = this.imageList1;
-            this.tabControl1.Location = new System.Drawing.Point(0, 25);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(761, 625);
-            this.tabControl1.TabIndex = 1;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
-            this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
-            this.tabControl1.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
-            this.tabControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseClick);
             // 
             // TextEditor
             // 

@@ -666,6 +666,7 @@ namespace ScriptEditor
                     if (matches.Count > 0) {
                         lbAutocomplete.Items.Clear();
                         var select = currentTab.textEditor.ActiveTextAreaControl.Caret;
+                        int maxLen = 0;
                         foreach (string item in matches) {
                             int sep = item.IndexOf("|");
                             AutoCompleteItem acItem = new AutoCompleteItem(item, "");
@@ -674,6 +675,7 @@ namespace ScriptEditor
                                 acItem.hint = item.Substring(sep + 1);
                             }
                             lbAutocomplete.Items.Add(acItem);
+                            if (acItem.name.Length > maxLen) maxLen = acItem.name.Length;
                         }
                         var caretPos = currentTab.textEditor.ActiveTextAreaControl.Caret.ScreenPosition;
                         var tePos = currentTab.textEditor.ActiveTextAreaControl.FindForm().PointToClient(currentTab.textEditor.ActiveTextAreaControl.Parent.PointToScreen(currentTab.textEditor.ActiveTextAreaControl.Location));
@@ -681,6 +683,8 @@ namespace ScriptEditor
                         tePos.Offset(15, 15);
                         lbAutocomplete.Location = tePos;
                         lbAutocomplete.Height = lbAutocomplete.ItemHeight * (lbAutocomplete.Items.Count + 1);
+                        maxLen *= 9; // size
+                        lbAutocomplete.Width = (maxLen > 120) ? maxLen : 120; 
                         lbAutocomplete.Show();
                         lbAutocomplete.Tag = new KeyValuePair<int, string>(currentTab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, word);
                     } else {
@@ -916,6 +920,7 @@ namespace ScriptEditor
             CommentStripButton.Enabled = false;
             UnCommentStripButton.Enabled = false;
             Text = SSE.Remove(SSE.Length - 2);
+            lbAutocomplete.Hide();
         }
 
 # region SearchFunction
