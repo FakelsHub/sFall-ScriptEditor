@@ -8,28 +8,13 @@
 
   <RuleSets>
     <RuleSet ignorecase="true">
-      <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+      <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\/{}[]:;"' ,	.?</Delimiters>
 
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#ifdef</Begin>
-      </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#ifndef</Begin>
-      </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red">#if</Begin>
-      </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
+       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
         <Begin color="Red" startofline="true">#else</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#elif</Begin>
-      </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
         <Begin color="Red" startofline="true">#endif</Begin>
-      </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin color="Red" startofline="true">#define</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
         <Begin color="Red" startofline="true">#undef</Begin>
@@ -49,9 +34,6 @@
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
         <Begin color="Red" startofline="true">#pragma</Begin>
       </Span>
-      <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="DarkGreen" stopateol = "true">
-        <Begin startofline="true">#</Begin>
-      </Span>
 
       <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
         <Begin>//</Begin>
@@ -70,6 +52,14 @@
         <Begin bgcolor="LightGray" color="Black">{</Begin>
         <End bgcolor="LightGray" color="Black">}</End>
       </Span>
+
+      <KeyWords name = "PreprocessorDirectives" bold = "false" italic = "false" color = "Red">
+        <Key word = "#define" />
+        <Key word = "#ifdef" />
+        <Key word = "#ifndef" />
+        <Key word = "#if" />
+        <Key word = "#elif" />
+      </KeyWords>
 
       <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "Black">
         <Key word = "," />
