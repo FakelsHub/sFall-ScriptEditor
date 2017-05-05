@@ -59,6 +59,31 @@ namespace ScriptEditor.CodeTranslation
 
         private int lastStatus = 1;
 
+        private string indentFormat(string defmacro, int macrolen)
+        { 
+                string[] macroline = defmacro.Split('\n');
+                if (macroline.Length > 1) {
+                    int indent= -1, dmlen = -1;
+                    macroline[0] = macroline[0].Replace("\r", string.Empty);
+                    if (macroline[0].Length > 1) {
+                        indent = macroline[0].Length - macroline[0].TrimStart().Length;
+                        dmlen = 8 + macrolen;
+                    }
+                    for (int i = 1; i < macroline.Length; i++)
+                    {
+                        macroline[i] = macroline[i].Replace("\r", string.Empty);
+                        if (indent == -1 && macroline[i].Length > 1) {
+                            indent = macroline[i].Length - macroline[i].TrimStart().Length;
+                            dmlen = 0;
+                        } else if (indent == -1 || macroline[i].Length == 0 ) continue;
+                        try { macroline[i] = macroline[i].Remove(0, indent + dmlen); }
+                        catch { Program.printLog("indentFormat. Line " + macroline[i] + "\r\nMacros: " + defmacro); }
+                    }
+                    return String.Join("\n", macroline);
+                }
+                return defmacro.TrimStart();
+        }
+
         private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
@@ -72,11 +97,11 @@ namespace ScriptEditor.CodeTranslation
                     return; //second check, because spaces are allowed between macro arguments
                 macro = line.Remove(closebracket + 1);
                 token = line.Remove(firstbracket).ToLowerInvariant();
-                def = line.Substring(closebracket + 1).TrimStart();
+                def = indentFormat(line.Substring(closebracket + 1), macro.Length);
             } else {
                 macro = line.Remove(firstspace);
                 token = macro.ToLowerInvariant();
-                def = line.Substring(firstspace).TrimStart();
+                def = indentFormat(line.Substring(firstspace), macro.Length);
             }
             macros[token] = new Macro(macro, def, file, lineno + 1);
         }
@@ -107,7 +132,7 @@ namespace ScriptEditor.CodeTranslation
                             sb.Append(lines[i].Remove(lines[i].Length - 1).TrimEnd());
                             sb.Append(Environment.NewLine);
                             i++;
-                            lines[i] = lines[i].Trim();
+                            //lines[i] = lines[i].Trim();
                         } while (lines[i].EndsWith("\\"));
                         sb.Append(lines[i]);
                         AddMacro(sb.ToString(), macros, file, lineno);

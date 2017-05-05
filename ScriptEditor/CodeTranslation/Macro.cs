@@ -29,7 +29,12 @@ namespace ScriptEditor.CodeTranslation
 
         public override string ToString()
         {
-            return name + " := " + def;
+            string declare = fdeclared.Remove(0, fdeclared.LastIndexOf('\\') + 1);
+            if (declare == "parser.ssl")
+                declare = "\n_";
+            else
+                declare = "\n\nDeclare file: " + declare;
+            return "Define: " + name + "\n" + def + declare;
         }
     }
 }

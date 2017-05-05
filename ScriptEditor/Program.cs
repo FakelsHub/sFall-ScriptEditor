@@ -42,5 +42,7 @@ namespace ScriptEditor
                 SingleInstanceManager.SendEditorOpenMessage();
             }
         }
+
+        public static void printLog(string log) { File.AppendAllText(Settings.ProgramFolder + "\\sse.log", "Еxception in " + log + "\r\n"); }
     }
 }
