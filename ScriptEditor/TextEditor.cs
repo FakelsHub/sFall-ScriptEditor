@@ -347,7 +347,7 @@ namespace ScriptEditor
                 return;
             }
             HighlightColor hc = currentTab.textEditor.Document.GetLineSegment(e.LogicalPosition.Line).GetColorForPosition(e.LogicalPosition.Column);
-            if (hc == null || hc.Color == System.Drawing.Color.Green || hc.Color == System.Drawing.Color.Brown || hc.Color == System.Drawing.Color.DarkGreen)
+            if (hc == null || hc.Color == Color.Green || hc.Color == Color.Brown || hc.Color == Color.DarkGreen || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xD0))
                 return;
             string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(e.LogicalPosition));
             if (word.Length == 0 ) return;
@@ -359,11 +359,9 @@ namespace ScriptEditor
                 }
             }
             string lookup = ProgramInfo.LookupOpcodesToken(word); // show opcodes help
-            if (lookup == null && currentTab.parseInfo != null ) lookup = currentTab.parseInfo.LookupToken(word, currentTab.filepath, e.LogicalPosition.Line + 1);
-            if (lookup != null) {
-                e.ShowToolTip(lookup);
-                return;
-            }
+            if (lookup == null && currentTab.parseInfo != null )
+                lookup = currentTab.parseInfo.LookupToken(word, currentTab.filepath, e.LogicalPosition.Line + 1);
+            if (lookup != null) e.ShowToolTip(lookup);
         }
 
         private void Save(TabInfo tab)
@@ -637,10 +635,15 @@ namespace ScriptEditor
             if (!Settings.autocomplete)
                 return;
             var caret = currentTab.textEditor.ActiveTextAreaControl.Caret;
-            if (e.KeyChar == '(') {
+            if (e.KeyChar == '"') currentTab.textEditor.Document.Insert(caret.Offset, "\"");
+            if (e.KeyChar == '(' || e.KeyChar == '[' || e.KeyChar == '{') {
                 if (lbAutocomplete.Visible) {
                     lbAutocomplete.Hide();
                 }
+                string bracket = ")";
+                if (e.KeyChar == '[') bracket = "]";
+                else if (e.KeyChar == '{') bracket = "}";
+                currentTab.textEditor.Document.Insert(caret.Offset, bracket);
                 if (currentTab.parseInfo == null) {
                     return;
                 }
