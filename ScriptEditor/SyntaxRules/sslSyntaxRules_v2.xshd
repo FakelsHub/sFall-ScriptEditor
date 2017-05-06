@@ -55,6 +55,29 @@
         <Key word = "#undef" />
       </KeyWords>
 
+      <KeyWords name = "StandartProcedures" bold = "false" italic = "false" color = "Indigo">
+        <Key word = "start" />
+        <Key word = "description_p_proc" />
+        <Key word = "look_at_p_proc" />
+        <Key word = "damage_p_proc" />
+        <Key word = "use_p_proc" />
+        <Key word = "use_obj_on_p_proc" />
+        <Key word = "use_skill_on_p_proc" />
+        <Key word = "combat_p_proc" />
+        <Key word = "critter_p_proc" />
+        <Key word = "push_p_proc" />
+        <Key word = "talk_p_proc" />
+        <Key word = "pickup_p_proc" />
+        <Key word = "drop_p_proc" />
+        <Key word = "is_dropping_p_proc" />
+        <Key word = "map_enter_p_proc" />
+        <Key word = "map_exit_p_proc" />
+        <Key word = "map_update_p_proc" />
+        <Key word = "destroy_p_proc" />
+        <Key word = "spatial_p_proc" />
+        <Key word = "timed_event_p_proc" />
+      </KeyWords>
+
       <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkBlue">
         <Key word = "," />
         <Key word = "." />
