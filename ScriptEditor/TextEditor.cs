@@ -136,7 +136,7 @@ namespace ScriptEditor
             splitContainer3.Panel1Collapsed = true;
             splitContainer2.Panel2Collapsed = true;
             splitContainer1.Panel2Collapsed = true;
-            splitContainer2.Panel1MinSize = 800;
+            splitContainer2.Panel1MinSize = 300;
             splitContainer2.Panel2MinSize = 150;
             splitContainer1.SplitterDistance = Size.Height;
             if (Settings.editorSplitterPosition == -1) {
@@ -173,7 +173,7 @@ namespace ScriptEditor
             splitContainer3.Panel1Collapsed = true;
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
             Settings.SaveUserData(this);
-            Settings.SaveWindowPosition(SavedWindows.Main, this);
+            if (WindowState != FormWindowState.Minimized) Settings.SaveWindowPosition(SavedWindows.Main, this);
             Settings.Save();
             Directory.Delete(Settings.scriptTempPath, true);
         }
@@ -525,7 +525,7 @@ namespace ScriptEditor
                         tn.Nodes.Add(tn2);
                     }
                     if (p.filename.ToLower() != currentTab.filename.ToLower()) {
-                        tn.ToolTipText = p.ToString() + "\ndefine file: " + p.filename;
+                        tn.ToolTipText = p.ToString() + "\ndeclarate file: " + p.filename;
                         ProcTree.Nodes[0].Nodes.Add(tn);
                         ProcTree.Nodes[0].Expand();
                     } else {
@@ -546,7 +546,7 @@ namespace ScriptEditor
                         TreeNode tn = new TreeNode(var.name);
                         tn.Tag = var;
                         if (var.filename.ToLower() != currentTab.filename.ToLower()) {
-                            tn.ToolTipText = var.ToString() + "\ndefine file: " + var.filename;
+                            tn.ToolTipText = var.ToString() + "\ndeclarate file: " + var.filename;
                             VarTree.Nodes[0].Nodes.Add(tn);
                             VarTree.Nodes[0].Expand();
                         } else {
