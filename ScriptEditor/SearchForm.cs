@@ -5,8 +5,6 @@ namespace ScriptEditor
 {
     public partial class SearchForm : Form
     {
-        public bool bcChange;
-
         public SearchForm()
         {
             InitializeComponent();
@@ -20,18 +18,17 @@ namespace ScriptEditor
 
         private void SearchForm_Deactivate(object sender, EventArgs e)
         {
-            if (!bcChange) Opacity = 0.7;
+            if (WindowState == FormWindowState.Minimized) Opacity = 0.6;
         }
 
         private void SearchForm_Activated(object sender, EventArgs e)
         {
             Opacity = 1;
-            bcChange = false;  
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }

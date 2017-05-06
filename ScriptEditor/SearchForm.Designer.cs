@@ -177,7 +177,7 @@
             this.bReplace.Name = "bReplace";
             this.bReplace.Size = new System.Drawing.Size(104, 23);
             this.bReplace.TabIndex = 13;
-            this.bReplace.Text = "Replace";
+            this.bReplace.Text = "Find && Replace";
             this.bReplace.UseVisualStyleBackColor = true;
             // 
             // textBox1

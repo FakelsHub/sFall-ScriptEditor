@@ -1068,16 +1068,19 @@ namespace ScriptEditor
                     int starttab = currentTab == null ? 0 : currentTab.index;
                     int endtab = starttab == 0 ? tabs.Count - 1 : starttab - 1;
                     int tab = starttab - 1;
+                    int caretOffset = currentTab.textEditor.ActiveTextAreaControl.Caret.Offset;
                     do
                     {
                         if (++tab == tabs.Count)
-                            tab = 0;
-                        if (SearchAndScroll(tabs[tab], regex))
-                        {
+                            tab = 0; //restart tab
+                        int start, len;
+                        if (Search(tabs[tab].textEditor.Text, sf.tbSearch.Text, regex, caretOffset + 1, false, out start, out len)) {
+                            FindSelected(tabs[tab], start, len);
                             if (currentTab == null || currentTab.index != tab)
                                 tabControl1.SelectTab(tab);
                             return true;
                         }
+                        caretOffset = 0; // search from begin 
                     } while (tab != endtab);
                 }
                 else
@@ -1576,7 +1579,6 @@ namespace ScriptEditor
                 };
                 sf.tbSearch.KeyPress += delegate(object a1, KeyPressEventArgs a2) { if (a2.KeyChar == '\r') { bSearch_Click(null, null); a2.Handled = true; } };
                 sf.bChange.Click += delegate(object a1, EventArgs a2) {
-                    sf.bcChange = true;
                     if (sf.fbdSearchFolder.ShowDialog() != DialogResult.OK)
                         return;
                     Settings.lastSearchPath = sf.fbdSearchFolder.SelectedPath;
@@ -1620,10 +1622,13 @@ namespace ScriptEditor
                     currentTab.textEditor.Document.Replace(offsets[i], lengths[i], sf.tbReplace.Text);
                 }
             } else {
+                currentTab.textEditor.ActiveTextAreaControl.Caret.Column--;
                 if (!bSearchInternal(null, null))
                     return;
                 ISelection selected = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
                 currentTab.textEditor.Document.Replace(selected.Offset, selected.Length, sf.tbReplace.Text);
+                selected.EndPosition = new TextLocation(selected.StartPosition.Column + sf.tbReplace.Text.Length, selected.EndPosition.Line);
+                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(selected);
             }
         }
 
