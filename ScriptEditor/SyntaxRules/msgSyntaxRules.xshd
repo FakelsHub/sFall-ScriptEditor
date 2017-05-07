@@ -4,14 +4,20 @@
     <Property name="LineComment" value="#"/>
   </Properties>
 
-  <Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
+  <Digits name = "Digits" bold = "true" italic = "false" color = "DarkBlue"/>
   <RuleSets>
     <RuleSet ignorecase="true">
       <Delimiters>{}</Delimiters>
 
-      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "DarkGreen" stopateol = "true">
         <Begin>#</Begin>
       </Span>
+
+      <KeyWords name = "SpecSymbol" bold = "false" italic = "false" color = "LightGray">
+        <Key word = "{" />
+        <Key word = "}" />
+      </KeyWords>
+
     </RuleSet>
 
     <RuleSet name = "CommentMarkerSet" ignorecase = "false">
