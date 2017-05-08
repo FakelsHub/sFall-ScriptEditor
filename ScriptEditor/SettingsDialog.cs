@@ -32,15 +32,15 @@ namespace ScriptEditor
             cbParserWarn.Checked = Settings.parserWarn;
             cbWatcom.Checked = Settings.useWatcom;
             cbCompilePath.Checked = Settings.ignoreCompPath;
+            foreach (var item in Settings.msgListPath)
+                msgPathlistView.Items.Add(item.ToString());
             SetLabelText();
         }
 
         private void SetLabelText()
         {
             textBox2.Text = outpath == null ? "<unset>" : outpath;
-            textBox1.Text = scriptshpath == null ? "<unset>" : scriptshpath;
-            foreach (var item in Settings.msgListPath)
-                msgPathlistView.Items.Add(item.ToString());
+            textBox1.Text = scriptshpath == null ? "<unset>" : scriptshpath;  
         }
 
         private void SettingsDialog_FormClosing(object sender, FormClosingEventArgs e)
@@ -151,6 +151,11 @@ namespace ScriptEditor
             msgPathlistView.FocusedItem.Text = iPath;
             msgPathlistView.Items[sInd].Selected = true;
             msgPathlistView.Items[sInd].Focused = true;
+        }
+
+        private void bAssociate_Click(object sender, EventArgs e)
+        {
+            FileAssociation.Associate();
         }
 
     }

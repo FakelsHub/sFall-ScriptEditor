@@ -2,15 +2,15 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("ScriptEditor")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Sfall Script Editor")]
+[assembly: AssemblyDescription("version by Mr.Stalin")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sfall Team")]
-[assembly: AssemblyProduct("ScriptEditor")]
-[assembly: AssemblyCopyright("Copyright © Sfall Team 2010-2016")]
+[assembly: AssemblyProduct("Script Editor")]
+[assembly: AssemblyCopyright("Copyright © Sfall Team 2010-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: System.CLSCompliant(true)]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("3.5.4.5")]
-[assembly: AssemblyFileVersion("3.5.4.5")]
+[assembly: AssemblyVersion("4.0.0.0")]
+[assembly: AssemblyFileVersion("4.0.0.0")]

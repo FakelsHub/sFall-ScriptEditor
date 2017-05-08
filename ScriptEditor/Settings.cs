@@ -25,10 +25,10 @@ namespace ScriptEditor
         public static byte optimize = 1;
         public static bool showWarnings = true;
         public static bool showDebug = true;
-        public static bool overrideIncludesPath = false;
+        public static bool overrideIncludesPath = true;
         public static bool warnOnFailedCompile = true;
         public static bool multiThreaded = true;
-        public static bool autoOpenMsgs = true;
+        public static bool autoOpenMsgs = false;
         public static string outputDir;
         public static string PathScriptsHFile;
         public static string lastMassCompile;
@@ -57,6 +57,7 @@ namespace ScriptEditor
 
         // no saved settings
         public static bool msgLipColumn = true;
+        public static bool firstRun = false;
 
         public static void SetupWindowPosition(SavedWindows window, Form f)
         {
@@ -117,51 +118,55 @@ namespace ScriptEditor
 
         private static void LoadInternal(BinaryReader br, BinaryReader brRecent)
         {
-            try {
-                allowDefine = br.ReadBoolean();
-                hintsLang = br.ReadByte();
-                highlight = br.ReadByte();
-                encoding = br.ReadByte();
-                optimize = br.ReadByte();
-                showWarnings = br.ReadBoolean();
-                showDebug = br.ReadBoolean();
-                overrideIncludesPath = br.ReadBoolean();
-                outputDir = br.ReadString();
-                if (outputDir.Length == 0)
-                    outputDir = null;
-                warnOnFailedCompile = br.ReadBoolean();
-                multiThreaded = br.ReadBoolean();
-                lastMassCompile = br.ReadString();
-                if (lastMassCompile.Length == 0)
-                    lastMassCompile = null;
-                lastSearchPath = br.ReadString();
-                if (lastSearchPath.Length == 0)
-                    lastSearchPath = null;
-                LoadWindowPos(br, 0);
-                editorSplitterPosition = br.ReadInt32();
-                autoOpenMsgs = br.ReadBoolean();
-                editorSplitterPosition2 = br.ReadInt32();
-                PathScriptsHFile = br.ReadString();
-                if (PathScriptsHFile.Length == 0)
-                    PathScriptsHFile = null;
-                language = br.ReadString();
-                if (language.Length == 0)
-                    language = "english";
-                tabsToSpaces = br.ReadBoolean();
-                tabSize = br.ReadInt32();
-                enableParser = br.ReadBoolean();
-                shortCircuit = br.ReadBoolean();
-                autocomplete = br.ReadBoolean();
-                showLog = br.ReadBoolean();
-                parserWarn = br.ReadBoolean();
-                useWatcom = br.ReadBoolean();
-                preprocDef = br.ReadString();
-                ignoreCompPath = br.ReadBoolean();
-                byte MsgItems = br.ReadByte();
-                for (byte i = 0; i < MsgItems; i++)
-                    msgListPath.Add(br.ReadString());
+            if (br != null) {
+                try {
+                    firstRun = br.ReadBoolean();
+                    allowDefine = br.ReadBoolean();
+                    hintsLang = br.ReadByte();
+                    highlight = br.ReadByte();
+                    encoding = br.ReadByte();
+                    optimize = br.ReadByte();
+                    showWarnings = br.ReadBoolean();
+                    showDebug = br.ReadBoolean();
+                    overrideIncludesPath = br.ReadBoolean();
+                    outputDir = br.ReadString();
+                    if (outputDir.Length == 0)
+                        outputDir = null;
+                    warnOnFailedCompile = br.ReadBoolean();
+                    multiThreaded = br.ReadBoolean();
+                    lastMassCompile = br.ReadString();
+                    if (lastMassCompile.Length == 0)
+                        lastMassCompile = null;
+                    lastSearchPath = br.ReadString();
+                    if (lastSearchPath.Length == 0)
+                        lastSearchPath = null;
+                    LoadWindowPos(br, 0);
+                    editorSplitterPosition = br.ReadInt32();
+                    autoOpenMsgs = br.ReadBoolean();
+                    editorSplitterPosition2 = br.ReadInt32();
+                    PathScriptsHFile = br.ReadString();
+                    if (PathScriptsHFile.Length == 0)
+                        PathScriptsHFile = null;
+                    language = br.ReadString();
+                    if (language.Length == 0)
+                        language = "english";
+                    tabsToSpaces = br.ReadBoolean();
+                    tabSize = br.ReadInt32();
+                    enableParser = br.ReadBoolean();
+                    shortCircuit = br.ReadBoolean();
+                    autocomplete = br.ReadBoolean();
+                    showLog = br.ReadBoolean();
+                    parserWarn = br.ReadBoolean();
+                    useWatcom = br.ReadBoolean();
+                    preprocDef = br.ReadString();
+                    ignoreCompPath = br.ReadBoolean();
+                    byte MsgItems = br.ReadByte();
+                    for (byte i = 0; i < MsgItems; i++)
+                        msgListPath.Add(br.ReadString());
+                }
+                catch { MessageBox.Show("An error occurred while reading configuration file.\nFile setting.dat may be in wrong format.", "Setting read error"); }
+                br.Close();
             }
-            catch { MessageBox.Show("An error occurred while reading configuration file.\nFile setting.dat may be in wrong format.", "Setting read error"); }
             // Recent files
             if (brRecent == null) return;
             int recentItems = brRecent.ReadByte();
@@ -188,18 +193,15 @@ namespace ScriptEditor
             if (!Directory.Exists(templatesFolder)) {
                 Directory.CreateDirectory(templatesFolder);
             }
-            if (File.Exists(SettingsPath)) {
-                //recent.Clear();
-                BinaryReader brRecent = null;
-                if (File.Exists(RecentPath)) {
-                   brRecent = new BinaryReader(File.OpenRead(RecentPath));
-                }
-                BinaryReader brSettings = new BinaryReader(File.OpenRead(SettingsPath));
-                LoadInternal(brSettings, brRecent);
-                brSettings.Close(); 
-            }
+            BinaryReader brRecent = null, brSettings = null;
+            if (File.Exists(RecentPath)) 
+                brRecent = new BinaryReader(File.OpenRead(RecentPath));
+            if (File.Exists(SettingsPath)) 
+                brSettings = new BinaryReader(File.OpenRead(SettingsPath));
+            LoadInternal(brSettings, brRecent);
             if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath).Close();
             if (!File.Exists(PreprocDefPath)) File.Create(PreprocDefPath).Close();
+            if (!firstRun) FileAssociation.Associate();
         }
 
         private static void WriteWindowPos(BinaryWriter bw, int i)
@@ -216,6 +218,7 @@ namespace ScriptEditor
             if (!Directory.Exists(SettingsFolder))
                 Directory.CreateDirectory(SettingsFolder);
             BinaryWriter bw = new BinaryWriter(File.Create(SettingsPath));
+            bw.Write((byte)255);
             bw.Write(allowDefine);
             bw.Write(hintsLang);
             bw.Write(highlight);

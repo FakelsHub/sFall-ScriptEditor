@@ -35,16 +35,20 @@ namespace ScriptEditor
         private PositionType PosChangeType;
         private int moveActive = -1;
         private int fuctionPanel = -1;
+        private FormWindowState wState;
+        private readonly string[] commandsArgs;
 
         private Encoding EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
         private TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
 
-        public TextEditor()
+        public TextEditor(string[] args)
         {
             InitializeComponent();
+            commandsArgs = args;
             Settings.SetupWindowPosition(SavedWindows.Main, this);
+            if (!Settings.firstRun) WindowState = FormWindowState.Maximized;
             pDefineStripComboBox.Items.AddRange(File.ReadAllLines(Settings.PreprocDefPath));
             pDefineStripComboBox.Text = Settings.preprocDef;
             SearchTextComboBox.Items.AddRange(File.ReadAllLines(Settings.SearchHistoryPath));
@@ -98,6 +102,7 @@ namespace ScriptEditor
             HandlerProcedure.CreateProcHandlers(ProcMnContext, this);
             Functions.CreateTree(FunctionsTree);
             ProgramInfo.LoadOpcodes();
+            DEBUGINFO("***** Sfall Script Editor v." + Application.ProductVersion + " *****");
         }
 
         private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
@@ -117,9 +122,8 @@ namespace ScriptEditor
 
         private void ShowMe()
         {
-            if (WindowState == FormWindowState.Minimized) {
-                WindowState = FormWindowState.Normal;
-            }
+            if (WindowState == FormWindowState.Minimized)
+                WindowState = wState;
             // get our current "TopMost" value (ours will always be false though)
             bool top = TopMost;
             // make our form jump to the top of everything
@@ -127,9 +131,9 @@ namespace ScriptEditor
             // set it back to whatever it was
             TopMost = top;
         }
-#else
-        void DEBUGINFO(string line) { tbOutput.Text = line + "\r\n" + tbOutput.Text; }
 #endif
+
+        void DEBUGINFO(string line) { tbOutput.Text = line + "\r\n" + tbOutput.Text; }
 
         private void TextEditor_Load(object sender, EventArgs e)
         {
@@ -144,9 +148,23 @@ namespace ScriptEditor
             } else minimizelogsize = Settings.editorSplitterPosition;
             if (Settings.editorSplitterPosition2 != -1) {
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
-            }
+            } else splitContainer2.SplitterDistance = Size.Width - 200;
             showLogWindowToolStripMenuItem.Checked = Settings.showLog;
             if (Settings.enableParser) CreateTabVarTree();
+            // open documents passed from command line
+            foreach (string s in commandsArgs) {
+                Open(s, TextEditor.OpenType.File);
+            }
+        }
+
+        private void TextEditor_Shown(object sender, EventArgs e)
+        {
+            if (!Settings.firstRun) Settings_ToolStripMenuItem.PerformClick();
+        }
+
+        private void TextEditor_Resize(object sender, EventArgs e)
+        {
+            if (WindowState != FormWindowState.Minimized) wState = WindowState;
         }
 
         private void TextEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -241,8 +259,8 @@ namespace ScriptEditor
             te.ConvertTabsToSpaces = Settings.tabsToSpaces;
             te.TabIndent = Settings.tabSize;
             te.Document.TextEditorProperties.IndentationSize = Settings.tabSize;
-            if (Settings.encoding == 1) te.Document.TextEditorProperties.Encoding = System.Text.Encoding.GetEncoding("cp866");
             if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0) {
+                if (Settings.encoding == 1) te.Document.TextEditorProperties.Encoding = System.Text.Encoding.GetEncoding("cp866");
                 te.SetHighlighting("msg");
             } else
                 te.SetHighlighting((Settings.highlight == 0) ? "ssl" : "ssl_v2"); // Activate the highlighting, use the name from the SyntaxDefinition node.
@@ -2646,7 +2664,7 @@ namespace ScriptEditor
 
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null) return;
+            if (!currentTab.shouldParse || currentTab == null) return;
             splitContainer2.Panel2Collapsed = !browserToolStripMenuItem.Checked;
         }
     }

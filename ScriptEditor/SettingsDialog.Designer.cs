@@ -52,12 +52,6 @@
             this.cbParserWarn = new System.Windows.Forms.CheckBox();
             this.cbWatcom = new System.Windows.Forms.CheckBox();
             this.cbCompilePath = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.HintLang_comboBox = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.msgPathlistView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -67,15 +61,22 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.HintLang_comboBox = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.Highlight_comboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.bAssociate = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.MsgcontextMenu.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -355,79 +356,6 @@
             this.toolTip.SetToolTip(this.cbCompilePath, "Compile scripts into same folder where source ssl file.");
             this.cbCompilePath.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.cbWatcom);
-            this.groupBox1.Controls.Add(this.cbShortCircuit);
-            this.groupBox1.Controls.Add(this.cbWarnings);
-            this.groupBox1.Controls.Add(this.cbDebug);
-            this.groupBox1.Controls.Add(this.cbWarnFailedCompile);
-            this.groupBox1.Controls.Add(this.cbMultiThread);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.cbOptimize);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(319, 120);
-            this.groupBox1.TabIndex = 22;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Compiling";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.cbCompilePath);
-            this.groupBox2.Controls.Add(this.textBox2);
-            this.groupBox2.Controls.Add(this.cbIncludePath);
-            this.groupBox2.Controls.Add(this.textBox1);
-            this.groupBox2.Controls.Add(label1);
-            this.groupBox2.Controls.Add(this.bChange);
-            this.groupBox2.Controls.Add(this.bScriptsH);
-            this.groupBox2.Controls.Add(label4);
-            this.groupBox2.Location = new System.Drawing.Point(12, 138);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(482, 104);
-            this.groupBox2.TabIndex = 23;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Path";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(6, 32);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(434, 20);
-            this.textBox2.TabIndex = 13;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(6, 71);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(434, 20);
-            this.textBox1.TabIndex = 13;
-            // 
-            // HintLang_comboBox
-            // 
-            this.HintLang_comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.HintLang_comboBox.FormattingEnabled = true;
-            this.HintLang_comboBox.Items.AddRange(new object[] {
-            "English",
-            "Russian",
-            "Chinese"});
-            this.HintLang_comboBox.Location = new System.Drawing.Point(419, 248);
-            this.HintLang_comboBox.Name = "HintLang_comboBox";
-            this.HintLang_comboBox.Size = new System.Drawing.Size(75, 21);
-            this.HintLang_comboBox.TabIndex = 25;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(328, 252);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 13);
-            this.label2.TabIndex = 26;
-            this.label2.Text = "Language Hints:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.msgPathlistView);
@@ -508,6 +436,79 @@
             this.modeDownToolStripMenuItem.Text = "Move Down";
             this.modeDownToolStripMenuItem.Click += new System.EventHandler(this.modeDownToolStripMenuItem_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.cbWatcom);
+            this.groupBox1.Controls.Add(this.cbShortCircuit);
+            this.groupBox1.Controls.Add(this.cbWarnings);
+            this.groupBox1.Controls.Add(this.cbDebug);
+            this.groupBox1.Controls.Add(this.cbWarnFailedCompile);
+            this.groupBox1.Controls.Add(this.cbMultiThread);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.cbOptimize);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(319, 120);
+            this.groupBox1.TabIndex = 22;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Compiling";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cbCompilePath);
+            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.cbIncludePath);
+            this.groupBox2.Controls.Add(this.textBox1);
+            this.groupBox2.Controls.Add(label1);
+            this.groupBox2.Controls.Add(this.bChange);
+            this.groupBox2.Controls.Add(this.bScriptsH);
+            this.groupBox2.Controls.Add(label4);
+            this.groupBox2.Location = new System.Drawing.Point(12, 138);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(482, 104);
+            this.groupBox2.TabIndex = 23;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Path";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(6, 32);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(434, 20);
+            this.textBox2.TabIndex = 13;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(6, 71);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(434, 20);
+            this.textBox1.TabIndex = 13;
+            // 
+            // HintLang_comboBox
+            // 
+            this.HintLang_comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.HintLang_comboBox.FormattingEnabled = true;
+            this.HintLang_comboBox.Items.AddRange(new object[] {
+            "English",
+            "Russian",
+            "Chinese"});
+            this.HintLang_comboBox.Location = new System.Drawing.Point(419, 248);
+            this.HintLang_comboBox.Name = "HintLang_comboBox";
+            this.HintLang_comboBox.Size = new System.Drawing.Size(75, 21);
+            this.HintLang_comboBox.TabIndex = 25;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(328, 252);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 13);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Language Hints:";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Highlight_comboBox
             // 
             this.Highlight_comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -541,11 +542,24 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Parser";
             // 
+            // bAssociate
+            // 
+            this.bAssociate.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bAssociate.Location = new System.Drawing.Point(419, 318);
+            this.bAssociate.Name = "bAssociate";
+            this.bAssociate.Size = new System.Drawing.Size(16, 16);
+            this.bAssociate.TabIndex = 32;
+            this.bAssociate.Text = "A";
+            this.toolTip.SetToolTip(this.bAssociate, "Associate SSL files with the editor.");
+            this.bAssociate.UseVisualStyleBackColor = true;
+            this.bAssociate.Click += new System.EventHandler(this.bAssociate_Click);
+            // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 376);
+            this.Controls.Add(this.bAssociate);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.Highlight_comboBox);
@@ -571,12 +585,12 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsDialog_FormClosing);
+            this.groupBox3.ResumeLayout(false);
+            this.MsgcontextMenu.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.MsgcontextMenu.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
@@ -629,5 +643,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem moveUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modeDownToolStripMenuItem;
+        private System.Windows.Forms.Button bAssociate;
     }
 }
