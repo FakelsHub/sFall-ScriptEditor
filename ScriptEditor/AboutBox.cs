@@ -9,14 +9,15 @@ namespace ScriptEditor
 {
     partial class AboutBox : Form
     {
+        const string appName = "Sfall Script Editor";
+
         public AboutBox()
         {
             InitializeComponent();
-            this.Text = "About sfall script editor";
-            this.labelProductName.Text = "sfall script editor";
+            this.Text += appName + " - extended version by Mr.Stalin";
+            this.labelProductName.Text = appName;
             this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
             this.labelCopyright.Text = AssemblyCopyright;
-            this.labelCompanyName.Text = string.Empty;
             this.textBoxDescription.Text = string.Format(
 @"The sfall script compiler, for sfall {0}
 updated by phobos2077 at 2016.10.14
@@ -30,11 +31,14 @@ Script compilation is handled by sslc sfall edition
 Script preprocessing handled by mcpp 2.7.2 (BCD)
 Copyright (c) 1998, 2002-2008 Kiyoshi Matsui
 
+Preprocessing Open Watcom C32 Compiler Version 1.9
+Copyright (c) 1984-2002 Sybase, Inc.
+
 Script decompilation handled by int2ssl 8.3.0
 Copyright (C) Anchorite (TeamX), 2005-2009
 Continued by Nirran, phobos2077
 
-See licences.txt for licence texts
+See licences.txt for licence texts.
 ", AssemblyVersion);
         }
 
@@ -111,5 +115,6 @@ See licences.txt for licence texts
             }
         }
         #endregion
+
     }
 }
