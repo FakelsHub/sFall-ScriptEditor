@@ -16,6 +16,23 @@ namespace ScriptEditor
         private const int SHCNE_ASSOCCHANGED = 0x8000000;
         private const uint SHCNF_IDLIST = 0x0U;
 
+        private static readonly string[] extAllowed = { FILE_EXTENSION, ".msg", ".h", ".int", ".ini", ".txt", ".xshd" };
+
+        public static bool CheckFileAllow(string ext)
+        {
+            bool result = false;
+            ext = System.IO.Path.GetExtension(ext).ToLower();
+            foreach (string e in extAllowed)
+            {
+                if (e == ext) {
+                    result = true;
+                    break;
+                }
+            }
+            if (!result) MessageBox.Show("You can not open this file type in the editor.", "Error - file is not allowed");
+            return result;
+        }
+
         public static void Associate()
         {
             string appName = "SfallScriptEditor";

@@ -215,6 +215,7 @@ namespace ScriptEditor
         public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false, bool seltab = true)
         {
             if (type == OpenType.File) {
+                if (!FileAssociation.CheckFileAllow(file)) return null;
                 if (!Path.IsPathRooted(file)) {
                     file = Path.GetFullPath(file);
                 }
@@ -2257,9 +2258,9 @@ namespace ScriptEditor
             if (after) findLine = Parser.GetDeclarationProcedureLine(ProcTree.SelectedNode.Text) + 1;
                 else findLine = Parser.GetEndLineProcDeclaration(); 
             if (findLine == -1) MessageBox.Show("The declaration procedure is written to beginning of script.", "Warning");
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
-            int offset = currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.PositionToOffset(new TextLocation(0, findLine));
-            currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, "procedure " + name + ";" + Environment.NewLine);
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            int offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, findLine));
+            currentTab.textEditor.Document.Insert(offset, "procedure " + name + ";" + Environment.NewLine);
             // proc body
             if (after) findLine = block.end + 1 ; // after current procedure
                 else findLine = currentTab.textEditor.Document.TotalNumberOfLines - 1; // paste to end script
@@ -2268,8 +2269,8 @@ namespace ScriptEditor
                 procblock = Environment.NewLine + procblock;
                 caretline++;
             }
-            offset = currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.PositionToOffset(new TextLocation(len, findLine));
-            currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, procblock);
+            offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(len, findLine));
+            currentTab.textEditor.Document.Insert(offset, procblock);
             currentTab.textEditor.ActiveTextAreaControl.Caret.Column = 0;
             currentTab.textEditor.ActiveTextAreaControl.Caret.Line = findLine + (caretline + overrides);
             currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(findLine + (caretline + overrides), 0);
@@ -2306,12 +2307,9 @@ namespace ScriptEditor
             currentTab.textEditor.Document.UndoStack.StartUndoGroup();
             foreach (Match m in matches)
             {
-                int offset_replace = differ * rename_count;
-                TextLocation sel_start = currentTab.textEditor.Document.OffsetToPosition(offset_replace + (m.Index + 1));
-                TextLocation sel_end = currentTab.textEditor.Document.OffsetToPosition(offset_replace + ((m.Index + 1) + (m.Length - 2)));
-                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(sel_start, sel_end);
-                currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.RemoveSelectedText();
-                currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset_replace + (m.Index + 1), newName);
+                int offset = (differ * rename_count) + (m.Index + 1);
+                currentTab.textEditor.Document.Remove(offset, (m.Length - 2));
+                currentTab.textEditor.Document.Insert(offset, newName);
                 rename_count++;
             }
             currentTab.textEditor.Document.UndoStack.EndUndoGroup();
@@ -2335,24 +2333,25 @@ namespace ScriptEditor
 
         private void DeleteProcedure(string procName, ProcBlock block, out string def_poc)
         {
+            int offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, block.begin));
+            int len = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, block.end));
+            len += TextUtilities.GetLineAsString(currentTab.textEditor.Document, block.end).Length;
+            if ((len + 2) < currentTab.textEditor.Document.TextLength) len += 2;
+            currentTab.textEditor.Document.Remove(offset, (len - offset));
+            // declare
             int declarLine = Parser.GetDeclarationProcedureLine(procName);
             if (declarLine != block.begin & declarLine > -1) {
-            int len = TextUtilities.GetLineAsString(currentTab.textEditor.Document, declarLine).Length;
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(0, declarLine), new TextLocation(len, declarLine));
-            def_poc = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
-            } else def_poc = null;
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(0, block.begin), new TextLocation(1000, block.end));
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
-            int offset = currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.PositionToOffset(new TextLocation(0, block.begin + 1));
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.Document.Remove(offset, 2);
+                def_poc = GetSelectBlockText(declarLine, declarLine); // select and get
+                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
+            }
+            else def_poc = null;
         }
 
         private string GetSelectBlockText(int _begin, int _end, int _ecol = -1, int _bcol = 0)
         {
             if (_ecol == -1) _ecol = TextUtilities.GetLineAsString(currentTab.textEditor.Document, _end).Length;
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SetSelection(new TextLocation(_bcol, _begin), new TextLocation(_ecol, _end));
-            return currentTab.textEditor.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(_bcol, _begin), new TextLocation(_ecol, _end));
+            return currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
         }
 
         //Update Procedure Tree
@@ -2404,13 +2403,14 @@ namespace ScriptEditor
             if (copy_defproc != null) {
             int p_def = Parser.GetDeclarationProcedureLine(name);
 
-            offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_def));
-            currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, copy_defproc + Environment.NewLine);
+            offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, p_def));
+            currentTab.textEditor.Document.Insert(offset, copy_defproc + Environment.NewLine);
             }
             //paste proc block
             int p_begin = Parser.GetProcBeginEndBlock(name, 0, true).begin;
-            offset = currentTab.textEditor.ActiveTextAreaControl.Document.PositionToOffset(new TextLocation(0, p_begin));
-            currentTab.textEditor.ActiveTextAreaControl.Document.Insert(offset, copy_procbody + "\r\n\r\n");
+            offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, p_begin));
+            int ln = TextUtilities.GetLineAsString(currentTab.textEditor.Document, p_begin).Length;
+            currentTab.textEditor.Document.Insert(offset + ln, "\r\n" + copy_procbody + "\r\n");
             //
             currentTab.textEditor.Document.UndoStack.EndUndoGroup();
             TreeNode nd = ProcTree.Nodes[root].Nodes[moveActive];
