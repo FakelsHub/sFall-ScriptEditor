@@ -806,7 +806,7 @@ namespace ScriptEditor
         private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (File.Exists("errors.txt")){
-                tbOutputParse.Text = ParseError.ParserLog(File.ReadAllText("errors.txt"), currentTab.filename) + tbOutputParse.Text;
+                tbOutputParse.Text = ParseError.ParserLog(File.ReadAllText("errors.txt"), currentTab) + tbOutputParse.Text;
                 File.Delete("errors.txt");
             }
             if (!(e.Result is TabInfo)) {

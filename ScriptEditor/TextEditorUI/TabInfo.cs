@@ -57,6 +57,8 @@ namespace ScriptEditor.TextEditorUI
         /// </summary>
         public Position history;
 
+        public bool error;
+
         public ProgramInfo parseInfo;
     }
 }
