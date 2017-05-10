@@ -1039,8 +1039,8 @@ namespace ICSharpCode.TextEditor
 		#region DrawHelper functions
 		void DrawBracketHighlight(Graphics g, Rectangle rect)
 		{
-			g.FillRectangle(BrushRegistry.GetBrush(Color.FromArgb(50, 0, 0, 255)), rect);
-			g.DrawRectangle(Pens.Blue, rect);
+			g.FillRectangle(BrushRegistry.GetBrush(Color.FromArgb(25, 255, 0, 0)), rect);
+			g.DrawRectangle(Pens.Red, rect);
 		}
 		
 		void DrawString(Graphics g, string text, Font font, Color color, int x, int y)

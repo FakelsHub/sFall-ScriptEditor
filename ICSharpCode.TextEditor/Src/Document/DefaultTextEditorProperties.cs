@@ -13,7 +13,8 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public enum BracketMatchingStyle {
 		Before,
-		After
+		After,
+		Outside
 	}
 	
 	public class DefaultTextEditorProperties : ITextEditorProperties
@@ -23,7 +24,7 @@ namespace ICSharpCode.TextEditor.Document
 		IndentStyle           indentStyle           = IndentStyle.Smart;
 		DocumentSelectionMode documentSelectionMode = DocumentSelectionMode.Normal;
 		Encoding              encoding              = System.Text.Encoding.UTF8;
-		BracketMatchingStyle  bracketMatchingStyle  = BracketMatchingStyle.After;
+		BracketMatchingStyle  bracketMatchingStyle  = BracketMatchingStyle.Outside;
 		FontContainer fontContainer;
 		static Font DefaultFont;
 		

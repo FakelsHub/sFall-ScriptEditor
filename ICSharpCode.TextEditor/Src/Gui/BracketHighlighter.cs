@@ -71,7 +71,12 @@ namespace ICSharpCode.TextEditor
 						return new Highlight(p, endP);
 					}
 				}
-			} else if (word == closingtag) {
+			}
+			if (document.TextEditorProperties.BracketMatchingStyle == BracketMatchingStyle.Outside) {
+				word = document.GetCharAt(Math.Max(0, Math.Min(document.TextLength - 1, --searchOffset)));
+				endP.Column--;
+			}
+			if (word == closingtag) {
 				if (searchOffset > 0) {
 					int bracketOffset = TextUtilities.SearchBracketBackward(document, searchOffset - 1, opentag, closingtag);
 					if (bracketOffset >= 0) {
