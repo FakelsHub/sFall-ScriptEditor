@@ -31,7 +31,7 @@ namespace ScriptEditor.CodeTranslation
         {
             string declare = fdeclared.Remove(0, fdeclared.LastIndexOf('\\') + 1);
             if (declare == "parser.ssl")
-                declare = "\n_";
+                declare = string.Empty;
             else
                 declare = "\n\nDeclare file: " + declare;
             return "Define: " + name + "\n" + def + declare;

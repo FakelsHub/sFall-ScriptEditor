@@ -78,8 +78,13 @@ namespace ScriptEditor.CodeTranslation
                         } else if (indent == -1 || macroline[i].Length == 0 ) continue;
                         try { macroline[i] = macroline[i].Remove(0, indent + dmlen); }
                         catch { Program.printLog("indentFormat. Line " + macroline[i] + "\r\nMacros: " + defmacro); }
+                        if (i > 40 && macroline.Length > 42) { // tip text size
+                            macroline[i++] = " continue...";
+                            Array.Resize(ref macroline, i);
+                            break;
+                        }
                     }
-                    return String.Join("\n", macroline);
+                    return String.Join("\n", macroline).TrimStart();
                 }
                 return defmacro.TrimStart();
         }

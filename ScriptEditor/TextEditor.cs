@@ -254,6 +254,8 @@ namespace ScriptEditor
             }
             //Create the text editor and set up the tab
             ICSharpCode.TextEditor.TextEditorControl te = new ICSharpCode.TextEditor.TextEditorControl();
+            te.Document.TextEditorProperties.AllowCaretBeyondEOL = true;
+            te.Document.TextEditorProperties.LineViewerStyle = LineViewerStyle.FullRow;
             te.ShowVRuler = false;
             te.Document.FoldingManager.FoldingStrategy = new CodeFolder();
             te.IndentStyle = IndentStyle.Smart;
@@ -2308,8 +2310,7 @@ namespace ScriptEditor
             foreach (Match m in matches)
             {
                 int offset = (differ * rename_count) + (m.Index + 1);
-                currentTab.textEditor.Document.Remove(offset, (m.Length - 2));
-                currentTab.textEditor.Document.Insert(offset, newName);
+                currentTab.textEditor.Document.Replace(offset, (m.Length - 2), newName);
                 rename_count++;
             }
             currentTab.textEditor.Document.UndoStack.EndUndoGroup();
