@@ -18,8 +18,12 @@ namespace ScriptEditor
 
         private static readonly string[] extAllowed = { FILE_EXTENSION, ".msg", ".h", ".int", ".ini", ".txt", ".xshd" };
 
-        public static bool CheckFileAllow(string ext)
+        public static bool CheckFileAllow(string ext, out bool Exists)
         {
+            if (System.IO.File.Exists(ext))
+                Exists = true;
+            else 
+                Exists = false;
             bool result = false;
             ext = System.IO.Path.GetExtension(ext).ToLower();
             foreach (string e in extAllowed)

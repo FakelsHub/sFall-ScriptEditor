@@ -215,25 +215,26 @@ namespace ScriptEditor
         public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false, bool seltab = true)
         {
             if (type == OpenType.File) {
-                if (!FileAssociation.CheckFileAllow(file)) return null;
                 if (!Path.IsPathRooted(file)) {
                     file = Path.GetFullPath(file);
                 }
-                // Check recent file
-                bool Exists = false;
-                if (File.Exists(file)) {
-                    Exists = true;
-                    recent = false; // false - delete not found file from recent list
-                }
+                // Check file
+                bool Exists;
+                if (!FileAssociation.CheckFileAllow(file, out Exists)) return null;
                 //Add this file to the recent files list
                 if (addToMRU) {
+                    if (!Exists && recent && MessageBox.Show("This recent file not found. Delete recent link to file?", "Open file error", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        recent = true;
+                    else
+                        recent = false; // don't delete file link from recent list
                     Settings.AddRecentFile(file, recent);
                     UpdateRecentList();
-                    if (recent) {
-                        MessageBox.Show("This file was not found.", "Open file error");
-                    }
+                    if (!Exists) return null;
                 }
-                if (!Exists) return null;
+                if (!Exists) {
+                    MessageBox.Show("This file was not found.", "Open file error");
+                    return null;
+                }
                 //If this is an int, decompile
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     var compiler = new Compiler();
@@ -1857,7 +1858,8 @@ namespace ScriptEditor
                     MessageBox.Show("Cannot open includes given via a relative path for an unsaved script", "Error");
                     return;
                 }
-                Open(Path.Combine(Path.GetDirectoryName(currentTab.filepath), line[1]), OpenType.File, false);
+                Parser.includePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
+                Open(line[1], OpenType.File, false);
             }
         }
 #endregion
@@ -2068,7 +2070,7 @@ namespace ScriptEditor
         private void openIncludesScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentTab.filepath != null) {
-                foreach (string s in Parser.GetAllIncludes(currentTab.filepath)) {
+                foreach (string s in Parser.GetAllIncludes(currentTab)) {
                     Open(s, OpenType.File, false, false, false, false);
                 }
             }

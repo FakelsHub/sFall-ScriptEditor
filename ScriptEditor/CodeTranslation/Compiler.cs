@@ -64,14 +64,14 @@ namespace ScriptEditor.CodeTranslation
                 string[] macroline = defmacro.Split('\n');
                 if (macroline.Length > 1) {
                     int indent= -1, dmlen = -1;
-                    macroline[0] = macroline[0].Replace("\r", string.Empty);
+                    macroline[0] = macroline[0].TrimEnd();
                     if (macroline[0].Length > 1) {
                         indent = macroline[0].Length - macroline[0].TrimStart().Length;
                         dmlen = 8 + macrolen;
                     }
                     for (int i = 1; i < macroline.Length; i++)
                     {
-                        macroline[i] = macroline[i].Replace("\r", string.Empty);
+                        macroline[i] = macroline[i].TrimEnd();
                         if (indent == -1 && macroline[i].Length > 1) {
                             indent = macroline[i].Length - macroline[i].TrimStart().Length;
                             dmlen = 0;
@@ -137,7 +137,6 @@ namespace ScriptEditor.CodeTranslation
                             sb.Append(lines[i].Remove(lines[i].Length - 1).TrimEnd());
                             sb.Append(Environment.NewLine);
                             i++;
-                            //lines[i] = lines[i].Trim();
                         } while (lines[i].EndsWith("\\"));
                         sb.Append(lines[i]);
                         AddMacro(sb.ToString(), macros, file, lineno);
@@ -159,7 +158,6 @@ namespace ScriptEditor.CodeTranslation
                 string[] linetext = text.Split('\n');
                 for (int i = 0; i < linetext.Length; i++)
                 {
-                    linetext[i] = linetext[i].Replace('\r', ' ').TrimEnd();
                     if (linetext[i].ToLower().TrimStart().StartsWith(Parser.INCLUDE)) {
                         string[] str = linetext[i].Split('"');
                         if (str.Length < 2)
@@ -308,7 +306,7 @@ namespace ScriptEditor.CodeTranslation
                 string[] text = File.ReadAllLines(file);
                 for (int i = 0; i < text.Length; i++)
                 {
-                    text[i] = text[i].Trim();
+                    text[i] = text[i].TrimStart();
                     if (text[i].ToLower().StartsWith(Parser.INCLUDE)) {
                         string[] str = text[i].Split('"');
                         if (str.Length < 2)
@@ -459,7 +457,7 @@ namespace ScriptEditor.CodeTranslation
                         if (m.Groups[3].Value.Length > 0) {
                             error.column = int.Parse(m.Groups[3].Value);
                         }
-                        error.message = m.Groups[4].Value.Replace("\r", string.Empty);
+                        error.message = m.Groups[4].Value.TrimEnd();
                         if (error.fileName != "none" && !Path.IsPathRooted(error.fileName)) {
                             error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(infile), error.fileName));
                         }

@@ -54,7 +54,7 @@ namespace ScriptEditor.TextEditorUI
         {
             if (tab.error) {
                 List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(0, tab.textEditor.Document.TextLength);
-                if (marker.Count > 0) tab.textEditor.Document.MarkerStrategy.RemoveMarker(marker[0]);
+                foreach (TextMarker m in marker) tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
                 tab.error = false;
             }
             bool warn = false;
@@ -62,7 +62,7 @@ namespace ScriptEditor.TextEditorUI
             log = string.Empty;
             for (int i = 0; i < sLog.Length; i++)
             {
-                sLog[i] = sLog[i].Replace("\r", string.Empty);
+                sLog[i] = sLog[i].TrimEnd();
                 if (sLog[i].StartsWith("[Error]")) {
                     if (log.Length > 0) log += Environment.NewLine;
                     warn = false;
@@ -86,13 +86,13 @@ namespace ScriptEditor.TextEditorUI
 
         private static void HighlightError(string error, TabInfo tab)
         {
-            string[] str = error.Split(':');
-            if (str.Length < 5) return; 
+            string[] str = error.Split(new char[] {':'}, 4);
+            if (str.Length < 3) return; 
             TextLocation ErrorPosition = new Error(str[2], "1").ErrorPosition;
             int offset = tab.textEditor.Document.PositionToOffset(ErrorPosition);
             int len = TextUtilities.GetLineAsString(tab.textEditor.Document, ErrorPosition.Line).Length;
             TextMarker tm = new TextMarker(offset, len, TextMarkerType.WaveLine, System.Drawing.Color.Red);
-            tm.ToolTip = str[4];
+            tm.ToolTip = str[str.Length - 1];
             tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
             tab.textEditor.ActiveTextAreaControl.Refresh();
             tab.error = true;

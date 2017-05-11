@@ -390,11 +390,11 @@ namespace ScriptEditor.CodeTranslation
             return false; // not found
         }
 
-        public static string[] GetAllIncludes(string file) {
-            int n = 0;
-            string[] include = new string[0];
-            string[] lines = File.ReadAllLines(file);
-            string dir = Path.GetDirectoryName(file);
+        public static List<string> GetAllIncludes(TabInfo tab)
+        {
+            List<string> include = new List<string>();
+            string[] lines = tab.textEditor.Document.TextContent.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
+            string dir = Path.GetDirectoryName(tab.filepath);
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = lines[i].Trim().ToLowerInvariant();
@@ -404,11 +404,8 @@ namespace ScriptEditor.CodeTranslation
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    if (!Path.IsPathRooted(text[1])) {
-                        text[1] = Path.Combine(dir, text[1]);
-                    }
-                    Array.Resize(ref include, n + 1);
-                    include[n++] = text[1];
+                    includePath(ref text[1], dir);
+                    include.Add(text[1]);
                 }
             }
             return include;
