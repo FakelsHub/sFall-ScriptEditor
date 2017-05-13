@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using ScriptEditor.TextEditorUI;
+using System.Windows.Forms;
 
 namespace ScriptEditor.CodeTranslation
 {
@@ -63,20 +64,23 @@ namespace ScriptEditor.CodeTranslation
         { 
                 string[] macroline = defmacro.Split('\n');
                 if (macroline.Length > 1) {
-                    int indent= -1, dmlen = -1;
+                    int indent = -1;
                     macroline[0] = macroline[0].TrimEnd();
                     if (macroline[0].Length > 1) {
-                        indent = macroline[0].Length - macroline[0].TrimStart().Length;
-                        dmlen = 8 + macrolen;
+                        indent = (8 + macrolen) + macroline[0].Length - macroline[0].TrimStart().Length;
                     }
                     for (int i = 1; i < macroline.Length; i++)
                     {
                         macroline[i] = macroline[i].TrimEnd();
                         if (indent == -1 && macroline[i].Length > 1) {
                             indent = macroline[i].Length - macroline[i].TrimStart().Length;
-                            dmlen = 0;
                         } else if (indent == -1 || macroline[i].Length == 0 ) continue;
-                        try { macroline[i] = macroline[i].Remove(0, indent + dmlen); }
+                        try {
+                            int adjust = macroline[i].Length - macroline[i].TrimStart().Length;
+                            if (adjust > indent) adjust = indent;
+                            else if (i == 1) indent = adjust;
+                            macroline[i] = macroline[i].Remove(0, adjust); 
+                        }
                         catch { Program.printLog("indentFormat. Line " + macroline[i] + "\r\nMacros: " + defmacro); }
                         if (i > 40 && macroline.Length > 42) { // tip text size
                             macroline[i++] = " continue...";
@@ -92,6 +96,7 @@ namespace ScriptEditor.CodeTranslation
         private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
+            line = line.TrimStart();
             int firstspace = line.IndexOf(' ');
             if (firstspace == -1)
                 return;
@@ -115,7 +120,7 @@ namespace ScriptEditor.CodeTranslation
         {
             if (!File.Exists(file))
                 return;
-            string[] lines = File.ReadAllLines(file);
+            string[] lines = File.ReadAllLines(file, Encoding.Default);//, Encoding.ASCII
             if (dir == null)
                 dir = Path.GetDirectoryName(file);
             for (int i = 0; i < lines.Length; i++) {
@@ -170,7 +175,7 @@ namespace ScriptEditor.CodeTranslation
                 }
                 text = String.Join("\n",linetext);
             }
-            File.WriteAllText(parserPath, text);
+            File.WriteAllText(parserPath, text, Encoding.Default);
         }
         
         public ProgramInfo Parse(string text, string filepath, ProgramInfo prev_pi)
@@ -187,7 +192,7 @@ namespace ScriptEditor.CodeTranslation
                 pi.parsed = false;
                 pi.macros.Clear();
             }
-            if (Settings.overrideIncludesPath) File.WriteAllText(parserPath, text); // restore
+            if (Settings.overrideIncludesPath) File.WriteAllText(parserPath, text, Encoding.Default); // restore
             // Macros
             GetMacros(parserPath, Path.GetDirectoryName(filepath), pi.macros);
             if (lastStatus >= 1) return pi; // parse failed, return macros and previous data Procs/Vars
@@ -317,7 +322,7 @@ namespace ScriptEditor.CodeTranslation
                         text[i]= str[0] + '"' + str[1] + '"';
                     }
                 }
-                string cfile = Settings.SettingsFolder + '\\' + Path.GetFileName(file);
+                string cfile = Settings.scriptTempPath + '\\' + Path.GetFileName(file);
                 File.WriteAllLines(cfile, text);
                 file = cfile;
             } 
@@ -473,18 +478,35 @@ namespace ScriptEditor.CodeTranslation
 
         public string Decompile(string infile)
         {
-            var exePath = Path.Combine(Settings.ResourcesFolder, "int2ssl.exe");
-            ProcessStartInfo psi = new ProcessStartInfo(exePath, "\"" + infile + "\" \"" + decompilationPath + "\"");
-            psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-            Process p = Process.Start(psi);
-            p.WaitForExit(3000);
-            if (!p.HasExited)
-                return null;
+            string[] program = { "int2ssl.exe", "int2ssl_v35.exe" };
+            foreach (string exe in program) 
+            {
+                var exePath = Path.Combine(Settings.ResourcesFolder, exe);
+                ProcessStartInfo psi = new ProcessStartInfo(exePath, "\"" + infile + "\" \"" + decompilationPath + "\"");
+                psi.UseShellExecute = false;
+                psi.CreateNoWindow = true;
+                Process p = Process.Start(psi);
+                p.WaitForExit(3000);
+                if (!p.HasExited)
+                    return null;
+                if (p.ExitCode == 0) break;
+                p.Dispose();
+            }
             if (!File.Exists(decompilationPath)) {
                 return null;
             }
-            string result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
+            SaveFileDialog sfDecomp = new SaveFileDialog();
+            sfDecomp.Title = "Enter name to save decompile file";
+            sfDecomp.Filter = "Script files|*.ssl";
+            sfDecomp.RestoreDirectory = true;
+            sfDecomp.InitialDirectory = Path.GetDirectoryName(infile);
+            sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
+            string result;
+            if (sfDecomp.ShowDialog() == DialogResult.OK)
+                result = sfDecomp.FileName;
+            else
+                result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
+            sfDecomp.Dispose();
             File.Delete(result);
             File.Move(decompilationPath, result);
             return result;

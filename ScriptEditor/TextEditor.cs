@@ -494,7 +494,7 @@ namespace ScriptEditor
             var compiler = new Compiler();
             string file = compiler.OverrideIncludeSSLCompile(tab.filepath);
             bool success = compiler.Compile(file, out msg, errors, preprocess);
-            if (Settings.overrideIncludesPath) File.Delete(Settings.SettingsFolder + '\\' + Path.GetFileName(file));
+            if (Settings.overrideIncludesPath) File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(file));
             foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
                 foreach (Error e in errors) {
                     if (e.type == et) {
