@@ -16,7 +16,7 @@ namespace ScriptEditor
         private const int SHCNE_ASSOCCHANGED = 0x8000000;
         private const uint SHCNF_IDLIST = 0x0U;
 
-        private static readonly string[] extAllowed = { FILE_EXTENSION, ".msg", ".h", ".int", ".ini", ".txt", ".xshd" };
+        private static readonly string[] extAllowed = { FILE_EXTENSION, ".msg", ".int", ".h", ".ini", ".txt", ".xshd" };
 
         public static bool CheckFileAllow(string ext, out bool Exists)
         {
@@ -42,18 +42,21 @@ namespace ScriptEditor
             string appName = "SfallScriptEditor";
             if (IsAssociated) {
                 string value = Registry.ClassesRoot.CreateSubKey(FILE_EXTENSION).GetValue("").ToString();
-                if (value == appName) return;
+                if (value == appName + "SSL") return;
                 Registry.ClassesRoot.DeleteSubKeyTree(value);
             }
-            Registry.ClassesRoot.CreateSubKey(FILE_EXTENSION).SetValue("", appName);
-            using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(appName))
+            for (int i = 0; i < 3; i++)
             {
-                key.SetValue("", "Sfall Script Editor v.4.0");
-                key.SetValue("AlwaysShowExt", "");
-                key.CreateSubKey("DefaultIcon").SetValue("", Settings.ResourcesFolder + "\\icon_ssl.ico");
-                key.CreateSubKey("Shell").SetValue("", "OpenSSEditor");
-                key.CreateSubKey(@"Shell\OpenSSEditor").SetValue("", "Open in Sfall ScriptEditor");
-                key.CreateSubKey(@"Shell\OpenSSEditor\Command").SetValue("", Application.ExecutablePath + " \"%1\"");
+                Registry.ClassesRoot.CreateSubKey(extAllowed[i]).SetValue("", appName + extAllowed[i].Remove(0,1).ToUpper());
+                using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(appName + extAllowed[i].Remove(0, 1).ToUpper()))
+                {
+                    key.SetValue("", "Sfall Script Editor v.4.0");
+                    key.SetValue("AlwaysShowExt", "");
+                    key.CreateSubKey("DefaultIcon").SetValue("", Settings.ResourcesFolder + "\\icon_" + extAllowed[i].Remove(0,1) + ".ico");
+                    key.CreateSubKey("Shell").SetValue("", "OpenSSEditor");
+                    key.CreateSubKey(@"Shell\OpenSSEditor").SetValue("", "Open in Sfall ScriptEditor");
+                    key.CreateSubKey(@"Shell\OpenSSEditor\Command").SetValue("", Application.ExecutablePath + " \"%1\"");
+                } 
             }
             SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
         }
