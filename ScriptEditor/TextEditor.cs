@@ -31,7 +31,6 @@ namespace ScriptEditor
         private GoToLine goToLine;
         private int previousTabIndex = -1;
         private int minimizelogsize;
-        public static string sHeaderfile;
         private PositionType PosChangeType;
         private int moveActive = -1;
         private int fuctionPanel = -1;
@@ -248,15 +247,16 @@ namespace ScriptEditor
                     for (int i = 0; i < tabs.Count; i++) {
                         if (string.Compare(tabs[i].filepath, file, true) == 0) {
                             if (seltab) tabControl1.SelectTab(i);
-                            return tabs[i];
+                            if (MessageBox.Show("This file is already open!\nDo you want to open another one same file?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) 
+                                return tabs[i];
                         }
                     }
                 }
             }
             //Create the text editor and set up the tab
             ICSharpCode.TextEditor.TextEditorControl te = new ICSharpCode.TextEditor.TextEditorControl();
-            te.Document.TextEditorProperties.AllowCaretBeyondEOL = true;
-            te.Document.TextEditorProperties.LineViewerStyle = LineViewerStyle.FullRow;
+            te.AllowCaretBeyondEOL = true;
+            te.LineViewerStyle = LineViewerStyle.FullRow;
             te.ShowVRuler = false;
             te.Document.FoldingManager.FoldingStrategy = new CodeFolder();
             te.IndentStyle = IndentStyle.Smart;
@@ -2046,7 +2046,7 @@ namespace ScriptEditor
 
         private void Headers_toolStripSplitButton_ButtonClick(object sender, EventArgs e)
         {
-                Headers Headfrm = new Headers();
+                Headers Headfrm = new Headers(this);
                 Headfrm.xy_pos = Headers_toolStripSplitButton.Bounds.Location;
                 Headfrm.Show();
         }
@@ -2076,12 +2076,9 @@ namespace ScriptEditor
             }
         }
 
-        private void TextEditor_Activated(object sender, EventArgs e)
+        public void AcceptHeaderFile(string sHeaderfile)
         {
-            if (sHeaderfile != null && sHeaderfile.Length > 0) {
-                Open(sHeaderfile, OpenType.File, false);
-                sHeaderfile = null;
-            }
+            if (sHeaderfile != null) Open(sHeaderfile, OpenType.File, false);
         }
 
         private void SplitDoc_Click(object sender, EventArgs e)
