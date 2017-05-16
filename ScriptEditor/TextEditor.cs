@@ -17,8 +17,8 @@ namespace ScriptEditor
         private const string SSE = "Sfall Script Editor - ";
         private const string parseoff = "Parser: Disabled";
         private const string unsaved = "unsaved.ssl";
-        private readonly List<string> TREEPROCEDURES = new List<string>{ "Global Procedures", "Local Script Procedures" };
-        private readonly List<string> TREEVARIABLES = new List<string>{ "Global Variables", "Local Script Variables" };
+        private readonly List<string> TREEPROCEDURES = new List<string>{ "Global Procedures", "Local Procedures" };
+        private readonly List<string> TREEVARIABLES = new List<string>{ "Global Variables", "Script Variables" };
 
         private DateTime timerNext, timer2Next;
         private Timer timer, timer2;
@@ -91,10 +91,12 @@ namespace ScriptEditor
             VarTree.Indent = 16;
             VarTree.ItemHeight = 14;
             VarTree.AfterSelect += TreeView_AfterSelect;
+            VarTree.AfterCollapse += AfterCollapse;
             VarTree.Dock = DockStyle.Fill;
             VarTab.Padding = new Padding(3, 3, 3, 3);
             VarTab.BackColor = SystemColors.ControlLightLight;
             VarTab.Controls.Add(VarTree);
+            ProcTree.AfterCollapse += AfterCollapse;
             if (Settings.PathScriptsHFile == null) {
                 Headers_toolStripSplitButton.Enabled = false;
             }
@@ -102,6 +104,11 @@ namespace ScriptEditor
             Functions.CreateTree(FunctionsTree);
             ProgramInfo.LoadOpcodes();
             DEBUGINFO("***** Sfall Script Editor v." + Application.ProductVersion + " *****");
+        }
+
+        void AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            if ((TreeStatus)ProcTree.Tag == TreeStatus.idle) Tree_Collapse();
         }
 
         private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
@@ -228,12 +235,8 @@ namespace ScriptEditor
                         recent = false; // don't delete file link from recent list
                     Settings.AddRecentFile(file, recent);
                     UpdateRecentList();
-                    if (!Exists) return null;
                 }
-                if (!Exists) {
-                    MessageBox.Show("This file was not found.", "Open file error");
-                    return null;
-                }
+                if (!Exists) return null;
                 //If this is an int, decompile
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     var compiler = new Compiler();
@@ -479,7 +482,7 @@ namespace ScriptEditor
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false)
         {
-            msg = string.Empty;
+            msg = String.Empty;
             if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
                 if (showMessages) MessageBox.Show("You cannot compile this file.", "Compile Error");
                 return false;
@@ -492,9 +495,7 @@ namespace ScriptEditor
             if (tab.changed || tab.filepath == null) return false;
             List<Error> errors = new List<Error>();
             var compiler = new Compiler();
-            string file = compiler.OverrideIncludeSSLCompile(tab.filepath);
-            bool success = compiler.Compile(file, out msg, errors, preprocess);
-            if (Settings.overrideIncludesPath) File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(file));
+            bool success = compiler.Compile(tab.filepath, out msg, errors, preprocess);
             foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
                 foreach (Error e in errors) {
                     if (e.type == et) {
@@ -513,18 +514,23 @@ namespace ScriptEditor
                 } else {
                     parserLabel.Text = "Failed to compiled: " + currentTab.filename;
                     parserLabel.ForeColor = Color.Firebrick;
+                    msg += "\r\n Compilation Failed!";
                 }
             } else {
                 parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
                 parserLabel.ForeColor = Color.DarkGreen;
+                msg += "\r\n Compilation Successfully!";
             }
             return success;
         }
+
+        private enum TreeStatus { idle, update }
 
         // Create names for procedures and variables in treeview
         private void UpdateNames()
         {
             if (currentTab == null) return;
+            ProcTree.Tag = TreeStatus.update;
             ProcTree.BeginUpdate();
             ProcTree.Nodes.Clear();
             VarTree.BeginUpdate();
@@ -536,7 +542,8 @@ namespace ScriptEditor
                     rootNode.ForeColor = Color.DarkBlue;
                     rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
                 }
-                ProcTree.Nodes[1].ToolTipText = "Goto beginning of script";
+                ProcTree.Nodes[0].ToolTipText = "Procedures declared and located in headers files";
+                ProcTree.Nodes[1].ToolTipText = "Procedures declared and located in this script";
                 foreach (Procedure p in currentTab.parseInfo.procs) {
                     TreeNode tn = new TreeNode(p.name); //TreeNode(p.ToString(false));
                     tn.Tag = p;
@@ -577,12 +584,34 @@ namespace ScriptEditor
                             VarTree.Nodes[1].Expand();
                         }
                     }
+                    if (currentTab.treeExpand.VarTree.global) VarTree.Nodes[0].Collapse();
+                    if (currentTab.treeExpand.VarTree.local) VarTree.Nodes[1].Collapse();
+                    if (VarTree.Nodes[0].Nodes.Count == 0) VarTree.Nodes[0].ForeColor = Color.Gray;
+                    if (VarTree.Nodes[1].Nodes.Count == 0) VarTree.Nodes[1].ForeColor = Color.Gray;
+                }
+                if (currentTab.treeExpand.ProcTree.global) ProcTree.Nodes[0].Collapse();
+                if (ProcTree.Nodes[0].Nodes.Count == 0) ProcTree.Nodes[0].ForeColor = Color.Gray;
+                if (ProcTree.Nodes.Count > 1)
+                {
+                    if (currentTab.treeExpand.ProcTree.local) ProcTree.Nodes[1].Collapse();
+                    if (ProcTree.Nodes[1].Nodes.Count == 0) ProcTree.Nodes[1].ForeColor = Color.Gray;
+                    ProcTree.Nodes[1].EnsureVisible();
                 }
             }
             VarTree.EndUpdate();
             ProcTree.EndUpdate();
-            if (ProcTree.Nodes.Count > 1) {
-                ProcTree.Nodes[1].EnsureVisible();
+            ProcTree.Tag = TreeStatus.idle;
+        }
+
+        private void Tree_Collapse()
+        {
+            if (ProcTree.Nodes.Count == 0) return;
+            currentTab.treeExpand.ProcTree.global = !ProcTree.Nodes[0].IsExpanded;
+            if (ProcTree.Nodes.Count > 1)
+                currentTab.treeExpand.ProcTree.local = !ProcTree.Nodes[1].IsExpanded;
+            if (VarTree.Nodes.Count > 0) {
+                currentTab.treeExpand.VarTree.global = !VarTree.Nodes[0].IsExpanded;
+                currentTab.treeExpand.VarTree.local = !VarTree.Nodes[1].IsExpanded;
             }
         }
 
@@ -592,10 +621,7 @@ namespace ScriptEditor
             if (e.Action == TreeViewAction.Unknown) return;
             string file = null;
             int line = 0;
-            if (e.Node.Text == TREEPROCEDURES[1]) {
-                file = currentTab.filepath;
-                line++;
-            } else if (e.Node.Tag is Variable) {
+            if (e.Node.Tag is Variable) {
                 Variable var = (Variable)e.Node.Tag;
                 file = var.fdeclared;
                 line = var.d.declared;
@@ -612,7 +638,7 @@ namespace ScriptEditor
         {
             if (line <= 0) return;
             bool not_this = false;
-            if (file != currentTab.filepath) {
+            if (currentTab == null || file != currentTab.filepath) {
                 if (Open(file, OpenType.File, false) == null) {
                     MessageBox.Show("Could not open file '" + file + "'", "Error");
                     return;
@@ -870,6 +896,7 @@ namespace ScriptEditor
             } else {
                 if (currentTab != null) {
                     previousTabIndex = currentTab.index;
+                    Tree_Collapse();
                 }
                 currentTab = tabs[tabControl1.SelectedIndex];
                 if (!Settings.enableParser && currentTab.parseInfo != null) currentTab.parseInfo.parseData = false;
@@ -921,10 +948,16 @@ namespace ScriptEditor
                 DecIndentStripButton.Enabled = true;
                 CommentStripButton.Enabled = true;
                 UnCommentStripButton.Enabled = true;
+                AlignToLeftToolStripMenuItem.Enabled = true;
+                commentTextToolStripMenuItem.Enabled = true;
+                uncommentTextToolStripMenuItem.Enabled = true;
             } else {
                 DecIndentStripButton.Enabled = false;
                 CommentStripButton.Enabled = false;
                 UnCommentStripButton.Enabled = false;
+                AlignToLeftToolStripMenuItem.Enabled = false;
+                commentTextToolStripMenuItem.Enabled = false;
+                uncommentTextToolStripMenuItem.Enabled = false;
             }
         }
 

@@ -14,6 +14,24 @@ namespace ScriptEditor.TextEditorUI
         public int pointerEnd;
     }
 
+    public struct Expand
+    {
+        public PTree ProcTree;
+        public VTree VarTree;
+
+        public struct PTree
+        {
+            public bool global;
+            public bool local;
+        }
+
+        public struct VTree
+        {
+            public bool global;
+            public bool local;
+        }
+    }
+
     /// <summary>
     /// Represents opened document tab.
     /// </summary>
@@ -58,6 +76,8 @@ namespace ScriptEditor.TextEditorUI
         public Position history;
 
         public bool error;
+
+        public Expand treeExpand;
 
         public ProgramInfo parseInfo;
     }

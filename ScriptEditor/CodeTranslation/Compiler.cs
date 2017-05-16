@@ -120,7 +120,7 @@ namespace ScriptEditor.CodeTranslation
         {
             if (!File.Exists(file))
                 return;
-            string[] lines = File.ReadAllLines(file, Encoding.Default);//, Encoding.ASCII
+            string[] lines = File.ReadAllLines(file, Encoding.Default);
             if (dir == null)
                 dir = Path.GetDirectoryName(file);
             for (int i = 0; i < lines.Length; i++) {
@@ -398,8 +398,10 @@ namespace ScriptEditor.CodeTranslation
                 return false;
             }
             infile = Path.GetFullPath(infile);
+            string srcfile = infile;
+            infile = OverrideIncludeSSLCompile(infile);
             bool success;
-            output = string.Empty;
+            output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n";
             string sourceDir = Path.GetDirectoryName(infile);
             if (Settings.useWatcom) {
                 string wccPath = Path.Combine(Settings.ResourcesFolder, "wcc.bat");
@@ -464,12 +466,13 @@ namespace ScriptEditor.CodeTranslation
                         }
                         error.message = m.Groups[4].Value.TrimEnd();
                         if (error.fileName != "none" && !Path.IsPathRooted(error.fileName)) {
-                            error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(infile), error.fileName));
+                            error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(srcfile), error.fileName));
                         }
                         errors.Add(error);
                     }
                 }
             }
+            if (Settings.overrideIncludesPath) File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(srcfile));
 #if DLL_COMPILER
             output=output.Replace("\n", "\r\n");
 #endif
