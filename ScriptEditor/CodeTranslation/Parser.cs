@@ -193,50 +193,6 @@ namespace ScriptEditor.CodeTranslation
             return 0; // not found
         }
 
-        // Получить для процедуры номер ее строки (УСТРЕЛО НЕ ИСПОЛЬЗОВАТЬ)
-        public static int GetPocedureLine(string pName, int startline = 0)
-        {
-            int lProc = -1, _proc = 0, _comm = 0; 
-            string[] file = File.ReadAllLines(Compiler.parserPath);
-            pName = pName.ToLowerInvariant();
-            int pLen = pName.Length;
-            for (int i = startline; i < file.Length; i++)
-            {
-                file[i] = file[i].Trim();
-                if (CommentBlockParse(ref file[i], ref _comm)) continue;
-                // ищем начало процедуры с нашим именем
-                if (_proc == 0 && IsProcedure(ref file[i], pName))
-                {   // нашли, имя 100% совпадает c искомым? 
-                    string s = " ";
-                    if (file[i].Length > PROC_LEN + pLen) s = file[i].Substring(PROC_LEN + pLen, 1);
-                    if (s != " " && s != "(") continue; //нет это не совпадает, ищем дальше
-                    _proc++; //совпадает, проверяем это процедура или ее объявление
-                    
-                    // убираем лишнее
-                    int z = file[i].IndexOf(COMMENT, PROC_LEN + pLen);
-                    if (z < 0) z = file[i].IndexOf("/*", PROC_LEN + pLen);
-                    if (z > 0) file[i] = file[i].Remove(z).TrimEnd();
-
-                    if (file[i].EndsWith(BEGIN)) return i;  // да это процедура
-                    else {
-                        lProc = i;
-                        continue; //нет, продолжаем искать begin
-                    }
-                } // ищем begin от процедуры.
-                else if (_proc > 0) {
-                    if (file[i].StartsWith(BEGIN)) return lProc; // нашли begin, возвращаем номер строки процедуры
-                    // в процессе проверяем и объявление процедур. 
-                    if (file[i].StartsWith(PROCEDURE))
-                    {   // если нашли - откат назад, будем продолжать искать нашу "procedure Name"
-                        _proc--;
-                        i--;
-                        continue;
-                    }
-                }
-            }
-            return -1;
-        }
-
         // Получить для заданной процедуры номера строк блока Begin...End
         public static ProcBlock GetProcBeginEndBlock(string pName, int startline = 0, bool procBegin = false)
         {
@@ -415,10 +371,10 @@ namespace ScriptEditor.CodeTranslation
         public static void includePath(ref string iPath, string dir)
         {
             if (!Path.IsPathRooted(iPath)) {
-                if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
-                    iPath = Path.Combine(Settings.PathScriptsHFile, iPath);
-                }
-                else iPath = Path.Combine(dir, iPath);
+                if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null)
+                    iPath = Path.GetFullPath(Path.Combine(Settings.PathScriptsHFile, iPath));
+                else
+                    iPath = Path.GetFullPath(Path.Combine(dir, iPath));
             } // переопределять и неотносительные пути, но тогда все header файлы должны лежать в одной папке.  
             else if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
                 iPath = Path.Combine(Settings.PathScriptsHFile, Path.GetFileName(iPath));
