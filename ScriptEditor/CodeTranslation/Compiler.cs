@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using ScriptEditor.TextEditorUI;
 using System.Windows.Forms;
 
@@ -447,31 +446,8 @@ namespace ScriptEditor.CodeTranslation
             success = p.ExitCode == 0;
             p.Dispose();
 #endif
-            if (errors != null) {
-                foreach (string s in output.Split(new char[] { '\n' })) {
-                    if (s.StartsWith("[Error]") || s.StartsWith("[Warning]") || s.StartsWith("[Message]")) {
-                        var error = new Error();
-                        if (s[1] == 'E') {
-                            error.type = ErrorType.Error;
-                        } else if (s[1] == 'W') {
-                            error.type = ErrorType.Warning;
-                        } else {
-                            error.type = ErrorType.Message;
-                        }
-                        Match m = Regex.Match(s, @"\[\w+\]\s*\<([^\>]+)\>\s*\:(\-?\d+):?(\-?\d+)?\:\s*(.*)");
-                        error.fileName = m.Groups[1].Value;
-                        error.line = int.Parse(m.Groups[2].Value);
-                        if (m.Groups[3].Value.Length > 0) {
-                            error.column = int.Parse(m.Groups[3].Value);
-                        }
-                        error.message = m.Groups[4].Value.TrimEnd();
-                        if (error.fileName != "none" && !Path.IsPathRooted(error.fileName)) {
-                            error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(srcfile), error.fileName));
-                        }
-                        errors.Add(error);
-                    }
-                }
-            }
+            if (errors != null) 
+                errors = Error.BuildLog(output, srcfile);
             if (Settings.overrideIncludesPath) File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(srcfile));
 #if DLL_COMPILER
             output=output.Replace("\n", "\r\n");

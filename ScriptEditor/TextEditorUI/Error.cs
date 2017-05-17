@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using System.Text.RegularExpressions;
 
 namespace ScriptEditor.TextEditorUI
 {
@@ -46,6 +48,36 @@ namespace ScriptEditor.TextEditorUI
         {
             return message;
         }
+
+        public static List<Error> BuildLog(string output, string srcfile)
+        {
+            List<Error> errors = new List<Error>();
+            foreach (string s in output.Split(new char[] { '\n' })) {
+                if (s.StartsWith("[Error]") || s.StartsWith("[Warning]") || s.StartsWith("[Message]")) {
+                    var error = new Error();
+                    if (s[1] == 'E') {
+                        error.type = ErrorType.Error;
+                    } else if (s[1] == 'W') {
+                        error.type = ErrorType.Warning;
+                    } else {
+                        error.type = ErrorType.Message;
+                    }
+                    Match m = Regex.Match(s, @"\[\w+\]\s*\<([^\>]+)\>\s*\:(\-?\d+):?(\-?\d+)?\:\s*(.*)");
+                    error.fileName = m.Groups[1].Value;
+                    error.line = int.Parse(m.Groups[2].Value);
+                    if (m.Groups[3].Value.Length > 0) {
+                        error.column = int.Parse(m.Groups[3].Value);
+                    }
+                    error.message = m.Groups[4].Value.TrimEnd();
+                    if (error.fileName != "none" && !Path.IsPathRooted(error.fileName)) {
+                        error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(srcfile), error.fileName));
+                    }
+                    errors.Add(error);
+                }
+            }
+            return errors;
+        }
+
     }
 
     public class ParseError
