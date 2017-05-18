@@ -275,7 +275,6 @@ namespace ScriptEditor
                 te.LoadFile(file, false, true);
             else if (type == OpenType.Text)
                 te.Text = file;
-            te.TextChanged += textChanged;
             te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object a1, MouseEventArgs a2) {
                 if (a2.Button == MouseButtons.Left)
                     UpdateEditorToolStripMenu();
@@ -297,7 +296,6 @@ namespace ScriptEditor
                         toolTipAC.Hide(panel1);
                 }
             };
-            te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
             TabInfo ti = new TabInfo();
             ti.history.linePosition = new TextLocation[0];
             ti.history.pointerCur = -1;
@@ -336,6 +334,7 @@ namespace ScriptEditor
                 if (!alwaysNew) tp.ToolTipText = ti.filepath;
                 System.String ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
+                    if (formatCodeToolStripMenuItem.Checked) te.Text = Utilities.FormattingCode(te.Text);
                     ti.shouldParse = true;
                     ti.needsParse = true; // set 'true' only edit text
                     if (Settings.autoOpenMsgs && ti.filepath != null) 
@@ -343,6 +342,8 @@ namespace ScriptEditor
                     FirstParseScript(ti); // First Parse
                 }
             }
+            te.TextChanged += textChanged;
+            te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
             if (tabControl1.TabPages.Count > 1) {
                 if (seltab) tabControl1.SelectTab(tp);
             } else {
@@ -2699,6 +2700,11 @@ namespace ScriptEditor
         {
             if (!currentTab.shouldParse || currentTab == null) return;
             splitContainer2.Panel2Collapsed = !browserToolStripMenuItem.Checked;
+        }
+
+        private void formatingCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Utilities.FormattingCode(currentTab.textEditor);
         }
     }
 }

@@ -101,7 +101,7 @@
     <Compile Include="CodeTranslation\Procedure.cs" />
     <Compile Include="CodeTranslation\Reference.cs" />
     <Compile Include="CodeTranslation\Variable.cs" />
-    <Compile Include="DraggableTabControl.cs">
+    <Compile Include="TextEditorUI\DraggableTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GoToLine.cs">
@@ -161,6 +161,7 @@
     <Compile Include="MessageEditor.Designer.cs">
       <DependentUpon>MessageEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextEditorUI\Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutBox.resx">
