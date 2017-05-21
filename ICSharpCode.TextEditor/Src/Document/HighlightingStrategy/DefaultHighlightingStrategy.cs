@@ -67,12 +67,12 @@ namespace ICSharpCode.TextEditor.Document
 			
 			// set small 'default color environment'
 			environmentColors["Default"]          = new HighlightBackground("WindowText", "Window", false, false);
-			environmentColors["Selection"]        = new HighlightColor("HighlightText", "Highlight", false, false);
+			environmentColors["Selection"]        = new HighlightColor(Color.WhiteSmoke, Color.FromArgb(64, 64, 64), false, false); //"HighlightText", "Highlight"
 			environmentColors["VRuler"]           = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["InvalidLines"]     = new HighlightColor(Color.Red, false, false);
-			environmentColors["CaretMarker"]      = new HighlightColor(Color.Yellow, false, false);
-			environmentColors["CaretLine"] = new HighlightBackground("ControlLight", "Window", false, false);
-			environmentColors["LineNumbers"] = new HighlightBackground("ControlDark", "Window", false, false);
+			environmentColors["CaretMarker"]      = new HighlightColor(Color.FromArgb(245 ,245, 255), false, false);
+			environmentColors["CaretLine"]        = new HighlightBackground("ControlLight", "Window", false, false);
+			environmentColors["LineNumbers"]      = new HighlightBackground("ControlDark", "Window", false, false);
 			
 			environmentColors["FoldLine"]         = new HighlightColor("ControlDark", false, false);
 			environmentColors["FoldMarker"]       = new HighlightColor("WindowText", "Window", false, false);

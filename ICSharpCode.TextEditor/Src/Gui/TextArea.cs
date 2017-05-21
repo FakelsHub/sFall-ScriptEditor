@@ -206,9 +206,9 @@ namespace ICSharpCode.TextEditor
 			new TextAreaMouseHandler(this).Attach();
 			new TextAreaDragDropHandler().Attach(this);
 			
-			bracketshemes.Add(new BracketHighlightingSheme('{', '}'));
 			bracketshemes.Add(new BracketHighlightingSheme('(', ')'));
 			bracketshemes.Add(new BracketHighlightingSheme('[', ']'));
+			bracketshemes.Add(new BracketHighlightingSheme('{', '}'));
 			
 			caret.PositionChanged += new EventHandler(SearchMatchingBracket);
 			Document.TextContentChanged += new EventHandler(TextContentChanged);
@@ -920,7 +920,7 @@ namespace ICSharpCode.TextEditor
 //			if (lineEnd < FirstPhysicalLine || lineBegin > FirstPhysicalLine + textView.VisibleLineCount) {
 //				return;
 //			}
-			
+
 			InvalidateLines((int)(xPos * this.TextView.WideSpaceWidth), lineBegin, lineEnd);
 		}
 		
