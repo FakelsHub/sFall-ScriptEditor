@@ -49,9 +49,8 @@ namespace ScriptEditor.TextEditorUI
             return message;
         }
 
-        public static List<Error> BuildLog(string output, string srcfile)
+        public static void BuildLog(List<Error> errors, string output, string srcfile)
         {
-            List<Error> errors = new List<Error>();
             foreach (string s in output.Split(new char[] { '\n' })) {
                 if (s.StartsWith("[Error]") || s.StartsWith("[Warning]") || s.StartsWith("[Message]")) {
                     var error = new Error();
@@ -75,13 +74,8 @@ namespace ScriptEditor.TextEditorUI
                     errors.Add(error);
                 }
             }
-            return errors;
         }
 
-    }
-
-    public class ParseError
-    {
         public static string ParserLog(string log, TabInfo tab)
         {
             if (tab.error) {

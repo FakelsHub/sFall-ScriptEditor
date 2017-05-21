@@ -39,13 +39,14 @@ namespace ScriptEditor
         private void listView1_MouseClick(object sender, MouseEventArgs e)
         {
             if (listView1.FocusedItem.Selected) {
-                Close();
+                Headers_Deactivate(null, null);
                 TE.AcceptHeaderFile(hFile);
             }
         }
 
         private void Headers_Deactivate(object sender, EventArgs e)
         {
+            Close();
             Dispose();
         }
     }

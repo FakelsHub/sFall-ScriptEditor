@@ -193,6 +193,22 @@ namespace ScriptEditor.CodeTranslation
             return 0; // not found
         }
 
+        // Получить последнию строку declaration
+        public static int GetEndRegionDeclaration(string text, int line)
+        {
+            int _comm = 0;
+            string[] file = text.Split('\n');
+            for (int i = line; i > 0; i--)
+            {
+                file[i] = file[i].TrimStart();
+                if (CommentBlockParse(ref file[i], ref _comm)) continue;
+                RemoveDebrisLine(file, 0-PROC_LEN, i);
+                if (file[i].ToLowerInvariant().StartsWith(PROCEDURE))
+                    return i;  // found end declaration
+            }
+            return -1; // not found
+        }
+
         // Получить для заданной процедуры номера строк блока Begin...End
         public static ProcBlock GetProcBeginEndBlock(string pName, int startline = 0, bool procBegin = false)
         {

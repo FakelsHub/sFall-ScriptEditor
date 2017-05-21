@@ -17,8 +17,10 @@ namespace ScriptEditor
         private const string SSE = "Sfall Script Editor - ";
         private const string parseoff = "Parser: Disabled";
         private const string unsaved = "unsaved.ssl";
-        private readonly List<string> TREEPROCEDURES = new List<string>{ "Global Procedures", "Local Procedures" };
-        private readonly List<string> TREEVARIABLES = new List<string>{ "Global Variables", "Script Variables" };
+        private static readonly List<string> TREEPROCEDURES = new List<string>{ "Global Procedures", "Local Procedures" };
+        private static readonly List<string> TREEVARIABLES = new List<string>{ "Global Variables", "Script Variables" };
+        private static readonly System.Media.SoundPlayer DontFind = new System.Media.SoundPlayer(Properties.Resources.DontFind);
+        private static readonly System.Media.SoundPlayer CompileFail = new System.Media.SoundPlayer(Properties.Resources.CompileError);
 
         private DateTime timerNext, timer2Next;
         private Timer timer, timer2;
@@ -93,7 +95,8 @@ namespace ScriptEditor
             VarTree.AfterSelect += TreeView_AfterSelect;
             VarTree.AfterCollapse += AfterCollapse;
             VarTree.Dock = DockStyle.Fill;
-            VarTab.Padding = new Padding(3, 3, 3, 3);
+            VarTree.BackColor = Color.FromArgb(250, 250, 255);
+            VarTab.Padding = new Padding(0, 2, 2, 2);
             VarTab.BackColor = SystemColors.ControlLightLight;
             VarTab.Controls.Add(VarTree);
             ProcTree.AfterCollapse += AfterCollapse;
@@ -261,6 +264,7 @@ namespace ScriptEditor
             te.AllowCaretBeyondEOL = true;
             te.LineViewerStyle = LineViewerStyle.FullRow;
             te.ShowVRuler = false;
+            te.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
             te.Document.FoldingManager.FoldingStrategy = new CodeFolder();
             te.IndentStyle = IndentStyle.Smart;
             te.ConvertTabsToSpaces = Settings.tabsToSpaces;
@@ -516,6 +520,7 @@ namespace ScriptEditor
                     parserLabel.Text = "Failed to compiled: " + currentTab.filename;
                     parserLabel.ForeColor = Color.Firebrick;
                     msg += "\r\n Compilation Failed!";
+                    if (!Settings.showLog) CompileFail.Play();
                 }
             } else {
                 parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
@@ -622,6 +627,7 @@ namespace ScriptEditor
             if (e.Action == TreeViewAction.Unknown) return;
             string file = null;
             int line = 0;
+            bool pSelect = false;
             if (e.Node.Tag is Variable) {
                 Variable var = (Variable)e.Node.Tag;
                 file = var.fdeclared;
@@ -630,12 +636,13 @@ namespace ScriptEditor
                 Procedure proc = (Procedure)e.Node.Tag;
                 file = proc.fstart;
                 line = proc.d.start;
+                pSelect = true;
             }
-            if (file != null) SelectLine(file, line);
+            if (file != null) SelectLine(file, line, -1, pSelect);
         }
 
         // Goto script text of selected Variable or Procedure in treeview
-        private void SelectLine(string file, int line, int column = -1)
+        private void SelectLine(string file, int line, int column = -1, bool pselect = false)
         {
             if (line <= 0) return;
             bool not_this = false;
@@ -659,24 +666,33 @@ namespace ScriptEditor
             } else {
                 start = new TextLocation(column - 1, ls.LineNumber);
             }
-            // Expand closed folding procedure (подумать над другим методом а не через foreach)
+            // Expand or Collapse folding
             foreach (FoldMarker fm in currentTab.textEditor.Document.FoldingManager.FoldMarker) {
-                if (fm.FoldType == FoldType.MemberBody && fm.StartLine == start.Line) {
-                    fm.IsFolded = false;
-                    break;
+                if (OnlyProcStripButton.Checked) {
+                    if (fm.FoldType == FoldType.MemberBody && fm.StartLine == start.Line)
+                        fm.IsFolded = false;
+                    else 
+                        fm.IsFolded = true;
+                } else {
+                    if (fm.FoldType == FoldType.MemberBody && fm.StartLine == start.Line) {
+                        fm.IsFolded = false;
+                        break;
+                    }
                 }
             }
-            // Scroll to end text document
-            //currentTab.textEditor.ActiveTextAreaControl.ScrollTo(currentTab.textEditor.Document.TotalNumberOfLines);
-            // Scroll and select procedure
-            end = new TextLocation(ls.Length, ls.LineNumber);
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
+            // Scroll and select
             currentTab.textEditor.ActiveTextAreaControl.Caret.Position = start;
-            if (!not_this) { // fix bug - Focus does not on control
-                currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line + 10, 0);
-                currentTab.textEditor.ActiveTextAreaControl.Focus();
-            } else currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line - 15, 0); 
-            currentTab.textEditor.Focus();
+            if (not_this || !pselect || !OnlyProcStripButton.Checked) {
+                end = new TextLocation(ls.Length, ls.LineNumber);
+                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(start, end);
+            } else currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            if (!not_this) {
+                if (pselect) {
+                    currentTab.textEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = start.Line - 1;
+                } else
+                    currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line + 10, 0);
+            } else currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(start.Line - 15, 0);
+            currentTab.textEditor.Refresh();
         }
 
         private void KeyPressed(object sender, KeyPressEventArgs e)
@@ -834,7 +850,7 @@ namespace ScriptEditor
         private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (File.Exists("errors.txt")){
-                tbOutputParse.Text = ParseError.ParserLog(File.ReadAllText("errors.txt"), currentTab) + tbOutputParse.Text;
+                tbOutputParse.Text = Error.ParserLog(File.ReadAllText("errors.txt"), currentTab) + tbOutputParse.Text;
                 File.Delete("errors.txt");
             }
             if (!(e.Result is TabInfo)) {
@@ -844,12 +860,12 @@ namespace ScriptEditor
             if (currentTab == tab) {
                 if (tab.filepath != null) {
                     if (tab.parseInfo.parsed) {
-                        currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
-                        currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-                        if (currentTab.parseInfo.procs.Length > 0) Outline_toolStripButton.Enabled = true;
+                        tab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
+                        tab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+                        if (tab.parseInfo.procs.Length > 0) Outline_toolStripButton.Enabled = true;
                         UpdateNames(); // Update Tree Variables/Pocedures
                         parserLabel.Text = (Settings.enableParser) ? "Parser: Complete": parseoff + " [only macros]";
-                        currentTab.needsParse = false;
+                        tab.needsParse = false;
                     } else {
                         parserLabel.Text = (Settings.enableParser) ? "Parser: Failed parsing (see parser errors tab)" : parseoff + " [only macros]";
                         //currentTab.needsParse = true; // требуется обновление
@@ -1569,16 +1585,15 @@ namespace ScriptEditor
 
         private void outlineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null) {
-                return;
-            }
+            if (currentTab == null) return;
+            int cline = currentTab.textEditor.ActiveTextAreaControl.Caret.Line;
             foreach (FoldMarker fm in currentTab.textEditor.Document.FoldingManager.FoldMarker) {
-                if (fm.FoldType == FoldType.MemberBody) {
+                if (cline >= fm.StartLine && cline <= fm.EndLine) continue;
+                if (fm.FoldType == FoldType.MemberBody)
                     fm.IsFolded = !fm.IsFolded;
-                }
             }
             currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Position.Line, 0);
+            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(cline, 0);
         }
 
         private void registerScriptToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1692,34 +1707,41 @@ namespace ScriptEditor
         private void FindForwardButton_Click(object sender, EventArgs e)
         {
             string find = SearchTextComboBox.Text.Trim();
+            if (find.Length == 0 || currentTab == null) return;
             int z = SearchPanel(currentTab.textEditor.Text, find, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, CaseButton.Checked);
             if (z != -1) FindSelected(currentTab, z, find.Length);
+            else DontFind.Play();
             addSearchTextComboBox(find);
         }
 
         private void FindBackButton_Click(object sender, EventArgs e)
         {
             string find = SearchTextComboBox.Text.Trim();
+            if (find.Length == 0 || currentTab == null) return;
             int offset = currentTab.textEditor.ActiveTextAreaControl.Caret.Offset;
             string text = currentTab.textEditor.Text.Remove(offset);
             int z = SearchPanel(text, find, offset - 1, CaseButton.Checked, true);
             if (z != -1) FindSelected(currentTab, z, find.Length);
+            else DontFind.Play();
             addSearchTextComboBox(find);
         }
 
         private void ReplaceButton_Click(object sender, EventArgs e)
         {
-            string replace = ReplaceTextBox.Text.Trim();
             string find = SearchTextComboBox.Text.Trim();
+            if (find.Length == 0) return;
+            string replace = ReplaceTextBox.Text.Trim();
             int z = SearchPanel(currentTab.textEditor.Text, find, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset, CaseButton.Checked);
             if (z != -1) FindSelected(currentTab, z, find.Length, replace);
+            else DontFind.Play();
             addSearchTextComboBox(find);
         }
 
         private void ReplaceAllButton_Click(object sender, EventArgs e)
         {
-            string replace = ReplaceTextBox.Text.Trim();
             string find = SearchTextComboBox.Text.Trim();
+            if (find.Length == 0) return;
+            string replace = ReplaceTextBox.Text.Trim();
             int z, offset = 0;
             do {
                 z = SearchPanel(currentTab.textEditor.Text, find, offset, CaseButton.Checked);
@@ -1734,6 +1756,13 @@ namespace ScriptEditor
             string word = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
             if (word == string.Empty) word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset);
             if (word != string.Empty) SearchTextComboBox.Text = word;
+        }
+
+        private void quickFindToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null) return;
+            SendtoolStripButton.PerformClick();
+            FindForwardButton.PerformClick();
         }
 #endregion
 
@@ -1845,8 +1874,7 @@ namespace ScriptEditor
             tabControl2.TabPages.Add(tp);
             tabControl2.SelectTab(tp);
             maximize_log();
-            currentTab.textEditor.Select();
-            currentTab.textEditor.Focus();
+            TextArea_SetFocus(null, null);
         }
 
         private void findDeclerationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1923,6 +1951,9 @@ namespace ScriptEditor
             AddOwnedForm(goToLine);
             goToLine.tbLine.Maximum = currentTab.textEditor.Document.TotalNumberOfLines;
             goToLine.tbLine.Select(0, 1);
+            goToLine.Activated += delegate(object s, EventArgs e1) {
+                currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter -= TextArea_SetFocus;
+            };
             goToLine.bGo.Click += delegate(object a1, EventArgs a2) {
                 TextAreaControl tac = currentTab.textEditor.ActiveTextAreaControl;
                 tac.Caret.Column = 0;
@@ -1930,7 +1961,9 @@ namespace ScriptEditor
                 tac.CenterViewOn(tac.Caret.Line, 0);
                 goToLine.tbLine.Select();
             };
-            goToLine.FormClosed += delegate(object a1, FormClosedEventArgs a2) { goToLine = null; };
+            goToLine.FormClosed += delegate(object a1, FormClosedEventArgs a2) {
+                foreach (var t in tabs)t.textEditor.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
+                goToLine = null; };
             goToLine.Show();
         }
 
@@ -2080,9 +2113,13 @@ namespace ScriptEditor
 
         private void Headers_toolStripSplitButton_ButtonClick(object sender, EventArgs e)
         {
-                Headers Headfrm = new Headers(this);
-                Headfrm.xy_pos = Headers_toolStripSplitButton.Bounds.Location;
-                Headfrm.Show();
+            if (currentTab != null) currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter -= TextArea_SetFocus;
+            Headers Headfrm = new Headers(this);
+            Headfrm.FormClosed += delegate(object s, FormClosedEventArgs e1) {
+                if (currentTab != null) currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
+            };
+            Headfrm.xy_pos = Headers_toolStripSplitButton.Bounds.Location;
+            Headfrm.Show();
         }
 
         private void openHeaderFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2119,8 +2156,7 @@ namespace ScriptEditor
         {
             if (currentTab != null){
                 currentTab.textEditor.Split();
-                currentTab.textEditor.Focus();
-                currentTab.textEditor.Select();
+                TextArea_SetFocus(null, null);
             }
         }
 
@@ -2216,7 +2252,7 @@ namespace ScriptEditor
             PosChangeType = PositionType.NoSave;
             currentTab.textEditor.ActiveTextAreaControl.Caret.Position = currentTab.history.linePosition[currentTab.history.pointerCur];
             currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, 0);
-            currentTab.textEditor.Focus();
+            //currentTab.textEditor.Focus();
             //currentTab.textEditor.Select();
             SetBackForwardButtonState();
         }
@@ -2280,7 +2316,7 @@ namespace ScriptEditor
         private void InsertProcedure(string name, ProcBlock block, bool after = false, byte overrides = 0)
         {
             currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-            int findLine, caretline = 3;
+            int findLine, caretline = 2;
             string procbody;
             //Copy from procedure
             if (block.copy) {
@@ -2288,8 +2324,8 @@ namespace ScriptEditor
                 overrides = 1;
             } else procbody = "script_overrides;\r\n\r\n".PadLeft(Settings.tabSize);
             string procblock = (overrides > 0)
-                       ? "\r\nprocedure " + name + "\r\nbegin\r\n" + procbody + "end\r\n"
-                       : "\r\nprocedure " + name + "\r\nbegin\r\n\r\nend\r\n";
+                       ? "\r\nprocedure " + name + " begin\r\n" + procbody + "end\r\n"
+                       : "\r\nprocedure " + name + " begin\r\n\r\nend\r\n";
             if (after) findLine = Parser.GetDeclarationProcedureLine(ProcTree.SelectedNode.Text) + 1;
                 else findLine = Parser.GetEndLineProcDeclaration(); 
             if (findLine == -1) MessageBox.Show("The declaration procedure is written to beginning of script.", "Warning");
@@ -2390,9 +2426,8 @@ namespace ScriptEditor
 
         //Update Procedure Tree
         private void SetFocusDocument()
-        { 
-            currentTab.textEditor.Focus();
-            currentTab.textEditor.Select();
+        {
+            TextArea_SetFocus(null, null);
             if (Settings.enableParser) {
                 timerNext = DateTime.Now;
                 timer.Start(); // Parser begin
@@ -2669,8 +2704,6 @@ namespace ScriptEditor
                     code = code.Replace("<cr>", Environment.NewLine);
                 } else code += " ";
                 currentTab.textEditor.ActiveTextAreaControl.TextArea.InsertString(code);
-                currentTab.textEditor.ActiveTextAreaControl.Select();
-                currentTab.textEditor.ActiveTextAreaControl.Focus();
             }
         }
 
@@ -2705,6 +2738,20 @@ namespace ScriptEditor
         private void formatingCodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Utilities.FormattingCode(currentTab.textEditor);
+        }
+
+        private void GoBeginStripButton_Click(object sender, EventArgs e)
+        {
+            currentTab.textEditor.BeginUpdate();
+            SelectLine(currentTab.filepath, 1);
+            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            currentTab.textEditor.EndUpdate();
+        }
+
+        void TextArea_SetFocus(object sender, EventArgs e)
+        {
+            currentTab.textEditor.ActiveTextAreaControl.TextArea.Focus();
+            currentTab.textEditor.ActiveTextAreaControl.TextArea.Select();
         }
     }
 }

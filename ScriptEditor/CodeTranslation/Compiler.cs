@@ -447,7 +447,7 @@ namespace ScriptEditor.CodeTranslation
             p.Dispose();
 #endif
             if (errors != null) 
-                errors = Error.BuildLog(output, srcfile);
+                 Error.BuildLog(errors, output, srcfile);
             if (Settings.overrideIncludesPath) File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(srcfile));
 #if DLL_COMPILER
             output=output.Replace("\n", "\r\n");
