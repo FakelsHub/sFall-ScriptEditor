@@ -170,6 +170,8 @@ namespace ScriptEditor
             foreach (string s in commandsArgs) {
                 Open(s, TextEditor.OpenType.File, true, false, false, true, true);
             }
+            this.Activated += TextEditor_Activated;
+            this.Deactivate += TextEditor_Deactivate;
         }
 
         private void TextEditor_Resize(object sender, EventArgs e)
@@ -1960,9 +1962,6 @@ namespace ScriptEditor
             AddOwnedForm(goToLine);
             goToLine.tbLine.Maximum = currentTab.textEditor.Document.TotalNumberOfLines;
             goToLine.tbLine.Select(0, 1);
-            goToLine.Activated += delegate(object s, EventArgs e1) {
-                currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter -= TextArea_SetFocus;
-            };
             goToLine.bGo.Click += delegate(object a1, EventArgs a2) {
                 TextAreaControl tac = currentTab.textEditor.ActiveTextAreaControl;
                 tac.Caret.Column = 0;
@@ -1970,9 +1969,7 @@ namespace ScriptEditor
                 tac.CenterViewOn(tac.Caret.Line, 0);
                 goToLine.tbLine.Select();
             };
-            goToLine.FormClosed += delegate(object a1, FormClosedEventArgs a2) {
-                foreach (var t in tabs)t.textEditor.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
-                goToLine = null; };
+            goToLine.FormClosed += delegate(object a1, FormClosedEventArgs a2) { goToLine = null; };
             goToLine.Show();
         }
 
@@ -2122,11 +2119,7 @@ namespace ScriptEditor
 
         private void Headers_toolStripSplitButton_ButtonClick(object sender, EventArgs e)
         {
-            if (currentTab != null) currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter -= TextArea_SetFocus;
             Headers Headfrm = new Headers(this);
-            Headfrm.FormClosed += delegate(object s, FormClosedEventArgs e1) {
-                if (currentTab != null) currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
-            };
             Headfrm.xy_pos = Headers_toolStripSplitButton.Bounds.Location;
             Headfrm.Show();
         }
@@ -2760,6 +2753,18 @@ namespace ScriptEditor
         {
             currentTab.textEditor.ActiveTextAreaControl.TextArea.Focus();
             currentTab.textEditor.ActiveTextAreaControl.TextArea.Select();
+        }
+
+        private void TextEditor_Deactivate(object sender, EventArgs e)
+        {
+            if (currentTab == null) return;
+            currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter -= TextArea_SetFocus;
+        }
+
+        private void TextEditor_Activated(object sender, EventArgs e)
+        {
+            if (currentTab == null) return;
+            currentTab.textEditor.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
         }
     }
 }
