@@ -120,11 +120,11 @@ namespace ScriptEditor
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == SingleInstanceManager.WM_SFALL_SCRIPT_EDITOR_OPEN) {
-                ShowMe();
                 var commandLineArgs = SingleInstanceManager.LoadCommandLine();
                 foreach (var file in commandLineArgs) {
-                    Open(file, OpenType.File);
+                    Open(file, OpenType.File, true, false, false, true, true);
                 }
+                ShowMe();
             }
             base.WndProc(ref m);
         }
@@ -133,12 +133,13 @@ namespace ScriptEditor
         {
             if (WindowState == FormWindowState.Minimized)
                 WindowState = wState;
+            Activate();
             // get our current "TopMost" value (ours will always be false though)
-            bool top = TopMost;
+            //bool top = TopMost;
             // make our form jump to the top of everything
-            TopMost = true;
+            //TopMost = true;
             // set it back to whatever it was
-            TopMost = top;
+            //TopMost = top;
         }
 #endif
 
@@ -160,15 +161,15 @@ namespace ScriptEditor
             } else splitContainer2.SplitterDistance = Size.Width - 200;
             showLogWindowToolStripMenuItem.Checked = Settings.showLog;
             if (Settings.enableParser) CreateTabVarTree();
-            // open documents passed from command line
-            foreach (string s in commandsArgs) {
-                Open(s, TextEditor.OpenType.File);
-            }
         }
 
         private void TextEditor_Shown(object sender, EventArgs e)
         {
             if (!Settings.firstRun) Settings_ToolStripMenuItem.PerformClick();
+            // open documents passed from command line
+            foreach (string s in commandsArgs) {
+                Open(s, TextEditor.OpenType.File, true, false, false, true, true);
+            }
         }
 
         private void TextEditor_Resize(object sender, EventArgs e)
@@ -221,11 +222,16 @@ namespace ScriptEditor
 
         public enum OpenType { None, File, Text }
 
-        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false, bool seltab = true)
+        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false, bool seltab = true, bool commandline = false)
         {
             if (type == OpenType.File) {
                 if (!Path.IsPathRooted(file)) {
                     file = Path.GetFullPath(file);
+                }
+                if (commandline && Path.GetExtension(file).ToLower() == ".msg") {
+                    if (currentTab == null) wState = FormWindowState.Minimized;
+                    MessageEditor.MessageEditorOpen(file, this);
+                    return null;
                 }
                 // Check file
                 bool Exists;
@@ -1816,7 +1822,10 @@ namespace ScriptEditor
         {
             if (currentTab == null)
                 return;
-            AssossciateMsg(currentTab, true);
+            if (msgAutoOpenEditorStripMenuItem.Checked)
+                MessageEditor.MessageEditorInit(currentTab, this);
+            else
+                AssossciateMsg(currentTab, true);
         }
 
 #region References/DeclerationDefinition & Include function
@@ -2679,8 +2688,7 @@ namespace ScriptEditor
 
         private void msgFileEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab != null) MessageEditor.MessageEditorInit(currentTab, this);
-            else MessageEditor.MessageEditorInit(null, this);
+            MessageEditor.MessageEditorInit(null, this);
         }
 
         public void AcceptMsgLine(string line)

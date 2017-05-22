@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -81,7 +82,6 @@
             this.dgvMessage.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.dgvMessage.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvMessage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dgvMessage.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.dgvMessage.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -90,31 +90,41 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             this.dgvMessage.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvMessage.ColumnHeadersHeight = 26;
+            this.dgvMessage.ColumnHeadersHeight = 22;
             this.dgvMessage.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvMessage.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EntryCol,
             this.cLine,
             this.cDescription,
             this.cLip});
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMessage.DefaultCellStyle = dataGridViewCellStyle5;
             this.dgvMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMessage.EnableHeadersVisualStyles = false;
-            this.dgvMessage.GridColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.dgvMessage.GridColor = System.Drawing.Color.Silver;
             this.dgvMessage.Location = new System.Drawing.Point(4, 17);
             this.dgvMessage.MultiSelect = false;
             this.dgvMessage.Name = "dgvMessage";
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            this.dgvMessage.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            this.dgvMessage.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.dgvMessage.RowHeadersVisible = false;
-            this.dgvMessage.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            this.dgvMessage.RowTemplate.Height = 18;
+            this.dgvMessage.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvMessage.Size = new System.Drawing.Size(819, 541);
             this.dgvMessage.TabIndex = 0;
             this.dgvMessage.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellClick);
             this.dgvMessage.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellValueChanged);
+            this.dgvMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvMessage_KeyPress);
             // 
             // EntryCol
             // 
@@ -302,7 +312,7 @@
             this.InsertEmptyStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.InsertEmptyStripButton.Name = "InsertEmptyStripButton";
             this.InsertEmptyStripButton.Size = new System.Drawing.Size(23, 23);
-            this.InsertEmptyStripButton.ToolTipText = "Add empty line";
+            this.InsertEmptyStripButton.ToolTipText = "Add empty line [Enter]";
             this.InsertEmptyStripButton.Click += new System.EventHandler(this.InsertEmptyStripButton_Click);
             // 
             // InsertCommentStripButton
@@ -343,7 +353,7 @@
             // SearchStripTextBox
             // 
             this.SearchStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.SearchStripTextBox.BackColor = System.Drawing.SystemColors.Info;
+            this.SearchStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(255)))));
             this.SearchStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.SearchStripTextBox.Name = "SearchStripTextBox";
             this.SearchStripTextBox.Size = new System.Drawing.Size(250, 26);
@@ -383,6 +393,7 @@
             this.StripComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.StripComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.StripComboBox.Items.AddRange(new object[] {
+            "1",
             "5",
             "10",
             "20",
@@ -485,7 +496,7 @@
             // 
             this.saveFileDialog.Filter = "Message files|*.msg";
             // 
-            // MsgTextEditor
+            // MessageEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -495,7 +506,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(250, 250);
-            this.Name = "MsgTextEditor";
+            this.Name = "MessageEditor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Tag = " - Message Editor";
             this.Text = " - Message Editor";

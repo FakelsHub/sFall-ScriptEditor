@@ -36,7 +36,7 @@ namespace ScriptEditor
             public Entry(string line)
             {
                 if (line.TrimStart().StartsWith("#")) {
-                    msgLine = "---";
+                    msgLine = "-";
                     desc = line;
                 } else {
                     string[] splitLine = line.Split('}');
@@ -98,17 +98,28 @@ namespace ScriptEditor
             //    msgEdit.WindowState = FormWindowState.Minimized;
         }
 
+        public static void MessageEditorOpen(string msgPath, Form frm)
+        {
+            if (msgPath == null)
+                MessageBox.Show("No output path selected.", "Error");
+            // Show form
+            MessageEditor msgEdit = new MessageEditor(msgPath, null);
+            msgEdit.scrptEditor = frm as TextEditor;
+            msgEdit.WindowState = FormWindowState.Maximized;
+            frm.TopMost = false;
+            msgEdit.Show();
+        }
+        
         private MessageEditor(string msg, TabInfo ti)
         {
             InitializeComponent();
             if (Settings.encoding == 1 ) encodingTextDOSToolStripMenuItem.Checked = true;
-            StripComboBox.SelectedIndex = 1;
+            StripComboBox.SelectedIndex = 2;
             if (!Settings.msgLipColumn) {
                 dgvMessage.Columns[3].Visible = false;
                 showLIPColumnToolStripMenuItem.Checked = false;
             }
             UpdateRecentList();
-            dgvMessage.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
             msgPath = msg;
             if (msgPath != null){
                 readMsgFile();
@@ -132,6 +143,7 @@ namespace ScriptEditor
             dgvMessage.Visible = true;
             //linesMsg.Clear();
             this.Text = Path.GetFileName(msgPath) + this.Tag;
+            groupBox.Text = msgPath;
         }
 
         private void saveFileMsg()
@@ -250,10 +262,14 @@ namespace ScriptEditor
             string path = msgPath;
             if (path == null && Settings.outputDir != null) path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
             saveFileDialog.InitialDirectory = path;
+            saveFileDialog.FileName = Path.GetFileName(msgPath);
             if (saveFileDialog.ShowDialog() == DialogResult.OK) {
                 msgPath = saveFileDialog.FileName;
                 saveFileMsg();
                 this.Text = Path.GetFileName(msgPath) + this.Tag;
+                groupBox.Text = msgPath;
+                Settings.AddMsgRecentFile(msgPath);
+                UpdateRecentList();
             }
         }
 
@@ -283,13 +299,15 @@ namespace ScriptEditor
             if ((string)dgvMessage.Rows[SelectLine.row].Cells[1].Value != string.Empty) SelectLine.row++;
             InsertRow(SelectLine.row, new Entry("{" + Line + "}{}{}"));
             msgSaveButton.Enabled = true;
-            dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true;
+            try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
+            catch { };
         }
 
         private void InsertEmptyStripButton_Click(object sender, EventArgs e)
         {
             InsertRow(++SelectLine.row, new Entry(""));
-            dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true;
+            try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
+            catch { };
             msgSaveButton.Enabled = true;
         }
 
@@ -304,7 +322,8 @@ namespace ScriptEditor
         private void InsertCommentStripButton_Click(object sender, EventArgs e)
         {
             InsertRow(SelectLine.row, new Entry("#"));
-            dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true;
+            try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
+            catch { };
             msgSaveButton.Enabled = true;
         }
 
@@ -436,6 +455,11 @@ namespace ScriptEditor
                   }
                   else if (result == DialogResult.Cancel) e.Cancel = true;
             }
+        }
+
+        private void dgvMessage_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13) InsertEmptyStripButton_Click(null, null);
         }
     }
 }
