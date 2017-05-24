@@ -55,6 +55,7 @@ namespace ScriptEditor
             SearchTextComboBox.Items.AddRange(File.ReadAllLines(Settings.SearchHistoryPath));
             SearchToolStrip.Visible = false;
             defineToolStripMenuItem.Checked = Settings.allowDefine;
+            msgAutoOpenEditorStripMenuItem.Checked = Settings.openMsgEditor;
             if (Settings.encoding == 1) EncodingDOSmenuItem.Checked = true;
             // highlighting
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(Settings.ResourcesFolder); // Create new provider with the highlighting directory.
@@ -202,10 +203,7 @@ namespace ScriptEditor
             if (sf != null) sf.Close();
             splitContainer3.Panel1Collapsed = true;
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
-            Settings.SaveUserData(this);
-            if (WindowState != FormWindowState.Minimized) Settings.SaveWindowPosition(SavedWindows.Main, this);
-            Settings.Save();
-            Directory.Delete(Settings.scriptTempPath, true);
+            Settings.SaveSettingData(this);
         }
 
         private void UpdateRecentList()
@@ -346,6 +344,7 @@ namespace ScriptEditor
                 if (!alwaysNew) tp.ToolTipText = ti.filepath;
                 System.String ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
+                    te.ActiveTextAreaControl.JumpTo(Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant()));
                     if (formatCodeToolStripMenuItem.Checked) te.Text = Utilities.FormattingCode(te.Text);
                     ti.shouldParse = true;
                     ti.needsParse = true; // set 'true' only edit text
@@ -456,6 +455,8 @@ namespace ScriptEditor
                         return;
                 }
             }
+            if (Path.GetExtension(tab.filepath).ToLowerInvariant() == ".ssl" && tab.filename != unsaved)
+                Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
             int i = tab.index;
             if (tabControl1.TabPages.Count > 2 && i == tabControl1.SelectedIndex) {
                 if (previousTabIndex != -1) {

@@ -29,6 +29,7 @@ namespace ScriptEditor
         public static bool warnOnFailedCompile = true;
         public static bool multiThreaded = true;
         public static bool autoOpenMsgs = false;
+        public static bool openMsgEditor = true;
         public static string outputDir;
         public static string PathScriptsHFile;
         public static string lastMassCompile;
@@ -36,6 +37,7 @@ namespace ScriptEditor
         public static readonly List<string> msgListPath = new List<string>();
         private static List<string> recent = new List<string>();
         private static List<string> recentMsg = new List<string>();
+        private static Dictionary<string, ushort> scriptPosition = new Dictionary<string, ushort>();
         private static readonly WindowPos[] windowPositions = new WindowPos[(int)SavedWindows.Count];
         public static int editorSplitterPosition = -1;
         public static int editorSplitterPosition2 = -1;
@@ -83,6 +85,23 @@ namespace ScriptEditor
             windowPositions[(int)window] = wp;
         }
 
+        public static void SetLastScriptPosition(string script, int line)
+        {
+            if (line < 10) return;
+            if (scriptPosition.ContainsKey(script))
+                scriptPosition[script] = (ushort)line;
+            else
+                scriptPosition.Add(script, (ushort)line);
+        }
+
+        public static int GetLastScriptPosition(string script)
+        {
+            if (scriptPosition.ContainsKey(script))
+                return (ushort)scriptPosition[script];
+            else 
+                return 0;
+        }
+
         public static void AddMsgRecentFile(string s, bool b = false)
         {
             SubRecentFile(ref recentMsg, s, b);
@@ -90,17 +109,19 @@ namespace ScriptEditor
 
         public static void AddRecentFile(string s, bool b = false)
         {
-            SubRecentFile(ref recent, s, b);
+            SubRecentFile(ref recent, s, b, true);
         }
 
-        public static void SubRecentFile(ref List<string> recent, string s, bool b)
+        public static void SubRecentFile(ref List<string> recent, string s, bool b, bool p = false)
         {
             for (int i = 0; i < recent.Count; i++) {
                 if (string.Compare(recent[i], s, true) == 0)
                     recent.RemoveAt(i--);
             }
-            if (!b && recent.Count >= MAX_RECENT)
+            if (!b && recent.Count >= MAX_RECENT) {
+                if (p) scriptPosition.Remove(Path.GetFileName(recent[0]));
                 recent.RemoveAt(0);
+            }
             if (!b) recent.Add(s);
         }
 
@@ -163,6 +184,7 @@ namespace ScriptEditor
                     byte MsgItems = br.ReadByte();
                     for (byte i = 0; i < MsgItems; i++)
                         msgListPath.Add(br.ReadString());
+                    openMsgEditor = br.ReadBoolean();
                 }
                 catch { MessageBox.Show("An error occurred while reading configuration file.\nFile setting.dat may be in wrong format.", "Setting read error"); }
                 br.Close();
@@ -175,6 +197,10 @@ namespace ScriptEditor
                 recent.Add(brRecent.ReadString());
             for (int i = 0; i < recentMsgItems; i++)
                 recentMsg.Add(brRecent.ReadString());
+            //
+            int positionItems = brRecent.ReadByte();
+            for (int i = 0; i < positionItems; i++)
+                scriptPosition.Add(brRecent.ReadString(), brRecent.ReadUInt16());
             brRecent.Close();
         }
 
@@ -251,6 +277,7 @@ namespace ScriptEditor
             bw.Write((byte)msgListPath.Count);
             for (int i = 0; i < msgListPath.Count; i++)
                 bw.Write(msgListPath[i]);
+            bw.Write(openMsgEditor);
             bw.Close();
             // Recent files
             BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));
@@ -260,16 +287,30 @@ namespace ScriptEditor
                 bwRecent.Write(recent[i]); 
             for (int i = 0; i < recentMsg.Count; i++)
                 bwRecent.Write(recentMsg[i]);
+            //
+            string[] key = new string[scriptPosition.Count];
+            ushort[] value = new ushort[scriptPosition.Count];
+            scriptPosition.Keys.CopyTo(key, 0);
+            scriptPosition.Values.CopyTo(value, 0);
+            bwRecent.Write((byte)scriptPosition.Count);
+            for (int i = 0; i < scriptPosition.Count; i++) {
+                bwRecent.Write(key[i]);
+                bwRecent.Write(value[i]);
+            }
             bwRecent.Close();
         }
 
-        public static void SaveUserData(Form mainfrm)
+        public static void SaveSettingData(Form mainfrm)
         {
             TextEditor frm = mainfrm as TextEditor;
             StreamWriter sw = new StreamWriter(Settings.SearchHistoryPath);
             foreach (var item in frm.SearchTextComboBox.Items)
                 sw.WriteLine(item.ToString());
             sw.Close();
+            openMsgEditor = frm.msgAutoOpenEditorStripMenuItem.Checked;
+            if (frm.WindowState != FormWindowState.Minimized) SaveWindowPosition(SavedWindows.Main, mainfrm);
+            Save();
+            Directory.Delete(scriptTempPath, true);
         }
 
         struct WindowPos
