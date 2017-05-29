@@ -103,29 +103,39 @@ namespace ICSharpCode.TextEditor
 				secondaryTextArea = new TextAreaControl(this);
 				secondaryTextArea.Dock = DockStyle.Bottom;
 				secondaryTextArea.Height = Height / 2;
-				
+                
 				secondaryTextArea.TextArea.GotFocus += delegate {
 					SetActiveTextAreaControl(secondaryTextArea);
 				};
-				
-				textAreaSplitter =  new Splitter();
-				textAreaSplitter.BorderStyle = BorderStyle.FixedSingle ;
+                
+                textAreaSplitter =  new Splitter();
+				textAreaSplitter.BorderStyle = BorderStyle.FixedSingle;
+                textAreaSplitter.BackColor = Color.Orange;
 				textAreaSplitter.Height = 8;
 				textAreaSplitter.Dock = DockStyle.Bottom;
-				textAreaPanel.Controls.Add(textAreaSplitter);
+                textAreaPanel.Controls.Add(textAreaSplitter);
 				textAreaPanel.Controls.Add(secondaryTextArea);
 				InitializeTextAreaControl(secondaryTextArea);
 				secondaryTextArea.OptionsChanged();
+
+                secondaryTextArea.Caret.Line = primaryTextArea.Caret.Line;
+                secondaryTextArea.CenterViewOn(secondaryTextArea.Caret.Line, 0);
+                secondaryTextArea.TextArea.Select();
 			} else {
-				SetActiveTextAreaControl(primaryTextArea);
+                secondaryTextArea.Visible = !secondaryTextArea.Visible;
+                textAreaSplitter.Visible = !textAreaSplitter.Visible;
+				if (secondaryTextArea.Visible == false)
+                    SetActiveTextAreaControl(primaryTextArea);
+                else 
+                    secondaryTextArea.TextArea.Select();
+
+                //textAreaPanel.Controls.Remove(secondaryTextArea);
+				//textAreaPanel.Controls.Remove(textAreaSplitter);
 				
-				textAreaPanel.Controls.Remove(secondaryTextArea);
-				textAreaPanel.Controls.Remove(textAreaSplitter);
-				
-				secondaryTextArea.Dispose();
-				textAreaSplitter.Dispose();
-				secondaryTextArea = null;
-				textAreaSplitter  = null;
+				//secondaryTextArea.Dispose();
+				//textAreaSplitter.Dispose();
+				//secondaryTextArea = null;
+				//textAreaSplitter  = null;
 			}
 		}
 		
