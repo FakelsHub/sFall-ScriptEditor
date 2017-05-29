@@ -81,7 +81,7 @@ namespace ICSharpCode.TextEditor.Util
 					basicDescription = splitDescription[0];
 					
 					if (splitDescription.Length > 1) {
-						documentation = splitDescription[1].Trim();
+						documentation = splitDescription[1].TrimEnd();
 					}
 				}
 			}

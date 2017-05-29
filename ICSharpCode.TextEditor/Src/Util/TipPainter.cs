@@ -13,8 +13,8 @@ namespace ICSharpCode.TextEditor.Util
 {
 	static class TipPainter
 	{
-		const float HorizontalBorder = 2;
-		const float VerticalBorder   = 1;
+		const float HorizontalBorder = 3;
+		const float VerticalBorder   = 5;
 		
 		//static StringFormat centerTipFormat = CreateTipStringFormat();
 		
