@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ScriptEditor.TextEditorUI
 {    
@@ -14,9 +15,15 @@ namespace ScriptEditor.TextEditorUI
         // for selected code
         public static void FormattingCode(TextEditorControl TE) 
         {
-            if (!TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) return;
-            string textCode = TE.ActiveTextAreaControl.SelectionManager.SelectedText;
-            int offset = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].Offset;
+            string textCode;
+            int offset; 
+            if (TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                textCode = TE.ActiveTextAreaControl.SelectionManager.SelectedText;
+                offset = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].Offset;
+            } else {
+                textCode = TextUtilities.GetLineAsString(TE.Document, TE.ActiveTextAreaControl.Caret.Line);
+                offset = TE.ActiveTextAreaControl.Caret.Offset - TE.ActiveTextAreaControl.Caret.Column;
+            }
             TE.Document.Replace(offset, textCode.Length, FormattingCode(textCode));
         }
                 
