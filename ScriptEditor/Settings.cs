@@ -56,6 +56,7 @@ namespace ScriptEditor
         public static bool useWatcom = false;
         public static string preprocDef = "---";
         public static bool ignoreCompPath = true;
+        public static bool userCmdCompile = false;
 
         // no saved settings
         public static bool msgLipColumn = true;
@@ -185,6 +186,7 @@ namespace ScriptEditor
                     for (byte i = 0; i < MsgItems; i++)
                         msgListPath.Add(br.ReadString());
                     openMsgEditor = br.ReadBoolean();
+                    userCmdCompile = br.ReadBoolean();
                 }
                 catch { MessageBox.Show("An error occurred while reading configuration file.\nFile setting.dat may be in wrong format.", "Setting read error"); }
                 br.Close();
@@ -278,6 +280,7 @@ namespace ScriptEditor
             for (int i = 0; i < msgListPath.Count; i++)
                 bw.Write(msgListPath[i]);
             bw.Write(openMsgEditor);
+            bw.Write(userCmdCompile);
             bw.Close();
             // Recent files
             BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));

@@ -15,7 +15,7 @@ namespace ScriptEditor.CodeTranslation
     }
     
     /// <summary>
-    /// Class for parsing procedures SSL code w/o external parser.dll [WIP]
+    /// Class for parsing procedures SSL code w/o external parser.dll
     /// </summary>
     public class Parser
     {
@@ -33,9 +33,11 @@ namespace ScriptEditor.CodeTranslation
         public static void InternalParser(TabInfo _ti, Form frm)
         {
             scrptEditor = frm as TextEditor;
+            TextEditor.parserRunning = true; // internal parse work
             File.WriteAllText(Compiler.parserPath, _ti.textEditor.Text);
             ProgramInfo _pi = new ProgramInfo(countProcs(), 0);
             _ti.parseInfo = InternalProcParse(_pi, _ti.textEditor.Text, _ti.filepath);
+            TextEditor.parserRunning = false;
         }
 
         // Update to data location of procedures
@@ -76,7 +78,7 @@ namespace ScriptEditor.CodeTranslation
             #endregion
 
             ProcBlock be_block = new ProcBlock();
-            UpdateParseSSL(text);
+            UpdateParseSSL(text, false);
             for (int i = 0; i < _pi.procs.Length; i++)
             {
                 _pi.procs[i] = new Procedure();
@@ -341,8 +343,9 @@ namespace ScriptEditor.CodeTranslation
             return false;
         }
 
-        public static void UpdateParseSSL(string sText)
+        public static void UpdateParseSSL(string sText, bool check = true)
         {
+            while (check && TextEditor.parserRunning) System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
             File.WriteAllText(Compiler.parserPath, sText.ToLowerInvariant());
         }
 
@@ -391,7 +394,7 @@ namespace ScriptEditor.CodeTranslation
                     iPath = Path.GetFullPath(Path.Combine(Settings.PathScriptsHFile, iPath));
                 else
                     iPath = Path.GetFullPath(Path.Combine(dir, iPath));
-            } // переопределять и неотносительные пути, но тогда все header файлы должны лежать в одной папке.  
+            } // переопределять и неотносительные пути (все headers файлы должны лежать в одной папке)
             else if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
                 iPath = Path.Combine(Settings.PathScriptsHFile, Path.GetFileName(iPath));
             }

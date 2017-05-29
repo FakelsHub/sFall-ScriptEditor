@@ -70,7 +70,7 @@ namespace ScriptEditor.CodeTranslation
         public static List<string> opcodes_list;
         private readonly Dictionary<string, Procedure> procLookup;
         private readonly Dictionary<string, Variable> varLookup;
-        public readonly Dictionary<string, Macro> macros;
+        public readonly SortedDictionary<string, Macro> macros;
         public bool parsed = false;
         public bool parseData = false; // Data Variables and Procedures received.
 
@@ -171,16 +171,8 @@ namespace ScriptEditor.CodeTranslation
             this.vars = new Variable[vars];
             procLookup = new Dictionary<string, Procedure>(procs);
             varLookup = new Dictionary<string, Variable>(vars);
-            macros = new Dictionary<string, Macro>();
+            macros = new SortedDictionary<string, Macro>();
         }
-
-        /*public ProgramInfo() {
-        	
-            this.procs = new Procedure[procs];
-            this.vars = new Variable[vars];
-            procLookup = new Dictionary<string, Procedure>(procs);
-            varLookup = new Dictionary<string, Variable>(vars);
-        }*/
 
         public static void LoadOpcodes()
         {
@@ -188,7 +180,7 @@ namespace ScriptEditor.CodeTranslation
             opcodes = new Dictionary<string, string>();
             opcodes_list = new List<string>();
             try {
-                lines = File.ReadAllLines(Path.Combine(Settings.ResourcesFolder, "opcodes.txt"));
+                lines = File.ReadAllLines(Path.Combine(Settings.ResourcesFolder, (Settings.hintsLang == 0) ? "opcodes.txt" : "opcodes_rus.txt"));
             } catch (FileNotFoundException) {
                 return;
             }
@@ -200,9 +192,10 @@ namespace ScriptEditor.CodeTranslation
                     String wrapped = "";
                     int lineLen = 0;
                     foreach (String word in words) {
-                        if ((lineLen + word.Length) > 100 || word == "-") {
+                        if ((lineLen + word.Length) > 150 || word == "|") {
                             wrapped += "\n";
                             lineLen = 0;
+                            if (word == "|") continue;
                         }
                         if (wrapped != "")
                             wrapped += " ";
@@ -220,31 +213,33 @@ namespace ScriptEditor.CodeTranslation
 
         public List<string> LookupAutosuggest(string part)
         {
+            List<string> matches = LookupOpcode(part);
             part = part.ToLower();
-            var matches = LookupOpcode(part);
             foreach (var entry in procLookup) {
                 if (entry.Key.IndexOf(part) == 0) {
                     matches.Add(entry.Value.name + "|" + entry.Value.ToString(true));
-                    if (matches.Count >= 10)
-                        break;
                 }
             }
-            if (matches.Count < 10) {
-                foreach (var entry in varLookup) {
-                    if (entry.Key.IndexOf(part) == 0) {
-                        matches.Add(entry.Value.name);
-                        if (matches.Count >= 10)
-                            break;
-                    }
+            foreach (var entry in varLookup) {
+                if (entry.Key.IndexOf(part) == 0) {
+                    matches.Add(entry.Value.name + "|" + entry.Value.ToString());
                 }
             }
-            if (matches.Count < 10) {
-                foreach (var entry in macros) {
-                    if (entry.Key.IndexOf(part) == 0) {
-                        matches.Add(entry.Value.name + "|" + entry.Value.def);
-                        if (matches.Count >= 10)
-                            break;
-                    }
+            SortedList<string, string> _macros = new SortedList<string, string>(StringComparer.Ordinal);
+            foreach (var entry in macros) {
+                if (entry.Key.IndexOf(part) == 0) {
+                    string def = (entry.Value.def.Length > 300) ? "No preview macros." : entry.Value.def;
+                    _macros.Add(entry.Value.name, "|Define:\n" + def);
+                }
+            }
+            foreach (var entry in _macros) matches.Add(entry.Key + entry.Value);
+            // remove dublicates
+            for (int i = 0; i < matches.Count; i++) {
+                string token = matches[i].Substring(0, matches[i].IndexOf('|'));
+                for (int j = i + 1; j < matches.Count; j++) {
+                    string check = matches[j].Substring(0, matches[j].IndexOf('|'));
+                    if (check == token)
+                        matches.RemoveAt(j--);
                 }
             }
             return matches;
@@ -257,8 +252,6 @@ namespace ScriptEditor.CodeTranslation
             foreach (string key in opcodes_list) {
                 if (key.IndexOf(part) == 0) {
                     matches.Add(key + "|" + opcodes[key]);
-                    if (matches.Count >= 10)
-                        break;
                 }
             }
             return matches;

@@ -32,6 +32,7 @@ namespace ScriptEditor
             cbParserWarn.Checked = Settings.parserWarn;
             cbWatcom.Checked = Settings.useWatcom;
             cbCompilePath.Checked = Settings.ignoreCompPath;
+            cbUserCompile.Checked = Settings.userCmdCompile;
             foreach (var item in Settings.msgListPath)
                 msgPathlistView.Items.Add(item.ToString());
             SetLabelText();
@@ -72,6 +73,7 @@ namespace ScriptEditor
             Settings.parserWarn = cbParserWarn.Checked;
             Settings.useWatcom = cbWatcom.Checked;
             Settings.ignoreCompPath = cbCompilePath.Checked;
+            Settings.userCmdCompile = cbUserCompile.Checked;
             Settings.msgListPath.Clear();
             foreach (ListViewItem item in msgPathlistView.Items)
                 Settings.msgListPath.Add(item.Text);
@@ -157,6 +159,5 @@ namespace ScriptEditor
         {
             FileAssociation.Associate();
         }
-
     }
 }

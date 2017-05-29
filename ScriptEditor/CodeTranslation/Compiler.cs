@@ -92,7 +92,7 @@ namespace ScriptEditor.CodeTranslation
                 return defmacro.TrimStart();
         }
 
-        private void AddMacro(string line, Dictionary<string, Macro> macros, string file, int lineno)
+        private void AddMacro(string line, SortedDictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
             line = line.TrimStart();
@@ -115,7 +115,7 @@ namespace ScriptEditor.CodeTranslation
             macros[token] = new Macro(macro, def, file, lineno + 1);
         }
 
-        private void GetMacros(string file, string dir, Dictionary<string, Macro> macros)
+        private void GetMacros(string file, string dir, SortedDictionary<string, Macro> macros)
         {
             if (!File.Exists(file))
                 return;
@@ -376,7 +376,7 @@ namespace ScriptEditor.CodeTranslation
 
         private static string GetWccCommandLine(string infile, string outfile) {
             string def = (Settings.preprocDef != "---" ? "/d" + Settings.preprocDef : string.Empty);
-            return (infile + " ..\\scrTemp\\" + outfile + " " + def);
+            return ("\"" + infile + "\" ..\\scrTemp\\" + outfile + " " + def);
 #endif
         }
 
@@ -396,58 +396,73 @@ namespace ScriptEditor.CodeTranslation
                 output = "No filename specified";
                 return false;
             }
+            bool success;
             infile = Path.GetFullPath(infile);
             string srcfile = infile;
-            infile = OverrideIncludeSSLCompile(infile);
-            bool success;
-            output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n";
             string sourceDir = Path.GetDirectoryName(infile);
-            if (Settings.useWatcom) {
-                string wccPath = Path.Combine(Settings.ResourcesFolder, "wcc.bat");
-                string outfile = "preprocess.ssl";
-                ProcessStartInfo wpsi = new ProcessStartInfo(wccPath, GetWccCommandLine(infile, outfile));
-                wpsi.RedirectStandardOutput = true;
-                wpsi.UseShellExecute = false;
-                wpsi.CreateNoWindow = true;
-                wpsi.WorkingDirectory = Settings.ResourcesFolder;
-                Process wp = Process.Start(wpsi);
-                output = wp.StandardOutput.ReadToEnd();
+            infile = OverrideIncludeSSLCompile(infile);
+            output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n";
+            if (Settings.userCmdCompile) {
+                string userbat = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
+                ProcessStartInfo upsi = new ProcessStartInfo(userbat, "\""+ infile + "\"");
+                upsi.RedirectStandardOutput = true;
+                upsi.RedirectStandardError = true;
+                upsi.UseShellExecute = false;
+                upsi.CreateNoWindow = true;
+                upsi.WorkingDirectory = Settings.ResourcesFolder;
+                Process wp = Process.Start(upsi);
+                output += wp.StandardOutput.ReadToEnd();
                 wp.WaitForExit(1000);
                 success = wp.ExitCode == 0;
                 wp.Dispose();
-                if (!success || preprocessOnly) return success;
-                infile = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[wcc].ssl");
-                File.Delete(infile);
-                File.Move(Path.Combine(Settings.scriptTempPath, outfile), infile);
-                output += Environment.NewLine;
-            }
+            } else {
+                if (Settings.useWatcom) {
+                    string wccPath = Path.Combine(Settings.ResourcesFolder, "wcc.bat");
+                    string outfile = "preprocess.ssl";
+                    ProcessStartInfo wpsi = new ProcessStartInfo(wccPath, GetWccCommandLine(infile, outfile));
+                    wpsi.RedirectStandardOutput = true;
+                    wpsi.UseShellExecute = false;
+                    wpsi.CreateNoWindow = true;
+                    wpsi.WorkingDirectory = Settings.ResourcesFolder;
+                    Process wp = Process.Start(wpsi);
+                    output = wp.StandardOutput.ReadToEnd();
+                    wp.WaitForExit(1000);
+                    success = wp.ExitCode == 0;
+                    wp.Dispose();
+                    if (!success || preprocessOnly) return success;
+                    infile = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[wcc].ssl");
+                    File.Delete(infile);
+                    File.Move(Path.Combine(Settings.scriptTempPath, outfile), infile);
+                    output += Environment.NewLine;
+                }
 
 #if DLL_COMPILER
-            string origpath=Directory.GetCurrentDirectory();
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(infile));
-            string[] args=Settings.GetSslcCommandLine(infile, preprocessOnly);
-            bool success=compile_main(args.Length, args)==0;
-            output=System.Runtime.InteropServices.Marshal.PtrToStringAnsi(FetchBuffer());
-            Directory.SetCurrentDirectory(origpath);
+                string origpath=Directory.GetCurrentDirectory();
+                Directory.SetCurrentDirectory(Path.GetDirectoryName(infile));
+                string[] args=Settings.GetSslcCommandLine(infile, preprocessOnly);
+                bool success=compile_main(args.Length, args)==0;
+                output=System.Runtime.InteropServices.Marshal.PtrToStringAnsi(FetchBuffer());
+                Directory.SetCurrentDirectory(origpath);
 #else
 
-            var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
-            ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir));
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardInput = true;
-            psi.UseShellExecute = false;
-            psi.CreateNoWindow = true;
-            psi.WorkingDirectory = Path.GetDirectoryName(infile);
-            Process p = Process.Start(psi);
-            p.StandardInput.WriteLine();
-            output += p.StandardOutput.ReadToEnd();
-            p.StandardInput.WriteLine();
-            p.WaitForExit(1000);
-            success = p.ExitCode == 0;
-            p.Dispose();
+                var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
+                ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir));
+                psi.RedirectStandardOutput = true;
+                psi.RedirectStandardInput = true;
+                psi.UseShellExecute = false;
+                psi.CreateNoWindow = true;
+                psi.WorkingDirectory = Path.GetDirectoryName(infile);
+                Process p = Process.Start(psi);
+                p.StandardInput.WriteLine();
+                output += p.StandardOutput.ReadToEnd();
+                p.StandardInput.WriteLine();
+                p.WaitForExit(1000);
+                success = p.ExitCode == 0;
+                p.Dispose();
 #endif
-            if (errors != null) 
-                 Error.BuildLog(errors, output, srcfile);
+            }
+            if (errors != null && !Settings.userCmdCompile) 
+                Error.BuildLog(errors, output, (Settings.useWatcom) ? infile : srcfile);
             if (Settings.overrideIncludesPath) File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(srcfile));
 #if DLL_COMPILER
             output=output.Replace("\n", "\r\n");

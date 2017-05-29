@@ -61,6 +61,8 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modeDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bAssociate = new System.Windows.Forms.Button();
+            this.cbUserCompile = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -70,7 +72,6 @@
             this.Highlight_comboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.bAssociate = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
@@ -101,7 +102,7 @@
             // cbWarnings
             // 
             this.cbWarnings.AutoSize = true;
-            this.cbWarnings.Location = new System.Drawing.Point(6, 21);
+            this.cbWarnings.Location = new System.Drawing.Point(6, 44);
             this.cbWarnings.Name = "cbWarnings";
             this.cbWarnings.Size = new System.Drawing.Size(101, 17);
             this.cbWarnings.TabIndex = 0;
@@ -112,7 +113,7 @@
             // cbDebug
             // 
             this.cbDebug.AutoSize = true;
-            this.cbDebug.Location = new System.Drawing.Point(6, 44);
+            this.cbDebug.Location = new System.Drawing.Point(6, 67);
             this.cbDebug.Name = "cbDebug";
             this.cbDebug.Size = new System.Drawing.Size(119, 17);
             this.cbDebug.TabIndex = 1;
@@ -124,10 +125,10 @@
             this.cbIncludePath.AutoSize = true;
             this.cbIncludePath.Location = new System.Drawing.Point(303, 54);
             this.cbIncludePath.Name = "cbIncludePath";
-            this.cbIncludePath.Size = new System.Drawing.Size(137, 17);
+            this.cbIncludePath.Size = new System.Drawing.Size(132, 17);
             this.cbIncludePath.TabIndex = 3;
-            this.cbIncludePath.Text = "Override includes paths";
-            this.toolTip.SetToolTip(this.cbIncludePath, "Override path of header files in script, to this selected path.");
+            this.cbIncludePath.Text = "Override includes path";
+            this.toolTip.SetToolTip(this.cbIncludePath, "Override path of included header files in script, to this selected path.");
             this.cbIncludePath.UseVisualStyleBackColor = true;
             // 
             // bChange
@@ -149,7 +150,7 @@
             // cbWarnFailedCompile
             // 
             this.cbWarnFailedCompile.AutoSize = true;
-            this.cbWarnFailedCompile.Location = new System.Drawing.Point(6, 67);
+            this.cbWarnFailedCompile.Location = new System.Drawing.Point(6, 90);
             this.cbWarnFailedCompile.Name = "cbWarnFailedCompile";
             this.cbWarnFailedCompile.Size = new System.Drawing.Size(134, 17);
             this.cbWarnFailedCompile.TabIndex = 7;
@@ -369,6 +370,7 @@
             // 
             // msgPathlistView
             // 
+            this.msgPathlistView.BackColor = System.Drawing.SystemColors.Window;
             this.msgPathlistView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.msgPathlistView.ContextMenuStrip = this.MsgcontextMenu;
@@ -436,8 +438,33 @@
             this.modeDownToolStripMenuItem.Text = "Move Down";
             this.modeDownToolStripMenuItem.Click += new System.EventHandler(this.modeDownToolStripMenuItem_Click);
             // 
+            // bAssociate
+            // 
+            this.bAssociate.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bAssociate.Location = new System.Drawing.Point(419, 318);
+            this.bAssociate.Name = "bAssociate";
+            this.bAssociate.Size = new System.Drawing.Size(16, 16);
+            this.bAssociate.TabIndex = 32;
+            this.bAssociate.Text = "A";
+            this.toolTip.SetToolTip(this.bAssociate, "Associate SSL, INT and MSG files with the sfall editor.");
+            this.bAssociate.UseVisualStyleBackColor = true;
+            this.bAssociate.Click += new System.EventHandler(this.bAssociate_Click);
+            // 
+            // cbUserCompile
+            // 
+            this.cbUserCompile.AutoSize = true;
+            this.cbUserCompile.Location = new System.Drawing.Point(6, 20);
+            this.cbUserCompile.Name = "cbUserCompile";
+            this.cbUserCompile.Size = new System.Drawing.Size(125, 17);
+            this.cbUserCompile.TabIndex = 22;
+            this.cbUserCompile.Text = "Compile from cmd-file";
+            this.toolTip.SetToolTip(this.cbUserCompile, "To use custom command batch file (UserComp.bat from resources folder) to compile " +
+                    "scripts files.");
+            this.cbUserCompile.UseVisualStyleBackColor = true;
+            // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cbUserCompile);
             this.groupBox1.Controls.Add(this.cbWatcom);
             this.groupBox1.Controls.Add(this.cbShortCircuit);
             this.groupBox1.Controls.Add(this.cbWarnings);
@@ -472,6 +499,7 @@
             // 
             // textBox2
             // 
+            this.textBox2.BackColor = System.Drawing.SystemColors.ControlLight;
             this.textBox2.Location = new System.Drawing.Point(6, 32);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
@@ -480,6 +508,7 @@
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.textBox1.Location = new System.Drawing.Point(6, 71);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
@@ -541,18 +570,6 @@
             this.groupBox4.TabIndex = 31;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Parser";
-            // 
-            // bAssociate
-            // 
-            this.bAssociate.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.bAssociate.Location = new System.Drawing.Point(419, 318);
-            this.bAssociate.Name = "bAssociate";
-            this.bAssociate.Size = new System.Drawing.Size(16, 16);
-            this.bAssociate.TabIndex = 32;
-            this.bAssociate.Text = "A";
-            this.toolTip.SetToolTip(this.bAssociate, "Associate SSL files with the editor.");
-            this.bAssociate.UseVisualStyleBackColor = true;
-            this.bAssociate.Click += new System.EventHandler(this.bAssociate_Click);
             // 
             // SettingsDialog
             // 
@@ -644,5 +661,6 @@
         private System.Windows.Forms.ToolStripMenuItem moveUpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modeDownToolStripMenuItem;
         private System.Windows.Forms.Button bAssociate;
+        private System.Windows.Forms.CheckBox cbUserCompile;
     }
 }
