@@ -103,6 +103,7 @@ namespace ScriptEditor.TextEditorUI
                 }
                 if (!warn) log += sLog[i] + Environment.NewLine;
             }
+            tab.textEditor.ActiveTextAreaControl.Refresh();
             if (log.Length > 2)
                 log = "------ Script: " + tab.filename
                 + " < Parse Time: " + DateTime.Now.ToString("HH:mm:ss")
@@ -113,14 +114,13 @@ namespace ScriptEditor.TextEditorUI
         private static void HighlightError(string error, TabInfo tab)
         {
             string[] str = error.Split(new char[] {':'}, 4);
-            if (str.Length < 3) return; 
+            if (str.Length < 3 || Path.GetFileName(str[1].TrimEnd('>')) != tab.filename) return; 
             TextLocation ErrorPosition = new Error(str[2], "1").ErrorPosition;
             int offset = tab.textEditor.Document.PositionToOffset(ErrorPosition);
             int len = TextUtilities.GetLineAsString(tab.textEditor.Document, ErrorPosition.Line).Length;
             TextMarker tm = new TextMarker(offset, len, TextMarkerType.WaveLine, System.Drawing.Color.Red);
             tm.ToolTip = str[str.Length - 1];
             tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
-            tab.textEditor.ActiveTextAreaControl.Refresh();
             tab.error = true;
         }
     }
