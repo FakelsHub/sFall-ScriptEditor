@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ScriptEditor.CodeTranslation;
 
 namespace ScriptEditor.TextEditorUI
 {    
@@ -14,6 +15,7 @@ namespace ScriptEditor.TextEditorUI
     /// </summary>
     class Utilities
     {
+    #region Formating text functions
         // for selected code
         public static void FormattingCode(TextEditorControl TE) 
         {
@@ -111,6 +113,118 @@ namespace ScriptEditor.TextEditorUI
                 seek += wordLen;
             }
         }
+
+        public static void DecIndent(TextEditorControl TE)
+        {
+            int len;
+            int indent = Settings.tabSize;
+            string ReplaceText = string.Empty;
+            if (TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                ISelection position = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
+                {
+                    if (ReplaceText != string.Empty) ReplaceText += "\n";
+                    if (SubDecIndent(i, ref indent, ref ReplaceText, out len, TE.Document)) return;
+                }
+                int offset_str = TE.Document.LineSegmentCollection[position.StartPosition.Line].Offset;
+                int offset_end = TE.Document.PositionToOffset(new TextLocation(TE.Document.LineSegmentCollection[position.EndPosition.Line].Length, position.EndPosition.Line));
+                int lenBlock = offset_end - offset_str;
+                TE.Document.Replace(offset_str, lenBlock, ReplaceText);
+                TextLocation srtSel = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].StartPosition;
+                TextLocation endSel = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].EndPosition;
+                srtSel.Column -= indent;
+                endSel.Column -= indent;
+                TE.ActiveTextAreaControl.SelectionManager.SetSelection(srtSel, endSel);
+            } else {
+                if (SubDecIndent(TE.ActiveTextAreaControl.Caret.Line, ref indent, ref ReplaceText, out len, TE.Document)) return;
+                int offset_str = TE.Document.LineSegmentCollection[TE.ActiveTextAreaControl.Caret.Line].Offset;
+                TE.Document.Replace(offset_str, len, ReplaceText);
+            }
+            TE.ActiveTextAreaControl.Caret.Column -= indent;
+            TE.Refresh();
+        }
+
+        private static bool SubDecIndent(int line, ref int indent, ref string ReplaceText, out int len, IDocument document)
+        {
+            string LineText = TextUtilities.GetLineAsString(document, line);
+            len = LineText.Length;
+            int start = (len - LineText.TrimStart().Length);
+            if (start < indent) {
+                int z = LineText.Length;
+                ReplaceText += LineText.TrimStart();
+                if (z == ReplaceText.Length) return true;
+                indent = z - ReplaceText.Length;
+            } else ReplaceText += LineText.Remove(start - indent, indent);
+            return false;
+        }
+
+        public static void CommentText(TextEditorControl TE)
+        {
+            if (TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                TE.Document.UndoStack.StartUndoGroup();
+                ISelection position = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++) 
+                {
+                    string LineText = TextUtilities.GetLineAsString(TE.Document, i);
+                    if (LineText.TrimStart().StartsWith(Parser.COMMENT)) continue;
+                    int offset = TE.Document.LineSegmentCollection[i].Offset;
+                    TE.Document.Insert(offset, Parser.COMMENT); 
+                }
+                TE.Document.UndoStack.EndUndoGroup();
+                TE.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            } else {
+                string LineText = TextUtilities.GetLineAsString(TE.Document, TE.ActiveTextAreaControl.Caret.Line);
+                if (LineText.TrimStart().StartsWith(Parser.COMMENT)) return;
+                int offset_str = TE.Document.LineSegmentCollection[TE.ActiveTextAreaControl.Caret.Line].Offset;
+                TE.Document.Insert(offset_str, Parser.COMMENT);
+            }
+            TE.ActiveTextAreaControl.Caret.Column += 2;
+        }
+
+        public static void UnCommentText(TextEditorControl TE)
+        {
+            if (TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                TE.Document.UndoStack.StartUndoGroup();
+                ISelection position = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
+                {
+                    string LineText = TextUtilities.GetLineAsString(TE.Document, i);
+                    if (!LineText.TrimStart().StartsWith(Parser.COMMENT)) continue;
+                    int n = LineText.IndexOf(Parser.COMMENT);
+                    int offset_str = TE.Document.LineSegmentCollection[i].Offset;
+                    TE.Document.Remove(offset_str + n, 2);
+                }
+                TE.Document.UndoStack.EndUndoGroup();
+                TE.ActiveTextAreaControl.SelectionManager.ClearSelection();
+            } else {
+                string LineText = TextUtilities.GetLineAsString(TE.Document, TE.ActiveTextAreaControl.Caret.Line);
+                if (!LineText.TrimStart().StartsWith(Parser.COMMENT)) return;
+                int n = LineText.IndexOf(Parser.COMMENT);
+                int offset_str = TE.Document.LineSegmentCollection[TE.ActiveTextAreaControl.Caret.Line].Offset;
+                TE.Document.Remove(offset_str + n, 2);
+            }
+            TE.ActiveTextAreaControl.Caret.Column -= 2;
+        }
+
+        public static void AlignToLeft(TextEditorControl TE)
+        {
+            if (TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
+                ISelection position = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
+                string LineText = TextUtilities.GetLineAsString(TE.Document, position.StartPosition.Line);
+                int Align = LineText.Length - LineText.TrimStart().Length; // узнаем длину отступа
+                TE.Document.UndoStack.StartUndoGroup();
+                for (int i = position.StartPosition.Line + 1; i <= position.EndPosition.Line; i++)
+                {
+                    LineText = TextUtilities.GetLineAsString(TE.Document, i);
+                    int len = LineText.Length - LineText.TrimStart().Length;
+                    if (len == 0 || len <= Align) continue;
+                    int offset = TE.Document.LineSegmentCollection[i].Offset;
+                    TE.Document.Remove(offset, len-Align);
+                }
+                TE.Document.UndoStack.EndUndoGroup();
+            }
+        }
+    #endregion
 
     # region Search Function
         public static bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)

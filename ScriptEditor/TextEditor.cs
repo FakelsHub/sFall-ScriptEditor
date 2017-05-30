@@ -2501,119 +2501,25 @@ namespace ScriptEditor
             if (addSearchText) SearchTextComboBox.Items.Add(world);
         }
 
-#region Script text utilites
         private void DecIndentStripButton_Click(object sender, EventArgs e)
         {
-            int len;
-            int indent = Settings.tabSize;
-            string ReplaceText = string.Empty;
-            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
-                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
-                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
-                {
-                    if (ReplaceText != string.Empty) ReplaceText += "\n";
-                    if (SubDecIndent(i, ref indent, ref ReplaceText, out len)) return;
-                }
-                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[position.StartPosition.Line].Offset;
-                int offset_end = currentTab.textEditor.Document.PositionToOffset(new TextLocation(currentTab.textEditor.Document.LineSegmentCollection[position.EndPosition.Line].Length, position.EndPosition.Line));
-                int lenBlock = offset_end - offset_str;
-                currentTab.textEditor.Document.Replace(offset_str, lenBlock, ReplaceText);
-                TextLocation srtSel = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].StartPosition;
-                TextLocation endSel = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].EndPosition;
-                srtSel.Column -= indent;
-                endSel.Column -= indent;
-                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(srtSel, endSel);
-            } else {
-                if (SubDecIndent(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, ref indent, ref ReplaceText, out len)) return;
-                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[currentTab.textEditor.ActiveTextAreaControl.Caret.Line].Offset;
-                currentTab.textEditor.Document.Replace(offset_str, len, ReplaceText);
-                
-            }
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Column -= indent;
-            currentTab.textEditor.Refresh();
-        }
-
-        private bool SubDecIndent(int line, ref int indent, ref string ReplaceText, out int len)
-        {
-            string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, line);
-            len = LineText.Length;
-            int start = (len - LineText.TrimStart().Length);
-            if (start < indent) {
-                int z = LineText.Length;
-                ReplaceText += LineText.TrimStart();
-                if (z == ReplaceText.Length) return true;
-                indent = z - ReplaceText.Length;
-            } else ReplaceText += LineText.Remove(start - indent, indent);
-            return false;
+            Utilities.DecIndent(currentTab.textEditor);
         }
 
         private void CommentTextStripButton_Click(object sender, EventArgs e)
         {
-            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
-                currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
-                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++) 
-                {
-                    string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, i);
-                    if (LineText.TrimStart().StartsWith(Parser.COMMENT)) continue;
-                    int offset = currentTab.textEditor.Document.LineSegmentCollection[i].Offset;
-                    currentTab.textEditor.Document.Insert(offset, Parser.COMMENT); 
-                }
-                currentTab.textEditor.Document.UndoStack.EndUndoGroup();
-                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
-            } else {
-                string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Line);
-                if (LineText.TrimStart().StartsWith(Parser.COMMENT)) return;
-                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[currentTab.textEditor.ActiveTextAreaControl.Caret.Line].Offset;
-                currentTab.textEditor.Document.Insert(offset_str, Parser.COMMENT);
-            }
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Column += 2;
+            Utilities.CommentText(currentTab.textEditor);
         }
 
         private void UnCommentTextStripButton_Click(object sender, EventArgs e)
         {
-            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
-                currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
-                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
-                {
-                    string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, i);
-                    if (!LineText.TrimStart().StartsWith(Parser.COMMENT)) continue;
-                    int n = LineText.IndexOf(Parser.COMMENT);
-                    int offset_str = currentTab.textEditor.Document.LineSegmentCollection[i].Offset;
-                    currentTab.textEditor.Document.Remove(offset_str + n, 2);
-                }
-                currentTab.textEditor.Document.UndoStack.EndUndoGroup();
-                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
-            } else {
-                string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Line);
-                if (!LineText.TrimStart().StartsWith(Parser.COMMENT)) return;
-                int n = LineText.IndexOf(Parser.COMMENT);
-                int offset_str = currentTab.textEditor.Document.LineSegmentCollection[currentTab.textEditor.ActiveTextAreaControl.Caret.Line].Offset;
-                currentTab.textEditor.Document.Remove(offset_str + n, 2);
-            }
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Column -= 2;
+            Utilities.UnCommentText(currentTab.textEditor);
         }
 
         private void AlignToLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab.textEditor.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
-                ISelection position = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
-                string LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, position.StartPosition.Line);
-                int Align = LineText.Length - LineText.TrimStart().Length; // узнаем длину отступа
-                currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-                for (int i = position.StartPosition.Line + 1; i <= position.EndPosition.Line; i++)
-                {
-                    LineText = TextUtilities.GetLineAsString(currentTab.textEditor.Document, i);
-                    int len = LineText.Length - LineText.TrimStart().Length;
-                    if (len == 0 || len <= Align) continue;
-                    int offset = currentTab.textEditor.Document.LineSegmentCollection[i].Offset;
-                    currentTab.textEditor.Document.Remove(offset, len-Align);
-                }
-                currentTab.textEditor.Document.UndoStack.EndUndoGroup();
-            }
+            Utilities.AlignToLeft(currentTab.textEditor);
         }
-#endregion
 
         private void msgFileEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
