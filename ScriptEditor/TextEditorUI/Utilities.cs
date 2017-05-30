@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -110,5 +111,129 @@ namespace ScriptEditor.TextEditorUI
                 seek += wordLen;
             }
         }
+
+    # region Search Function
+        public static bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)
+        {
+            if (start >= text.Length) start = 0;
+            mstart = 0;
+            mlen = str.Length;
+            if (regex != null) {
+                Match m = regex.Match(text, start);
+                if (m.Success) {
+                    mstart = m.Index;
+                    mlen = m.Length;
+                    return true;
+                }
+                if (!restart) return false;
+                m = regex.Match(text);
+                if (m.Success) {
+                    mstart = m.Index;
+                    mlen = m.Length;
+                    return true;
+                }
+            } else {
+                int i = text.IndexOf(str, start, StringComparison.OrdinalIgnoreCase);
+                if (i != -1) {
+                    mstart = i;
+                    return true;
+                }
+                if (!restart) return false;
+                i = text.IndexOf(str, StringComparison.OrdinalIgnoreCase);
+                if (i != -1) {
+                    mstart = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool Search(string text, string str, Regex regex)
+        {
+            if (regex != null) {
+                if (regex.IsMatch(text))
+                    return true;
+            } else {
+                if (text.IndexOf(str, StringComparison.OrdinalIgnoreCase) != -1)
+                    return true;
+            }
+            return false;
+        }
+
+        public static bool SearchAndScroll(TabInfo tab, Regex regex, string searchText, ref ScriptEditor.TextEditor.PositionType type)
+        {
+            int start, len;
+            if (Search(tab.textEditor.Text, searchText, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, out start, out len)) {
+                FindSelected(tab, start, len, ref type);
+                return true;
+            }
+            return false;
+        }
+
+        public static void FindSelected(TabInfo tab, int start, int len, ref ScriptEditor.TextEditor.PositionType type, string replace = null)
+        {
+            type = ScriptEditor.TextEditor.PositionType.NoSave;
+            TextLocation locstart = tab.textEditor.Document.OffsetToPosition(start);
+            TextLocation locend = tab.textEditor.Document.OffsetToPosition(start + len);
+            tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
+            if (replace != null) {
+                tab.textEditor.ActiveTextAreaControl.Document.Replace(start, len, replace);
+                locend = tab.textEditor.Document.OffsetToPosition(start + replace.Length);
+                tab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(locstart, locend);
+            }
+            tab.textEditor.ActiveTextAreaControl.Caret.Position = locstart;
+            tab.textEditor.ActiveTextAreaControl.CenterViewOn(locstart.Line, 0);
+        }
+
+        public static void SearchForAll(TabInfo tab, string searchText, Regex regex, DataGridView dgv, List<int> offsets, List<int> lengths)
+        {
+            int start, len, line, lastline = -1;
+            int offset = 0;
+            while (Search(tab.textEditor.Text, searchText, regex, offset, false, out start, out len))
+            {
+                offset = start + 1;
+                line = tab.textEditor.Document.OffsetToPosition(start).Line;
+                if (offsets != null) {
+                    offsets.Add(start);
+                    lengths.Add(len);
+                }
+                if (line != lastline) {
+                    lastline = line;
+                    string message = TextUtilities.GetLineAsString(tab.textEditor.Document, line).Trim();
+                    Error error = new Error(message, tab.filepath, line + 1, tab.textEditor.Document.OffsetToPosition(start).Column + 1, len);
+                    dgv.Rows.Add(tab.filename, error.line.ToString(), error);
+                }
+            }
+        }
+
+        public static void SearchForAll(string[] text, string file, string searchText, Regex regex, DataGridView dgv)
+        {
+            bool matched;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (regex != null)
+                    matched = regex.IsMatch(text[i]);
+                else
+                    matched = text[i].IndexOf(searchText, StringComparison.OrdinalIgnoreCase) != -1;
+                if (matched) {
+                    Error error = new Error(text[i].Trim(), file, i + 1);
+                    dgv.Rows.Add(Path.GetFileName(file), (i + 1).ToString(), error);
+                }
+            }
+        }
+
+        public static int SearchPanel(string text, string find, int start, bool icase, bool back = false)
+        {
+            int z; // = -1;
+            if (!icase) {
+                if (back) z = text.LastIndexOf(find, start, StringComparison.OrdinalIgnoreCase);
+                else z = text.IndexOf(find, start, StringComparison.OrdinalIgnoreCase);
+            } else {
+                if (back) z = text.LastIndexOf(find, start);
+                else z= text.IndexOf(find, start);
+            }
+            return z;
+        }
+    #endregion
     }
 }

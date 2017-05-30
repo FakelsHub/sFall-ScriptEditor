@@ -17,6 +17,7 @@ namespace ScriptEditor.TextEditorUI
         public string fileName;
         public int line;
         public int column;
+        public int len;
         public TextLocation ErrorPosition;
 
         public Error() { }
@@ -36,12 +37,13 @@ namespace ScriptEditor.TextEditorUI
             this.column = column;
         }
 
-        public Error(string message, string fileName, int line, int column = -1)
+        public Error(string message, string fileName, int line, int column = -1, int len = -1)
         {
             this.message = message;
             this.fileName = fileName;
             this.line = line;
             this.column = column;
+            this.len = len;
         }
 
         public override string ToString()
