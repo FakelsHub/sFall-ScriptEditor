@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.TextEditor;
@@ -85,6 +86,29 @@ namespace ScriptEditor.TextEditorUI
                 }
             }
             return string.Join("\n", linecode);
+        }
+
+        public static void HighlightingSelectedText(TextEditorControl TE)
+        {
+            List<TextMarker> marker = TE.Document.MarkerStrategy.GetMarkers(0, TE.Document.TextLength);
+            foreach (TextMarker m in marker) {
+                if (m.TextMarkerType == TextMarkerType.SolidBlock)
+                    TE.Document.MarkerStrategy.RemoveMarker(m); 
+            }
+            if (!TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) return;
+            string sWord = TE.ActiveTextAreaControl.SelectionManager.SelectedText.Trim();
+            int wordLen = sWord.Length;
+            if (wordLen == 0 || (wordLen < 3 && !Char.IsLetterOrDigit(Convert.ToChar((sWord.Substring(0,1)))))) return;
+            int seek = 0;
+            while (seek < TE.Document.TextLength) {
+                seek = TE.Text.IndexOf(sWord, seek);
+                if (seek == -1) break;
+                char chS = (seek > 0) ? TE.Document.GetCharAt(seek - 1) : ' ';
+                char chE = ((seek + wordLen) < TE.Document.TextLength) ? TE.Document.GetCharAt(seek + wordLen): ' ';
+                if (!(Char.IsLetter(chS) || chS == '_') && !(Char.IsLetter(chE) || chE == '_'))
+                    TE.Document.MarkerStrategy.AddMarker(new TextMarker(seek, sWord.Length, TextMarkerType.SolidBlock, Color.GreenYellow, Color.Black));
+                seek += wordLen;
+            }
         }
     }
 }

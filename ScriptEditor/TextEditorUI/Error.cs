@@ -80,7 +80,10 @@ namespace ScriptEditor.TextEditorUI
         {
             if (tab.error) {
                 List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(0, tab.textEditor.Document.TextLength);
-                foreach (TextMarker m in marker) tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
+                foreach (TextMarker m in marker) { 
+                    if (m.TextMarkerType == TextMarkerType.WaveLine) 
+                        tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
+                }
                 tab.error = false;
             }
             bool warn = false;
@@ -103,7 +106,7 @@ namespace ScriptEditor.TextEditorUI
                 }
                 if (!warn) log += sLog[i] + Environment.NewLine;
             }
-            tab.textEditor.ActiveTextAreaControl.Refresh();
+            tab.textEditor.Refresh();
             if (log.Length > 2)
                 log = "------ Script: " + tab.filename
                 + " < Parse Time: " + DateTime.Now.ToString("HH:mm:ss")

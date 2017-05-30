@@ -39,6 +39,7 @@ namespace ScriptEditor
         private FormWindowState wState;
         private readonly string[] commandsArgs;
         private bool lbAutocompleteShiftCaret;
+        private bool SplitEvent;
 
         private Encoding EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
@@ -272,8 +273,8 @@ namespace ScriptEditor
             ICSharpCode.TextEditor.TextEditorControl te = new ICSharpCode.TextEditor.TextEditorControl();
             te.AllowCaretBeyondEOL = true;
             te.LineViewerStyle = LineViewerStyle.FullRow;
-            te.ShowVRuler = false;
-            te.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
+            te.ShowVRuler = true;
+            te.VRulerRow = Settings.tabSize;
             te.Document.FoldingManager.FoldingStrategy = new CodeFolder();
             te.IndentStyle = IndentStyle.Smart;
             te.ConvertTabsToSpaces = Settings.tabsToSpaces;
@@ -288,18 +289,7 @@ namespace ScriptEditor
                 te.LoadFile(file, false, true);
             else if (type == OpenType.Text)
                 te.Text = file;
-            te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object a1, MouseEventArgs a2) {
-                if (a2.Button == MouseButtons.Left)
-                    UpdateEditorToolStripMenu();
-                lbAutocomplete.Hide();
-            };
-            te.ActiveTextAreaControl.TextArea.KeyPress += KeyPressed;
-            te.HorizontalScroll.Visible = false;
-            te.ActiveTextAreaControl.TextArea.PreviewKeyDown += delegate(object sender, PreviewKeyDownEventArgs a2) {
-                PosChangeType = PositionType.SaveChange; // Save position change for navigation, if key was pressed
-                lbAutoCompleteKey(a2);
-            };
-            te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
+            // set tabinfo 
             TabInfo ti = new TabInfo();
             ti.history.linePosition = new TextLocation[0];
             ti.history.pointerCur = -1;
@@ -324,7 +314,6 @@ namespace ScriptEditor
                 ti.filename = unsaved;
             }
             ti.index = tabControl1.TabCount;
-            te.ActiveTextAreaControl.TextArea.ToolTipRequest += new ToolTipRequestEventHandler(TextArea_ToolTipRequest);
             te.ContextMenuStrip = editorMenuStrip;
 
             tabs.Add(ti);
@@ -347,14 +336,38 @@ namespace ScriptEditor
                     FirstParseScript(ti); // First Parse
                 }
             }
+            // TE events
             te.TextChanged += textChanged;
-            te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
+            SetActiveAreaEvents(te);
+            //
             if (tabControl1.TabPages.Count > 1) {
                 if (seltab) tabControl1.SelectTab(tp);
             } else {
                 tabControl1_Selected(null, null);
             }
             return ti;
+        }
+
+        private void SetActiveAreaEvents(TextEditorControl te)
+        {
+            te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object a1, MouseEventArgs a2) {
+                if (a2.Button == MouseButtons.Left)
+                    UpdateEditorToolStripMenu();
+                lbAutocomplete.Hide();
+            };
+            te.ActiveTextAreaControl.TextArea.KeyPress += KeyPressed;
+            te.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
+            te.ActiveTextAreaControl.TextArea.PreviewKeyDown += delegate(object sender, PreviewKeyDownEventArgs a2) {
+                PosChangeType = PositionType.SaveChange; // Save position change for navigation, if key was pressed
+                lbAutoCompleteKey(a2);
+            };
+            te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
+            te.ActiveTextAreaControl.TextArea.MouseDoubleClick += delegate(object sender, MouseEventArgs e) {
+                Utilities.HighlightingSelectedText(currentTab.textEditor);
+                currentTab.textEditor.Refresh();
+            };
+            te.ActiveTextAreaControl.TextArea.ToolTipRequest += new ToolTipRequestEventHandler(TextArea_ToolTipRequest);
+            te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
         }
 
         private void EnableFormControls()
@@ -2205,6 +2218,10 @@ namespace ScriptEditor
         {
             if (currentTab != null){
                 currentTab.textEditor.Split();
+                if (!SplitEvent) {
+                    SplitEvent = true;
+                    SetActiveAreaEvents(currentTab.textEditor);
+                }
                 TextArea_SetFocus(null, null);
             }
         }
