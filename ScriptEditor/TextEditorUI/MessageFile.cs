@@ -45,11 +45,16 @@ namespace ScriptEditor.TextEditorUI
         
         public static void ParseMessages(TabInfo ti)
         {
+            ParseMessages(ti, ti.msgFileTab.textEditor.Document.TextContent.Split('\r'));
+        }
+
+        public static void ParseMessages(TabInfo ti, string[] linesMsg)
+        {
             ti.messages.Clear();
             char[] split = new char[] { '}' };
-            for (int i = 0; i < ti.msgFileTab.textEditor.Document.TotalNumberOfLines; i++)
+            for (int i = 0; i < linesMsg.Length; i++)
             {
-                string[] line = ti.msgFileTab.textEditor.Document.GetText(ti.msgFileTab.textEditor.Document.GetLineSegment(i)).Split(split, StringSplitOptions.RemoveEmptyEntries);
+                string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
                 if (line.Length != 3)
                     continue;
                 for (int j = 0; j < 3; j += 2)

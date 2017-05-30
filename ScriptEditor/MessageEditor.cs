@@ -129,7 +129,7 @@ namespace ScriptEditor
                 linesMsg = new List<string>();
             }
             associateTab = ti;
-            if (associateTab != null) ParseMessages(associateTab);
+            if (associateTab != null) MessageFile.ParseMessages(associateTab, linesMsg.ToArray());
         }
 
         private void readMsgFile()
@@ -231,6 +231,7 @@ namespace ScriptEditor
             AddRow(new Entry("# Description"));
             AddRow(new Entry("{101}{}{}"));
             this.Text = "unsaved.msg" + this.Tag;
+            this.groupBox.Text = "Messages";
             linesMsg = new List<string>();
             msgPath = null;
         }
@@ -410,32 +411,9 @@ namespace ScriptEditor
             enc = (encodingTextDOSToolStripMenuItem.Checked) ? Encoding.GetEncoding("cp866") : Encoding.Default;
         }
 
-        private void ParseMessages(TabInfo ti)
-        {
-            ti.messages.Clear();
-            char[] split = new char[] { '}' };
-            for (int i = 0; i < linesMsg.Count; i++)
-            {
-                string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
-                if (line.Length != 3)
-                    continue;
-                for (int j = 0; j < 3; j += 2)
-                {
-                    line[j] = line[j].Trim();
-                    if (line[j].Length == 0 || line[j][0] != '{')
-                        continue;
-                    line[j] = line[j].Substring(1);
-                }
-                int index;
-                if (!int.TryParse(line[0], out index))
-                    continue;
-                ti.messages[index] = line[2];
-            }
-        }
-
         private void MessageEditor_Deactivate(object sender, EventArgs e)
         {
-            if (associateTab != null) ParseMessages(associateTab);
+            if (associateTab != null) MessageFile.ParseMessages(associateTab, linesMsg.ToArray());
         }
 
         private void MessageEditor_KeyDown(object sender, KeyEventArgs e)
