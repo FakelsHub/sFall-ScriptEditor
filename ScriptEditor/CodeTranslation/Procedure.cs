@@ -25,7 +25,7 @@ namespace ScriptEditor.CodeTranslation
 
         public string ToString(bool fullSpec = true)
         {
-            System.String s = "";
+            string s = string.Empty;
             if (fullSpec) {
                 if ((d.type & ProcType.Import) != ProcType.None)
                     s += "imported ";
@@ -44,15 +44,16 @@ namespace ScriptEditor.CodeTranslation
                 s += "procedure ";
             }
             s += name;
-            s += "(";
+            string args = "(";
             for (int i = 0; i < d.args; i++) {
                 if (i > 0)
-                    s += ", ";
-                s += (i >= variables.Length) ? "x" : variables[i].name;
+                    args += ", ";
+                args += (i >= variables.Length) ? "x" : variables[i].name;
                 if (fullSpec && i < variables.Length && variables[i].initialValue != null)
-                    s += " := " + variables[i].initialValue;
+                    args += " := " + variables[i].initialValue;
             }
-            s += ")";
+            args += ")";
+            if (fullSpec || args.Length > 2) s += args;
             return s;
         }
         public bool IsImported()
