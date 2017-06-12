@@ -11,9 +11,9 @@ using ScriptEditor.CodeTranslation;
 namespace ScriptEditor.TextEditorUI
 {    
     /// <summary>
-    /// Class for text functions.
+    /// Class for text editor functions.
     /// </summary>
-    class Utilities
+    internal static class Utilities
     {
     #region Formating text functions
         // for selected code
@@ -112,6 +112,7 @@ namespace ScriptEditor.TextEditorUI
                     TE.Document.MarkerStrategy.AddMarker(new TextMarker(seek, sWord.Length, TextMarkerType.SolidBlock, Color.GreenYellow, Color.Black));
                 seek += wordLen;
             }
+            TE.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
         }
 
         public static void DecIndent(TextEditorControl TE)
@@ -336,18 +337,185 @@ namespace ScriptEditor.TextEditorUI
             }
         }
 
-        public static int SearchPanel(string text, string find, int start, bool icase, bool back = false)
+        public static int SearchPanel(string text, string find, int start, bool icase, bool wholeword, bool back = false)
         {
-            int z; // = -1;
-            if (!icase) {
-                if (back) z = text.LastIndexOf(find, start, StringComparison.OrdinalIgnoreCase);
-                else z = text.IndexOf(find, start, StringComparison.OrdinalIgnoreCase);
-            } else {
-                if (back) z = text.LastIndexOf(find, start);
-                else z= text.IndexOf(find, start);
+            int z;
+            if (wholeword) {
+                RegexOptions option = RegexOptions.Multiline;
+                if (!icase) option |= RegexOptions.IgnoreCase;
+                if (back) option |= RegexOptions.RightToLeft;
+                z = SearchWholeWord(text, find, start, option);
+            } else {            
+                if (!icase) {
+                    if (back) z = text.LastIndexOf(find, start, StringComparison.OrdinalIgnoreCase);
+                    else z = text.IndexOf(find, start, StringComparison.OrdinalIgnoreCase);
+                } else {
+                    if (back) z = text.LastIndexOf(find, start);
+                    else z= text.IndexOf(find, start);
+                }
             }
             return z;
         }
+
+        private static int SearchWholeWord(string text, string find, int start, RegexOptions option)
+        {
+            int z, x;
+            string search = @"\b" + find + @"\b";
+            Regex s_regex = new Regex(search, option);
+            if (!Search(text, find, s_regex, start, false, out z, out x)) return -1;
+            return z;
+        }
     #endregion
+
+        internal static void RefactorRename(IParserInfo item, TextEditorControl TE)
+        {
+            string newName;
+            switch ((NameType)item.Type()) {
+                case NameType.LVar: // local procedure variable 
+                    Variable lvar = (Variable)item;
+                    newName = lvar.name;
+                    if (!ProcForm.CreateRenameForm(ref newName, "Local Variable") || newName == lvar.name) return;
+                    TE.Document.UndoStack.StartUndoGroup();
+                    subRenameVariable(lvar, newName, RegexOptions.IgnoreCase, TE);
+                    break;
+                case NameType.GVar: // script variable
+                    Variable gvar = (Variable)item;
+                    newName = gvar.name;
+                    if (!ProcForm.CreateRenameForm(ref newName, "Script Variable") || newName == gvar.name) return;
+                    TE.Document.UndoStack.StartUndoGroup();
+                    // rename only references
+                    subRenameVariable(gvar, newName, RegexOptions.IgnoreCase, TE);
+                    // for all script text
+                    //subRenameMacros(gvar.name, newName, RegexOptions.IgnoreCase, TE); 
+                    break;
+                case NameType.Proc:
+                    Procedure proc = (Procedure)item;
+                    RenameProcedure(proc.name, TE);
+                    return;
+                case NameType.Macro:
+                    Macro macros = (Macro)item;
+                    int offset = macros.name.IndexOf('(');
+                    if (offset != -1)
+                        newName = macros.name.Remove(offset);
+                    else 
+                        newName = macros.name;
+                    string name = newName;
+                    if (!ProcForm.CreateRenameForm(ref newName, "Local Macros") || newName == macros.name) return;
+                    TE.Document.UndoStack.StartUndoGroup();
+                    subRenameMacros(name, newName, RegexOptions.None, TE);
+                    // insert/delete spaces
+                    int diff = name.Length - newName.Length;
+                    if (diff != 0) {
+                        offset = TE.Document.PositionToOffset(new TextLocation(0, macros.declared - 1));
+                        offset += (macros.name.Length + 8) - diff;
+                        if (diff > 0)
+                            TE.Document.Insert(offset, new string(' ', diff));
+                        else {
+                            diff = diff * -1;
+                            for (int i = 0; i < diff; i++)  
+                            {
+                                if (!Char.IsWhiteSpace(TE.Document.GetCharAt(offset + 1))) break; 
+                                TE.Document.Remove(offset, 1);
+                            }
+                        }
+                    }
+                    break;   
+            }
+            TE.Document.UndoStack.EndUndoGroup();
+        }
+
+        private static void subRenameMacros(string find, string newName, RegexOptions option ,TextEditorControl TE)
+        {
+            int z, offset = 0;
+            while (offset < TE.Text.Length)
+            {
+                z = SearchWholeWord(TE.Text, find, offset, option);
+                if (z == -1) break; 
+                TE.Document.Replace(z, find.Length, newName);
+                offset += z + newName.Length; 
+            }
+        }
+
+        private static void subRenameVariable(Variable var, string newName, RegexOptions option, TextEditorControl TE)
+        {
+            int z, offset;
+            int nameLen = var.name.Length;
+            foreach (var refs in var.references)
+            {
+                LineSegment ls = TE.Document.GetLineSegment(refs.line - 1);
+                offset = 0;
+                while (offset < ls.Length)
+                {
+                    z = SearchWholeWord(TextUtilities.GetLineAsString(TE.Document, refs.line - 1), var.name, offset, option);
+                    if (z == -1) break; 
+                    TE.Document.Replace(ls.Offset + z, nameLen, newName);
+                    offset = z + newName.Length;
+                }
+            }
+            int decline = var.d.declared - 1;
+            for (int i = decline; i > 0; i--)
+            {
+                z = SearchWholeWord(TextUtilities.GetLineAsString(TE.Document, i), var.name, 0, option);
+                if (z == -1) continue; 
+                LineSegment ls = TE.Document.GetLineSegment(i);
+                TE.Document.Replace(ls.Offset + z, nameLen, newName);
+                break;
+            }
+        }
+
+        // Search and replace procedure name in script text
+        internal static void RenameProcedure(string oldName, TextEditorControl TE)
+        {
+            string newName = oldName;
+            // form ini
+            if (!ProcForm.CreateRenameForm(ref newName, "Procedure") 
+                || newName == oldName || Parser.CheckExistsProcedureName(newName)) {
+                return;
+            }
+            int differ = newName.Length - oldName.Length; 
+            string search = "[= ]" + oldName + "[ ,;(\\s]";
+            RegexOptions option = RegexOptions.Multiline | RegexOptions.IgnoreCase;
+            Regex s_regex = new Regex(search, option);
+            MatchCollection matches = s_regex.Matches(TE.Text);
+            int replace_count = 0;
+            TE.Document.UndoStack.StartUndoGroup();
+            foreach (Match m in matches) {
+                int offset = (differ * replace_count) + (m.Index + 1);
+                TE.Document.Replace(offset, (m.Length - 2), newName);
+                replace_count++;
+            }
+            TE.Document.UndoStack.EndUndoGroup();
+
+        }
+
+        // auto selected text color region  
+        internal static void SelectedTextColorRegion(TextEditorControl TE)
+        {
+            TextLocation tl = TE.ActiveTextAreaControl.Caret.Position;
+            HighlightColor hc = TE.Document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
+            if (hc == null) return; 
+            if (hc.BackgroundColor == Color.LightGray) {
+                int sStart= tl.Column, sEnd = tl.Column + 1;
+                for (int i = sEnd; i < (sEnd + 32); i++)
+                {
+                    hc = TE.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
+                    if (hc == null || hc.BackgroundColor != Color.LightGray) {
+                        sEnd = i;
+                        break;
+                    }
+                }
+                for (int i = sStart; i > 0; i--)
+                {
+                    hc = TE.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
+                    if (hc == null || hc.BackgroundColor != Color.LightGray) {
+                        sStart = i + 1;
+                        break;
+                    }
+                }
+                TextLocation sSel = new TextLocation(sStart, tl.Line);
+                TextLocation eSel = new TextLocation(sEnd, tl.Line);
+                TE.ActiveTextAreaControl.SelectionManager.SetSelection(sSel, eSel);
+            }
+        }
     }
 }

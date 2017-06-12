@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ScriptEditor
@@ -26,6 +21,21 @@ namespace ScriptEditor
                ProcedureName.Text = "unnamed_proc";
             }
             
+        }
+
+        internal static bool CreateRenameForm(ref string name, string tile = "")
+        {
+            ProcForm RenameFrm = new ProcForm();
+            RenameFrm.groupBox1.Enabled = false;
+            RenameFrm.ProcedureName.Text = name;  
+            RenameFrm.Text = "Rename " + tile;
+            RenameFrm.Create.Text = "OK";
+            if (RenameFrm.ShowDialog() == DialogResult.Cancel) {
+                return false; 
+            }
+            name = RenameFrm.ProcedureName.Text.Trim();
+            RenameFrm.Dispose();
+            return true;
         }
     }
 }

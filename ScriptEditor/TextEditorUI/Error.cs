@@ -97,7 +97,7 @@ namespace ScriptEditor.TextEditorUI
                 if (sLog[i].StartsWith("[Error]")) {
                     if (log.Length > 0) log += Environment.NewLine;
                     warn = false;
-                    HighlightError(sLog[i], tab);
+                    if (TextEditor.ParsingErrors) HighlightError(sLog[i], tab);
                 }
                 if (sLog[i].StartsWith("[Warning]")) {
                     if (!Settings.parserWarn){
