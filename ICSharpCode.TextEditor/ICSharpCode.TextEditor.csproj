@@ -59,6 +59,8 @@
     <OutputPath>bin\Release\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <RegisterForComInterop>false</RegisterForComInterop>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
@@ -256,6 +258,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)\ScriptEditor\"</PostBuildEvent>
+    <PostBuildEvent>move "$(TargetPath)" "$(SolutionDir)\ScriptEditor\"
+move "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)\ScriptEditor\bin\Release"</PostBuildEvent>
   </PropertyGroup>
 </Project>

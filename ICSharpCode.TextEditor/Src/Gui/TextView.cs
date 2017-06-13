@@ -375,7 +375,7 @@ namespace ICSharpCode.TextEditor
 		
 		int PaintLinePart(Graphics g, int lineNumber, int startColumn, int endColumn, Rectangle lineRectangle, int physicalXPos)
 		{
-			bool  drawLineMarker  = DrawLineMarkerAtLine(lineNumber);
+			bool  drawLineMarker  = false; // DrawLineMarkerAtLine(lineNumber);
 			Brush backgroundBrush = textArea.Enabled ? GetBgColorBrush(lineNumber) : SystemBrushes.InactiveBorder;
 			
 			HighlightColor selectionColor = textArea.Document.HighlightingStrategy.GetColorFor("Selection");
@@ -472,9 +472,9 @@ namespace ICSharpCode.TextEditor
 				{
 					// word is completely selected
 					wordBackBrush = selectionBackgroundBrush;
-					if (selectionColor.HasForeground) {
-						wordForeColor = selectionColor.Color;
-					}
+					/*if (selectionColor.HasForeground) {
+						wordForeColor = selectionColor.Color; // при выделении переопределять цвет текста
+					}*/
 				} else if (drawLineMarker) {
 					wordBackBrush = backgroundBrush;
 				}

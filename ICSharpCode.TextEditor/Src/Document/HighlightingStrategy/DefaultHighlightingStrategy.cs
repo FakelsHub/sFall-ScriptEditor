@@ -67,8 +67,8 @@ namespace ICSharpCode.TextEditor.Document
 			
 			// set small 'default color environment'
 			environmentColors["Default"]          = new HighlightBackground("WindowText", "Window", false, false);
-			environmentColors["Selection"]        = new HighlightColor(Color.WhiteSmoke, Color.FromArgb(64, 64, 64), false, false); //"HighlightText", "Highlight"
-			environmentColors["VRuler"]           = new HighlightColor("ControlLight", "Window", false, false);
+			environmentColors["Selection"]        = new HighlightColor(Color.Black, Color.FromArgb(180, 195, 215), false, false);
+			environmentColors["VRuler"]           = new HighlightColor(Color.WhiteSmoke, false, false); //"ControlLight", "Window"
 			environmentColors["InvalidLines"]     = new HighlightColor(Color.Red, false, false);
 			environmentColors["CaretMarker"]      = new HighlightColor(Color.FromArgb(245 ,245, 255), false, false);
 			environmentColors["CaretLine"]        = new HighlightBackground("ControlLight", "Window", false, false);
@@ -77,6 +77,7 @@ namespace ICSharpCode.TextEditor.Document
 			environmentColors["FoldLine"]         = new HighlightColor("ControlDark", false, false);
 			environmentColors["FoldMarker"]       = new HighlightColor("WindowText", "Window", false, false);
 			environmentColors["SelectedFoldLine"] = new HighlightColor("WindowText", false, false);
+
 			environmentColors["EOLMarkers"]       = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["SpaceMarkers"]     = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["TabMarkers"]       = new HighlightColor("ControlLight", "Window", false, false);
