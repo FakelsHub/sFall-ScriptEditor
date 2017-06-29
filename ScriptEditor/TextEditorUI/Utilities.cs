@@ -117,45 +117,54 @@ namespace ScriptEditor.TextEditorUI
 
         public static void DecIndent(TextEditorControl TE)
         {
-            int len;
-            int indent = Settings.tabSize;
-            string ReplaceText = string.Empty;
+            int indent = -1;
             if (TE.ActiveTextAreaControl.SelectionManager.HasSomethingSelected) {
                 ISelection position = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
                 for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
                 {
-                    if (ReplaceText != string.Empty) ReplaceText += "\n";
-                    if (SubDecIndent(i, ref indent, ref ReplaceText, out len, TE.Document)) return;
+                    CheckSpacesIndent(i, ref indent, TE.Document);
                 }
-                int offset_str = TE.Document.LineSegmentCollection[position.StartPosition.Line].Offset;
-                int offset_end = TE.Document.PositionToOffset(new TextLocation(TE.Document.LineSegmentCollection[position.EndPosition.Line].Length, position.EndPosition.Line));
-                int lenBlock = offset_end - offset_str;
-                TE.Document.Replace(offset_str, lenBlock, ReplaceText);
+                if (indent <= 0) return;
+                TE.Document.UndoStack.StartUndoGroup();
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
+                {
+                    SubDecIndent(i, indent, TE.Document);
+                }
+                TE.Document.UndoStack.EndUndoGroup();
                 TextLocation srtSel = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].StartPosition;
                 TextLocation endSel = TE.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].EndPosition;
                 srtSel.Column -= indent;
                 endSel.Column -= indent;
                 TE.ActiveTextAreaControl.SelectionManager.SetSelection(srtSel, endSel);
             } else {
-                if (SubDecIndent(TE.ActiveTextAreaControl.Caret.Line, ref indent, ref ReplaceText, out len, TE.Document)) return;
-                int offset_str = TE.Document.LineSegmentCollection[TE.ActiveTextAreaControl.Caret.Line].Offset;
-                TE.Document.Replace(offset_str, len, ReplaceText);
+                int line = TE.ActiveTextAreaControl.Caret.Line;
+                CheckSpacesIndent(line, ref indent, TE.Document);
+                if (indent <= 0 || SubDecIndent(line, indent, TE.Document)) return;
             }
             TE.ActiveTextAreaControl.Caret.Column -= indent;
             TE.Refresh();
         }
 
-        private static bool SubDecIndent(int line, ref int indent, ref string ReplaceText, out int len, IDocument document)
+        private static void CheckSpacesIndent(int line, ref int indent, IDocument document)
         {
             string LineText = TextUtilities.GetLineAsString(document, line);
-            len = LineText.Length;
-            int start = (len - LineText.TrimStart().Length);
-            if (start < indent) {
-                int z = LineText.Length;
-                ReplaceText += LineText.TrimStart();
-                if (z == ReplaceText.Length) return true;
-                indent = z - ReplaceText.Length;
-            } else ReplaceText += LineText.Remove(start - indent, indent);
+            int len = LineText.Length;
+            int trimlen = LineText.TrimStart().Length;
+            if (len == 0 || trimlen == 0) return;
+
+            int spacesLen = (len - trimlen);
+            if (indent == -1) {
+                // Adjust indent
+                int adjust = spacesLen % Settings.tabSize;
+                indent = (adjust > 0) ? adjust : Settings.tabSize; 
+            }
+            if (spacesLen < indent) indent = spacesLen;
+        }
+
+        private static bool SubDecIndent(int line, int indent, IDocument document)
+        {
+            if (TextUtilities.GetLineAsString(document, line).TrimStart().Length == 0) return true;
+            document.Remove(document.LineSegmentCollection[line].Offset, indent);
             return false;
         }
 
