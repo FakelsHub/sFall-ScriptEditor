@@ -184,15 +184,15 @@ namespace ScriptEditor.CodeTranslation
                 // убираем лишнее
                 RemoveDebrisLine(file, 0-PROC_LEN, i);
                 if (file[i].EndsWith(BEGIN)) {
-                    if (file[i].StartsWith(PROCEDURE) || file[--i].StartsWith(PROCEDURE)) {
-                        for (int j = i - 1; j > 0; j--) {
-                            if (file[j].StartsWith(PROCEDURE)) return j + 1;
-                        }
-                        return i - 1;  // if not found procedure declaration
-                    } else return -1;  // procedure block is broken
+                    if (file[i].StartsWith(PROCEDURE) || file[--i].StartsWith(PROCEDURE)) return i; 
+                    for (int j = i - 1; j > 0; j--) {
+                       if (file[j].StartsWith(PROCEDURE)) return j + 1;
+                    }
+                    if (++i <= file.Length) continue;
+                    return -1;  // procedure block is broken
                 }
             }
-            return 0; // not found
+            return 0; // not found procedure declaration
         }
 
         // Получить последнию строку declaration
