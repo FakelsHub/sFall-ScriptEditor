@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace ScriptEditor
 {
-    class FileAssociation
+    public static class FileAssociation
     {
         [DllImport("shell32.dll", SetLastError = true)]
         private static extern void SHChangeNotify(int wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
@@ -37,12 +37,12 @@ namespace ScriptEditor
             return result;
         }
 
-        public static void Associate()
+        public static void Associate(bool force = false)
         {
             string appName = "SfallScriptEditor";
             if (IsAssociated) {
                 string value = Registry.ClassesRoot.CreateSubKey(FILE_EXTENSION).GetValue("").ToString();
-                if (value == appName + "SSL") return;
+                if (value == appName + "SSL" && !force) return;
                 Registry.ClassesRoot.DeleteSubKeyTree(value);
             }
             for (int i = 0; i < 3; i++)

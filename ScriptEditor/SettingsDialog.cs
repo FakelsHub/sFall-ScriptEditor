@@ -157,7 +157,7 @@ namespace ScriptEditor
 
         private void bAssociate_Click(object sender, EventArgs e)
         {
-            FileAssociation.Associate();
+            FileAssociation.Associate(true);
         }
     }
 }
