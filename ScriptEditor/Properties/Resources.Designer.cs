@@ -71,5 +71,18 @@ namespace ScriptEditor.Properties {
                 return ResourceManager.GetStream("DontFind", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на procedure start;
+        ///
+        ///procedure start begin
+        ///
+        ///end.
+        /// </summary>
+        internal static string newScript {
+            get {
+                return ResourceManager.GetString("newScript", resourceCulture);
+            }
+        }
     }
 }

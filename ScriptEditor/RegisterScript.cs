@@ -59,8 +59,6 @@ namespace ScriptEditor
         const string DESCMSG = "#\r\n#   This file was built using Sfall Script Editor.\r\n#";
         const string SCRIPT_H = "SCRIPT_";
 
-        private Encoding enc = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
-
         private void AddRow(Entry e)
         {
             dgvScripts.Rows.Add(e, e.row + 1, e.script, e.desc, e.vars, e.name);
@@ -102,7 +100,7 @@ namespace ScriptEditor
                 entries[i] = new Entry(i, lines[i]);
             lines.Clear();
             if (msgPath != null) {
-                linesMsg = new List<string>(File.ReadAllLines(msg, enc));
+                linesMsg = new List<string>(File.ReadAllLines(msg, Settings.EncCodePage));
                 for (int i = 0; i < linesMsg.Count; i++)
                 {
                     string[] line = linesMsg[i].Split('}');
@@ -183,7 +181,7 @@ namespace ScriptEditor
                 linesMsg.Add(DESCMSG);
                 foreach (Entry entry in entries) 
                     linesMsg.Add(entry.GetMsgAsString());
-                File.WriteAllLines(msgPath, linesMsg.ToArray(), enc);
+                File.WriteAllLines(msgPath, linesMsg.ToArray(), Settings.EncCodePage);
                 linesMsg.Clear();
             }
             Save_button.ImageIndex = 0;

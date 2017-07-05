@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Sfall Script Editor")]
-[assembly: AssemblyDescription("version by Mr.Stalin")]
+[assembly: AssemblyDescription("Extended version by Mr.Stalin")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sfall Team")]
 [assembly: AssemblyProduct("Script Editor")]

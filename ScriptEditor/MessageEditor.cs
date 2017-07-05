@@ -14,7 +14,7 @@ namespace ScriptEditor
         private string msgPath;
         private bool returnLine;
         
-        private Encoding enc = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
+        private Encoding enc = (Settings.encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
         private TabInfo associateTab;
         private TextEditor scrptEditor;
@@ -113,7 +113,7 @@ namespace ScriptEditor
         private MessageEditor(string msg, TabInfo ti)
         {
             InitializeComponent();
-            if (Settings.encoding == 1 ) encodingTextDOSToolStripMenuItem.Checked = true;
+            if (Settings.encoding == (byte)EncodingType.OEM866 ) encodingTextDOSToolStripMenuItem.Checked = true;
             StripComboBox.SelectedIndex = 2;
             if (!Settings.msgLipColumn) {
                 dgvMessage.Columns[3].Visible = false;

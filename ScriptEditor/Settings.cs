@@ -7,9 +7,12 @@ using System.Windows.Forms;
 namespace ScriptEditor
 {
     public enum SavedWindows { Main, Count }
+    public enum  EncodingType : byte { Default, OEM866 }
 
     public static class Settings
     {
+        public static Encoding EncCodePage;
+
         public static readonly string ProgramFolder = Path.GetDirectoryName(Application.ExecutablePath);
         public static readonly string SettingsFolder = Path.Combine(ProgramFolder, "settings");
         public static readonly string ResourcesFolder = Path.Combine(ProgramFolder, "resources");
@@ -50,7 +53,7 @@ namespace ScriptEditor
         public static bool showLog = true;
         public static byte hintsLang = 0;
         public static byte highlight = 1; // 0 = Original, 1 = FGeck
-        public static byte encoding = 0; // 0 = DEFAULT, 1 = DOS(cp866)
+        public static byte encoding = (byte)EncodingType.Default; // 0 = DEFAULT, 1 = DOS(cp866)
         public static bool allowDefine = true;
         public static bool parserWarn = true;
         public static bool useWatcom = false;
@@ -230,6 +233,7 @@ namespace ScriptEditor
             if (!File.Exists(SearchHistoryPath)) File.Create(SearchHistoryPath).Close();
             if (!File.Exists(PreprocDefPath)) File.Create(PreprocDefPath).Close();
             if (!firstRun) FileAssociation.Associate();
+            EncCodePage = (encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
         }
 
         private static void WriteWindowPos(BinaryWriter bw, int i)

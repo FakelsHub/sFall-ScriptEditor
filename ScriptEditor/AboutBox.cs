@@ -16,7 +16,7 @@ namespace ScriptEditor
             InitializeComponent();
             this.Text += appName + " - extended version by Mr.Stalin";
             this.labelProductName.Text = appName;
-            this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
+            this.labelVersion.Text = String.Format("Version {0} beta", AssemblyVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.textBoxDescription.Text = string.Format(
 @"The sfall script compiler, for sfall {0}

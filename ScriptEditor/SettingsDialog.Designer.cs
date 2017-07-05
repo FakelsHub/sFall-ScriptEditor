@@ -195,7 +195,7 @@
             this.openFileDialog1.FileName = "scripts.h";
             this.openFileDialog1.Filter = "Header files|*.h";
             this.openFileDialog1.RestoreDirectory = true;
-            this.openFileDialog1.Title = "Select Header scripts.h";
+            this.openFileDialog1.Title = "Select Headers folder";
             // 
             // tbLanguage
             // 
@@ -384,6 +384,7 @@
             this.msgPathlistView.ShowItemToolTips = true;
             this.msgPathlistView.Size = new System.Drawing.Size(388, 75);
             this.msgPathlistView.TabIndex = 15;
+            this.toolTip.SetToolTip(this.msgPathlistView, "Paths for search to message files.");
             this.msgPathlistView.UseCompatibleStateImageBehavior = false;
             this.msgPathlistView.View = System.Windows.Forms.View.Details;
             // 
@@ -400,7 +401,8 @@
             this.moveUpToolStripMenuItem,
             this.modeDownToolStripMenuItem});
             this.MsgcontextMenu.Name = "MsgcontextMenu";
-            this.MsgcontextMenu.Size = new System.Drawing.Size(201, 98);
+            this.MsgcontextMenu.ShowImageMargin = false;
+            this.MsgcontextMenu.Size = new System.Drawing.Size(176, 98);
             // 
             // addPathToolStripMenuItem
             // 
@@ -531,11 +533,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(328, 252);
+            this.label2.Location = new System.Drawing.Point(355, 252);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 13);
+            this.label2.Size = new System.Drawing.Size(58, 13);
             this.label2.TabIndex = 26;
-            this.label2.Text = "Language Hints:";
+            this.label2.Text = "Language:";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Highlight_comboBox
@@ -580,9 +582,9 @@
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.Highlight_comboBox);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.tbLanguage);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.HintLang_comboBox);
             this.Controls.Add(this.cbAutoOpenMessages);

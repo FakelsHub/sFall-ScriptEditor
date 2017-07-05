@@ -42,8 +42,6 @@ namespace ScriptEditor
         private bool SplitEvent;
         internal static bool ParsingErrors = true;
 
-        private Encoding EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
-
         private TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
 
@@ -60,7 +58,10 @@ namespace ScriptEditor
             SearchToolStrip.Visible = false;
             defineToolStripMenuItem.Checked = Settings.allowDefine;
             msgAutoOpenEditorStripMenuItem.Checked = Settings.openMsgEditor;
-            if (Settings.encoding == 1) EncodingDOSmenuItem.Checked = true;
+            if (Settings.encoding == (byte)EncodingType.OEM866) {
+                EncodingDOSmenuItem.Checked = true;
+                windowsDefaultMenuItem.Checked = false;
+            }
             // highlighting
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(Settings.ResourcesFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
@@ -120,15 +121,17 @@ namespace ScriptEditor
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == SingleInstanceManager.WM_SFALL_SCRIPT_EDITOR_OPEN) {
+                TabInfo result = null;
                 var commandLineArgs = SingleInstanceManager.LoadCommandLine();
                 foreach (var file in commandLineArgs) {
-                    Open(file, OpenType.File, true, false, false, true, true);
+                    result = Open(file, OpenType.File, true, false, false, true, true);
                 }
-                ShowMe();
+                if (result != null) ShowMe();
             }
             base.WndProc(ref m);
         }
 
+        // activate form only for open ssl file
         private void ShowMe()
         {
             if (WindowState == FormWindowState.Minimized)
@@ -198,6 +201,10 @@ namespace ScriptEditor
                             return;
                     }
                 }
+            }
+            if (bwSyntaxParser.IsBusy) {
+                e.Cancel = true;
+                return;
             }
             if (sf != null) sf.Close();
             splitContainer3.Panel1Collapsed = true;
@@ -275,7 +282,7 @@ namespace ScriptEditor
             te.TabIndent = Settings.tabSize;
             te.Document.TextEditorProperties.IndentationSize = Settings.tabSize;
             if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0) {
-                if (Settings.encoding == 1) te.Document.TextEditorProperties.Encoding = System.Text.Encoding.GetEncoding("cp866");
+                if (Settings.encoding == (byte)EncodingType.OEM866) te.Document.TextEditorProperties.Encoding = Encoding.GetEncoding("cp866");
                 te.SetHighlighting("msg");
             } else
                 te.SetHighlighting((Settings.highlight == 0) ? "ssl" : "ssl_v2"); // Activate the highlighting, use the name from the SyntaxDefinition node.
@@ -289,10 +296,12 @@ namespace ScriptEditor
             ti.history.pointerCur = -1;
             ti.textEditor = te;
             if (type == OpenType.None) { // only for new create script
+                sfdScripts.FileName = "NewScript";
                 if (sfdScripts.ShowDialog() == DialogResult.OK) {
                     file = sfdScripts.FileName;
                     type = OpenType.File;
                     ti.changed = true;
+                    te.Text = Properties.Resources.newScript;
                 } else return null; 
             } else ti.changed = false;
             if (type == OpenType.File ) { //&& !alwaysNew
@@ -352,7 +361,7 @@ namespace ScriptEditor
                 while (parserRunning) {
                     System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
                 }
-                File.WriteAllText(tab.filepath, tab.textEditor.Text, EncCodePage);
+                File.WriteAllText(tab.filepath, tab.textEditor.Text, (Path.GetExtension(tab.filename) == ".msg") ?  Settings.EncCodePage: Encoding.Default);
                 tab.changed = false;
                 SetTabTextChange(tab.index);
                 Text = SSE + tab.filepath;
@@ -1125,6 +1134,7 @@ namespace ScriptEditor
             Search_toolStripButton.Enabled = true;
             if (Settings.showLog) splitContainer1.Panel2Collapsed = false;
         }
+
         private void ControlFormStateOn_Off()
         {
             lbAutocomplete.Hide();
@@ -1736,9 +1746,16 @@ namespace ScriptEditor
 
         private void EncodingMenuItem_Click(object sender, EventArgs e)
         {
-            Settings.encoding = 0;
-            if (EncodingDOSmenuItem.Checked) Settings.encoding = 1;
-            EncCodePage = (Settings.encoding == 1) ? Encoding.GetEncoding("cp866") : Encoding.Default;
+            if (((ToolStripMenuItem)sender).Tag == "dos") {
+                EncodingDOSmenuItem.Checked = true;
+                windowsDefaultMenuItem.Checked = false;
+                Settings.encoding = (byte)EncodingType.OEM866;
+            } else {
+                EncodingDOSmenuItem.Checked = false;
+                windowsDefaultMenuItem.Checked = true;
+                Settings.encoding = (byte)EncodingType.Default;
+            }
+            Settings.EncCodePage = (Settings.encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
         }
 
         private void defineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2288,8 +2305,6 @@ namespace ScriptEditor
             PosChangeType = PositionType.NoSave;
             currentTab.textEditor.ActiveTextAreaControl.Caret.Position = currentTab.history.linePosition[currentTab.history.pointerCur];
             currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, 0);
-            //currentTab.textEditor.Focus();
-            //currentTab.textEditor.Select();
             SetBackForwardButtonState();
         }
 #endregion
@@ -2364,7 +2379,10 @@ namespace ScriptEditor
                        : "\r\nprocedure " + name + " begin\r\n\r\nend\r\n";
             if (after) findLine = Parser.GetDeclarationProcedureLine(((Procedure)ProcTree.SelectedNode.Tag).name) + 1;
                 else findLine = Parser.GetEndLineProcDeclaration(); 
-            if (findLine == -1) MessageBox.Show("The declaration procedure is written to beginning of script.", "Warning");
+            if (findLine == -1) {
+                findLine = 0;
+                MessageBox.Show("The declaration procedure is broken, declaration written to beginning of script.", "Warning");
+            }
             currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
             int offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, findLine));
             currentTab.textEditor.Document.Insert(offset, "procedure " + name + ";" + Environment.NewLine);
