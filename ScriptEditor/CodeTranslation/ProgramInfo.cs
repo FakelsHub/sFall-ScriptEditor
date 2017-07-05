@@ -67,7 +67,7 @@ namespace ScriptEditor.CodeTranslation
         public readonly Procedure[] procs;
         public readonly Variable[] vars;
         public static Dictionary<string, string> opcodes;
-        public static List<string> opcodes_list;
+        public static SortedList<string, string> opcodes_list;
         private readonly Dictionary<string, Procedure> procLookup;
         private readonly Dictionary<string, Variable> varLookup;
         public readonly SortedDictionary<string, Macro> macros;
@@ -100,8 +100,8 @@ namespace ScriptEditor.CodeTranslation
         public static string LookupOpcodesToken(string token)
         {
             token = token.ToLowerInvariant();
-            if (opcodes.ContainsKey(token)) {
-                return opcodes[token]; 
+            if (opcodes_list.ContainsKey(token)) {
+                return opcodes[opcodes_list[token]];
             }else {
                 return null;
             }
@@ -178,7 +178,7 @@ namespace ScriptEditor.CodeTranslation
         {
             String[] lines;
             opcodes = new Dictionary<string, string>();
-            opcodes_list = new List<string>();
+            opcodes_list = new SortedList<string, string>();
             try {
                 lines = File.ReadAllLines(Path.Combine(Settings.ResourcesFolder, (Settings.hintsLang == 0) ? "opcodes.txt" : "opcodes_rus.txt"));
             } catch (FileNotFoundException) {
@@ -206,9 +206,8 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
             foreach (var entry in opcodes) {
-                opcodes_list.Add(entry.Key);
+                opcodes_list.Add(entry.Key.ToLowerInvariant(), entry.Key);
             }
-            opcodes_list.Sort();
         }
 
         public List<string> LookupAutosuggest(string part)
@@ -248,10 +247,10 @@ namespace ScriptEditor.CodeTranslation
         public static List<string> LookupOpcode(string part)
         {
             var matches = new List<string>();
-            part = part.ToLower();
-            foreach (string key in opcodes_list) {
-                if (key.IndexOf(part) == 0) {
-                    matches.Add(key + "|" + opcodes[key]);
+            foreach (string key in opcodes_list.Keys) {
+                if (key.IndexOf(part, StringComparison.OrdinalIgnoreCase) == 0) {
+                    string value = opcodes_list[key];
+                    matches.Add(value + "|" + opcodes[value]);
                 }
             }
             return matches;
