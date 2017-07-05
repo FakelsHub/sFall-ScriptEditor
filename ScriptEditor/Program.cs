@@ -8,7 +8,7 @@ namespace ScriptEditor
 {
     static class Program
     {
-        static Mutex mutex = new Mutex(true, "SFALL_SCRIPT_EDITOR");
+        static Mutex mutex = new Mutex(true, "SFALL_SCRIPT_EDITOR_4");
 
         /// <summary>
         /// The main entry point for the application.

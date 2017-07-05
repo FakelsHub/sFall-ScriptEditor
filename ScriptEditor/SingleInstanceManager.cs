@@ -19,7 +19,7 @@ namespace ScriptEditor
         [DllImport("user32")]
         private static extern int RegisterWindowMessage(string message);
 
-        public static readonly int WM_SFALL_SCRIPT_EDITOR_OPEN = RegisterWindowMessage("WM_SFALL_SCRIPT_EDITOR_OPEN");
+        public static readonly int WM_SFALL_SCRIPT_EDITOR_OPEN = RegisterWindowMessage("WM_SFALL_SCRIPT_EDITOR_4_OPEN");
 
         public static void SendEditorOpenMessage()
         {
