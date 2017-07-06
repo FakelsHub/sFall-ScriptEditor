@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ScriptEditor.TextEditorUI
 {
-    class WorkerArgs
+    public class WorkerArgs
     {
         public readonly string text;
         public readonly TabInfo tab;

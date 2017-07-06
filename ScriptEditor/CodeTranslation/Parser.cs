@@ -17,7 +17,7 @@ namespace ScriptEditor.CodeTranslation
     /// <summary>
     /// Class for parsing procedures SSL code w/o external parser.dll
     /// </summary>
-    public class Parser
+    public static class Parser
     {
         private static List<string> ProcNameList = new List<string>();
         private static TextEditor scrptEditor;
@@ -48,7 +48,7 @@ namespace ScriptEditor.CodeTranslation
             {
                 foreach (Procedure p in update_pi.procs)
                 {
-                    if (_pi.procs[i].name.ToLowerInvariant() == p.name && _pi.procs[i].fdeclared == p.fdeclared) {
+                    if (String.Equals(_pi.procs[i].name, p.name, StringComparison.OrdinalIgnoreCase) && _pi.procs[i].fdeclared == p.fdeclared) {
                         _pi.procs[i].d.start = p.d.start;
                         _pi.procs[i].d.end = p.d.end;
                         _pi.procs[i].d.declared = p.d.declared;
@@ -122,7 +122,7 @@ namespace ScriptEditor.CodeTranslation
             {
                 file[i] = file[i].TrimStart();
                 if (CommentBlockParse(ref file[i], ref _comm)) continue;
-                if (file[i].ToLowerInvariant().StartsWith(PROCEDURE)) {
+                if (file[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
                     string s = file[i].Substring(PROC_LEN, file[i].Length - PROC_LEN);
                     // удалить Begin или другую информацию из имени процедуры
@@ -146,9 +146,12 @@ namespace ScriptEditor.CodeTranslation
             for (int i = 0; i < NameProcedures.Length; i++)
             {
                 bool _add = true;
-                foreach (string a in ProcNameList)
+                foreach (string name in ProcNameList)
                 {
-                    if (NameProcedures[i].ToLowerInvariant() == a.ToLowerInvariant()) _add = false;
+                    if (String.Equals(NameProcedures[i], name, StringComparison.OrdinalIgnoreCase)) {
+                        _add = false;
+                        break;
+                    }
                 }
                 if (_add) ProcNameList.Add(NameProcedures[i]);
             }
@@ -205,7 +208,7 @@ namespace ScriptEditor.CodeTranslation
                 file[i] = file[i].TrimStart();
                 if (CommentBlockParse(ref file[i], ref _comm)) continue;
                 RemoveDebrisLine(file, 0-PROC_LEN, i);
-                if (file[i].ToLowerInvariant().StartsWith(PROCEDURE))
+                if (file[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase))
                     return i;  // found end declaration
             }
             return -1; // not found
@@ -372,8 +375,8 @@ namespace ScriptEditor.CodeTranslation
             string dir = Path.GetDirectoryName(tab.filepath);
             for (int i = 0; i < lines.Length; i++)
             {
-                lines[i] = lines[i].Trim().ToLowerInvariant();
-                if (lines[i].StartsWith(INCLUDE)) {
+                lines[i] = lines[i].Trim();
+                if (lines[i].StartsWith(INCLUDE, StringComparison.OrdinalIgnoreCase)) {
                     string[] text = lines[i].Split('"');
                     if (text.Length < 2)
                         continue;

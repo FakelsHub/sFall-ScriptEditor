@@ -1746,7 +1746,7 @@ namespace ScriptEditor
 
         private void EncodingMenuItem_Click(object sender, EventArgs e)
         {
-            if (((ToolStripMenuItem)sender).Tag == "dos") {
+            if (((ToolStripMenuItem)sender).Tag.ToString() == "dos") {
                 EncodingDOSmenuItem.Checked = true;
                 windowsDefaultMenuItem.Checked = false;
                 Settings.encoding = (byte)EncodingType.OEM866;

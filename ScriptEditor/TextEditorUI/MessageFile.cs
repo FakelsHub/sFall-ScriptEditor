@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace ScriptEditor.TextEditorUI
 {
-    public class MessageFile
+    public static class MessageFile
     {
         public static readonly string MessageTextSubPath = "..\\text\\" + Settings.language + "\\dialog\\";
         

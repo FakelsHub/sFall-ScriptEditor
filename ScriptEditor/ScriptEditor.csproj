@@ -153,6 +153,7 @@
     <Compile Include="TextEditor.Designer.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextEditorUI\Functions.cs" />
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
     <Compile Include="TextEditorUI\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
