@@ -124,7 +124,7 @@
         <Key word = "break" />
         <Key word = "continue" />
       </KeyWords>
-      
+
       <KeyWords name = "FalloutBaseFunctions" bold="false" italic="false" color="DarkMagenta">
         <Key word = "give_exp_points" />
         <Key word = "scr_return" />
@@ -405,7 +405,7 @@
         <Key word = "selectfilelist" />
         <Key word = "tokenize" />
       </KeyWords>
-      
+
       <KeyWords name = "FalloutBaseMacros" bold="false" italic="true" color="DarkMagenta">
         <Key word = "rm_fixed_timer_event" />
         <Key word = "create_object" />
@@ -912,9 +912,8 @@
         <Key word = "sfall_func4" />
         <Key word = "sfall_func5" />
         <Key word = "sfall_func6" />
-        
       </KeyWords>
-      
+
       <KeyWords name = "SfallMacros" bold="true" italic="true" color="DarkMagenta">
         <Key word = "create_array_list" />
         <Key word = "temp_array_list" />
@@ -938,7 +937,7 @@
         <Key word = "set_attack_is_explosion" />
         <Key word = "set_attack_is_explosion_fire" />
         <Key word = "key_pressed_vk" />
-        
+
         <Key word = "mstr_combat" />
         <Key word = "mstr_ai" />
         <Key word = "mstr_scrname" />
@@ -959,10 +958,10 @@
         <Key word = "mstr_stat" />
         <Key word = "mstr_trait" />
         <Key word = "mstr_worldmap" />
-        
+
         <Key word = "party_member_list_critters" />
         <Key word = "party_member_list_all" />
-        
+
         <Key word = "spatial_radius" />
         <Key word = "critter_inven_obj2" />
         <Key word = "intface_redraw" />
@@ -970,7 +969,7 @@
         <Key word = "intface_show" />
         <Key word = "intface_is_hidden" />
         <Key word = "exec_map_update_scripts" />
-        
+
         <Key word = "car_gas_amount" />
         <Key word = "get_flags" />
         <Key word = "get_ini_section" />
@@ -997,7 +996,7 @@
         <Key word = "false" />
         <Key word = "floor" />
       </KeyWords>
-      
+
       <KeyWords name = "Constants" bold="false" italic="false" color="DarkBlue">
         <Key word = "textshadow" />
         <Key word = "textunderline" />
@@ -1075,8 +1074,150 @@
         <Key word = "ONE_GAME_DAY" />
         <Key word = "ONE_GAME_WEEK" />
         <Key word = "ONE_GAME_MONTH" />
+
+        <Key word = "ROLL_CRITICAL_FAILURE" />
+        <Key word = "ROLL_FAILURE" />
+        <Key word = "ROLL_SUCCESS" />
+        <Key word = "ROLL_CRITICAL_SUCCESS" />
+        <Key word = "GOOD_REACTION" />
+        <Key word = "NEUTRAL_REACTION" />
+        <Key word = "BAD_REACTION" />
+        <Key word = "TRAIT_PERK" />
+        <Key word = "TRAIT_OBJECT" />
+        <Key word = "TRAIT_TRAIT" />
+        <Key word = "OBJECT_AI_PACKET" />
+        <Key word = "OBJECT_TEAM_NUM" />
+        <Key word = "OBJECT_CUR_ROT" />
+        <Key word = "OBJECT_VISIBILITY" />
+        <Key word = "OBJECT_CUR_WEIGHT" />
+        <Key word = "INVEN_TYPE_WORN" />
+        <Key word = "INVEN_TYPE_RIGHT_HAND" />
+        <Key word = "INVEN_TYPE_LEFT_HAND" />
+        <Key word = "INVEN_TYPE_INV_COUNT" />
+        <Key word = "GENDER_MALE" />
+        <Key word = "GENDER_FEMALE" />
+        <Key word = "CRITTER_IS_NORMAL" />
+        <Key word = "CRITTER_IS_DEAD" />
+        <Key word = "CRITTER_IS_PRONE" />
+        <Key word = "MARK_TYPE_TOWN" />
+        <Key word = "MARK_TYPE_MAP" />
+        <Key word = "MARK_STATE_UNKNOWN" />
+        <Key word = "MARK_STATE_KNOWN" />
+        <Key word = "MARK_STATE_VISITED" />
+        <Key word = "MARK_STATE_INVISIBLE" />
+
+        <Key word = "STAT_st" />
+        <Key word = "STAT_pe" />
+        <Key word = "STAT_en" />
+        <Key word = "STAT_ch" />
+        <Key word = "STAT_iq" />
+        <Key word = "STAT_ag" />
+        <Key word = "STAT_lu" />
+        <Key word = "STAT_max_hp" />
+        <Key word = "STAT_max_hit_points" />
+        <Key word = "STAT_max_move_points" />
+        <Key word = "STAT_ac" />
+        <Key word = "STAT_unarmed_dmg" />
+        <Key word = "STAT_unused" />
+        <Key word = "STAT_melee_dmg" />
+        <Key word = "STAT_carry_amt" />
+        <Key word = "STAT_sequence" />
+        <Key word = "STAT_heal_rate" />
+        <Key word = "STAT_crit_chance" />
+        <Key word = "STAT_better_crit" />
+        <Key word = "STAT_dmg_thresh" />
+        <Key word = "STAT_dmg_thresh_laser" />
+        <Key word = "STAT_dmg_thresh_fire" />
+        <Key word = "STAT_dmg_thresh_plasma" />
+        <Key word = "STAT_dmg_thresh_electrical" />
+        <Key word = "STAT_dmg_thresh_emp" />
+        <Key word = "STAT_dmg_thresh_explosion" />
+        <Key word = "STAT_dmg_resist" />
+        <Key word = "STAT_dmg_resist_laser" />
+        <Key word = "STAT_dmg_resist_fire" />
+        <Key word = "STAT_dmg_resist_plasma" />
+        <Key word = "STAT_dmg_resist_electrical" />
+        <Key word = "STAT_dmg_resist_emp" />
+        <Key word = "STAT_dmg_resist_explosion" />
+        <Key word = "STAT_rad_resist" />
+        <Key word = "STAT_poison_resist" />
+        <Key word = "STAT_age" />
+        <Key word = "STAT_gender" />
+        <Key word = "STAT_current_hp" />
+        <Key word = "STAT_current_poison" />
+        <Key word = "STAT_current_rad" />
+        <Key word = "STAT_real_max_stat" />
+
+        <Key word = "item_type_armor" />
+        <Key word = "item_type_container" />
+        <Key word = "item_type_drug" />
+        <Key word = "item_type_weapon" />
+        <Key word = "item_type_ammo" />
+        <Key word = "item_type_misc_item" />
+        <Key word = "item_type_key_item" />
+
+        <Key word = "DMG_normal_dam" />
+        <Key word = "DMG_laser" />
+        <Key word = "DMG_fire" />
+        <Key word = "DMG_plasma" />
+        <Key word = "DMG_electrical" />
+        <Key word = "DMG_emp" />
+        <Key word = "DMG_explosion" />
+        <Key word = "DMG_BYPASS_ARMOR" />
+        <Key word = "DMG_NOANIMATE" />
+
         <Key word = "RELEASE" />
         <Key word = "DEBUG" />
+
+        <Key word = "WORLDMAP" />
+        <Key word = "LOCALMAP" />
+        <Key word = "DIALOG" />
+        <Key word = "ESCMENU" />
+        <Key word = "SAVEGAME" />
+        <Key word = "LOADGAME" />
+        <Key word = "COMBAT" />
+        <Key word = "OPTIONS" />
+        <Key word = "HELP" />
+        <Key word = "CHARSCREEN" />
+        <Key word = "PIPBOY" />
+        <Key word = "PCOMBAT" />
+        <Key word = "INVENTORY" />
+        <Key word = "AUTOMAP" />
+        <Key word = "SKILLDEX" />
+        <Key word = "INTFACEUSE" />
+        <Key word = "INTFACELOOT" />
+        <Key word = "BARTER" />
+        <Key word = "HEROWIN" />
+
+        <Key word = "HOOK_TOHIT" />
+        <Key word = "HOOK_AFTERHITROLL" />
+        <Key word = "HOOK_CALCAPCOST" />
+        <Key word = "HOOK_DEATHANIM1" />
+        <Key word = "HOOK_DEATHANIM2" />
+        <Key word = "HOOK_COMBATDAMAGE" />
+        <Key word = "HOOK_ONDEATH" />
+        <Key word = "HOOK_FINDTARGET" />
+        <Key word = "HOOK_USEOBJON" />
+        <Key word = "HOOK_REMOVEINVENOBJ" />
+        <Key word = "HOOK_BARTERPRICE" />
+        <Key word = "HOOK_MOVECOST" />
+        <Key word = "HOOK_HEXMOVEBLOCKING" />
+        <Key word = "HOOK_HEXAIBLOCKING" />
+        <Key word = "HOOK_HEXSHOOTBLOCKING" />
+        <Key word = "HOOK_HEXSIGHTBLOCKING" />
+        <Key word = "HOOK_ITEMDAMAGE" />
+        <Key word = "HOOK_AMMOCOST" />
+        <Key word = "HOOK_USEOBJ" />
+        <Key word = "HOOK_KEYPRESS" />
+        <Key word = "HOOK_MOUSECLICK" />
+        <Key word = "HOOK_USESKILL" />
+        <Key word = "HOOK_STEAL" />
+        <Key word = "HOOK_WITHINPERCEPTION" />
+        <Key word = "HOOK_INVENTORYMOVE" />
+        <Key word = "HOOK_INVENWIELD" />
+        <Key word = "HOOK_ADJUSTFID" />
+        <Key word = "HOOK_COMBATTURN" />
+        <Key word = "HOOK_CARTRAVEL" />
       </KeyWords> 
     </RuleSet>
 
