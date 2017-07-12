@@ -1199,7 +1199,7 @@ namespace ScriptEditor
                     t.treeExpand.ProcTree.local = false;
                 }
                 if (currentTab != null ) {
-                    ProcTree.Nodes[0].Expand();
+                    if (ProcTree.Nodes.Count > 0) ProcTree.Nodes[0].Expand();
                     if (tabControl3.TabPages.Count > 2) {
                         tabControl3.TabPages.RemoveAt(1);
                     }
@@ -1213,10 +1213,14 @@ namespace ScriptEditor
                     t.treeExpand.VarTree.local = false;
                 }
                 if (currentTab != null) {
-                    ProcTree.Nodes[0].Expand();
-                    ProcTree.Nodes[1].Expand();
-                    VarTree.Nodes[0].Expand();
-                    VarTree.Nodes[1].Expand();
+                    if (ProcTree.Nodes.Count > 0) {
+                        ProcTree.Nodes[0].Expand();
+                        ProcTree.Nodes[1].Expand();
+                    }
+                    if (VarTree.Nodes.Count > 0) {
+                        VarTree.Nodes[0].Expand();
+                        VarTree.Nodes[1].Expand();
+                    }
                     if (tabControl3.TabPages.Count < 3) {
                         CreateTabVarTree();
                     }
@@ -1746,7 +1750,7 @@ namespace ScriptEditor
 
         private void EncodingMenuItem_Click(object sender, EventArgs e)
         {
-            if (((ToolStripMenuItem)sender).Tag.ToString() == "dos") {
+            if (((ToolStripMenuItem)sender).Tag != null /*&& ((ToolStripMenuItem)sender).Tag.ToString() == "dos"*/) {
                 EncodingDOSmenuItem.Checked = true;
                 windowsDefaultMenuItem.Checked = false;
                 Settings.encoding = (byte)EncodingType.OEM866;
