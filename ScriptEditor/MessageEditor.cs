@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
-using Path = System.IO.Path;
-using File = System.IO.File;
 using ScriptEditor.TextEditorUI;
 
 namespace ScriptEditor
@@ -13,7 +13,10 @@ namespace ScriptEditor
         private List<string> linesMsg;
         private string msgPath;
         private bool returnLine;
-        
+
+        private const char pcMarker = (char)0x25CF;
+        private Color pcColor = Color.FromArgb(0, 0, 220);
+
         private Encoding enc = (Settings.encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
         private TabInfo associateTab;
@@ -32,6 +35,13 @@ namespace ScriptEditor
             public string msgLine = string.Empty;
             public string msglip = string.Empty;
             public string desc = string.Empty;
+            public string debris = string.Empty;
+
+            public bool pcMark = false;
+            
+            public Entry() 
+            {
+            }
 
             public Entry(string line)
             {
@@ -39,15 +49,22 @@ namespace ScriptEditor
                     msgLine = "-";
                     desc = line;
                 } else {
-                    string[] splitLine = line.Split('}');
+                    string[] splitLine = line.Split(new char[] {'}'}, StringSplitOptions.RemoveEmptyEntries);
                     if (splitLine.Length < 3) {
                         if (line.Length == 0) return;
                         msgLine = "^";
                         desc = line.TrimEnd('}');
                     } else {
-                        msgLine = splitLine[0].TrimStart(' ', '{'); //номер строки
+                        string mark = String.Empty;
+                        if (splitLine[0].StartsWith("\t")) {
+                            mark = pcMarker + " ";
+                            pcMark = true;
+                        }
+                        msgLine = splitLine[0].TrimStart(' ', '\t', '{'); //номер строки
                         msglip = splitLine[1].TrimStart(' ', '{');
-                        desc = splitLine[2].TrimStart('{');
+                        desc = mark + splitLine[2].TrimStart('{');
+                        if (splitLine.Length > 3)
+                            debris = splitLine[3];
                     }
                 }
             }
@@ -57,19 +74,26 @@ namespace ScriptEditor
                 prev = false;
                 int result;
                 if (int.TryParse(msgLine, out result)) {
-                    return ("{" + (msgLine) + "}{" + msglip + "}{" + desc + "}");
+                    string tab = String.Empty;
+                    if (pcMark || desc.StartsWith(Convert.ToString(pcMarker))) {
+                        desc = desc.TrimStart(pcMarker, ' ');
+                        tab = "\t";
+                    };
+                    return (tab + "{" + (msgLine) + "}{" + msglip + "}{" + desc + "}" + debris);
                 }
                 else if (msgLine == "^") {
                     prev = true;
-                    return (desc + "}");
+                    return (desc + "}" + debris);
                 }
-                else return (desc);  
+                else return (desc + debris);  
             }
         }
      
         private void AddRow(Entry e)
         {
             dgvMessage.Rows.Add(e, e.msgLine, e.desc, e.msglip);
+            if (e.pcMark) 
+                dgvMessage.Rows[dgvMessage.Rows.Count - 1].Cells[2].Style.ForeColor = pcColor;
         }
 
         private void InsertRow(int i, Entry e)
@@ -113,7 +137,7 @@ namespace ScriptEditor
         private MessageEditor(string msg, TabInfo ti)
         {
             InitializeComponent();
-            if (Settings.encoding == (byte)EncodingType.OEM866 ) encodingTextDOSToolStripMenuItem.Checked = true;
+            if (Settings.encoding == (byte)EncodingType.OEM866) encodingTextDOSToolStripMenuItem.Checked = true;
             StripComboBox.SelectedIndex = 2;
             if (!Settings.msgLipColumn) {
                 dgvMessage.Columns[3].Visible = false;
@@ -125,7 +149,7 @@ namespace ScriptEditor
                 readMsgFile();
             } else {
                 this.Text = "Empty" + this.Tag;
-                AddRow(new Entry("{}{}{}"));
+                AddRow(new Entry());
                 linesMsg = new List<string>();
             }
             associateTab = ti;
@@ -159,13 +183,16 @@ namespace ScriptEditor
                 {
                     switch (cells.ColumnIndex) {
                         case 1:
-                            cells.Style.ForeColor = System.Drawing.SystemColors.HotTrack;
+                            cells.Style.ForeColor = SystemColors.HotTrack;
                             break;
                         case 3:
-                            cells.Style.ForeColor = System.Drawing.Color.Gray;
+                            cells.Style.ForeColor = Color.Gray;
                             break;
                         default:
-                            cells.Style.ForeColor = System.Drawing.Color.Black;
+                            if (entries.pcMark)
+                                cells.Style.ForeColor = pcColor;
+                            else
+                                cells.Style.ForeColor = Color.Black;
                             break;
                     }
                 }
@@ -204,7 +231,7 @@ namespace ScriptEditor
                     break;
             }
             if (!returnLine) {
-                dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = System.Drawing.Color.Red; 
+                dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Red; 
                 msgSaveButton.Enabled = true;
             }
             returnLine = false;
