@@ -11,7 +11,7 @@ namespace ScriptEditor
     {
         private const int HWND_BROADCAST = 0xffff;
 
-        private static readonly string CommandLineFile = Path.Combine(Settings.SettingsFolder, "commandline.txt");
+        private static readonly string CommandLineFile = Path.Combine(Path.GetTempPath(), "commandline.txt");
 
         [DllImport("user32")]
         private static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam);
@@ -56,5 +56,11 @@ namespace ScriptEditor
             }
             return new string[0];
         }
+
+        public static void DeleteCommandLine() 
+        {
+            File.Delete(CommandLineFile);
+        }
+
     }
 }

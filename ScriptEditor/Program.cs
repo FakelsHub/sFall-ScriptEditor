@@ -26,13 +26,16 @@ namespace ScriptEditor
                 // reset working folder to EXE directory (to resolve possible issues in parse_main)
                 Directory.SetCurrentDirectory(Settings.ProgramFolder);
                 Application.Run(te);
+                SingleInstanceManager.DeleteCommandLine();
                 mutex.ReleaseMutex();
             } else {
                 // only show message if opened normally without command line arguments
-                if (args.Length == 0)
+                if (args.Length == 0) 
                     MessageBox.Show("Another instance is already running!", "Sfall Script Editor");
-                // pass command line arguments via file
-                SingleInstanceManager.SaveCommandLine(args);
+                else {
+                    // pass command line arguments via file
+                    SingleInstanceManager.SaveCommandLine(args);
+                }
                 // send message to other instance
                 SingleInstanceManager.SendEditorOpenMessage();
             }
