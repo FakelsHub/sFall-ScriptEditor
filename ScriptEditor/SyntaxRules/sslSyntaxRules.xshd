@@ -1168,6 +1168,7 @@
 
         <Key word = "RELEASE" />
         <Key word = "DEBUG" />
+        <Key word = "SFALL_SC_EVALUATION" />
 
         <Key word = "WORLDMAP" />
         <Key word = "LOCALMAP" />
