@@ -19,7 +19,7 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public static class Parser
     {
-        private static List<string> ProcNameList = new List<string>();
+        private static List<string> procNameList = new List<string>();
         private static TextEditor scrptEditor;
 
         const int PROC_LEN = 10; 
@@ -30,12 +30,20 @@ namespace ScriptEditor.CodeTranslation
         public const string DEFINE = "#define ";
         public const string COMMENT = "//";
 
+        public static List<string> ProceduresListName
+        {
+            get { 
+                GetNamesProcedures();
+                return procNameList; 
+            }
+        }
+
         public static void InternalParser(TabInfo _ti, Form frm)
         {
             scrptEditor = frm as TextEditor;
             TextEditor.parserRunning = true; // internal parse work
             File.WriteAllText(Compiler.parserPath, _ti.textEditor.Text);
-            ProgramInfo _pi = new ProgramInfo(countProcs(), 0);
+            ProgramInfo _pi = new ProgramInfo(CountProcedures, 0);
             _ti.parseInfo = InternalProcParse(_pi, _ti.textEditor.Text, _ti.filepath);
             TextEditor.parserRunning = false;
         }
@@ -43,7 +51,7 @@ namespace ScriptEditor.CodeTranslation
         // Update to data location of procedures
         public static ProgramInfo UpdateProcsPI(ProgramInfo _pi, string file, string filepath)
         {
-            ProgramInfo update_pi = InternalProcParse(new ProgramInfo(countProcs(), 0), file, filepath);
+            ProgramInfo update_pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), file, filepath);
             for (int i = 0; i < _pi.procs.Length; i++)
             {
                 foreach (Procedure p in update_pi.procs)
@@ -59,10 +67,12 @@ namespace ScriptEditor.CodeTranslation
             return _pi;
         }
 
-        private static int countProcs()
+        private static int CountProcedures
         {
-            GetNamesProcedures();
-            return ProcNameList.Count;
+            get {
+                GetNamesProcedures();
+                return procNameList.Count;
+            }
         }
 
         // Get procedure data
@@ -82,7 +92,7 @@ namespace ScriptEditor.CodeTranslation
             for (int i = 0; i < _pi.procs.Length; i++)
             {
                 _pi.procs[i] = new Procedure();
-                _pi.procs[i].name = ProcNameList[i];
+                _pi.procs[i].name = procNameList[i];
                 _pi.procs[i].d.declared = GetDeclarationProcedureLine(_pi.procs[i].name) + 1;
                 be_block = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
                 _pi.procs[i].d.start = be_block.begin + 1;
@@ -142,18 +152,18 @@ namespace ScriptEditor.CodeTranslation
                 }            
             }
             // Delеte duplicates
-            ProcNameList.Clear();
+            procNameList.Clear();
             for (int i = 0; i < NameProcedures.Length; i++)
             {
                 bool _add = true;
-                foreach (string name in ProcNameList)
+                foreach (string name in procNameList)
                 {
                     if (String.Equals(NameProcedures[i], name, StringComparison.OrdinalIgnoreCase)) {
                         _add = false;
                         break;
                     }
                 }
-                if (_add) ProcNameList.Add(NameProcedures[i]);
+                if (_add) procNameList.Add(NameProcedures[i]);
             }
         }
 
@@ -346,10 +356,10 @@ namespace ScriptEditor.CodeTranslation
             return false;
         }
 
-        public static void UpdateParseSSL(string sText, bool check = true)
+        public static void UpdateParseSSL(string sText, bool check = true, bool lower = true)
         {
             while (check && TextEditor.parserRunning) System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
-            File.WriteAllText(Compiler.parserPath, sText.ToLowerInvariant());
+            File.WriteAllText(Compiler.parserPath, (lower) ? sText.ToLowerInvariant(): sText);
         }
 
         public static bool CheckExistsProcedureName(string pName)
@@ -366,6 +376,17 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
             return false; // not found
+        }
+
+        public static Procedure GetProcedurePosition(Procedure[] procScript, int linePosition)
+        {
+            linePosition++;
+            foreach (Procedure proc in procScript)
+            {
+                if (linePosition >= proc.d.start & linePosition <= proc.d.end)
+                    return proc;
+            }
+            return null;
         }
 
         public static List<string> GetAllIncludes(TabInfo tab)

@@ -255,5 +255,16 @@ namespace ScriptEditor.CodeTranslation
             }
             return matches;
         }
+
+        public bool ShortCircuitEvaluation
+        {
+            get {
+                string token = "sfall_sc_evaluation";
+                if (macros.ContainsKey(token))
+                    return Convert.ToBoolean(macros[token].def.Trim('(', ')'));
+
+                return false;
+            }
+        }
     }
 }

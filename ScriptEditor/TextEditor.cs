@@ -461,8 +461,8 @@ namespace ScriptEditor
             if (tab.changed) Save(tab);
             if (tab.changed || tab.filepath == null) return false;
             List<Error> errors = new List<Error>();
-            var compiler = new Compiler();
-            bool success = compiler.Compile(tab.filepath, out msg, errors, preprocess);
+            Compiler compiler = new Compiler();
+            bool success = compiler.Compile(tab.filepath, out msg, errors, preprocess, tab.parseInfo.ShortCircuitEvaluation);
             foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
                 foreach (Error e in errors) {
                     if (e.type == et) {
@@ -478,14 +478,14 @@ namespace ScriptEditor
                 if (showMessages && Settings.warnOnFailedCompile) {
                     MessageBox.Show("Script " + tab.filename + " failed to compile.\nSee the output build and errors window log for details.", "Compile Script Error");
                 } else {
-                    parserLabel.Text = "Failed to compiled: " + currentTab.filename;
+                    parserLabel.Text = "Failed to compiled: " + tab.filename;
                     parserLabel.ForeColor = Color.Firebrick;
                     msg += "\r\n Compilation Failed!";
                     CompileFail.Play();
                     maximize_log();
                 }
             } else {
-                parserLabel.Text = "Successfully compiled: " + currentTab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
+                parserLabel.Text = "Successfully compiled: " + tab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
                 parserLabel.ForeColor = Color.DarkGreen;
                 msg += "\r\n Compilation Successfully!";
             }
@@ -664,7 +664,7 @@ namespace ScriptEditor
 #endregion
 
         // Goto script text of selected Variable or Procedure in treeview
-        private void SelectLine(string file, int line, bool pselect = false, int column = -1, int sLen = -1)
+        public void SelectLine(string file, int line, bool pselect = false, int column = -1, int sLen = -1)
         {
             if (line <= 0) return;
             bool not_this = false;
@@ -927,7 +927,7 @@ namespace ScriptEditor
             splitDocumentToolStripMenuItem.Enabled = true;
             openAllIncludesScriptToolStripMenuItem.Enabled = true;
             GotoProc_StripButton.Enabled = true;
-            Search_toolStripButton.Enabled = true;
+            //Search_toolStripButton.Enabled = true;
             if (Settings.showLog) splitContainer1.Panel2Collapsed = false;
         }
 
@@ -967,7 +967,7 @@ namespace ScriptEditor
             Back_toolStripButton.Enabled = false;
             Forward_toolStripButton.Enabled = false;
             GotoProc_StripButton.Enabled = false;
-            Search_toolStripButton.Enabled = false;
+            //Search_toolStripButton.Enabled = false;
             if (SearchToolStrip.Visible) Search_Panel(null, null);
             DecIndentStripButton.Enabled = false;
             CommentStripButton.Enabled = false;
@@ -1708,9 +1708,28 @@ namespace ScriptEditor
 
         private void dialogNodesDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
+#if DEBUG
             if (currentTab == null) return; 
             NodeDiagram NodesView = new NodeDiagram(currentTab.textEditor.Document);
             NodesView.Show();
+#endif
+        }
+
+        private void previewDialogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null) return;
+            string msgPath;
+            if (!MessageFile.Assossciate(currentTab, false, out msgPath)) {
+                MessageBox.Show("The associated message file this script could not be found.", "Dialog preview");
+                return;
+            }
+            DialogPreview DialogView = new DialogPreview(currentTab, msgPath);
+            if (!DialogView.InitReady) {
+                DialogView.Dispose();
+                MessageBox.Show("This script does not contain dialog procedures.", "Dialog preview");
+            }
+            else
+                DialogView.Show(this);
         }
     }
 }

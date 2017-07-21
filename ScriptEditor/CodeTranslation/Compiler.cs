@@ -361,7 +361,7 @@ namespace ScriptEditor.CodeTranslation
                 null
             };
 #else
-        private static string GetSslcCommandLine(string infile, bool preprocess, string sourceDir)
+        private static string GetSslcCommandLine(string infile, bool preprocess, string sourceDir, bool shortCircuit)
         {
             string usePreprocess = string.Empty;
             if (!Settings.useWatcom) usePreprocess = preprocess ? "-P " : "-p ";
@@ -370,7 +370,7 @@ namespace ScriptEditor.CodeTranslation
                 + (Settings.showWarnings ? "" : "-n ")
                 + (Settings.showDebug ? "-d " : "")
                 + ("-l ") /* always no logo */
-                + (Settings.shortCircuit ? "-s " : "")
+                + ((Settings.shortCircuit || shortCircuit) ? "-s " : "")
                 + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile, sourceDir)) + "\"";
         }
 
@@ -388,7 +388,7 @@ namespace ScriptEditor.CodeTranslation
         private static extern IntPtr FetchBuffer();
 #endif
 
-        public bool Compile(string infile, out string output, List<Error> errors, bool preprocessOnly)
+        public bool Compile(string infile, out string output, List<Error> errors, bool preprocessOnly, bool shortCircuit = false)
         {
             if (errors != null)
                 errors.Clear();
@@ -446,7 +446,7 @@ namespace ScriptEditor.CodeTranslation
 #else
 
                 var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
-                ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir));
+                ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir, shortCircuit));
                 psi.RedirectStandardOutput = true;
                 psi.RedirectStandardInput = true;
                 psi.UseShellExecute = false;

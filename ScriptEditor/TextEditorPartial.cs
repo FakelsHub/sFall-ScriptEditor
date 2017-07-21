@@ -225,7 +225,6 @@ namespace ScriptEditor
         #region Search&Replace function
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null) return;
             if (sf == null) {
                 sf = new SearchForm();
                 sf.Owner = this;
@@ -365,6 +364,10 @@ namespace ScriptEditor
 
         private void Search_Panel(object sender, EventArgs e)
         {
+            if (currentTab == null) {
+                findToolStripMenuItem_Click(null, null);
+                return;
+            }
             SearchToolStrip.Visible = !SearchToolStrip.Visible;
             TabClose_button.Top += (SearchToolStrip.Visible) ? 25 : -25;
         }

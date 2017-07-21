@@ -40,6 +40,7 @@ namespace ScriptEditor.TextEditorUI
                     } else return false;
                 }       
             }
+            path = Path.GetFullPath(path);
             return true;
         }
         
@@ -55,20 +56,42 @@ namespace ScriptEditor.TextEditorUI
             for (int i = 0; i < linesMsg.Length; i++)
             {
                 string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
-                if (line.Length != 3)
-                    continue;
-                for (int j = 0; j < 3; j += 2)
-                {
-                    line[j] = line[j].Trim();
-                    if (line[j].Length == 0 || line[j][0] != '{')
-                        continue;
-                    line[j] = line[j].Substring(1);
-                }
+                subParse(line);
                 int index;
                 if (!int.TryParse(line[0], out index))
                     continue;
                 ti.messages[index] = line[2];
             }
         }
+
+        private static void subParse(string[] line)
+        {
+            if (line.Length != 3)
+                return;
+            for (int j = 0; j < 3; j += 2)
+            {
+                line[j] = line[j].Trim();
+                if (line[j].Length == 0 || line[j][0] != '{')
+                    continue;
+                line[j] = line[j].Substring(1);
+            }
+        }
+
+        public static string GetMessages(string[] linesMsg, int messageNum)
+        {
+            char[] split = new char[] { '}' };
+            for (int i = 0; i < linesMsg.Length; i++)
+            {
+                string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
+                subParse(line);
+                int index;
+                if (int.TryParse(line[0], out index)) {
+                    if (index == messageNum)
+                        return line[2];
+                }
+            }
+            return null;
+        }
+
     }
 }
