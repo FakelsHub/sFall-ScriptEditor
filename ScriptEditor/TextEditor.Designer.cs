@@ -1442,7 +1442,6 @@ namespace ScriptEditor {
             this.previewDialogToolStripMenuItem.Name = "previewDialogToolStripMenuItem";
             this.previewDialogToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.previewDialogToolStripMenuItem.Text = "Preview && Test Dialog";
-            this.previewDialogToolStripMenuItem.ToolTipText = "Will be implemented in next versions.";
             this.previewDialogToolStripMenuItem.Click += new System.EventHandler(this.previewDialogToolStripMenuItem_Click);
             // 
             // dialogNodesDiagramToolStripMenuItem
@@ -1451,6 +1450,7 @@ namespace ScriptEditor {
             this.dialogNodesDiagramToolStripMenuItem.Name = "dialogNodesDiagramToolStripMenuItem";
             this.dialogNodesDiagramToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.dialogNodesDiagramToolStripMenuItem.Text = "View Dialog Diagram";
+            this.dialogNodesDiagramToolStripMenuItem.ToolTipText = "Will be implemented in next versions.";
             this.dialogNodesDiagramToolStripMenuItem.Click += new System.EventHandler(this.dialogNodesDiagramToolStripMenuItem_Click);
             // 
             // toolStripSeparator24
