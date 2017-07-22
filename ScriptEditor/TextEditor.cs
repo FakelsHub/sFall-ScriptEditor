@@ -1458,6 +1458,10 @@ namespace ScriptEditor
 
         private void maximize_log()
         {
+            if (currentTab == null && splitContainer1.Panel2Collapsed) {
+                showLogWindowToolStripMenuItem.Checked = true;
+                splitContainer1.Panel2Collapsed = false;
+            }
             if (minimizelogsize == 0) return;
             if (Settings.editorSplitterPosition == -1)
                 Settings.editorSplitterPosition = Size.Height - (Size.Height / 4);
@@ -1467,13 +1471,7 @@ namespace ScriptEditor
 
         private void showLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Settings.showLog) {
-                splitContainer1.Panel2Collapsed = true;
-                Settings.showLog = false;
-            } else {
-                splitContainer1.Panel2Collapsed = false;
-                Settings.showLog = true;
-            }
+            splitContainer1.Panel2Collapsed = !(Settings.showLog = showLogWindowToolStripMenuItem.Checked);
         }
 
         private void Headers_toolStripSplitButton_ButtonClick(object sender, EventArgs e)

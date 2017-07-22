@@ -4,9 +4,11 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+
+using ScriptEditor.CodeTranslation;
+
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using ScriptEditor.CodeTranslation;
 
 namespace ScriptEditor.TextEditorUI
 {    
@@ -237,7 +239,7 @@ namespace ScriptEditor.TextEditorUI
     #endregion
 
     # region Search Function
-        public static bool Search(string text, string str, Regex regex, int start, bool restart, out int mstart, out int mlen)
+        public static bool Search(string text, string str, Regex regex, int start, bool restart, bool mcase, out int mstart, out int mlen)
         {
             if (start >= text.Length) start = 0;
             mstart = 0;
@@ -257,13 +259,13 @@ namespace ScriptEditor.TextEditorUI
                     return true;
                 }
             } else {
-                int i = text.IndexOf(str, start, StringComparison.OrdinalIgnoreCase);
+                int i = text.IndexOf(str, start, (mcase) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
                 if (i != -1) {
                     mstart = i;
                     return true;
                 }
                 if (!restart) return false;
-                i = text.IndexOf(str, StringComparison.OrdinalIgnoreCase);
+                i = text.IndexOf(str, (mcase) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
                 if (i != -1) {
                     mstart = i;
                     return true;
@@ -272,22 +274,22 @@ namespace ScriptEditor.TextEditorUI
             return false;
         }
 
-        public static bool Search(string text, string str, Regex regex)
+        public static bool Search(string text, string str, Regex regex, bool mcase)
         {
             if (regex != null) {
                 if (regex.IsMatch(text))
                     return true;
             } else {
-                if (text.IndexOf(str, StringComparison.OrdinalIgnoreCase) != -1)
+                if (text.IndexOf(str, (mcase) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) != -1)
                     return true;
             }
             return false;
         }
 
-        public static bool SearchAndScroll(TabInfo tab, Regex regex, string searchText, ref ScriptEditor.TextEditor.PositionType type)
+        public static bool SearchAndScroll(TabInfo tab, Regex regex, string searchText, bool mcase, ref ScriptEditor.TextEditor.PositionType type)
         {
             int start, len;
-            if (Search(tab.textEditor.Text, searchText, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, out start, out len)) {
+            if (Search(tab.textEditor.Text, searchText, regex, tab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, true, mcase, out start, out len)) {
                 FindSelected(tab, start, len, ref type);
                 return true;
             }
@@ -309,11 +311,11 @@ namespace ScriptEditor.TextEditorUI
             tab.textEditor.ActiveTextAreaControl.CenterViewOn(locstart.Line, 0);
         }
 
-        public static void SearchForAll(TabInfo tab, string searchText, Regex regex, DataGridView dgv, List<int> offsets, List<int> lengths)
+        public static void SearchForAll(TabInfo tab, string searchText, Regex regex, bool mcase, DataGridView dgv, List<int> offsets, List<int> lengths)
         {
             int start, len, line, lastline = -1;
             int offset = 0;
-            while (Search(tab.textEditor.Text, searchText, regex, offset, false, out start, out len))
+            while (Search(tab.textEditor.Text, searchText, regex, offset, false, mcase, out start, out len))
             {
                 offset = start + 1;
                 line = tab.textEditor.Document.OffsetToPosition(start).Line;
@@ -330,7 +332,7 @@ namespace ScriptEditor.TextEditorUI
             }
         }
 
-        public static void SearchForAll(string[] text, string file, string searchText, Regex regex, DataGridView dgv)
+        public static void SearchForAll(string[] text, string file, string searchText, Regex regex, bool mcase, DataGridView dgv)
         {
             bool matched;
             for (int i = 0; i < text.Length; i++)
@@ -338,7 +340,7 @@ namespace ScriptEditor.TextEditorUI
                 if (regex != null)
                     matched = regex.IsMatch(text[i]);
                 else
-                    matched = text[i].IndexOf(searchText, StringComparison.OrdinalIgnoreCase) != -1;
+                    matched = text[i].IndexOf(searchText, (mcase) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) != -1;
                 if (matched) {
                     Error error = new Error(text[i].Trim(), file, i + 1);
                     dgv.Rows.Add(Path.GetFileName(file), (i + 1).ToString(), error);
@@ -371,7 +373,7 @@ namespace ScriptEditor.TextEditorUI
             int z, x;
             string search = @"\b" + find + @"\b";
             Regex s_regex = new Regex(search, option);
-            if (!Search(text, find, s_regex, start, false, out z, out x)) return -1;
+            if (!Search(text, find, s_regex, start, false, false, out z, out x)) return -1;
             return z;
         }
     #endregion

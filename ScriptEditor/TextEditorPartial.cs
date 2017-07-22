@@ -4,10 +4,12 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+
 using ScriptEditor.CodeTranslation;
 using ScriptEditor.TextEditorUI;
+
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ScriptEditor
 {
@@ -140,12 +142,20 @@ namespace ScriptEditor
         }
         #endregion
 
-        #region SearchFunction
+        #region Search Function
         private bool SubSearchInternal(List<int> offsets, List<int> lengths)
         {
+            RegexOptions option = RegexOptions.None;
             Regex regex = null;
+
+            if (!sf.cbCase.Checked)
+                option = RegexOptions.IgnoreCase;
+
             if (sf.cbRegular.Checked)
-                regex = new Regex(sf.tbSearch.Text);
+                regex = new Regex(sf.tbSearch.Text, option);
+            else if (sf.cbWord.Checked)
+                regex = new Regex(@"\b" + sf.tbSearch.Text + @"\b", option);
+
             if (sf.rbFolder.Checked && Settings.lastSearchPath == null) {
                 MessageBox.Show("No search path set.", "Error");
                 return false;
@@ -154,7 +164,7 @@ namespace ScriptEditor
                 if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
                     if (currentTab == null)
                         return false;
-                    if (Utilities.SearchAndScroll(currentTab, regex, sf.tbSearch.Text, ref PosChangeType))
+                    if (Utilities.SearchAndScroll(currentTab, regex, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType))
                         return true;
                 } else if (sf.rbAll.Checked) {
                     int starttab = currentTab == null ? 0 : currentTab.index;
@@ -165,7 +175,7 @@ namespace ScriptEditor
                         if (++tab == tabs.Count)
                             tab = 0; //restart tab
                         int start, len;
-                        if (Utilities.Search(tabs[tab].textEditor.Text, sf.tbSearch.Text, regex, caretOffset + 1, false, out start, out len)) {
+                        if (Utilities.Search(tabs[tab].textEditor.Text, sf.tbSearch.Text, regex, caretOffset + 1, false, sf.cbCase.Checked, out start, out len)) {
                             Utilities.FindSelected(tabs[tab], start, len, ref PosChangeType);
                             if (currentTab == null || currentTab.index != tab)
                                 tabControl1.SelectTab(tab);
@@ -174,17 +184,18 @@ namespace ScriptEditor
                         caretOffset = 0; // search from begin 
                     } while (tab != endtab);
                 } else {
-                    SearchOption so = sf.cbSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                    List<string> files = new List<string>(Directory.GetFiles(Settings.lastSearchPath, "*.ssl", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.h", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.msg", so));
+                    sf.lbFindFiles.Items.Clear();
+                    sf.lbFindFiles.Tag = regex;
+                    List<string> files = sf.GetFolderFiles();
                     for (int i = 0; i < files.Count; i++)
                     {
-                        string text = File.ReadAllText(files[i]);
-                        if (Utilities.Search(text, sf.tbSearch.Text, regex)) {
-                            Utilities.SearchAndScroll(Open(files[i], OpenType.File), regex, sf.tbSearch.Text, ref PosChangeType);
-                            return true;
-                        }
+                        if (Utilities.Search(File.ReadAllText(files[i]), sf.tbSearch.Text, regex, sf.cbCase.Checked))
+                            sf.lbFindFiles.Items.Add(files[i]);
+                    }
+                    sf.labelCount.Text = sf.lbFindFiles.Items.Count.ToString();
+                    if (sf.lbFindFiles.Items.Count > 0) {
+                        sf.Height = 468;
+                        return true;
                     }
                 }
             } else {
@@ -194,17 +205,14 @@ namespace ScriptEditor
                 if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
                     if (currentTab == null)
                         return false;
-                    Utilities.SearchForAll(currentTab, sf.tbSearch.Text, regex, dgv, offsets, lengths);
+                    Utilities.SearchForAll(currentTab, sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
                 } else if (sf.rbAll.Checked) {
                     for (int i = 0; i < tabs.Count; i++)
-                        Utilities.SearchForAll(tabs[i], sf.tbSearch.Text, regex, dgv, offsets, lengths);
+                        Utilities.SearchForAll(tabs[i], sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
                 } else {
-                    SearchOption so = sf.cbSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                    List<string> files = new List<string>(Directory.GetFiles(Settings.lastSearchPath, "*.ssl", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.h", so));
-                    files.AddRange(Directory.GetFiles(Settings.lastSearchPath, "*.msg", so));
+                    List<string> files = sf.GetFolderFiles();
                     for (int i = 0; i < files.Count; i++)
-                        Utilities.SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), sf.tbSearch.Text, regex, dgv);
+                        Utilities.SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv);
                 }
                 if (dgv.RowCount > 0) {
                     TabPage tp = new TabPage("Search results");
@@ -222,7 +230,7 @@ namespace ScriptEditor
         }
         #endregion
 
-        #region Search&Replace function
+        #region Search&Replace function form
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (sf == null) {
@@ -244,6 +252,10 @@ namespace ScriptEditor
                         return;
                     Settings.lastSearchPath = sf.fbdSearchFolder.SelectedPath;
                     sf.textBox1.Text = Settings.lastSearchPath;
+                };
+                sf.lbFindFiles.MouseDoubleClick += delegate (object a1, MouseEventArgs a2) {
+                    string file = sf.lbFindFiles.SelectedItem.ToString();
+                    Utilities.SearchAndScroll(Open(file, OpenType.File), (Regex)sf.lbFindFiles.Tag, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType);
                 };
                 sf.bSearch.Click += new EventHandler(bSearch_Click);
                 sf.bReplace.Click += new EventHandler(bReplace_Click);

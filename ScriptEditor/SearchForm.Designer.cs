@@ -40,14 +40,21 @@
             this.bReplace = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.lbFindFiles = new System.Windows.Forms.ListBox();
+            this.cbCase = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cbWord = new System.Windows.Forms.CheckBox();
+            this.cbFileMask = new System.Windows.Forms.ComboBox();
+            this.labelCount = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(13, 141);
+            label1.Location = new System.Drawing.Point(13, 167);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(86, 13);
             label1.TabIndex = 5;
@@ -59,55 +66,57 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbSearch.Location = new System.Drawing.Point(13, 23);
             this.tbSearch.Name = "tbSearch";
-            this.tbSearch.Size = new System.Drawing.Size(379, 20);
+            this.tbSearch.Size = new System.Drawing.Size(402, 20);
             this.tbSearch.TabIndex = 0;
             // 
             // cbRegular
             // 
             this.cbRegular.AutoSize = true;
-            this.cbRegular.Location = new System.Drawing.Point(13, 49);
+            this.cbRegular.Location = new System.Drawing.Point(13, 91);
             this.cbRegular.Name = "cbRegular";
             this.cbRegular.Size = new System.Drawing.Size(116, 17);
             this.cbRegular.TabIndex = 1;
             this.cbRegular.Text = "Regular expression";
             this.cbRegular.UseVisualStyleBackColor = true;
+            this.cbRegular.CheckedChanged += new System.EventHandler(this.cbRegular_CheckedChanged);
             // 
             // rbCurrent
             // 
             this.rbCurrent.AutoSize = true;
             this.rbCurrent.Checked = true;
-            this.rbCurrent.Location = new System.Drawing.Point(149, 49);
+            this.rbCurrent.Location = new System.Drawing.Point(153, 91);
             this.rbCurrent.Name = "rbCurrent";
-            this.rbCurrent.Size = new System.Drawing.Size(112, 17);
+            this.rbCurrent.Size = new System.Drawing.Size(125, 17);
             this.rbCurrent.TabIndex = 2;
             this.rbCurrent.TabStop = true;
-            this.rbCurrent.Text = "Current  document";
+            this.rbCurrent.Text = "Find in current scripts";
             this.rbCurrent.UseVisualStyleBackColor = true;
             // 
             // rbAll
             // 
             this.rbAll.AutoSize = true;
-            this.rbAll.Location = new System.Drawing.Point(149, 72);
+            this.rbAll.Location = new System.Drawing.Point(153, 120);
             this.rbAll.Name = "rbAll";
-            this.rbAll.Size = new System.Drawing.Size(113, 17);
+            this.rbAll.Size = new System.Drawing.Size(129, 17);
             this.rbAll.TabIndex = 3;
-            this.rbAll.Text = "All open document";
+            this.rbAll.Text = "Find in all open scripts";
             this.rbAll.UseVisualStyleBackColor = true;
             // 
             // rbFolder
             // 
             this.rbFolder.AutoSize = true;
-            this.rbFolder.Location = new System.Drawing.Point(149, 134);
+            this.rbFolder.Location = new System.Drawing.Point(153, 149);
             this.rbFolder.Name = "rbFolder";
-            this.rbFolder.Size = new System.Drawing.Size(86, 17);
+            this.rbFolder.Size = new System.Drawing.Size(106, 17);
             this.rbFolder.TabIndex = 4;
-            this.rbFolder.Text = "Files in folder";
+            this.rbFolder.Text = "Find in files folder";
             this.rbFolder.UseVisualStyleBackColor = true;
+            this.rbFolder.CheckedChanged += new System.EventHandler(this.rbFolder_CheckedChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 92);
+            this.label2.Location = new System.Drawing.Point(13, 46);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 6;
@@ -117,11 +126,12 @@
             // 
             this.bChange.Enabled = false;
             this.bChange.Image = ((System.Drawing.Image)(resources.GetObject("bChange.Image")));
-            this.bChange.Location = new System.Drawing.Point(13, 183);
+            this.bChange.Location = new System.Drawing.Point(310, 209);
             this.bChange.Name = "bChange";
             this.bChange.Size = new System.Drawing.Size(104, 23);
             this.bChange.TabIndex = 7;
             this.bChange.Text = "Change";
+            this.bChange.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.bChange.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bChange.UseVisualStyleBackColor = true;
             // 
@@ -129,21 +139,22 @@
             // 
             this.cbSearchSubfolders.AutoSize = true;
             this.cbSearchSubfolders.Enabled = false;
-            this.cbSearchSubfolders.Location = new System.Drawing.Point(149, 187);
+            this.cbSearchSubfolders.Location = new System.Drawing.Point(13, 213);
             this.cbSearchSubfolders.Name = "cbSearchSubfolders";
-            this.cbSearchSubfolders.Size = new System.Drawing.Size(111, 17);
+            this.cbSearchSubfolders.Size = new System.Drawing.Size(122, 17);
             this.cbSearchSubfolders.TabIndex = 8;
-            this.cbSearchSubfolders.Text = "Search subfolders";
+            this.cbSearchSubfolders.Text = "Search in subfolders";
             this.cbSearchSubfolders.UseVisualStyleBackColor = true;
             // 
             // bSearch
             // 
             this.bSearch.Image = ((System.Drawing.Image)(resources.GetObject("bSearch.Image")));
-            this.bSearch.Location = new System.Drawing.Point(288, 49);
+            this.bSearch.Location = new System.Drawing.Point(311, 88);
             this.bSearch.Name = "bSearch";
-            this.bSearch.Size = new System.Drawing.Size(104, 23);
+            this.bSearch.Size = new System.Drawing.Size(103, 23);
             this.bSearch.TabIndex = 10;
             this.bSearch.Text = "Search";
+            this.bSearch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.bSearch.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bSearch.UseVisualStyleBackColor = true;
             // 
@@ -155,7 +166,7 @@
             // cbFindAll
             // 
             this.cbFindAll.AutoSize = true;
-            this.cbFindAll.Location = new System.Drawing.Point(13, 72);
+            this.cbFindAll.Location = new System.Drawing.Point(13, 120);
             this.cbFindAll.Name = "cbFindAll";
             this.cbFindAll.Size = new System.Drawing.Size(102, 17);
             this.cbFindAll.TabIndex = 11;
@@ -166,14 +177,14 @@
             // 
             this.tbReplace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbReplace.Location = new System.Drawing.Point(13, 108);
+            this.tbReplace.Location = new System.Drawing.Point(13, 62);
             this.tbReplace.Name = "tbReplace";
-            this.tbReplace.Size = new System.Drawing.Size(379, 20);
+            this.tbReplace.Size = new System.Drawing.Size(402, 20);
             this.tbReplace.TabIndex = 12;
             // 
             // bReplace
             // 
-            this.bReplace.Location = new System.Drawing.Point(288, 79);
+            this.bReplace.Location = new System.Drawing.Point(310, 117);
             this.bReplace.Name = "bReplace";
             this.bReplace.Size = new System.Drawing.Size(104, 23);
             this.bReplace.TabIndex = 13;
@@ -186,11 +197,11 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.textBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBox1.Location = new System.Drawing.Point(13, 157);
+            this.textBox1.Location = new System.Drawing.Point(13, 183);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.ShortcutsEnabled = false;
-            this.textBox1.Size = new System.Drawing.Size(379, 20);
+            this.textBox1.Size = new System.Drawing.Size(402, 20);
             this.textBox1.TabIndex = 20;
             // 
             // label3
@@ -202,9 +213,73 @@
             this.label3.TabIndex = 14;
             this.label3.Text = "Find Text:";
             // 
+            // lbFindFiles
+            // 
+            this.lbFindFiles.FormattingEnabled = true;
+            this.lbFindFiles.Location = new System.Drawing.Point(13, 254);
+            this.lbFindFiles.Name = "lbFindFiles";
+            this.lbFindFiles.ScrollAlwaysVisible = true;
+            this.lbFindFiles.Size = new System.Drawing.Size(402, 173);
+            this.lbFindFiles.TabIndex = 21;
+            // 
+            // cbCase
+            // 
+            this.cbCase.AutoSize = true;
+            this.cbCase.Checked = true;
+            this.cbCase.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbCase.Location = new System.Drawing.Point(222, 3);
+            this.cbCase.Name = "cbCase";
+            this.cbCase.Size = new System.Drawing.Size(82, 17);
+            this.cbCase.TabIndex = 22;
+            this.cbCase.Text = "Match case";
+            this.cbCase.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(13, 238);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.TabIndex = 23;
+            this.label4.Text = "Found in files: ";
+            // 
+            // cbWord
+            // 
+            this.cbWord.AutoSize = true;
+            this.cbWord.Location = new System.Drawing.Point(310, 3);
+            this.cbWord.Name = "cbWord";
+            this.cbWord.Size = new System.Drawing.Size(105, 17);
+            this.cbWord.TabIndex = 24;
+            this.cbWord.Text = "Whole word only";
+            this.cbWord.UseVisualStyleBackColor = true;
+            // 
+            // cbFileMask
+            // 
+            this.cbFileMask.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbFileMask.Enabled = false;
+            this.cbFileMask.FormattingEnabled = true;
+            this.cbFileMask.Items.AddRange(new object[] {
+            "All",
+            "*.h",
+            "*.ssl",
+            "*.msg"});
+            this.cbFileMask.Location = new System.Drawing.Point(205, 211);
+            this.cbFileMask.Name = "cbFileMask";
+            this.cbFileMask.Size = new System.Drawing.Size(53, 21);
+            this.cbFileMask.TabIndex = 25;
+            // 
+            // labelCount
+            // 
+            this.labelCount.AutoSize = true;
+            this.labelCount.Location = new System.Drawing.Point(86, 238);
+            this.labelCount.Name = "labelCount";
+            this.labelCount.Size = new System.Drawing.Size(13, 13);
+            this.labelCount.TabIndex = 26;
+            this.labelCount.Text = "0";
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(288, 183);
+            this.button1.Location = new System.Drawing.Point(310, 146);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(104, 23);
             this.button1.TabIndex = 7;
@@ -212,11 +287,27 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(150, 214);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(49, 13);
+            this.label6.TabIndex = 27;
+            this.label6.Text = "File type:";
+            // 
             // SearchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(404, 215);
+            this.ClientSize = new System.Drawing.Size(427, 239);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.labelCount);
+            this.Controls.Add(this.cbFileMask);
+            this.Controls.Add(this.cbWord);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.cbCase);
+            this.Controls.Add(this.lbFindFiles);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.bReplace);
             this.Controls.Add(this.tbReplace);
@@ -256,7 +347,6 @@
         internal System.Windows.Forms.RadioButton rbAll;
         internal System.Windows.Forms.RadioButton rbFolder;
         internal System.Windows.Forms.Button bChange;
-        internal System.Windows.Forms.CheckBox cbSearchSubfolders;
         internal System.Windows.Forms.Button bSearch;
         internal System.Windows.Forms.FolderBrowserDialog fbdSearchFolder;
         internal System.Windows.Forms.CheckBox cbFindAll;
@@ -264,8 +354,16 @@
         internal System.Windows.Forms.Button bReplace;
         internal System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label6;
+        internal System.Windows.Forms.ListBox lbFindFiles;
+        internal System.Windows.Forms.Label labelCount;
+        internal System.Windows.Forms.CheckBox cbCase;
+        internal System.Windows.Forms.CheckBox cbWord;
+        private System.Windows.Forms.ComboBox cbFileMask;
+        internal System.Windows.Forms.CheckBox cbSearchSubfolders;
 
     }
 }
