@@ -14,6 +14,7 @@ namespace ScriptEditor
         private string msgPath;
         private bool returnLine;
         private bool allow;
+        private bool editMode;
 
         private const char pcMarker = (char)0x25CF;
         private Color pcColor = Color.FromArgb(0, 0, 220);
@@ -481,7 +482,8 @@ namespace ScriptEditor
             if (e.KeyCode == Keys.Escape) {
                 e.Handled = true;
                 Close();
-            }
+            } else if (e.KeyCode == Keys.Delete && !editMode)
+                DeleteLineStripButton_Click(null, null);
         }
 
         private void MessageEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -583,6 +585,16 @@ namespace ScriptEditor
                 dgvMessage.Rows.RemoveAt(SelectLine.row);
                 dgvMessage.Rows.Insert(SelectLine.row - 1, row);
             }
+        }
+
+        private void dgvMessage_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            editMode = true;
+        }
+
+        private void dgvMessage_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            editMode = false;
         }
     }
 }
