@@ -27,7 +27,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// returns the whitespaces which are before a non white space character in the line line
 		/// as a string.
 		/// </summary>
-		protected string GetIndentation(TextArea textArea, int lineNumber)
+		protected string GetIndentation(TextArea textArea, int lineNumber, bool smart)
 		{
 			if (lineNumber < 0 || lineNumber > textArea.Document.TotalNumberOfLines) {
 				throw new ArgumentOutOfRangeException("lineNumber");
@@ -35,7 +35,7 @@ namespace ICSharpCode.TextEditor.Document
 			
 			string lineText = TextUtilities.GetLineAsString(textArea.Document, lineNumber);
 			StringBuilder whitespaces = new StringBuilder();
-			
+
 			foreach (char ch in lineText) {
 				if (Char.IsWhiteSpace(ch)) {
 					whitespaces.Append(ch);
@@ -43,15 +43,26 @@ namespace ICSharpCode.TextEditor.Document
 					break;
 				}
 			}
+
+            if (smart) {
+                if (lineText.TrimEnd(whitespaceChars).EndsWith("begin", StringComparison.OrdinalIgnoreCase)) {
+                    LineSegment line = textArea.Document.GetLineSegment(lineNumber + 2);
+                    if (textArea.Document.GetText(line).TrimStart(' ', '\t').Length == 0)
+                        textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\n");
+
+                    whitespaces.Append(new string(whitespaceChars[0], textArea.Document.TextEditorProperties.IndentationSize));
+                }
+            }
+
 			return whitespaces.ToString();
 		}
 		
 		/// <summary>
 		/// Could be overwritten to define more complex indenting.
 		/// </summary>
-		protected virtual int AutoIndentLine(TextArea textArea, int lineNumber)
+		protected virtual int AutoIndentLine(TextArea textArea, int lineNumber, bool smart)
 		{
-			string indentation = lineNumber != 0 ? GetIndentation(textArea, lineNumber - 1) : "";
+			string indentation = lineNumber != 0 ? GetIndentation(textArea, lineNumber - 1, smart) : "";
 			if(indentation.Length > 0) {
 				string newLineText = indentation + TextUtilities.GetLineAsString(textArea.Document, lineNumber).Trim();
 				LineSegment oldLine  = textArea.Document.GetLineSegment(lineNumber);
@@ -111,7 +122,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </summary>
 		protected virtual int SmartIndentLine(TextArea textArea, int line)
 		{
-			return AutoIndentLine(textArea, line); // smart = autoindent in normal texts
+			return AutoIndentLine(textArea, line, true); // smart = autoindent in normal texts
 		}
 		
 		/// <summary>
@@ -144,7 +155,7 @@ namespace ICSharpCode.TextEditor.Document
 					result = 0;
 					break;
 				case IndentStyle.Auto:
-					result = AutoIndentLine(textArea, line);
+					result = AutoIndentLine(textArea, line, false);
 					break;
 				case IndentStyle.Smart:
 					result = SmartIndentLine(textArea, line);
