@@ -181,7 +181,14 @@ namespace ScriptEditor.CodeTranslation
         {
             // Parse disabled, get only macros
             ParseOverrideIncludes(text);
-            if (Settings.enableParser && filepath != null) lastStatus = parse_main(parserPath, filepath, Path.GetDirectoryName(filepath));
+            if (Settings.enableParser && filepath != null) {
+                try {
+                    lastStatus = parse_main(parserPath, filepath, Path.GetDirectoryName(filepath));
+                } catch {
+                    MessageBox.Show("An unexpected error occurred while parsing text of the script.\nIt is recommended that you save all unsaved documents and restart application,\nin order to avoid further incorrect operation of the application.", "Error: Parser.dll");
+                    lastStatus = 2;
+                };
+            }
             ProgramInfo pi = (lastStatus >= 1)
                             ? new ProgramInfo(0, 0)
                             : new ProgramInfo(numProcs(), numVars());
@@ -360,6 +367,7 @@ namespace ScriptEditor.CodeTranslation
                 preprocess?preprocessPath:GetOutputPath(infile),
                 null
             };
+        }
 #else
         private static string GetSslcCommandLine(string infile, bool preprocess, string sourceDir, bool shortCircuit)
         {
@@ -374,11 +382,17 @@ namespace ScriptEditor.CodeTranslation
                 + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile, sourceDir)) + "\"";
         }
 
-        private static string GetWccCommandLine(string infile, string outfile) {
-            string def = (Settings.preprocDef != "---" ? "/d" + Settings.preprocDef : string.Empty);
-            return ("\"" + infile + "\" ..\\scrTemp\\" + outfile + " " + def);
-#endif
+        private static string GetCommandLine(string infile, string outfile) {
+            return ("\"" + infile + "\" ..\\scrTemp\\" + outfile 
+                 + ((Settings.preprocDef != "---") ? " /d" + Settings.preprocDef : string.Empty));
         }
+
+        private static string GetCommandLine(string infile, bool shortCircuit) { 
+            return ("\"" + infile + "\" /d"
+                 + ((Settings.preprocDef != "---") ? Settings.preprocDef : string.Empty) 
+                 + ((Settings.shortCircuit || shortCircuit) ? " -s" : string.Empty));
+        }
+#endif
 
 #if DLL_COMPILER
         [System.Runtime.InteropServices.DllImport("resources\\sslc.dll")]
@@ -404,7 +418,7 @@ namespace ScriptEditor.CodeTranslation
             output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n";
             if (Settings.userCmdCompile) {
                 string userbat = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
-                ProcessStartInfo upsi = new ProcessStartInfo(userbat, "\""+ infile + "\"");
+                ProcessStartInfo upsi = new ProcessStartInfo(userbat, GetCommandLine(infile, shortCircuit));
                 upsi.RedirectStandardOutput = true;
                 upsi.RedirectStandardError = true;
                 upsi.UseShellExecute = false;
@@ -419,7 +433,7 @@ namespace ScriptEditor.CodeTranslation
                 if (Settings.useWatcom) {
                     string wccPath = Path.Combine(Settings.ResourcesFolder, "wcc.bat");
                     string outfile = "preprocess.ssl";
-                    ProcessStartInfo wpsi = new ProcessStartInfo(wccPath, GetWccCommandLine(infile, outfile));
+                    ProcessStartInfo wpsi = new ProcessStartInfo(wccPath, GetCommandLine(infile, outfile));
                     wpsi.RedirectStandardOutput = true;
                     wpsi.UseShellExecute = false;
                     wpsi.CreateNoWindow = true;
