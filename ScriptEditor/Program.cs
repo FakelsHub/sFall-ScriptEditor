@@ -16,28 +16,39 @@ namespace ScriptEditor
         [STAThread]
         static void Main(string[] args)
         {
-            // check if another instance is already running
-            if (mutex.WaitOne(TimeSpan.Zero, true)) {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Settings.Load();
-                // pass arguments of command line to opening
-                TextEditor te = new TextEditor(args);
-                // reset working folder to EXE directory (to resolve possible issues in parse_main)
-                Directory.SetCurrentDirectory(Settings.ProgramFolder);
-                Application.Run(te);
-                SingleInstanceManager.DeleteCommandLine();
-                mutex.ReleaseMutex();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            Settings.Load();
+            // reset working folder to EXE directory (to resolve possible issues in parse_main)
+            Directory.SetCurrentDirectory(Settings.ProgramFolder);
+
+            if (args.Length > 0 && mutex.WaitOne(TimeSpan.Zero, true) 
+                && Path.GetExtension(args[0]).ToLower() == ".msg") {
+                
+                mutex.Close();
+                // run only Messages editor
+                MessageEditor me = new MessageEditor(args[0].ToString());
+                Application.Run(me);
             } else {
-                // only show message if opened normally without command line arguments
-                if (args.Length == 0) 
-                    MessageBox.Show("Another instance is already running!", "Sfall Script Editor");
-                else {
-                    // pass command line arguments via file
-                    SingleInstanceManager.SaveCommandLine(args);
+                // check if another instance is already running
+                if (mutex.WaitOne(TimeSpan.Zero, true)) {
+                    // pass arguments of command line to opening
+                    TextEditor te = new TextEditor(args);
+                    Application.Run(te);
+                    mutex.ReleaseMutex();
+                } else {
+                    // only show message if opened normally without command line arguments
+                    if (args.Length == 0) 
+                        MessageBox.Show("Another instance is already running!", "Sfall Script Editor");
+                    else {
+                        // pass command line arguments via file
+                        SingleInstanceManager.SaveCommandLine(args);
+                    }
+                    // send message to other instance
+                    SingleInstanceManager.SendEditorOpenMessage();
                 }
-                // send message to other instance
-                SingleInstanceManager.SendEditorOpenMessage();
+                SingleInstanceManager.DeleteCommandLine();
             }
         }
 

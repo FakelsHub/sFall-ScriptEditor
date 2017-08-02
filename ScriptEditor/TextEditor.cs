@@ -437,7 +437,7 @@ namespace ScriptEditor
 
         private void AssossciateMsg(TabInfo tab, bool create)
         {
-            if (Settings.outputDir == null || tab.filepath == null || tab.msgFileTab != null)
+            if (tab.filepath == null || tab.msgFileTab != null)
                 return;
             string path;
             if (MessageFile.Assossciate(tab, create, out path)) {

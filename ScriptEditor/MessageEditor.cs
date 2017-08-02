@@ -129,9 +129,7 @@ namespace ScriptEditor
         {
             string msgPath = null;
             if (ti != null) {
-                if (Settings.outputDir == null) {
-                    MessageBox.Show("No output path selected.", "Error");
-                } else if (!MessageFile.Assossciate(ti, true, out msgPath)) msgPath = null;
+                if (!MessageFile.Assossciate(ti, true, out msgPath)) return;
             }
             // Show form
             MessageEditor msgEdit = new MessageEditor(msgPath, ti);
@@ -153,7 +151,12 @@ namespace ScriptEditor
             frm.TopMost = false;
             msgEdit.Show();
         }
-        
+
+        public MessageEditor(string msgfile) : this (msgfile, null)
+        {
+            SendStripButton.Enabled = false;
+        }
+
         private MessageEditor(string msg, TabInfo ti)
         {
             InitializeComponent();
@@ -188,6 +191,7 @@ namespace ScriptEditor
 
             this.Text = Path.GetFileName(msgPath) + this.Tag;
             groupBox.Text = msgPath;
+            msgSaveButton.Enabled = false;
         }
 
         private void saveFileMsg()
@@ -284,6 +288,7 @@ namespace ScriptEditor
             this.groupBox.Text = "Messages";
             linesMsg = new List<string>();
             msgPath = null;
+            msgSaveButton.Enabled = true;
         }
 
         private void msgOpenButton_ButtonClick(object sender, EventArgs e)
@@ -560,10 +565,14 @@ namespace ScriptEditor
                 dgvMessage.Rows.RemoveAt(index_min);
                 dgvMessage.Rows.Insert(index_max, row);
 
+                msgSaveButton.Enabled = true;
+
             } else if (SelectLine.row > 0) {
                 DataGridViewRow row = dgvMessage.Rows[--SelectLine.row];
                 dgvMessage.Rows.RemoveAt(SelectLine.row);
                 dgvMessage.Rows.Insert(SelectLine.row + 1, row);
+
+                msgSaveButton.Enabled = true;
             }
         }
 
@@ -580,10 +589,14 @@ namespace ScriptEditor
                 dgvMessage.Rows.RemoveAt(index_max);
                 dgvMessage.Rows.Insert(index_min, row);
 
+                msgSaveButton.Enabled = true;
+
             } else if (SelectLine.row < dgvMessage.Rows.Count - 1) {
                 DataGridViewRow row = dgvMessage.Rows[++SelectLine.row];
                 dgvMessage.Rows.RemoveAt(SelectLine.row);
                 dgvMessage.Rows.Insert(SelectLine.row - 1, row);
+
+                msgSaveButton.Enabled = true;
             }
         }
 

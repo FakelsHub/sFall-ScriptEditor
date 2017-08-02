@@ -13,7 +13,11 @@ namespace ScriptEditor.TextEditorUI
         public static bool Assossciate(TabInfo tab, bool create, out string path)
         {
             bool found = true;
-            string defaultDir = Path.Combine(Settings.outputDir, MessageTextSubPath);
+            string defaultDir;
+            if (Settings.outputDir == null)
+                defaultDir = Path.GetDirectoryName(tab.filepath);
+            else
+                defaultDir = Path.Combine(Settings.outputDir, MessageTextSubPath);
             // primary check in output dir
             path = Path.Combine(defaultDir, Path.ChangeExtension(tab.filename, ".msg"));
             if (!File.Exists(path)) {
