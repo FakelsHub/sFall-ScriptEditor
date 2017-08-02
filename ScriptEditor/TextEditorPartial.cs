@@ -378,7 +378,7 @@ namespace ScriptEditor
 
         private void Search_Panel(object sender, EventArgs e)
         {
-            if (currentTab == null) {
+            if (currentTab == null && !SearchToolStrip.Visible) {
                 findToolStripMenuItem_Click(null, null);
                 return;
             }
