@@ -95,7 +95,7 @@ namespace ScriptEditor.CodeTranslation
         private void AddMacro(string line, SortedDictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
-            line = line.TrimStart();
+            line = line.Trim();
             int firstspace = line.IndexOf(' ');
             if (firstspace == -1)
                 return;
@@ -123,7 +123,7 @@ namespace ScriptEditor.CodeTranslation
             if (dir == null)
                 dir = Path.GetDirectoryName(file);
             for (int i = 0; i < lines.Length; i++) {
-                lines[i] = lines[i].Trim();
+                lines[i] = lines[i].Replace('\t', ' ').TrimStart();
                 if (lines[i].StartsWith(Parser.INCLUDE)) {
                     string[] text = lines[i].Split('"');
                     if (text.Length < 2)
@@ -155,7 +155,7 @@ namespace ScriptEditor.CodeTranslation
             int strlen = (namelist[name - 5] << 8) + namelist[name - 6];
             return Encoding.ASCII.GetString(namelist, name - 4, strlen).TrimEnd('\0');
         }
-        
+
         public void ParseOverrideIncludes(string text)
         {
             if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
@@ -176,7 +176,7 @@ namespace ScriptEditor.CodeTranslation
             }
             File.WriteAllText(parserPath, text, Encoding.Default);
         }
-        
+
         public ProgramInfo Parse(string text, string filepath, ProgramInfo prev_pi)
         {
             // Parse disabled, get only macros
