@@ -72,16 +72,21 @@ namespace ScriptEditor.Properties {
             }
         }
         
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на procedure start;
-        ///
-        ///procedure start begin
-        ///
-        ///end.
-        /// </summary>
         internal static string newScript {
             get {
                 return ResourceManager.GetString("newScript", resourceCulture);
+            }
+        }
+        
+        internal static string User_SyntaxRules {
+            get {
+                return ResourceManager.GetString("User_SyntaxRules", resourceCulture);
+            }
+        }
+        
+        internal static string UserFunctions {
+            get {
+                return ResourceManager.GetString("UserFunctions", resourceCulture);
             }
         }
     }

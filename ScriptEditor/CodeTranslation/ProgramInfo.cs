@@ -180,7 +180,7 @@ namespace ScriptEditor.CodeTranslation
             opcodes = new Dictionary<string, string>();
             opcodes_list = new SortedList<string, string>();
             try {
-                lines = File.ReadAllLines(Path.Combine(Settings.ResourcesFolder, (Settings.hintsLang == 0) ? "opcodes.txt" : "opcodes_rus.txt"));
+                lines = File.ReadAllLines(Path.Combine(Settings.DescriptionsFolder, (Settings.hintsLang == 0) ? "opcodes.txt" : "opcodes_rus.txt"));
             } catch (FileNotFoundException) {
                 return;
             }

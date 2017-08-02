@@ -16,6 +16,7 @@ namespace ScriptEditor
         public static readonly string ProgramFolder = Path.GetDirectoryName(Application.ExecutablePath);
         public static readonly string SettingsFolder = Path.Combine(ProgramFolder, "settings");
         public static readonly string ResourcesFolder = Path.Combine(ProgramFolder, "resources");
+        public static readonly string DescriptionsFolder = Path.Combine(ProgramFolder, "descriptions");
         public static readonly string scriptTempPath = Path.Combine(ProgramFolder, "scrTemp");
 
         private static readonly string RecentPath = Path.Combine(SettingsFolder, "recent.dat");

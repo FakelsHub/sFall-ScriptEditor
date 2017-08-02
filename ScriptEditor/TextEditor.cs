@@ -66,7 +66,7 @@ namespace ScriptEditor
                 windowsDefaultMenuItem.Checked = false;
             }
             // highlighting
-            FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(Settings.ResourcesFolder); // Create new provider with the highlighting directory.
+            FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(SyntaxFile.SyntaxFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
             // folding timer
             timer = new Timer();
@@ -213,6 +213,7 @@ namespace ScriptEditor
             splitContainer3.Panel1Collapsed = true;
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
             Settings.SaveSettingData(this);
+            SyntaxFile.DeleteSyntaxFile();
         }
 #endregion
 
@@ -286,9 +287,9 @@ namespace ScriptEditor
             te.Document.TextEditorProperties.IndentationSize = Settings.tabSize;
             if (type == OpenType.File && string.Compare(Path.GetExtension(file), ".msg", true) == 0) {
                 if (Settings.encoding == (byte)EncodingType.OEM866) te.Document.TextEditorProperties.Encoding = Encoding.GetEncoding("cp866");
-                te.SetHighlighting("msg");
+                te.SetHighlighting("Message");
             } else
-                te.SetHighlighting((Settings.highlight == 0) ? "ssl" : "ssl_v2"); // Activate the highlighting, use the name from the SyntaxDefinition node.
+                te.SetHighlighting((Settings.highlight == 0) ? "Original" : "F-Geck"); // Activate the highlighting, use the name from the SyntaxDefinition node.
             if (type == OpenType.File)
                 te.LoadFile(file, false, true);
             else if (type == OpenType.Text)

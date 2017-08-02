@@ -165,6 +165,7 @@
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
     <Compile Include="TextEditorUI\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
+    <Compile Include="SyntaxRules\SyntaxFile.cs" />
     <Compile Include="TextEditorUI\MessageFile.cs" />
     <Compile Include="TextEditorUI\TabInfo.cs" />
     <Compile Include="MessageEditor.cs">
@@ -217,30 +218,37 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Resources\Functions.ini">
+    <None Include="Descriptions\Functions.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Functions_rus.ini">
+    <None Include="Descriptions\Functions_rus.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\ProcHandlers.ini">
+    <None Include="Descriptions\ProcHandlers.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\ProcHandlers_rus.ini">
+    <None Include="Descriptions\ProcHandlers_rus.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="Descriptions\UserFunctions.ini" />
     <None Include="Resources\usercomp.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\wcc.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SyntaxRules\msgSyntaxRules.xshd" />
-    <None Include="packages.config" />
-    <None Include="SyntaxRules\sslSyntaxRules.xshd">
-      <SubType>Designer</SubType>
+    <None Include="SyntaxRules\msg_SyntaxRules.xshd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SyntaxRules\sslSyntaxRules_v2.xshd" />
+    <None Include="packages.config" />
+    <None Include="SyntaxRules\ssl_SyntaxRules.xshd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SyntaxRules\ssl+_SyntaxRules.xshd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="SyntaxRules\User_SyntaxRules.xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -264,16 +272,19 @@
     <None Include="Resources\icon_ssl.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Resources\icon_int.ico">
+    <None Include="Descriptions\opcodes_rus.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon_msg.ico">
+    </None>
+    <None Include="Resources\icon_int.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <None Include="Resources\icon_msg.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\newScript.txt" />
-    <Content Include="Resources\opcodes.txt">
+    <None Include="Descriptions\opcodes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.DiagramCanvas\ICSharpCode.DiagramCanvas.csproj">
@@ -287,8 +298,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)\SyntaxRules\*SyntaxRules.xshd" "$(TargetDir)\resources\"
-copy "$(ProjectDir)\SyntaxRules\*SyntaxRules_v2.xshd" "$(TargetDir)\resources\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <BaseAddress>4194304</BaseAddress>

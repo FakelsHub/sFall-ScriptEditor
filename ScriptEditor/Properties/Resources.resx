@@ -1336,8 +1336,15 @@
         /+7/7v/q/+X/3v/T/8z/xf/C/7v/u/+4/7n/uv+7/77/vf8L
 </value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="newScript" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\newScript.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+    <value>..\Resources\newScript.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="User_SyntaxRules" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\SyntaxRules\User_SyntaxRules.xml;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="UserFunctions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Descriptions\UserFunctions.ini;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

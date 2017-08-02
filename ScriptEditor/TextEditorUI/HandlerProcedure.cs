@@ -20,7 +20,7 @@ namespace ScriptEditor.TextEditorUI
             bool sub = false;
             string parentName = "";
             string file = phFile + ((Settings.hintsLang == English) ? def : lng);
-            string[] lines = File.ReadAllLines(Settings.ResourcesFolder + file, Encoding.Default);
+            string[] lines = File.ReadAllLines(Settings.DescriptionsFolder + file, Encoding.Default);
             ToolStripMenuItem SubMenuItem = new ToolStripMenuItem();
             Menu.Items.Add(new ToolStripSeparator());
             for (int i = 0; i < lines.Length; i++) {

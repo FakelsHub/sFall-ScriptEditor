@@ -8,15 +8,26 @@ namespace ScriptEditor.TextEditorUI
 {
     public static class Functions
     {
-        const string fnFile = "\\Functions";
+        const string fnFile = "Functions";
+        const string fnUserFile = "UserFunctions.ini";
 
         public static void CreateTree(TreeView Tree)
         {
+            int Node = -1, mNode = -1, sNode = -1, ssNode = -1, aNode = 0;
+
+            if (!File.Exists(fnUserFile))
+                File.WriteAllText(fnUserFile, Properties.Resources.UserFunctions);
+
+            string file = Path.Combine(Settings.DescriptionsFolder, fnFile) + ((Settings.hintsLang == HandlerProcedure.English) ? HandlerProcedure.def : HandlerProcedure.lng);
+            BuildFunctionTree(Tree, ref Node, ref mNode, ref sNode, ref ssNode, ref aNode, file);
+            BuildFunctionTree(Tree, ref Node, ref mNode, ref sNode, ref ssNode, ref aNode, fnUserFile);
+        }
+
+        private static void BuildFunctionTree(TreeView Tree, ref int Node, ref int mNode, ref int sNode, ref int ssNode, ref int aNode, string file)
+        {
             TreeNode ND;
             string codeName;
-            int Node = -1, mNode = -1, sNode = -1, ssNode = -1, aNode = 0;
-            string file = fnFile + ((Settings.hintsLang == HandlerProcedure.English) ? HandlerProcedure.def : HandlerProcedure.lng);
-            string[] lines = File.ReadAllLines(Settings.ResourcesFolder + file, Encoding.Default);
+            string[] lines = File.ReadAllLines(file, Encoding.Default);
             for (int i = 0; i < lines.Length; i++) 
             {
                 lines[i] = lines[i].Trim();
@@ -30,8 +41,7 @@ namespace ScriptEditor.TextEditorUI
                     mNode = -1;
                     aNode = 0;
                     continue;
-                }
-                else if (lines[i].StartsWith("<m+>")) {
+                } else if (lines[i].StartsWith("<m+>")) {
                     codeName = lines[i].Substring(4, lines[i].Length - 4);
                     ND = new TreeNode(codeName);
                     mNode++;
@@ -44,8 +54,7 @@ namespace ScriptEditor.TextEditorUI
                         }
                     } else Tree.Nodes[Node].Nodes[sNode].Nodes.Add(ND);
                     continue;
-                }
-                else if (lines[i].StartsWith("<m->")) {
+                } else if (lines[i].StartsWith("<m->")) {
                     mNode--;
                     ssNode = 0;
                     continue;
@@ -53,7 +62,7 @@ namespace ScriptEditor.TextEditorUI
                     int n = lines[i].IndexOf("<d>");
                     if (n > 0) {
                         ND = new TreeNode(lines[i].Substring(0, n));
-                        int m =  lines[i].IndexOf("<s>");
+                        int m = lines[i].IndexOf("<s>");
                         ND.ToolTipText = lines[i].Substring(n + 3, m - (n + 3));
                         ND.Tag = lines[i].Substring(m + 3, lines[i].Length - (m + 3));
                         ND.NodeFont = new Font("Arial", 8, FontStyle.Bold);
@@ -72,13 +81,13 @@ namespace ScriptEditor.TextEditorUI
                                 break;
                             default:
                                 break;
-                        } 
+                        }
                     }
                 }
                 if (lines[i] == "<->") {
                     Tree.Nodes.Add(new String('-', 50));
                     Node++;
-                }   
+                }
             }
         }
     }
