@@ -37,6 +37,7 @@ namespace ScriptEditor
                     TextEditor te = new TextEditor(args);
                     Application.Run(te);
                     mutex.ReleaseMutex();
+                    SingleInstanceManager.DeleteCommandLine();
                 } else {
                     // only show message if opened normally without command line arguments
                     if (args.Length == 0) 
@@ -48,7 +49,6 @@ namespace ScriptEditor
                     // send message to other instance
                     SingleInstanceManager.SendEditorOpenMessage();
                 }
-                SingleInstanceManager.DeleteCommandLine();
             }
         }
 

@@ -129,7 +129,7 @@ namespace ScriptEditor
                 foreach (var file in commandLineArgs) {
                     result = Open(file, OpenType.File, true, false, false, true, true);
                 }
-                if (result != null) ShowMe();
+                if (result != null && !this.Focused ) ShowMe();
             }
             base.WndProc(ref m);
         }
@@ -147,6 +147,8 @@ namespace ScriptEditor
             // set it back to whatever it was
             //TopMost = top;
         }
+#else
+        private void ShowMe() {}
 #endif
 
         void DEBUGINFO(string line) { tbOutput.Text = line + "\r\n" + tbOutput.Text; }
@@ -268,6 +270,7 @@ namespace ScriptEditor
                     for (int i = 0; i < tabs.Count; i++) {
                         if (string.Compare(tabs[i].filepath, file, true) == 0) {
                             if (seltab) tabControl1.SelectTab(i);
+                            ShowMe();
                             if (MessageBox.Show("This file is already open!\nDo you want to open another one same file?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) 
                                 return tabs[i];
                         }
