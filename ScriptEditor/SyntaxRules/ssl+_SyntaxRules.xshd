@@ -1177,6 +1177,14 @@
         <Key word = "STAT_current_rad" />
         <Key word = "STAT_real_max_stat" />
 
+        <Key word = "OBJ_TYPE_ITEM" />
+        <Key word = "OBJ_TYPE_CRITTER" />
+        <Key word = "OBJ_TYPE_SCENERY" />
+        <Key word = "OBJ_TYPE_WALL" />
+        <Key word = "OBJ_TYPE_TILE" />
+        <Key word = "OBJ_TYPE_MISC" />
+        <Key word = "OBJ_TYPE_SPATIAL" />
+
         <Key word = "item_type_armor" />
         <Key word = "item_type_container" />
         <Key word = "item_type_drug" />
