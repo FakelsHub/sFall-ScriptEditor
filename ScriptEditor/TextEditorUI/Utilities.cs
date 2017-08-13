@@ -437,13 +437,13 @@ namespace ScriptEditor.TextEditorUI
 
         private static void subRenameMacros(string find, string newName, RegexOptions option ,TextEditorControl TE)
         {
-            int z, offset = 0;
+            int offset = 0;
             while (offset < TE.Text.Length)
             {
-                z = SearchWholeWord(TE.Text, find, offset, option);
-                if (z == -1) break; 
-                TE.Document.Replace(z, find.Length, newName);
-                offset += z + newName.Length; 
+                offset = SearchWholeWord(TE.Text, find, offset, option);
+                if (offset == -1) break; 
+                TE.Document.Replace(offset, find.Length, newName);
+                offset += newName.Length; 
             }
         }
 

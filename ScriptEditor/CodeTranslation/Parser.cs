@@ -125,45 +125,37 @@ namespace ScriptEditor.CodeTranslation
         // Получить список всех процедур из скрипта
         private static void GetNamesProcedures()
         {
-            int _comm = 0, m = 0;
-            string[] NameProcedures = new string[0];
+            int _comm = 0;
+            procNameList.Clear();
             string[] file = File.ReadAllLines(Compiler.parserPath);
             for (int i = 0; i < file.Length; i++)
             {
+                bool _add = true;
                 file[i] = file[i].TrimStart();
                 if (CommentBlockParse(ref file[i], ref _comm)) continue;
                 if (file[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
-                    string s = file[i].Substring(PROC_LEN, file[i].Length - PROC_LEN);
-                    // удалить Begin или другую информацию из имени процедуры
-                    int z = s.IndexOf(';');
-                    if (z > 0) s = s.Remove(z);
-                    z = s.IndexOf('(');
-                    if (z > 0) s = s.Remove(z);
-                    z = s.IndexOf(BEGIN);
-                    if (z > 0) s = s.Remove(z);
-                    z = s.IndexOf(COMMENT);
-                    if (z < 0) z = s.IndexOf("/*");
-                    if (z > 0) s = s.Remove(z);
-                    s = s.Trim();
+                    string pName = file[i].Substring(PROC_LEN, file[i].Length - PROC_LEN);
+                    // delete Begin or other information from procedure name
+                    int z = pName.IndexOf(';');
+                    if (z > 0) pName = pName.Remove(z);
+                    z = pName.IndexOf('(');
+                    if (z > 0) pName = pName.Remove(z);
+                    z = pName.IndexOf(BEGIN);
+                    if (z > 0) pName = pName.Remove(z);
+                    z = pName.IndexOf(COMMENT);
+                    if (z < 0) z = pName.IndexOf("/*");
+                    if (z > 0) pName = pName.Remove(z);
+                    pName = pName.Trim();
                     //
-                    Array.Resize(ref NameProcedures, m + 1);
-                    NameProcedures[m++] = s;
-                }            
-            }
-            // Delеte duplicates
-            procNameList.Clear();
-            for (int i = 0; i < NameProcedures.Length; i++)
-            {
-                bool _add = true;
-                foreach (string name in procNameList)
-                {
-                    if (String.Equals(NameProcedures[i], name, StringComparison.OrdinalIgnoreCase)) {
-                        _add = false;
-                        break;
+                    foreach (string name in procNameList) {
+                        if (String.Equals(pName, name, StringComparison.OrdinalIgnoreCase)) {
+                            _add = false;
+                            break;
+                        }
                     }
-                }
-                if (_add) procNameList.Add(NameProcedures[i]);
+                    if (_add) procNameList.Add(pName);  
+                }            
             }
         }
 
@@ -175,7 +167,7 @@ namespace ScriptEditor.CodeTranslation
             int pLen = pName.Length;
             for (int i = 0; i < file.Length; i++) {
                 file[i] = file[i].Trim();
-                // TODO: возможна тут нужна проверка на закоментированный блок /* */
+                // TODO: возможно тут нужна проверка на закоментированный блок /* */
                 if (IsProcedure(ref file[i], pName)) {
                     if (file[i].Length <= (PROC_LEN + pLen)) continue; // broken declare
                     RemoveDebrisLine(file, pLen, i);
@@ -197,7 +189,8 @@ namespace ScriptEditor.CodeTranslation
                 // убираем лишнее
                 RemoveDebrisLine(file, 0-PROC_LEN, i);
                 if (file[i].EndsWith(BEGIN)) {
-                    if (file[i].StartsWith(PROCEDURE) || file[--i].StartsWith(PROCEDURE)) return i; 
+                    if (!file[i].StartsWith(PROCEDURE) && !file[i - 1].StartsWith(PROCEDURE)) 
+                        continue; 
                     for (int j = i - 1; j > 0; j--) {
                        if (file[j].StartsWith(PROCEDURE)) return j + 1;
                     }
@@ -345,12 +338,10 @@ namespace ScriptEditor.CodeTranslation
         {
             if (sLine.StartsWith(PROCEDURE)) {
                 // удаление двойных пробелов в строке процедуры
-                char[] m  = sLine.ToCharArray();
-                for (int i = 9; i < m.Length; i++)
-                {
-                    if (m[i] == ' ' && m[i + 1] == ' ') m[i] = '\0';
-                }
-                sLine = new string(m).Replace("\0", "");
+                char[] ch  = sLine.ToCharArray();
+                for (int i = 9; i < ch.Length; i++)
+                    if (ch[i] == ' ' && ch[i + 1] == ' ') ch[i] = '\0';
+                sLine = new string(ch).Replace("\0", "");
                 if (sLine.StartsWith(PROCEDURE + pName)) return true;
             }
             return false;
