@@ -33,6 +33,8 @@ namespace ScriptEditor
 
             public string GetMsgAsString()
             {
+                if (Settings.EncCodePage.CodePage == 866) 
+                    name = name.Replace(Convert.ToChar(0x0425), Convert.ToChar(0x58)); //Replacement of Russian letter "X", to English letter
                 return ("{" + (row + 101) + "}{" + msglip + "}{" + name + "}").PadRight(60) + "# " + script.PadRight(16) + "; " + desc;
             }
         }
@@ -55,6 +57,20 @@ namespace ScriptEditor
         private bool doAdd = false;
         private int scriptNumb = -1;
         private bool returnLine;
+        private bool notSaved;
+
+        private bool NotSaved
+        {
+            get { return notSaved; }
+            set {
+                Save_button.Text = "Saved";
+                notSaved = value;
+                if (value)
+                    Save_button.Image = imageList1.Images[1];
+                else
+                    Save_button.Image = imageList1.Images[0];
+            }
+        }
 
         const string DESCMSG = "#\r\n#   This file was built using Sfall Script Editor.\r\n#";
         const string SCRIPT_H = "SCRIPT_";
@@ -70,6 +86,7 @@ namespace ScriptEditor
             msgPath = msg;
             headerPath = header;
             InitializeComponent();
+
             dgvScripts.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
             char[] space = new char[] { ' ' };
             lines = new List<string>(File.ReadAllLines(lst));
@@ -87,14 +104,14 @@ namespace ScriptEditor
                     lines.Add(script.PadRight(16) + ";".PadRight(48) + "# local_vars=0");
                     doAdd = true;
                     AllowCheckBox.Checked = Settings.allowDefine;
-                    Save_button.ImageIndex = 1;
+                    Save_button.Image = imageList1.Images[1];
+                    notSaved = true;
                 }
                 AllowCheckBox.Enabled = true;
                 DefinetextBox.Enabled = true;
-            } else {
-                Addbutton.Enabled = true;
-                Delbutton.Enabled = true;
-            }
+            } else 
+                NotSaved = false;
+
             Entry[] entries = new Entry[lines.Count];
             for (int i = 0; i < lines.Count; i++)
                 entries[i] = new Entry(i, lines[i]);
@@ -154,9 +171,8 @@ namespace ScriptEditor
 
         private void RegisterScript_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (cancel)
-                return;
-            if (Save_button.ImageIndex > 0) {
+            if (cancel) return;
+            if (NotSaved) {
                 if (MessageBox.Show("Save all changed to files?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes) {
                     Save_button_Click(null, null);
                 }
@@ -165,8 +181,8 @@ namespace ScriptEditor
 
         private void Save_button_Click(object sender, EventArgs e)
         {
-            if (Save_button.ImageIndex == 0) 
-                return;
+            if (!NotSaved) return;
+            dgvScripts.EndEdit();
             Entry[] entries = new Entry[dgvScripts.Rows.Count];
             for (int i = 0; i < entries.Length; i++)
             {
@@ -184,7 +200,7 @@ namespace ScriptEditor
                 File.WriteAllLines(msgPath, linesMsg.ToArray(), Settings.EncCodePage);
                 linesMsg.Clear();
             }
-            Save_button.ImageIndex = 0;
+            NotSaved = false;
             if (AllowCheckBox.Checked && headerPath == null) {
                 MessageBox.Show("The definition was not added in header file.\nCould not find file scripts.h", "Script header error");
                 return;
@@ -227,28 +243,25 @@ namespace ScriptEditor
                         MessageBox.Show("Script file names must be 8 characters.", "Name Error");
                         returnLine = true;
                         cell.Value = entry.script;
-                        returnLine = false;
                         break;
                     }
                     entry.script = val;
-                    Save_button.ImageIndex = 1;
                     break;
                 case 3:
                     if (val.Length > 64 - 20)
                         val = val.Remove(64 - 20);
                     entry.desc = val;
-                    Save_button.ImageIndex = 1;
                     break;
                 case 4:
                     int.TryParse(val, out entry.vars);
-                    Save_button.ImageIndex = 1;
                     break;
                 case 5:
                     if (val.IndexOfAny(new char[] { '{', '}' }) == -1)
                         entry.name = val;
-                    Save_button.ImageIndex = 1;
                     break;
             }
+            if (!returnLine) NotSaved = true;
+            returnLine = false;
         }
 
         private cell Finds(int rowStart, int colStart, int rev = 1)
@@ -288,7 +301,7 @@ namespace ScriptEditor
             entries[0] = new Entry(dgvScripts.RowCount, "none.int".PadRight(80));
             AddRow(entries[0]);
             dgvScripts.FirstDisplayedScrollingRowIndex = dgvScripts.RowCount - 1;
-            Save_button.ImageIndex = 1;
+            NotSaved = true;
         }
 
         private void Delbutton_Click(object sender, EventArgs e)
@@ -296,7 +309,7 @@ namespace ScriptEditor
             dgvScripts.Sort(dgvScripts.Columns[1], System.ComponentModel.ListSortDirection.Ascending);
             dgvScripts.Rows.RemoveAt(dgvScripts.RowCount - 1);
             dgvScripts.FirstDisplayedScrollingRowIndex = dgvScripts.RowCount - 1;
-            Save_button.ImageIndex = 1;
+            NotSaved = true;
         }
 
         private void Downbutton_Click(object sender, EventArgs e)

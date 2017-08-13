@@ -314,7 +314,7 @@ namespace ScriptEditor {
             this.splitContainer2.Panel2.Controls.Add(this.statusStrip);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.Size = new System.Drawing.Size(961, 682);
-            this.splitContainer2.SplitterDistance = 815;
+            this.splitContainer2.SplitterDistance = 816;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 4;
             // 
@@ -339,7 +339,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel2.Controls.Add(this.minimizelog_button);
             this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Size = new System.Drawing.Size(815, 682);
+            this.splitContainer1.Size = new System.Drawing.Size(816, 682);
             this.splitContainer1.SplitterDistance = 650;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
@@ -351,7 +351,7 @@ namespace ScriptEditor {
             this.TabClose_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TabClose_button.ForeColor = System.Drawing.Color.DarkRed;
             this.TabClose_button.Image = ((System.Drawing.Image)(resources.GetObject("TabClose_button.Image")));
-            this.TabClose_button.Location = new System.Drawing.Point(795, 22);
+            this.TabClose_button.Location = new System.Drawing.Point(796, 22);
             this.TabClose_button.Name = "TabClose_button";
             this.TabClose_button.Size = new System.Drawing.Size(18, 18);
             this.TabClose_button.TabIndex = 0;
@@ -367,7 +367,7 @@ namespace ScriptEditor {
             this.Split_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Split_button.ForeColor = System.Drawing.Color.DarkRed;
             this.Split_button.Image = ((System.Drawing.Image)(resources.GetObject("Split_button.Image")));
-            this.Split_button.Location = new System.Drawing.Point(795, 630);
+            this.Split_button.Location = new System.Drawing.Point(796, 630);
             this.Split_button.Name = "Split_button";
             this.Split_button.Size = new System.Drawing.Size(16, 16);
             this.Split_button.TabIndex = 2;
@@ -385,7 +385,7 @@ namespace ScriptEditor {
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(815, 625);
+            this.tabControl1.Size = new System.Drawing.Size(816, 625);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             this.tabControl1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
@@ -417,7 +417,7 @@ namespace ScriptEditor {
             this.SearchToolStrip.Location = new System.Drawing.Point(0, 0);
             this.SearchToolStrip.Name = "SearchToolStrip";
             this.SearchToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.SearchToolStrip.Size = new System.Drawing.Size(815, 25);
+            this.SearchToolStrip.Size = new System.Drawing.Size(816, 25);
             this.SearchToolStrip.TabIndex = 3;
             this.SearchToolStrip.Resize += new System.EventHandler(this.SearchToolStrip_Resize);
             // 
@@ -542,7 +542,7 @@ namespace ScriptEditor {
             this.minimizelog_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.minimizelog_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.minimizelog_button.Image = ((System.Drawing.Image)(resources.GetObject("minimizelog_button.Image")));
-            this.minimizelog_button.Location = new System.Drawing.Point(791, -1);
+            this.minimizelog_button.Location = new System.Drawing.Point(792, -1);
             this.minimizelog_button.Name = "minimizelog_button";
             this.minimizelog_button.Size = new System.Drawing.Size(20, 20);
             this.minimizelog_button.TabIndex = 6;
@@ -562,7 +562,7 @@ namespace ScriptEditor {
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
             this.tabControl2.ShowToolTips = true;
-            this.tabControl2.Size = new System.Drawing.Size(815, 30);
+            this.tabControl2.Size = new System.Drawing.Size(816, 30);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl2_MouseClick);
             // 
@@ -571,7 +571,7 @@ namespace ScriptEditor {
             this.tabPageParse.Controls.Add(this.tbOutputParse);
             this.tabPageParse.Location = new System.Drawing.Point(4, 22);
             this.tabPageParse.Name = "tabPageParse";
-            this.tabPageParse.Size = new System.Drawing.Size(807, 4);
+            this.tabPageParse.Size = new System.Drawing.Size(808, 4);
             this.tabPageParse.TabIndex = 2;
             this.tabPageParse.Text = "Parser output";
             this.tabPageParse.UseVisualStyleBackColor = true;
@@ -590,7 +590,7 @@ namespace ScriptEditor {
             this.tbOutputParse.Name = "tbOutputParse";
             this.tbOutputParse.ReadOnly = true;
             this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutputParse.Size = new System.Drawing.Size(807, 4);
+            this.tbOutputParse.Size = new System.Drawing.Size(808, 4);
             this.tbOutputParse.TabIndex = 1;
             // 
             // tabPageBuild
@@ -598,7 +598,7 @@ namespace ScriptEditor {
             this.tabPageBuild.Controls.Add(this.tbOutput);
             this.tabPageBuild.Location = new System.Drawing.Point(4, 22);
             this.tabPageBuild.Name = "tabPageBuild";
-            this.tabPageBuild.Size = new System.Drawing.Size(806, 4);
+            this.tabPageBuild.Size = new System.Drawing.Size(807, 4);
             this.tabPageBuild.TabIndex = 0;
             this.tabPageBuild.Text = "Build output";
             this.tabPageBuild.UseVisualStyleBackColor = true;
@@ -615,7 +615,7 @@ namespace ScriptEditor {
             this.tbOutput.Name = "tbOutput";
             this.tbOutput.ReadOnly = true;
             this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutput.Size = new System.Drawing.Size(806, 4);
+            this.tbOutput.Size = new System.Drawing.Size(807, 4);
             this.tbOutput.TabIndex = 0;
             // 
             // tabPageError
@@ -623,7 +623,7 @@ namespace ScriptEditor {
             this.tabPageError.Controls.Add(this.dgvErrors);
             this.tabPageError.Location = new System.Drawing.Point(4, 22);
             this.tabPageError.Name = "tabPageError";
-            this.tabPageError.Size = new System.Drawing.Size(806, 4);
+            this.tabPageError.Size = new System.Drawing.Size(807, 4);
             this.tabPageError.TabIndex = 1;
             this.tabPageError.Text = "Errors";
             this.tabPageError.UseVisualStyleBackColor = true;
@@ -651,7 +651,7 @@ namespace ScriptEditor {
             this.dgvErrors.RowHeadersVisible = false;
             this.dgvErrors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvErrors.Size = new System.Drawing.Size(806, 4);
+            this.dgvErrors.Size = new System.Drawing.Size(807, 4);
             this.dgvErrors.TabIndex = 0;
             this.dgvErrors.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
             // 
@@ -699,7 +699,7 @@ namespace ScriptEditor {
             this.tabControl3.Padding = new System.Drawing.Point(0, 0);
             this.tabControl3.SelectedIndex = 0;
             this.tabControl3.ShowToolTips = true;
-            this.tabControl3.Size = new System.Drawing.Size(143, 660);
+            this.tabControl3.Size = new System.Drawing.Size(142, 660);
             this.tabControl3.TabIndex = 1;
             // 
             // tabPage4
@@ -712,7 +712,7 @@ namespace ScriptEditor {
             this.tabPage4.Location = new System.Drawing.Point(4, 21);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(0, 0, 2, 2);
-            this.tabPage4.Size = new System.Drawing.Size(135, 635);
+            this.tabPage4.Size = new System.Drawing.Size(134, 635);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
             this.tabPage4.ToolTipText = "Procedures";
@@ -731,7 +731,7 @@ namespace ScriptEditor {
             this.ProcTree.ShowLines = false;
             this.ProcTree.ShowNodeToolTips = true;
             this.ProcTree.ShowRootLines = false;
-            this.ProcTree.Size = new System.Drawing.Size(133, 608);
+            this.ProcTree.Size = new System.Drawing.Size(132, 608);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             this.ProcTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseClick);
@@ -801,7 +801,7 @@ namespace ScriptEditor {
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(133, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(132, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -882,7 +882,7 @@ namespace ScriptEditor {
             this.tabPage6.Location = new System.Drawing.Point(4, 21);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(0, 2, 2, 2);
-            this.tabPage6.Size = new System.Drawing.Size(136, 635);
+            this.tabPage6.Size = new System.Drawing.Size(135, 635);
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "Functions";
             // 
@@ -911,7 +911,7 @@ namespace ScriptEditor {
             this.ColStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 660);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(143, 22);
+            this.statusStrip.Size = new System.Drawing.Size(142, 22);
             this.statusStrip.TabIndex = 2;
             // 
             // toolStripStatusLabel3
@@ -928,7 +928,7 @@ namespace ScriptEditor {
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.LineStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.LineStripStatusLabel.Name = "LineStripStatusLabel";
-            this.LineStripStatusLabel.Size = new System.Drawing.Size(59, 17);
+            this.LineStripStatusLabel.Size = new System.Drawing.Size(58, 17);
             this.LineStripStatusLabel.Spring = true;
             this.LineStripStatusLabel.Text = "Line: 1";
             this.LineStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -941,7 +941,7 @@ namespace ScriptEditor {
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.ColStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.ColStripStatusLabel.Name = "ColStripStatusLabel";
-            this.ColStripStatusLabel.Size = new System.Drawing.Size(59, 17);
+            this.ColStripStatusLabel.Size = new System.Drawing.Size(58, 17);
             this.ColStripStatusLabel.Spring = true;
             this.ColStripStatusLabel.Text = "Col: 1";
             this.ColStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -1000,7 +1000,7 @@ namespace ScriptEditor {
             this.FunctionButton.Name = "FunctionButton";
             this.FunctionButton.Size = new System.Drawing.Size(23, 22);
             this.FunctionButton.Text = "Function Tree";
-            this.FunctionButton.ToolTipText = "Show/Hide function tree [Alt+F]";
+            this.FunctionButton.ToolTipText = "Show/Hide function tree [Alt+E]";
             this.FunctionButton.Click += new System.EventHandler(this.FunctionButton_Click);
             // 
             // toolStripSeparator27
@@ -1761,7 +1761,7 @@ namespace ScriptEditor {
             // funcToolStripMenuItem
             // 
             this.funcToolStripMenuItem.Name = "funcToolStripMenuItem";
-            this.funcToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F)));
+            this.funcToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
             this.funcToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.funcToolStripMenuItem.Text = "func";
             this.funcToolStripMenuItem.Click += new System.EventHandler(this.funcToolStripMenuItem_Click);

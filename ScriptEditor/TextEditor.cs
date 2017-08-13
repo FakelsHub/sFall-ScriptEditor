@@ -368,10 +368,18 @@ namespace ScriptEditor
                 while (parserRunning) {
                     System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
                 }
-                File.WriteAllText(tab.filepath, tab.textEditor.Text, (Path.GetExtension(tab.filename) == ".msg") ?  Settings.EncCodePage: Encoding.Default);
+                bool msg = false;
+                if (Path.GetExtension(tab.filename) == ".msg") 
+                    msg = true;
+                
+                string saveText = tab.textEditor.Text;
+                if (msg && Settings.EncCodePage.CodePage == 866) 
+                    saveText = saveText.Replace(Convert.ToChar(0x0425), Convert.ToChar(0x58)); //Replacement russian letter "X", to english letter
+                File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage: Encoding.Default);
+
                 tab.changed = false;
                 SetTabTextChange(tab.index);
-                Text = SSE + tab.filepath;
+                this.Text = SSE + tab.filepath;
             }
         }
 

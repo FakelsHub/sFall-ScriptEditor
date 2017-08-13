@@ -24,8 +24,9 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterScript));
             this.dgvScripts = new System.Windows.Forms.DataGridView();
             this.EntryCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -35,20 +36,26 @@
             this.cVars = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox = new System.Windows.Forms.GroupBox();
-            this.Addbutton = new System.Windows.Forms.Button();
-            this.FindtextBox = new System.Windows.Forms.TextBox();
-            this.Downbutton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.Save_button = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.Delbutton = new System.Windows.Forms.Button();
-            this.Upbutton = new System.Windows.Forms.Button();
-            this.label = new System.Windows.Forms.Label();
             this.DefinetextBox = new System.Windows.Forms.TextBox();
             this.AllowCheckBox = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.Save_button = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.Addbutton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.Delbutton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.Upbutton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.Downbutton = new System.Windows.Forms.ToolStripButton();
+            this.FindtextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this.dgvScripts)).BeginInit();
             this.groupBox.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgvScripts
@@ -59,7 +66,16 @@
             this.dgvScripts.BackgroundColor = System.Drawing.SystemColors.MenuBar;
             this.dgvScripts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvScripts.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
-            this.dgvScripts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle28.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle28.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle28.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle28.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle28.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvScripts.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle28;
+            this.dgvScripts.ColumnHeadersHeight = 24;
+            this.dgvScripts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvScripts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EntryCol,
             this.cLine,
@@ -74,7 +90,7 @@
             this.dgvScripts.RowHeadersVisible = false;
             this.dgvScripts.RowHeadersWidth = 30;
             this.dgvScripts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvScripts.Size = new System.Drawing.Size(515, 438);
+            this.dgvScripts.Size = new System.Drawing.Size(527, 454);
             this.dgvScripts.TabIndex = 0;
             this.dgvScripts.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvScripts_CellClick);
             // 
@@ -97,8 +113,8 @@
             // 
             // cScript
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.cScript.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.cScript.DefaultCellStyle = dataGridViewCellStyle29;
             this.cScript.HeaderText = "Script File";
             this.cScript.Name = "cScript";
             this.cScript.Resizable = System.Windows.Forms.DataGridViewTriState.False;
@@ -114,8 +130,8 @@
             // 
             // cVars
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.cVars.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cVars.DefaultCellStyle = dataGridViewCellStyle30;
             this.cVars.HeaderText = "LVars:";
             this.cVars.Name = "cVars";
             this.cVars.Resizable = System.Windows.Forms.DataGridViewTriState.False;
@@ -139,63 +155,13 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox.Controls.Add(this.dgvScripts);
-            this.groupBox.Location = new System.Drawing.Point(9, 64);
+            this.groupBox.Location = new System.Drawing.Point(3, 54);
             this.groupBox.Name = "groupBox";
             this.groupBox.Padding = new System.Windows.Forms.Padding(6);
-            this.groupBox.Size = new System.Drawing.Size(527, 463);
+            this.groupBox.Size = new System.Drawing.Size(539, 479);
             this.groupBox.TabIndex = 1;
             this.groupBox.TabStop = false;
             this.groupBox.Text = "Scripts List";
-            // 
-            // Addbutton
-            // 
-            this.Addbutton.Enabled = false;
-            this.Addbutton.Image = ((System.Drawing.Image)(resources.GetObject("Addbutton.Image")));
-            this.Addbutton.Location = new System.Drawing.Point(93, 9);
-            this.Addbutton.Name = "Addbutton";
-            this.Addbutton.Size = new System.Drawing.Size(30, 24);
-            this.Addbutton.TabIndex = 2;
-            this.Addbutton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.toolTip1.SetToolTip(this.Addbutton, "Add new line to end.");
-            this.Addbutton.UseVisualStyleBackColor = true;
-            this.Addbutton.Click += new System.EventHandler(this.Addbutton_Click);
-            // 
-            // FindtextBox
-            // 
-            this.FindtextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.FindtextBox.BackColor = System.Drawing.SystemColors.Info;
-            this.FindtextBox.Location = new System.Drawing.Point(167, 12);
-            this.FindtextBox.Name = "FindtextBox";
-            this.FindtextBox.Size = new System.Drawing.Size(284, 20);
-            this.FindtextBox.TabIndex = 3;
-            // 
-            // Downbutton
-            // 
-            this.Downbutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Downbutton.Image = ((System.Drawing.Image)(resources.GetObject("Downbutton.Image")));
-            this.Downbutton.Location = new System.Drawing.Point(457, 9);
-            this.Downbutton.Name = "Downbutton";
-            this.Downbutton.Size = new System.Drawing.Size(30, 24);
-            this.Downbutton.TabIndex = 4;
-            this.toolTip1.SetToolTip(this.Downbutton, "Find Down");
-            this.Downbutton.UseVisualStyleBackColor = true;
-            this.Downbutton.Click += new System.EventHandler(this.Downbutton_Click);
-            // 
-            // Save_button
-            // 
-            this.Save_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Save_button.ImageIndex = 0;
-            this.Save_button.ImageList = this.imageList1;
-            this.Save_button.Location = new System.Drawing.Point(9, 9);
-            this.Save_button.Name = "Save_button";
-            this.Save_button.Size = new System.Drawing.Size(78, 24);
-            this.Save_button.TabIndex = 6;
-            this.Save_button.Text = "Register";
-            this.Save_button.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.toolTip1.SetToolTip(this.Save_button, "Save all changes to files.");
-            this.Save_button.UseVisualStyleBackColor = true;
-            this.Save_button.Click += new System.EventHandler(this.Save_button_Click);
             // 
             // imageList1
             // 
@@ -204,48 +170,14 @@
             this.imageList1.Images.SetKeyName(0, "RegisterReady.png");
             this.imageList1.Images.SetKeyName(1, "RegisterNeed.png");
             // 
-            // Delbutton
-            // 
-            this.Delbutton.Enabled = false;
-            this.Delbutton.Image = ((System.Drawing.Image)(resources.GetObject("Delbutton.Image")));
-            this.Delbutton.Location = new System.Drawing.Point(128, 9);
-            this.Delbutton.Name = "Delbutton";
-            this.Delbutton.Size = new System.Drawing.Size(30, 24);
-            this.Delbutton.TabIndex = 2;
-            this.Delbutton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.toolTip1.SetToolTip(this.Delbutton, "Delete last line.");
-            this.Delbutton.UseVisualStyleBackColor = true;
-            this.Delbutton.Click += new System.EventHandler(this.Delbutton_Click);
-            // 
-            // Upbutton
-            // 
-            this.Upbutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.Upbutton.Image = ((System.Drawing.Image)(resources.GetObject("Upbutton.Image")));
-            this.Upbutton.Location = new System.Drawing.Point(506, 9);
-            this.Upbutton.Name = "Upbutton";
-            this.Upbutton.Size = new System.Drawing.Size(30, 24);
-            this.Upbutton.TabIndex = 4;
-            this.Upbutton.UseVisualStyleBackColor = true;
-            this.Upbutton.Click += new System.EventHandler(this.Upbutton_Click);
-            // 
-            // label
-            // 
-            this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label.BackColor = System.Drawing.Color.Transparent;
-            this.label.Image = ((System.Drawing.Image)(resources.GetObject("label.Image")));
-            this.label.Location = new System.Drawing.Point(483, 11);
-            this.label.Name = "label";
-            this.label.Size = new System.Drawing.Size(26, 22);
-            this.label.TabIndex = 5;
-            // 
             // DefinetextBox
             // 
             this.DefinetextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.DefinetextBox.Enabled = false;
-            this.DefinetextBox.Location = new System.Drawing.Point(167, 38);
+            this.DefinetextBox.Location = new System.Drawing.Point(185, 29);
             this.DefinetextBox.Name = "DefinetextBox";
-            this.DefinetextBox.Size = new System.Drawing.Size(284, 20);
+            this.DefinetextBox.Size = new System.Drawing.Size(300, 20);
             this.DefinetextBox.TabIndex = 7;
             // 
             // AllowCheckBox
@@ -254,7 +186,7 @@
             this.AllowCheckBox.AutoSize = true;
             this.AllowCheckBox.Enabled = false;
             this.AllowCheckBox.ForeColor = System.Drawing.Color.Firebrick;
-            this.AllowCheckBox.Location = new System.Drawing.Point(457, 41);
+            this.AllowCheckBox.Location = new System.Drawing.Point(491, 30);
             this.AllowCheckBox.Name = "AllowCheckBox";
             this.AllowCheckBox.Size = new System.Drawing.Size(51, 17);
             this.AllowCheckBox.TabIndex = 8;
@@ -265,41 +197,152 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.label2.Location = new System.Drawing.Point(23, 42);
+            this.label2.Location = new System.Drawing.Point(6, 32);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(136, 13);
+            this.label2.Size = new System.Drawing.Size(172, 13);
             this.label2.TabIndex = 9;
-            this.label2.Text = "Added #define to Scripts.h:";
+            this.label2.Text = "Add definition for script in Scripts.h:";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Save_button,
+            this.toolStripSeparator1,
+            this.Addbutton,
+            this.toolStripSeparator4,
+            this.Delbutton,
+            this.toolStripSeparator2,
+            this.Upbutton,
+            this.toolStripSeparator3,
+            this.Downbutton,
+            this.FindtextBox,
+            this.toolStripLabel1});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(545, 25);
+            this.toolStrip1.TabIndex = 10;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // Save_button
+            // 
+            this.Save_button.Image = ((System.Drawing.Image)(resources.GetObject("Save_button.Image")));
+            this.Save_button.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Save_button.Name = "Save_button";
+            this.Save_button.Size = new System.Drawing.Size(79, 22);
+            this.Save_button.Text = "Registered";
+            this.Save_button.ToolTipText = "Save all changes to files.";
+            this.Save_button.Click += new System.EventHandler(this.Save_button_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // Addbutton
+            // 
+            this.Addbutton.AutoSize = false;
+            this.Addbutton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Addbutton.Image = ((System.Drawing.Image)(resources.GetObject("Addbutton.Image")));
+            this.Addbutton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Addbutton.Name = "Addbutton";
+            this.Addbutton.Size = new System.Drawing.Size(25, 22);
+            this.Addbutton.ToolTipText = "Add script line";
+            this.Addbutton.Click += new System.EventHandler(this.Addbutton_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // Delbutton
+            // 
+            this.Delbutton.AutoSize = false;
+            this.Delbutton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Delbutton.Image = ((System.Drawing.Image)(resources.GetObject("Delbutton.Image")));
+            this.Delbutton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Delbutton.Name = "Delbutton";
+            this.Delbutton.Size = new System.Drawing.Size(25, 22);
+            this.Delbutton.ToolTipText = "Delete last script line";
+            this.Delbutton.Click += new System.EventHandler(this.Delbutton_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // Upbutton
+            // 
+            this.Upbutton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.Upbutton.AutoSize = false;
+            this.Upbutton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Upbutton.Image = ((System.Drawing.Image)(resources.GetObject("Upbutton.Image")));
+            this.Upbutton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Upbutton.Name = "Upbutton";
+            this.Upbutton.Size = new System.Drawing.Size(25, 22);
+            this.Upbutton.ToolTipText = "Find up";
+            this.Upbutton.Click += new System.EventHandler(this.Upbutton_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator3.AutoSize = false;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(8, 25);
+            // 
+            // Downbutton
+            // 
+            this.Downbutton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.Downbutton.AutoSize = false;
+            this.Downbutton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Downbutton.Image = ((System.Drawing.Image)(resources.GetObject("Downbutton.Image")));
+            this.Downbutton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Downbutton.Name = "Downbutton";
+            this.Downbutton.Size = new System.Drawing.Size(25, 22);
+            this.Downbutton.ToolTipText = "Find down";
+            this.Downbutton.Click += new System.EventHandler(this.Downbutton_Click);
+            // 
+            // FindtextBox
+            // 
+            this.FindtextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.FindtextBox.AutoSize = false;
+            this.FindtextBox.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.FindtextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.FindtextBox.Name = "FindtextBox";
+            this.FindtextBox.Size = new System.Drawing.Size(300, 21);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripLabel1.AutoSize = false;
+            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripLabel1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripLabel1.Image")));
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(20, 16);
             // 
             // RegisterScript
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(545, 536);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.AllowCheckBox);
             this.Controls.Add(this.DefinetextBox);
-            this.Controls.Add(this.Save_button);
-            this.Controls.Add(this.Upbutton);
-            this.Controls.Add(this.Downbutton);
-            this.Controls.Add(this.FindtextBox);
-            this.Controls.Add(this.Delbutton);
-            this.Controls.Add(this.Addbutton);
             this.Controls.Add(this.groupBox);
-            this.Controls.Add(this.label);
             this.Controls.Add(this.label2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(250, 250);
             this.Name = "RegisterScript";
-            this.Padding = new System.Windows.Forms.Padding(6);
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Script Register Editor";
+            this.Text = "Scripts list editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RegisterScript_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RegisterScript_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvScripts)).EndInit();
             this.groupBox.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,17 +352,10 @@
 
         private System.Windows.Forms.DataGridView dgvScripts;
         private System.Windows.Forms.GroupBox groupBox;
-        private System.Windows.Forms.Button Addbutton;
-        private System.Windows.Forms.TextBox FindtextBox;
-        private System.Windows.Forms.Button Downbutton;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.Button Upbutton;
-        private System.Windows.Forms.Label label;
-        private System.Windows.Forms.Button Save_button;
         private System.Windows.Forms.TextBox DefinetextBox;
         private System.Windows.Forms.CheckBox AllowCheckBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button Delbutton;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.DataGridViewTextBoxColumn EntryCol;
         private System.Windows.Forms.DataGridViewButtonColumn cLine;
@@ -327,5 +363,17 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cDescription;
         private System.Windows.Forms.DataGridViewTextBoxColumn cVars;
         private System.Windows.Forms.DataGridViewTextBoxColumn cName;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton Save_button;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton Addbutton;
+        private System.Windows.Forms.ToolStripButton Delbutton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton Upbutton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton Downbutton;
+        private System.Windows.Forms.ToolStripTextBox FindtextBox;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
     }
 }

@@ -133,8 +133,9 @@ namespace ScriptEditor
             }
             // Show form
             MessageEditor msgEdit = new MessageEditor(msgPath, ti);
-            msgEdit.Owner = frm;
             msgEdit.scrptEditor = frm as TextEditor;
+            if (ti != null) 
+                msgEdit.alwaysOnTopToolStripMenuItem.Checked = true;
             msgEdit.Show();
             //if (Settings.autoOpenMsgs && msgEdit.scrptEditor.msgAutoOpenEditorStripMenuItem.Checked)
             //    msgEdit.WindowState = FormWindowState.Minimized;
@@ -197,11 +198,15 @@ namespace ScriptEditor
         private void saveFileMsg()
         {
             bool prevLine;
+            bool replaceX = (enc.CodePage == 866);
+            dgvMessage.EndEdit();
             linesMsg.Clear();
             for (int i = 0; i < dgvMessage.Rows.Count; i++)
             {
                 Entry entries = (Entry)dgvMessage.Rows[i].Cells[0].Value;
-                linesMsg.Add(entries.ToString(out prevLine));
+                string line = entries.ToString(out prevLine);
+                if (replaceX) line = line.Replace(Convert.ToChar(0x0425), Convert.ToChar(0x58)); //Replacement of Russian letter "X", to English letter
+                linesMsg.Add(line);
                 if (prevLine) linesMsg[i - 1] = linesMsg[i - 1].TrimEnd('}');
                 foreach (DataGridViewCell cells in dgvMessage.Rows[i].Cells)
                 {
@@ -333,6 +338,7 @@ namespace ScriptEditor
         {
             int Line = 0, nLine;
             bool _comm = false;
+            dgvMessage.EndEdit();
             for (int n = SelectLine.row; n >= 0; n--)
             {
                 if (int.TryParse((string)dgvMessage.Rows[n].Cells[1].Value, out Line)) break;
@@ -608,6 +614,14 @@ namespace ScriptEditor
         private void dgvMessage_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             editMode = false;
+        }
+
+        private void alwaysOnTopToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            if (alwaysOnTopToolStripMenuItem.Checked) 
+                this.Owner = scrptEditor;
+            else 
+                this.Owner = null;
         }
     }
 }
