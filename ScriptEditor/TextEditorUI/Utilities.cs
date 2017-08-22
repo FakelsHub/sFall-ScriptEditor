@@ -484,7 +484,7 @@ namespace ScriptEditor.TextEditorUI
                 return;
             }
             int differ = newName.Length - oldName.Length; 
-            string search = "[= ]" + oldName + "[ ,;(\\s]";
+            string search = "[=, ]" + oldName + "[ ,;()\\s]";
             RegexOptions option = RegexOptions.Multiline | RegexOptions.IgnoreCase;
             Regex s_regex = new Regex(search, option);
             MatchCollection matches = s_regex.Matches(TE.Text);

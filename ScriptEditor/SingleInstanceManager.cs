@@ -41,8 +41,8 @@ namespace ScriptEditor
                 fullArgs[i] = Path.IsPathRooted(args[i])
                     ? args[i]
                     : Path.GetFullPath(args[i]);
+                File.AppendAllText(SingleInstanceManager.CommandLineFile, fullArgs[i] + Environment.NewLine);
             }
-            File.WriteAllLines(SingleInstanceManager.CommandLineFile, fullArgs);
         }
 
         /// <summary>
@@ -52,15 +52,16 @@ namespace ScriptEditor
         public static string[] LoadCommandLine() 
         {
             if (File.Exists(SingleInstanceManager.CommandLineFile)) {
-                return File.ReadAllLines(SingleInstanceManager.CommandLineFile);
+                string[] read = File.ReadAllLines(SingleInstanceManager.CommandLineFile);
+                DeleteCommandLine();
+                return read;
             }
             return new string[0];
         }
 
-        public static void DeleteCommandLine() 
+        public static void DeleteCommandLine()
         {
             File.Delete(CommandLineFile);
         }
-
     }
 }

@@ -129,7 +129,7 @@ namespace ScriptEditor
                 foreach (var file in commandLineArgs) {
                     result = Open(file, OpenType.File, true, false, false, true, true);
                 }
-                if (result != null && !this.Focused ) ShowMe();
+                if (result != null && !this.Focused) ShowMe();
             }
             base.WndProc(ref m);
         }
@@ -175,11 +175,12 @@ namespace ScriptEditor
         {
             if (!Settings.firstRun) Settings_ToolStripMenuItem.PerformClick();
             // open documents passed from command line
-            foreach (string s in commandsArgs) {
-                Open(s, TextEditor.OpenType.File, true, false, false, true, true);
+            foreach (string file in commandsArgs) {
+                Open(file, TextEditor.OpenType.File, true, false, false, true, true);
             }
             this.Activated += TextEditor_Activated;
             this.Deactivate += TextEditor_Deactivate;
+            SingleInstanceManager.SendEditorOpenMessage();
         }
 
         private void TextEditor_Resize(object sender, EventArgs e)
@@ -1625,10 +1626,11 @@ namespace ScriptEditor
         private void FunctionsTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Tag != null && currentTab != null) {
+                string space = new string(' ', currentTab.textEditor.ActiveTextAreaControl.Caret.Column);
                 string code = e.Node.Tag.ToString();
-                if (code.LastIndexOf("<cr>") > 0) {
-                    code = code.Replace("<cr>", Environment.NewLine);
-                } else code += " ";
+                if (code.Contains("<cr>")) {
+                    code = code.Replace("<cr>", Environment.NewLine + space);
+                } else if (code.EndsWith(")")) code += " ";
                 currentTab.textEditor.ActiveTextAreaControl.TextArea.InsertString(code);
             }
         }

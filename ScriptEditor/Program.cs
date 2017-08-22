@@ -45,9 +45,9 @@ namespace ScriptEditor
                     else {
                         // pass command line arguments via file
                         SingleInstanceManager.SaveCommandLine(args);
+                        // send message to other instance
+                        SingleInstanceManager.SendEditorOpenMessage();
                     }
-                    // send message to other instance
-                    SingleInstanceManager.SendEditorOpenMessage();
                 }
             }
         }
