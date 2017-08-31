@@ -42,7 +42,7 @@ public class DraggableTabControl : TabControl
 
         Swap(m_DraggedTab, tab);
         
-        SelectedTab = m_DraggedTab;
+        //SelectedTab = m_DraggedTab;
     }
     
    /* private void OnMouseUp(object sender, MouseEventArgs e)
@@ -72,9 +72,10 @@ public class DraggableTabControl : TabControl
         if (tabsSwapped != null) {
         	tabsSwapped(this, new TabsSwappedEventArgs(iA, iB));
         }
-        TabPages.Remove(a);
-        TabPages.Insert(iB, a);
-        TabPages.Remove(b);
+        TabPages.RemoveAt(iB);
+        //TabPages.Remove(a);
+        //TabPages.Insert(iB, a);
+        //TabPages.Remove(b);
         TabPages.Insert(iA, b);
     }
 }
