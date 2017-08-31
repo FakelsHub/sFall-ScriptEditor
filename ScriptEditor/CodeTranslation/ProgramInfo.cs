@@ -225,7 +225,8 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
             SortedList<string, string> _macros = new SortedList<string, string>(StringComparer.Ordinal);
-            foreach (var entry in macros) {
+            // возникает ошибка "коллекция была изменена после создания экземпляра перечислителя"
+            foreach (var entry in new SortedDictionary<string, Macro>(macros)) { //fixed
                 if (entry.Key.IndexOf(part) == 0) {
                     string def = (entry.Value.def.Length > 300) ? "No preview macros." : entry.Value.def;
                     _macros.Add(entry.Value.name, "|Define:\n" + def);

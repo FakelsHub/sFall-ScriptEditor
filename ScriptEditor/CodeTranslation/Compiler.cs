@@ -416,7 +416,7 @@ namespace ScriptEditor.CodeTranslation
             string sourceDir = Path.GetDirectoryName(infile);
             infile = OverrideIncludeSSLCompile(infile);
             output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n";
-            if (Settings.userCmdCompile) {
+            if (Settings.userCmdCompile && !preprocessOnly) {
                 string userbat = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
                 ProcessStartInfo upsi = new ProcessStartInfo(userbat, GetCommandLine(infile, shortCircuit));
                 upsi.RedirectStandardOutput = true;
