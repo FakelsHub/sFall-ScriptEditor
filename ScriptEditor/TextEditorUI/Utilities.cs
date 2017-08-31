@@ -38,7 +38,7 @@ namespace ScriptEditor.TextEditorUI
             string[] pattern = { ":=", "!=", "==", ">=", "<=", "+=", "-=", "*=", "/=", "%=", ",", ">", "<", "+", "-", "*", "/", "%" };
             char[] excludeR = { ' ', '=', '+', '-', '*', '/' };
             char[] excludeL = { ' ', '=', '>', '<', '+', '-', '!', ':', '*', '/', '%' };
-            char[] excludeD = { ' ', ',' };
+            char[] excludeD = { ' ', ',', '(' };
             const string space = " ";
 
             string[] linecode = textCode.Split('\n');
@@ -80,7 +80,9 @@ namespace ScriptEditor.TextEditorUI
                                     linecode[i] = linecode[i].Insert(n, space);
                                 else {
                                     if (linecode[i].Substring(n - 1, 1).IndexOfAny(excludeL) == -1) {
-                                        if (((p == "+" || p == "-") && (linecode[i].Substring(n + 1, 1)) == p) == false) // check '++/--'
+                                        if ((p == "-" && Char.IsDigit(char.Parse(linecode[i].Substring(n + 1, 1)))
+                                            && linecode[i].Substring(n - 1, 1) == "(") == false                             // check NegDigit
+                                            && ((p == "+" || p == "-") && (linecode[i].Substring(n + 1, 1)) == p) == false) // check '++/--'
                                             linecode[i] = linecode[i].Insert(n, space);
                                     }
                                 }
