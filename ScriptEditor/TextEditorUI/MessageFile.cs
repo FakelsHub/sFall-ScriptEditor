@@ -60,18 +60,18 @@ namespace ScriptEditor.TextEditorUI
             for (int i = 0; i < linesMsg.Length; i++)
             {
                 string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
-                subParse(line);
+                if (subParse(line)) continue; 
                 int index;
                 if (!int.TryParse(line[0], out index))
                     continue;
-                ti.messages[index] = line[2];
+                ti.messages.Add(index, line[2]);
             }
         }
 
-        private static void subParse(string[] line)
+        private static bool subParse(string[] line)
         {
             if (line.Length != 3)
-                return;
+                return true;
             for (int j = 0; j < 3; j += 2)
             {
                 line[j] = line[j].Trim();
@@ -79,6 +79,7 @@ namespace ScriptEditor.TextEditorUI
                     continue;
                 line[j] = line[j].Substring(1);
             }
+            return false;
         }
 
         public static string GetMessages(string[] linesMsg, int messageNum)
@@ -87,7 +88,7 @@ namespace ScriptEditor.TextEditorUI
             for (int i = 0; i < linesMsg.Length; i++)
             {
                 string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
-                subParse(line);
+                if (subParse(line)) continue;
                 int index;
                 if (int.TryParse(line[0], out index)) {
                     if (index == messageNum)
