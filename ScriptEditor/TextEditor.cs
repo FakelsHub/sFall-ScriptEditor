@@ -52,6 +52,7 @@ namespace ScriptEditor
         public TextEditor(string[] args)
         {
             InitializeComponent();
+            InitControlEvent();
             commandsArgs = args;
             Settings.SetupWindowPosition(SavedWindows.Main, this);
             if (!Settings.firstRun) WindowState = FormWindowState.Maximized;
@@ -68,13 +69,6 @@ namespace ScriptEditor
             // highlighting
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(SyntaxFile.SyntaxFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
-            // folding timer
-            timer = new Timer();
-            timer.Interval = 100;
-            timer.Tick += new EventHandler(timer_Tick);
-            timer2 = new Timer();
-            timer2.Interval = 10;
-            timer2.Tick += new EventHandler(timer2_Tick);
             // Recent files
             UpdateRecentList();
             // Templates
@@ -83,34 +77,7 @@ namespace ScriptEditor
                 mi.Tag = file;
                 mi.Click += new EventHandler(Template_Click); // Open Templates file
                 New_toolStripDropDownButton.DropDownItems.Add(mi);
-            }
-            // Parser
-            parserLabel = new ToolStripLabel((Settings.enableParser) ? "Parser: No file" : parseoff);
-            parserLabel.Alignment = ToolStripItemAlignment.Right;
-            parserLabel.Click += delegate(object sender, EventArgs e) { ParseScript(); };
-            parserLabel.ToolTipText = "Click - Run update parser info.";
-            parserLabel.TextChanged += delegate(object sender, EventArgs e) { parserLabel.ForeColor = Color.Black; };
-            ToolStrip.Items.Add(parserLabel);
-            tabControl1.tabsSwapped += delegate(object sender, TabsSwappedEventArgs e) {
-                TabInfo tmp = tabs[e.aIndex];
-                tabs[e.aIndex] = tabs[e.bIndex];
-                tabs[e.aIndex].index = e.aIndex;
-                tabs[e.bIndex] = tmp;
-                tabs[e.bIndex].index = e.bIndex;
-            };
-            //Create Variable Tab
-            VarTree.ShowNodeToolTips = true;
-            VarTree.ShowRootLines = false;
-            VarTree.Indent = 16;
-            VarTree.ItemHeight = 14;
-            VarTree.AfterSelect += TreeView_AfterSelect;
-            VarTree.AfterCollapse += AfterCollapse;
-            VarTree.Dock = DockStyle.Fill;
-            VarTree.BackColor = Color.FromArgb(250, 250, 255);
-            VarTab.Padding = new Padding(0, 2, 2, 2);
-            VarTab.BackColor = SystemColors.ControlLightLight;
-            VarTab.Controls.Add(VarTree);
-            ProcTree.AfterCollapse += AfterCollapse;
+            }       
             if (Settings.PathScriptsHFile == null) {
                 Headers_toolStripSplitButton.Enabled = false;
             }
@@ -260,6 +227,7 @@ namespace ScriptEditor
                 if (!Exists) return null;
                 //If this is an int, decompile
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
+                    if (!this.Focused) ShowMe();
                     var compiler = new Compiler();
                     string decomp = compiler.Decompile(file);
                     if (decomp == null) {
@@ -750,7 +718,7 @@ namespace ScriptEditor
                 if (lbAutocomplete.Visible) {
                     lbAutocomplete.Hide();
                 }
-                if (Char.IsWhiteSpace(currentTab.textEditor.Document.GetCharAt(caret.Offset + 1))) {
+                if (Char.IsWhiteSpace(currentTab.textEditor.Document.GetCharAt(caret.Offset))) {
                     string bracket = ")";
                     if (e.KeyChar == '[') bracket = "]";
                     else if (e.KeyChar == '{') bracket = "}";
@@ -776,9 +744,10 @@ namespace ScriptEditor
                 if (e.KeyChar == ']') bracket = "[";
                 else if (e.KeyChar == '}') bracket = "{";
                 if (currentTab.textEditor.Document.GetCharAt(caret.Offset - 1) == Convert.ToChar(bracket)) {
-                    //currentTab.textEditor.Document.UndoStack.UndoOperation(false);
+                    currentTab.textEditor.Document.UndoStack.StartUndoGroup();
+                    currentTab.textEditor.Document.Insert(caret.Offset, " ");
                     currentTab.textEditor.Document.Remove(caret.Offset, 1);
-                    //currentTab.textEditor.Document.UndoStack.UndoOperation(true);
+                    currentTab.textEditor.Document.UndoStack.EndUndoGroup();
                 }
             } else {
                 string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, caret.Offset - 1) + e.KeyChar.ToString();
@@ -907,6 +876,47 @@ namespace ScriptEditor
         }
 
 #region Control set states
+        private void InitControlEvent()
+        {   // Parser
+            parserLabel = new ToolStripLabel((Settings.enableParser) ? "Parser: No file" : parseoff);
+            parserLabel.Alignment = ToolStripItemAlignment.Right;
+            parserLabel.Click += delegate(object sender, EventArgs e) { ParseScript(); };
+            parserLabel.ToolTipText = "Click - Run update parser info.";
+            parserLabel.TextChanged += delegate(object sender, EventArgs e) { parserLabel.ForeColor = Color.Black; };
+            ToolStrip.Items.Add(parserLabel);
+
+            // Parser timer
+            timer = new Timer();
+            timer.Interval = 100;
+            timer.Tick += new EventHandler(timer_Tick);
+            timer2 = new Timer();
+            timer2.Interval = 10;
+            timer2.Tick += new EventHandler(timer2_Tick);
+
+            // Tabs Swapped
+            tabControl1.tabsSwapped += delegate(object sender, TabsSwappedEventArgs e) {
+                TabInfo tmp = tabs[e.aIndex];
+                tabs[e.aIndex] = tabs[e.bIndex];
+                tabs[e.aIndex].index = e.aIndex;
+                tabs[e.bIndex] = tmp;
+                tabs[e.bIndex].index = e.bIndex;
+            };
+
+            // Create Variable Tab
+            VarTree.ShowNodeToolTips = true;
+            VarTree.ShowRootLines = false;
+            VarTree.Indent = 16;
+            VarTree.ItemHeight = 14;
+            VarTree.AfterSelect += TreeView_AfterSelect;
+            VarTree.AfterCollapse += AfterCollapse;
+            VarTree.Dock = DockStyle.Fill;
+            VarTree.BackColor = Color.FromArgb(250, 250, 255);
+            VarTab.Padding = new Padding(0, 2, 2, 2);
+            VarTab.BackColor = SystemColors.ControlLightLight;
+            VarTab.Controls.Add(VarTree);
+            ProcTree.AfterCollapse += AfterCollapse;
+        }
+
         private void SetTabTextChange(int i) { tabControl1.TabPages[i].ImageIndex = (tabs[i].changed ? 1 : 0); }
 
         private void SetActiveAreaEvents(TextEditorControl te)
@@ -1325,6 +1335,10 @@ namespace ScriptEditor
         {
             if (currentTab == null)
                 return;
+            if (Settings.userCmdCompile) {
+                MessageBox.Show("It is required to turn off the compilation option via a user cmd file.");
+                return;
+            }
             dgvErrors.Rows.Clear();
             string msg;
             bool result = Compile(currentTab, out msg);

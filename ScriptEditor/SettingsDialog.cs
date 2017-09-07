@@ -159,5 +159,19 @@ namespace ScriptEditor
         {
             FileAssociation.Associate(true);
         }
+
+        private void cbCompilePath_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox2.Enabled = !cbCompilePath.Checked;
+        }
+
+        private void cbUserCompile_CheckedChanged(object sender, EventArgs e)
+        {
+            cbCompilePath.Enabled = !cbUserCompile.Checked;
+            textBox2.Enabled = !cbUserCompile.Checked & !cbCompilePath.Checked;;
+            //cbWatcom.Enabled = !cbUserCompile.Checked;
+            cbOptimize.Enabled = !cbUserCompile.Checked;
+            cbDebug.Enabled = !cbUserCompile.Checked;
+        }
     }
 }

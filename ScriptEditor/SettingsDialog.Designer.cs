@@ -356,6 +356,7 @@
             this.cbCompilePath.Text = "Not use path compiling";
             this.toolTip.SetToolTip(this.cbCompilePath, "Compile scripts into same folder where source ssl file.");
             this.cbCompilePath.UseVisualStyleBackColor = true;
+            this.cbCompilePath.CheckedChanged += new System.EventHandler(this.cbCompilePath_CheckedChanged);
             // 
             // groupBox3
             // 
@@ -463,6 +464,7 @@
             this.toolTip.SetToolTip(this.cbUserCompile, "To use custom command batch file (UserComp.bat from resources folder) to compile " +
                     "scripts files.");
             this.cbUserCompile.UseVisualStyleBackColor = true;
+            this.cbUserCompile.CheckedChanged += new System.EventHandler(this.cbUserCompile_CheckedChanged);
             // 
             // groupBox1
             // 
