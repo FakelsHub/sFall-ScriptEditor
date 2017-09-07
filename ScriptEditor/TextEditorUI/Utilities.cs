@@ -18,6 +18,13 @@ namespace ScriptEditor.TextEditorUI
     internal static class Utilities
     {
     #region Formating text functions
+
+        private struct Quote
+        {
+            public int Open;
+            public int Close;
+        }
+
         // for selected code
         public static void FormattingCode(TextEditorControl TE) 
         {
@@ -41,53 +48,70 @@ namespace ScriptEditor.TextEditorUI
             char[] excludeD = { ' ', ',', '(' };
             const string space = " ";
 
+            List<Quote> Quotes = new  List<Quote>(); 
+
             string[] linecode = textCode.Split('\n');
             for (int i = 0; i < linecode.Length; i++) {
                 string tmp = linecode[i].TrimStart();
                 if (tmp.Length < 3 || tmp.StartsWith("//") || tmp.StartsWith("/*")) continue;
+                // check Quotes
                 int openQuotes = linecode[i].IndexOf('"');
-                int closeQuotes = (openQuotes != -1) ? linecode[i].IndexOf('"', openQuotes + 1) : -1; 
+                while (openQuotes > -1) {
+                    Quote Position;
+                    Position.Open = openQuotes++;
+                    Position.Close = linecode[i].IndexOf('"', openQuotes);
+                    if (Position.Close == -1) break;
+                    Quotes.Add(Position);
+                    openQuotes = linecode[i].IndexOf('"', Position.Close + 1);
+                };
                 foreach (string p in pattern) {
                     int n = 0;
                     do {
                         n = linecode[i].IndexOf(p, n);
-                        // skip string "..."
-                        if (openQuotes > 0 && (n > openQuotes && n < closeQuotes)) {
-                            n = closeQuotes + 1;
-                            if (n < linecode[i].Length) {
-                                openQuotes = linecode[i].IndexOf('"', n);
-                                closeQuotes = (openQuotes != -1) ? linecode[i].IndexOf('"', openQuotes + 1) : -1;
-                            } else openQuotes = -1;
+                        if (n < 0) break;
+                        
+                        // skiping quotes "..."
+                        bool inQuotes = false; 
+                        foreach (Quote q in Quotes)
+                        {
+                            if (n > q.Open && n < q.Close) {
+                                n = q.Close + 1;
+                                inQuotes = true;
+                                break;
+                            }
+                        }
+                        if (inQuotes) {
+                            if (n >= linecode[i].Length) break;
                             continue;
                         }
-                        if (n > 0) {
-                            // insert right space
-                            if (linecode[i].Substring(n + p.Length, 1) != space) {
-                                if (p.Length == 2)
-                                    linecode[i] = linecode[i].Insert(n + 2, space);
-                                else {
-                                    if (linecode[i].Substring(n + 1, 1).IndexOfAny(excludeR) == -1) {
-                                        if ((p == "-" && Char.IsDigit(char.Parse(linecode[i].Substring(n + 1, 1)))
-                                        && linecode[i].Substring(n - 1, 1).IndexOfAny(excludeD) != -1) == false       // check NegDigit
-                                        && ((p == "+" || p == "-") && linecode[i].Substring(n - 1, 1) == p) == false) // check '++/--'
-                                            linecode[i] = linecode[i].Insert(n + 1, space);
-                                    }
+
+                        // insert right space
+                        if (linecode[i].Substring(n + p.Length, 1) != space) {
+                            if (p.Length == 2)
+                                linecode[i] = linecode[i].Insert(n + 2, space);
+                            else {
+                                if (linecode[i].Substring(n + 1, 1).IndexOfAny(excludeR) == -1) {
+                                    if ((p == "-" && Char.IsDigit(char.Parse(linecode[i].Substring(n + 1, 1)))
+                                    && linecode[i].Substring(n - 1, 1).IndexOfAny(excludeD) != -1) == false       // check NegDigit
+                                    && ((p == "+" || p == "-") && linecode[i].Substring(n - 1, 1) == p) == false) // check '++/--'
+                                        linecode[i] = linecode[i].Insert(n + 1, space);
                                 }
                             }
-                            // insert left space
-                            if (p != "," && linecode[i].Substring(n - 1, 1) != space) {
-                                if (p.Length == 2)
-                                    linecode[i] = linecode[i].Insert(n, space);
-                                else {
-                                    if (linecode[i].Substring(n - 1, 1).IndexOfAny(excludeL) == -1) {
-                                        if ((p == "-" && Char.IsDigit(char.Parse(linecode[i].Substring(n + 1, 1)))
-                                            && linecode[i].Substring(n - 1, 1) == "(") == false                             // check NegDigit
-                                            && ((p == "+" || p == "-") && (linecode[i].Substring(n + 1, 1)) == p) == false) // check '++/--'
-                                            linecode[i] = linecode[i].Insert(n, space);
-                                    }
+                        }
+                        // insert left space
+                        if (p != "," && linecode[i].Substring(n - 1, 1) != space) {
+                            if (p.Length == 2)
+                                linecode[i] = linecode[i].Insert(n, space);
+                            else {
+                                if (linecode[i].Substring(n - 1, 1).IndexOfAny(excludeL) == -1) {
+                                    if ((p == "-" && Char.IsDigit(char.Parse(linecode[i].Substring(n + 1, 1)))
+                                        && linecode[i].Substring(n - 1, 1) == "(") == false                             // check NegDigit
+                                        && ((p == "+" || p == "-") && (linecode[i].Substring(n + 1, 1)) == p) == false) // check '++/--'
+                                        linecode[i] = linecode[i].Insert(n, space);
                                 }
                             }
-                        } else break;
+                        }
+
                         n += p.Length;
                     } while (n < linecode[i].Length);
                 }
