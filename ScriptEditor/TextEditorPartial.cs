@@ -94,7 +94,7 @@ namespace ScriptEditor
         // Parse Stop
         private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            if (!currentTab.needsParse)
+            if (currentTab.needsParse)
                     dgvErrors.Rows.Clear();
             if (File.Exists("errors.txt")) {
                 try { //в случаях ошибки в parser.dll, не закрывается созданный им файл, что приводит к ошибке доступа
