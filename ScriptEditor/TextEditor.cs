@@ -1343,8 +1343,10 @@ namespace ScriptEditor
             string msg;
             bool result = Compile(currentTab, out msg);
             tbOutput.Text = msg;
-            if (result)
-                Open(Compiler.GetOutputPath(currentTab.filepath), OpenType.File, false);
+            if (result) {
+                var compiler = new Compiler();
+                Open(compiler.GetOutputPath(currentTab.filepath), OpenType.File, false);
+            }
         }
 
         private void editRegisteredScriptsToolStripMenuItem_Click(object sender, EventArgs e)

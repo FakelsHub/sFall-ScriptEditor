@@ -14,6 +14,8 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public class Compiler
     {
+        const string bakupFile = @"\BakupSSL.tmp";
+
         private static readonly string decompilationPath = Path.Combine(Settings.scriptTempPath, "decomp.ssl");
         public static readonly string parserPath = Path.Combine(Settings.scriptTempPath, "parser.ssl");
         private static readonly string preprocessPath = Path.Combine(Settings.scriptTempPath, "preprocess.ssl");
@@ -58,6 +60,7 @@ namespace ScriptEditor.CodeTranslation
         #endregion
 
         private int lastStatus = 1;
+        private string outputSSL;
 
         private string indentFormat(string defmacro, int macrolen)
         { 
@@ -344,13 +347,14 @@ namespace ScriptEditor.CodeTranslation
             return sName;   
         }
 
-        public static string GetOutputPath(string infile, string sourceDir = "")
+        public string GetOutputPath(string infile, string sourceDir = "")
         { 
             string outputFile = Path.GetFileNameWithoutExtension(infile);
             if (sourceDir.Length != 0 && Settings.useWatcom) outputFile = outputFile.Remove(outputFile.Length - 6);
             outputFile = outputFile + ".int";
             if (Settings.ignoreCompPath && sourceDir.Length == 0) sourceDir = Path.GetDirectoryName(infile);
-            return (Settings.ignoreCompPath) ? Path.Combine(sourceDir, outputFile) : Path.Combine(Settings.outputDir, outputFile);
+            outputSSL = (Settings.ignoreCompPath) ? Path.Combine(sourceDir, outputFile) : Path.Combine(Settings.outputDir, outputFile);
+            return outputSSL;
         }
 
 #if DLL_COMPILER
@@ -369,7 +373,7 @@ namespace ScriptEditor.CodeTranslation
             };
         }
 #else
-        private static string GetSslcCommandLine(string infile, bool preprocess, string sourceDir, bool shortCircuit)
+        private string GetSslcCommandLine(string infile, bool preprocess, string sourceDir, bool shortCircuit)
         {
             string usePreprocess = string.Empty;
             if (!Settings.useWatcom) usePreprocess = preprocess ? "-P " : "-p ";
@@ -466,6 +470,10 @@ namespace ScriptEditor.CodeTranslation
                 psi.UseShellExecute = false;
                 psi.CreateNoWindow = true;
                 psi.WorkingDirectory = Path.GetDirectoryName(infile);
+
+                if (File.Exists(outputSSL))
+                    File.Move(outputSSL, sourceDir + bakupFile);
+
                 Process p = Process.Start(psi);
                 p.StandardInput.WriteLine();
                 output += p.StandardOutput.ReadToEnd();
@@ -473,6 +481,11 @@ namespace ScriptEditor.CodeTranslation
                 p.WaitForExit(1000);
                 success = p.ExitCode == 0;
                 p.Dispose();
+
+                if (success)
+                    File.Delete(sourceDir + bakupFile);
+                else if (File.Exists(sourceDir + bakupFile))
+                    File.Move(sourceDir + bakupFile, outputSSL);
 #endif
             }
             if (errors != null && !Settings.userCmdCompile) 
