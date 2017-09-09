@@ -61,6 +61,9 @@ namespace ScriptEditor
         public static string preprocDef = "---";
         public static bool ignoreCompPath = true;
         public static bool userCmdCompile = false;
+        public static bool msgHighlightComment = true;
+        public static byte msgHighlightColor = 0;
+        public static byte msgFontSize = 0;
 
         // no saved settings
         public static bool msgLipColumn = true;
@@ -191,6 +194,10 @@ namespace ScriptEditor
                         msgListPath.Add(br.ReadString());
                     openMsgEditor = br.ReadBoolean();
                     userCmdCompile = br.ReadBoolean();
+                    msgHighlightComment = br.ReadBoolean();
+                    msgHighlightColor = br.ReadByte();
+                    msgFontSize = br.ReadByte();
+                    //msgLipColumn = br.ReadBoolean();
                 }
                 catch { MessageBox.Show("An error occurred while reading configuration file.\nFile setting.dat may be in wrong format.", "Setting read error"); }
                 br.Close();
@@ -286,6 +293,10 @@ namespace ScriptEditor
                 bw.Write(msgListPath[i]);
             bw.Write(openMsgEditor);
             bw.Write(userCmdCompile);
+            bw.Write(msgHighlightComment);
+            bw.Write(msgHighlightColor);
+            bw.Write(msgFontSize);
+            //bw.Write(msgLipColumn);
             bw.Close();
             // Recent files
             BinaryWriter bwRecent = new BinaryWriter(File.Create(RecentPath));

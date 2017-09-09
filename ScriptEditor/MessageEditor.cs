@@ -18,6 +18,7 @@ namespace ScriptEditor
 
         private const char pcMarker = (char)0x25CF;
         private Color pcColor = Color.FromArgb(0, 0, 220);
+        private Color cmColor;
 
         private Encoding enc = (Settings.encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
@@ -31,7 +32,14 @@ namespace ScriptEditor
             public int row;
             public int col;
         }
-       
+
+        private void SetCommentColor()
+        {
+            cmColor = (Settings.msgHighlightColor == 1) 
+                ? Color.FromArgb(170, 250, 170) 
+                : Color.FromArgb(230, 230, 230);
+        }
+
         private class Entry
         {
             public string msgLine = string.Empty;
@@ -40,7 +48,8 @@ namespace ScriptEditor
             public string debris = string.Empty;
 
             public bool pcMark = false;
-            
+            public bool commentLine = false;
+
             public Entry() { }
 
             public Entry(string line)
@@ -48,6 +57,7 @@ namespace ScriptEditor
                 if (line.TrimStart().StartsWith("#")) {
                     msgLine = "-";
                     desc = line;
+                    commentLine = true;
                 } else {
                     string[] splitLine = line.Split(new char[] {'}'}, StringSplitOptions.RemoveEmptyEntries);
                     if (splitLine.Length < 3) {
@@ -91,12 +101,14 @@ namespace ScriptEditor
                 else return (desc + debris);  
             }
         }
-     
+
         private void AddRow(Entry e)
         {
             dgvMessage.Rows.Add(e, e.msgLine, e.desc, e.msglip);
             if (e.pcMark) 
                 dgvMessage.Rows[dgvMessage.Rows.Count - 1].Cells[2].Style.ForeColor = pcColor;
+            if (e.commentLine)
+                MarkCommentLine(dgvMessage.Rows.Count - 1);
         }
 
         private void InsertRow(int i, Entry e)
@@ -106,6 +118,30 @@ namespace ScriptEditor
                 AddRow(e);
             }
             else dgvMessage.Rows.Insert(i, e, e.msgLine, e.desc, e.msglip);
+            if (e.commentLine)
+                MarkCommentLine(i);
+        }
+
+        private void MarkCommentLine(int row)
+        {
+            if (!Settings.msgHighlightComment) 
+                return;
+
+            foreach (DataGridViewCell cell in dgvMessage.Rows[row].Cells)
+                cell.Style.BackColor = cmColor;
+        }
+
+        private void HighlightingCommentUpdate()
+        {
+            Color clr = (Settings.msgHighlightComment) ? cmColor : dgvMessage.RowsDefaultCellStyle.BackColor;
+            for (int row = 0; row < dgvMessage.Rows.Count; row++)
+            {
+                Entry ent = (Entry)dgvMessage.Rows[row].Cells[0].Value;
+                if (ent.commentLine) {
+                    foreach (DataGridViewCell cell in dgvMessage.Rows[row].Cells)
+                        cell.Style.BackColor = clr;
+                }
+            }
         }
 
         public static void MessageEditorInit(string msgPath, int line)
@@ -161,6 +197,14 @@ namespace ScriptEditor
         private MessageEditor(string msg, TabInfo ti)
         {
             InitializeComponent();
+
+            FontSizeComboBox.SelectedIndex = Settings.msgFontSize;
+            if (Settings.msgFontSize != 0) FontSizeChanged(null, null);
+            FontSizeComboBox.SelectedIndexChanged += FontSizeChanged;
+
+            ColorComboBox.SelectedIndex = Settings.msgHighlightColor;
+            HighlightingCommToolStripMenuItem.Checked = Settings.msgHighlightComment;
+
             if (Settings.encoding == (byte)EncodingType.OEM866) encodingTextDOSToolStripMenuItem.Checked = true;
             StripComboBox.SelectedIndex = 2;
             if (!Settings.msgLipColumn) {
@@ -188,6 +232,7 @@ namespace ScriptEditor
             {
                 AddRow(new Entry(linesMsg[i]));
             }
+            dgvMessage.AutoResizeColumns();
             dgvMessage.Visible = true;
 
             this.Text = Path.GetFileName(msgPath) + this.Tag;
@@ -221,7 +266,7 @@ namespace ScriptEditor
                             if (entries.pcMark)
                                 cells.Style.ForeColor = pcColor;
                             else
-                                cells.Style.ForeColor = Color.Black;
+                                cells.Style.ForeColor = dgvMessage.RowsDefaultCellStyle.ForeColor;
                             break;
                     }
                 }
@@ -481,6 +526,16 @@ namespace ScriptEditor
         private void encodingTextDOSToolStripMenuItem_Click(object sender, EventArgs e)
         {
             enc = (encodingTextDOSToolStripMenuItem.Checked) ? Encoding.GetEncoding("cp866") : Encoding.Default;
+            if (msgPath != null) {
+                dgvMessage.SelectionChanged -= dgvMessage_SelectionChanged;
+
+                dgvMessage.Rows.Clear();
+                readMsgFile();
+                dgvMessage.FirstDisplayedScrollingRowIndex = (SelectLine.row <= 5) ? SelectLine.row : SelectLine.row - 5;
+                dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true;
+
+                dgvMessage.SelectionChanged += dgvMessage_SelectionChanged;
+            }
         }
 
         private void MessageEditor_Deactivate(object sender, EventArgs e)
@@ -495,6 +550,16 @@ namespace ScriptEditor
                 Close();
             } else if (e.KeyCode == Keys.Delete && !editMode)
                 DeleteLineStripButton_Click(null, null);
+            else if (e.Control && e.KeyCode == Keys.Subtract) {
+                if (FontSizeComboBox.SelectedIndex == 0)
+                    return;
+                FontSizeComboBox.SelectedIndex--;
+            }
+            else if (e.Control && e.KeyCode == Keys.Add) {
+                if (FontSizeComboBox.SelectedIndex == FontSizeComboBox.Items.Count - 1)
+                    return;
+                FontSizeComboBox.SelectedIndex++;
+            }
         }
 
         private void MessageEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -519,14 +584,29 @@ namespace ScriptEditor
         private void playerMarkerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Entry entry = (Entry)dgvMessage.Rows[SelectLine.row].Cells[0].Value;
+            if (entry.msgLine == "-")
+                return;
+
+            dgvMessage.CellValueChanged -= dgvMessage_CellValueChanged;
+
+            bool changed = (dgvMessage.Rows[SelectLine.row].Cells[2].Style.ForeColor == Color.Red);
+
             if (entry.pcMark) {
                 entry.desc = entry.desc.TrimStart(pcMarker, ' ');
                 entry.pcMark = false;
+                if (!changed)
+                    dgvMessage.Rows[SelectLine.row].Cells[2].Style.ForeColor = dgvMessage.RowsDefaultCellStyle.ForeColor;
             } else {
                 entry.desc = pcMarker + " " + entry.desc;
                 entry.pcMark = true;
+                if (!changed)
+                    dgvMessage.Rows[SelectLine.row].Cells[2].Style.ForeColor = pcColor;
             }
+
             dgvMessage.Rows[SelectLine.row].Cells[2].Value = entry.desc;
+            dgvMessage.CellValueChanged += dgvMessage_CellValueChanged;
+
+            msgSaveButton.Enabled = true;
         }
 
         private void MoveToolStripButton_Click(object sender, EventArgs e)
@@ -622,6 +702,42 @@ namespace ScriptEditor
                 this.Owner = scrptEditor;
             else 
                 this.Owner = null;
+        }
+
+        private void FontSizeChanged(object sender, EventArgs e)
+        {
+            int size = int.Parse(FontSizeComboBox.Text);
+            dgvMessage.Columns[2].DefaultCellStyle.Font = new Font(dgvMessage.Columns[2].DefaultCellStyle.Font.Name, size, FontStyle.Regular);
+
+            if (size > 9)
+                size = (int)(size / 1.5f);
+            else
+                size--;
+            dgvMessage.Columns[1].DefaultCellStyle.Font = new Font(dgvMessage.Columns[1].DefaultCellStyle.Font.Name, size, FontStyle.Bold);
+
+            dgvMessage.AutoResizeColumns();
+            dgvMessage.AutoResizeRows();
+
+            Settings.msgFontSize = (byte)FontSizeComboBox.SelectedIndex;
+        }
+
+        private void HighlightingCheck(object sender, EventArgs e)
+        {
+            Settings.msgHighlightComment = HighlightingCommToolStripMenuItem.Checked;
+
+            if (dgvMessage.RowCount > 1)
+                HighlightingCommentUpdate();
+        }
+
+        private void ColorComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (dgvMessage.RowCount > 1)
+                Settings.msgHighlightColor = (byte)ColorComboBox.SelectedIndex;
+
+            SetCommentColor();
+
+            if (dgvMessage.RowCount > 1)
+                HighlightingCommentUpdate();
         }
     }
 }
