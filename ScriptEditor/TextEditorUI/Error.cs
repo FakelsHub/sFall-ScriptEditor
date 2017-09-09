@@ -78,7 +78,7 @@ namespace ScriptEditor.TextEditorUI
             }
         }
 
-        public static string ParserLog(string log, TabInfo tab)
+        public static string ParserLog(string log, TabInfo tab, List<Error> errors)
         {
             if (tab.error) {
                 List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(0, tab.textEditor.Document.TextLength);
@@ -97,7 +97,7 @@ namespace ScriptEditor.TextEditorUI
                 if (sLog[i].StartsWith("[Error]")) {
                     if (log.Length > 0) log += Environment.NewLine;
                     warn = false;
-                    if (TextEditor.ParsingErrors) HighlightError(sLog[i], tab);
+                    if (TextEditor.ParsingErrors) HighlightError(sLog[i], tab, errors);
                 }
                 if (sLog[i].StartsWith("[Warning]")) {
                     if (!Settings.parserWarn){
@@ -116,17 +116,20 @@ namespace ScriptEditor.TextEditorUI
             return log;
         }
 
-        private static void HighlightError(string error, TabInfo tab)
+        private static void HighlightError(string error, TabInfo tab, List<Error> errors)
         {
             string[] str = error.Split(new char[] {':'}, 4);
             if (str.Length < 3 || Path.GetFileName(str[1].TrimEnd('>')) != tab.filename) return; 
             TextLocation ErrorPosition = new Error(str[2], "1").ErrorPosition;
             int offset = tab.textEditor.Document.PositionToOffset(ErrorPosition);
             int len = TextUtilities.GetLineAsString(tab.textEditor.Document, ErrorPosition.Line).Length;
+
             TextMarker tm = new TextMarker(offset, len, TextMarkerType.WaveLine, System.Drawing.Color.Red);
             tm.ToolTip = str[str.Length - 1];
             tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
             tab.error = true;
+            // add to error tab
+            errors.Add(new Error(ErrorType.Error, tm.ToolTip, tab.filepath, int.Parse(str[2]), 1));
         }
     }
 }

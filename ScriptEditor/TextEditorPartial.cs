@@ -94,10 +94,15 @@ namespace ScriptEditor
         // Parse Stop
         private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
+            if (!currentTab.needsParse)
+                    dgvErrors.Rows.Clear();
             if (File.Exists("errors.txt")) {
                 try { //в случаях ошибки в parser.dll, не закрывается созданный им файл, что приводит к ошибке доступа
-                    tbOutputParse.Text = Error.ParserLog(File.ReadAllText("errors.txt"), currentTab); //+tbOutputParse.Text; 
+                    List<Error> errors = new List<Error>();
+                    tbOutputParse.Text = Error.ParserLog(File.ReadAllText("errors.txt"), currentTab, errors); //+tbOutputParse.Text;
                     File.Delete("errors.txt");
+                    foreach (Error err in errors)
+                        dgvErrors.Rows.Insert(0, err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
                 } catch {}
             }
             if (!(e.Result is TabInfo)) {
