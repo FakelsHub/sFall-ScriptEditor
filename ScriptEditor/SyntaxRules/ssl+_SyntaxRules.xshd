@@ -439,7 +439,7 @@
         <Key word = "selectfilelist" />
       </KeyWords>
 
-      <KeyWords name = "Special" bold="true" italic="false" bgcolor="DimGray" color="White">
+      <KeyWords name = "Special" bold="true" italic="false" color="DimGray">
         <Key word = "debug_msg" />
       </KeyWords>
 
@@ -660,7 +660,7 @@
         <Key word = "Check_Create_Car" />
       </KeyWords>
 
-      <KeyWords name = "SfallFunctions" bold="true" italic="false" color="SaddleBrown">
+      <KeyWords name = "SfallUnsafeFunctions" bold="true" italic="false" color="#E04500">
         <Key word = "read_byte" />
         <Key word = "read_short" />
         <Key word = "read_int" />
@@ -679,6 +679,9 @@
         <Key word = "call_offset_r2" />
         <Key word = "call_offset_r3" />
         <Key word = "call_offset_r4" />
+      </KeyWords>
+
+      <KeyWords name = "SfallFunctions" bold="true" italic="false" color="SaddleBrown">
         <Key word = "set_pc_base_stat" />
         <Key word = "set_pc_extra_stat" />
         <Key word = "get_pc_base_stat" />

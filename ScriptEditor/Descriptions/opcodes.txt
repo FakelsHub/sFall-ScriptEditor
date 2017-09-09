@@ -429,11 +429,6 @@ void set_npc_stat_max(int stat, int value)
 void set_npc_stat_min(int stat, int value)
 
 int  input_funcs_available()
-int  key_pressed(int dxScancode)
-void tap_key(int dxScancode)
-int  get_mouse_x()
-int  get_mouse_y()
-int  get_mouse_buttons()
 int  get_window_under_mouse()
 
 int get_year()
@@ -603,8 +598,8 @@ int   fs_pos(int id)
 void  fs_seek(int id, int pos)
 void  fs_resize(int id, int size)
 
-int  get_proto_data(objptr, int offset)
-void set_proto_data(objptr, int offset, int value)
+int  get_proto_data(int pid, int offset)
+void set_proto_data(int pid, int offset, int value)
 
 int   list_begin(int type)
 int   list_next(int listid)
@@ -660,6 +655,11 @@ void set_inven_ap_cost
 
 
 // SFALL OPCODES with descriptions (will override entries from above)
+int  key_pressed(int dxScancode)
+void tap_key(int dxScancode)
+int  get_mouse_x()
+int  get_mouse_y()
+int  get_mouse_buttons() | - Returns the number of the mouse button that is currently pressed (1 - left, 2 - right, 3 - middle) and 0 otherwise.
 
 int game_loaded() | - Returns 1 the first time it is called after a new game or game load, and 0 any time after.
 int get_ini_setting(string setting) | - Reads an integer value from an ini file in the fallout directory. 
