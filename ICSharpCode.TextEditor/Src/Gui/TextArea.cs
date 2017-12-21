@@ -311,7 +311,7 @@ namespace ICSharpCode.TextEditor
 			CloseToolTip();
 			
 			foreach (AbstractMargin margin in leftMargins) {
-				if (margin.DrawingPosition.Contains(e.X, e.Y)) {
+				if (margin.IsVisible && margin.DrawingPosition.Contains(e.X, e.Y)) { // fix bug for open folding
 					margin.HandleMouseDown(new Point(e.X, e.Y), e.Button);
 				}
 			}
@@ -442,7 +442,7 @@ namespace ICSharpCode.TextEditor
 					RequestToolTip(e.Location);
 			}
 			foreach (AbstractMargin margin in leftMargins) {
-				if (margin.DrawingPosition.Contains(e.X, e.Y)) {
+				if (margin.IsVisible && margin.DrawingPosition.Contains(e.X, e.Y)) {
 					this.Cursor = margin.Cursor;
 					margin.HandleMouseMove(new Point(e.X, e.Y), e.Button);
 					if (lastMouseInMargin != margin) {
