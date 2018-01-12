@@ -226,6 +226,16 @@ namespace ICSharpCode.TextEditor
 				                 - textArea.TextView.TextArea.VirtualTop.Y);
 			}
 		}
+
+		public Point GetScreenPosition(int line, int column) 
+		{
+				int xpos = textArea.TextView.GetDrawingXPos(line, column);
+				return new Point(textArea.TextView.DrawingPosition.X + xpos,
+				                 textArea.TextView.DrawingPosition.Y
+				                 + (textArea.Document.GetVisibleLine(line)) * textArea.TextView.FontHeight
+				                 - textArea.TextView.TextArea.VirtualTop.Y);
+		}
+
 		int oldLine = -1;
 		bool outstandingUpdate;
 		
