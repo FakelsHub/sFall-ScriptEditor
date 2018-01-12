@@ -13,8 +13,8 @@ namespace ICSharpCode.TextEditor.Util
 {
 	static class TipPainter
 	{
-		const float HorizontalBorder = 3;
-		const float VerticalBorder   = 5;
+		const float HorizontalBorder = 8;
+		const float VerticalBorder   = 6;
 		
 		//static StringFormat centerTipFormat = CreateTipStringFormat();
 		
@@ -112,8 +112,9 @@ namespace ICSharpCode.TextEditor.Util
 			
 			if (maxLayoutSize.Width > 0 && maxLayoutSize.Height > 0) {
 				graphics.TextRenderingHint =
-					TextRenderingHint.AntiAliasGridFit;
-				
+					TextRenderingHint.ClearTypeGridFit;
+				graphics.TextContrast = 0;
+
 				tipData.SetMaximumSize(maxLayoutSize);
 				tipSizeF = tipData.GetRequiredSize();
 				tipData.SetAllocatedSize(tipSizeF);
