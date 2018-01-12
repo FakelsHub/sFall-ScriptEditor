@@ -134,6 +134,10 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		protected override void Convert(IDocument document, int startOffset, int length)
 		{
+			if (startOffset > 0) {
+				startOffset--;
+				length++;
+			}
 			StringBuilder what = new StringBuilder(document.GetText(startOffset, length));
 			
 			for (int i = 0; i < what.Length; ++i) {
