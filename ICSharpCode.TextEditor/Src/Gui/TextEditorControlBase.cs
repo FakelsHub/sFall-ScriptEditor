@@ -571,6 +571,7 @@ namespace ICSharpCode.TextEditor
 			
 			editactions[Keys.Divide | Keys.Control] = new ToggleComment();
 			editactions[Keys.OemQuestion | Keys.Control] = new ToggleComment();
+			editactions[Keys.Multiply | Keys.Control] = new ToggleBlockComment();
 			
 			editactions[Keys.Back | Keys.Alt]  = new Actions.Undo();
 			editactions[Keys.Z | Keys.Control] = new Actions.Undo();
