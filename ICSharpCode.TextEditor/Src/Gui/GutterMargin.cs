@@ -88,6 +88,13 @@ namespace ICSharpCode.TextEditor
 						             numberStringFormat);
 					}
 				}
+                if (!textArea.Document.TextEditorProperties.EnableFolding) {
+                    g.DrawLine(BrushRegistry.GetPen(lineNumberPainterColor.Color),
+                                       base.drawingPosition.X + 23,
+                                       backgroundRectangle.Y,
+                                       base.drawingPosition.X + 23,
+                                       backgroundRectangle.Bottom);
+                }
 			}
 		}
 

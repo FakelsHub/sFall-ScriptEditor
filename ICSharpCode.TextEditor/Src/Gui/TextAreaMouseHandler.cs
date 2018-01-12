@@ -68,7 +68,7 @@ namespace ICSharpCode.TextEditor
 						++endLines;
 						if (endLines >= 10) {
 							sb.Remove(i + 1, sb.Length - i - 1);
-							sb.Append(Environment.NewLine);
+							//sb.Append(Environment.NewLine);
 							sb.Append("...");
 							break;
 							

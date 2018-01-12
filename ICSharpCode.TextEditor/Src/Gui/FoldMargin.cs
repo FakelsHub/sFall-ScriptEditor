@@ -53,18 +53,16 @@ namespace ICSharpCode.TextEditor
 				                                          textArea.TextView.FontHeight);
 				
 				if (rect.IntersectsWith(markerRectangle)) {
+					g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled
+															? lineNumberPainterColor.BackgroundColor
+															: SystemColors.InactiveBorder), markerRectangle);
 					// draw dotted separator line
 					if (textArea.Document.TextEditorProperties.ShowLineNumbers) {
-						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder),
-						                markerRectangle);
-						
 						g.DrawLine(BrushRegistry.GetDotPen(lineNumberPainterColor.Color),
 						           base.drawingPosition.X,
 						           markerRectangle.Y,
 						           base.drawingPosition.X,
 						           markerRectangle.Bottom);
-					} else {
-						g.FillRectangle(BrushRegistry.GetBrush(textArea.Enabled ? lineNumberPainterColor.BackgroundColor : SystemColors.InactiveBorder), markerRectangle);
 					}
 					
 					int currentLine = textArea.Document.GetFirstLogicalLine(textArea.TextView.FirstPhysicalLine + y);
