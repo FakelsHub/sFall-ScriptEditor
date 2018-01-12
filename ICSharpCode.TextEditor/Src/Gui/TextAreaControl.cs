@@ -302,10 +302,10 @@ namespace ICSharpCode.TextEditor
 				return;
 			if ((Control.ModifierKeys & Keys.Control) != 0 && TextEditorProperties.MouseWheelTextZoom) {
 				if (scrollDistance > 0) {
-					motherTextEditorControl.Font = new Font(motherTextEditorControl.Font.Name,
+					motherTextEditorControl.Font = new Font(motherTextEditorControl.Font.FontFamily,
 					                                        motherTextEditorControl.Font.Size + 1);
 				} else {
-					motherTextEditorControl.Font = new Font(motherTextEditorControl.Font.Name,
+					motherTextEditorControl.Font = new Font(motherTextEditorControl.Font.FontFamily,
 					                                        Math.Max(6, motherTextEditorControl.Font.Size - 1));
 				}
 			} else {
