@@ -340,13 +340,13 @@ namespace ICSharpCode.TextEditor
 		void SetToolTip(string text, int lineNumber)
 		{
 			if (oldToolTip == text) {
-                Point loc = LocationToolTip(lineNumber, toolTip.Location);
-                if (!loc.IsEmpty)
-                    toolTip.Location = loc;
-                return;
-            }
-            if (toolTip != null && toolTip.Owner != this.FindForm())
-                toolTip.Close();
+				Point loc = LocationToolTip(lineNumber, toolTip.Location);
+				if (!loc.IsEmpty)
+					toolTip.Location = loc;
+				return;
+			}
+			if (toolTip != null && toolTip.Owner != this.FindForm())
+				toolTip.Close();
 			if (toolTip == null || toolTip.IsDisposed)
 				toolTip = new DeclarationViewWindow(this.FindForm());
 			if (text == null) {
@@ -361,8 +361,8 @@ namespace ICSharpCode.TextEditor
 			oldToolTip = text;
 		}
 		
-        Point LocationToolTip(int lineNumber, Point? prevLocation = null)
-        {
+		Point LocationToolTip(int lineNumber, Point? prevLocation = null)
+		{
 			Point p = Control.MousePosition;
 			Point cp = PointToClient(p);
 			if (lineNumber >= 0) {
@@ -371,11 +371,11 @@ namespace ICSharpCode.TextEditor
 			}
 			p.Offset(3, 3);
 
-            if (prevLocation != null && prevLocation.Value.Y == p.Y)
-                return new Point();
-            else
-                return p;
-        }
+			if (prevLocation != null && prevLocation.Value.Y == p.Y)
+				return new Point();
+			else
+				return p;
+		}
 
 		public event ToolTipRequestEventHandler ToolTipRequest;
 		

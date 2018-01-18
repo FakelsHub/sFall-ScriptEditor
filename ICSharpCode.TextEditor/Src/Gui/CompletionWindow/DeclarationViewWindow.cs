@@ -68,9 +68,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		public DeclarationViewWindow(Form parent)
 		{
 			SetStyle(ControlStyles.Selectable, false);
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            SetStyle(ControlStyles.ResizeRedraw, true);
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+			SetStyle(ControlStyles.ResizeRedraw, true);
 
 			StartPosition   = FormStartPosition.Manual;
 			FormBorderStyle = FormBorderStyle.None;
@@ -79,7 +79,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			Size            = new Size(0, 0);
 			base.CreateHandle();
 
-            //Font = new Font(FontFamily.GenericSansSerif, 9.5f, FontStyle.Regular, GraphicsUnit.Point);
+			//Font = new Font(FontFamily.GenericSansSerif, 9.5f, FontStyle.Regular, GraphicsUnit.Point);
 		}
 		
 		protected override CreateParams CreateParams {
@@ -126,11 +126,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		protected override void OnPaintBackground(PaintEventArgs pe)
 		{
-            // Draw gradient background
-            LinearGradientBrush gradient = new LinearGradientBrush(pe.ClipRectangle, 
-                                                                   Color.White, 
-                                                                   Color.FromArgb(255, 245, 190),
-                                                                   LinearGradientMode.Vertical);
+			// Draw gradient background
+			LinearGradientBrush gradient = new LinearGradientBrush(pe.ClipRectangle, 
+																   Color.White, 
+																   Color.FromArgb(255, 245, 190),
+																   LinearGradientMode.Vertical);
 			pe.Graphics.FillRectangle(gradient, pe.ClipRectangle);
 		}
 	}
