@@ -339,29 +339,44 @@ namespace ICSharpCode.TextEditor
 		
 		void SetToolTip(string text, int lineNumber)
 		{
+			if (oldToolTip == text) {
+                Point loc = LocationToolTip(lineNumber, toolTip.Location);
+                if (!loc.IsEmpty)
+                    toolTip.Location = loc;
+                return;
+            }
+            if (toolTip != null && toolTip.Owner != this.FindForm())
+                toolTip.Close();
 			if (toolTip == null || toolTip.IsDisposed)
 				toolTip = new DeclarationViewWindow(this.FindForm());
-			if (oldToolTip == text)
-				return;
 			if (text == null) {
 				toolTip.Hide();
 			} else {
-				Point p = Control.MousePosition;
-				Point cp = PointToClient(p);
-				if (lineNumber >= 0) {
-					lineNumber = this.Document.GetVisibleLine(lineNumber);
-					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
-				}
-				p.Offset(3, 3);
 				toolTip.Owner = this.FindForm();
-				toolTip.Location = p;
+				toolTip.Location = LocationToolTip(lineNumber);
 				toolTip.Description = text;
 				toolTip.HideOnClick = true;
-				toolTip.Show();
+				//toolTip.Show();
 			}
 			oldToolTip = text;
 		}
 		
+        Point LocationToolTip(int lineNumber, Point? prevLocation = null)
+        {
+			Point p = Control.MousePosition;
+			Point cp = PointToClient(p);
+			if (lineNumber >= 0) {
+				lineNumber = this.Document.GetVisibleLine(lineNumber);
+				p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
+			}
+			p.Offset(3, 3);
+
+            if (prevLocation != null && prevLocation.Value.Y == p.Y)
+                return new Point();
+            else
+                return p;
+        }
+
 		public event ToolTipRequestEventHandler ToolTipRequest;
 		
 		protected virtual void OnToolTipRequest(ToolTipRequestEventArgs e)
