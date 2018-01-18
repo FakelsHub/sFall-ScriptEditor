@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 [assembly: StringFreezing()]
 
 [assembly: AssemblyTitle("ICSharpCode.TextEditor")]
-[assembly: AssemblyDescription("A .NET text editor control")]
+[assembly: AssemblyDescription("A .NET Framework 4.0 text editor control")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

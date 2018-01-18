@@ -21,7 +21,7 @@
     <BaseAddress>98041856</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -41,6 +41,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Optimize>False</Optimize>
@@ -115,8 +116,8 @@
     <Compile Include="Src\Document\TextBufferStrategy\ITextBufferStrategy.cs" />
     <Compile Include="Src\Document\TextBufferStrategy\StringTextBufferStrategy.cs" />
     <Compile Include="Src\Util\AugmentableRedBlackTree.cs" />
-    <Compile Include="Src\Util\CheckedList.cs" />
-    <Compile Include="Src\Util\LoggingService.cs" />
+    <None Include="Src\Util\CheckedList.cs" />
+    <None Include="Src\Util\LoggingService.cs" />
     <Compile Include="Src\Util\LookupTable.cs" />
     <Compile Include="Src\Util\MouseWheelHandler.cs" />
     <Compile Include="Src\Util\RedBlackTreeIterator.cs" />
@@ -137,18 +138,18 @@
     <Compile Include="Src\Gui\Ime.cs" />
     <Compile Include="Src\Gui\TextAreaUpdate.cs" />
     <Compile Include="Src\Document\Selection\SelectionManager.cs" />
-    <Compile Include="Src\Gui\CompletionWindow\ICompletionData.cs" />
-    <Compile Include="Src\Gui\CompletionWindow\ICompletionDataProvider.cs" />
-    <Compile Include="Src\Gui\CompletionWindow\CodeCompletionWindow.cs">
+    <None Include="Src\Gui\CompletionWindow\ICompletionData.cs" />
+    <None Include="Src\Gui\CompletionWindow\ICompletionDataProvider.cs" />
+    <None Include="Src\Gui\CompletionWindow\CodeCompletionWindow.cs">
       <SubType>Form</SubType>
-    </Compile>
+    </None>
     <Compile Include="Src\Gui\CompletionWindow\DeclarationViewWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\InsightWindow\IInsightDataProvider.cs" />
-    <Compile Include="Src\Gui\InsightWindow\InsightWindow.cs">
+    <None Include="Src\Gui\InsightWindow\IInsightDataProvider.cs" />
+    <None Include="Src\Gui\InsightWindow\InsightWindow.cs">
       <SubType>Form</SubType>
-    </Compile>
+    </None>
     <Compile Include="Src\Util\RtfWriter.cs" />
     <Compile Include="Src\Document\FoldingStrategy\FoldingManager.cs" />
     <Compile Include="Src\Document\AbstractSegment.cs" />
@@ -196,12 +197,12 @@
     <Compile Include="Src\Document\DefaultTextEditorProperties.cs" />
     <Compile Include="Src\Document\MarkerStrategy\MarkerStrategy.cs" />
     <Compile Include="Src\Document\MarkerStrategy\TextMarker.cs" />
-    <Compile Include="Src\Gui\CompletionWindow\AbstractCompletionWindow.cs">
+    <None Include="Src\Gui\CompletionWindow\AbstractCompletionWindow.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\CompletionWindow\CodeCompletionListView.cs">
+    </None>
+    <None Include="Src\Gui\CompletionWindow\CodeCompletionListView.cs">
       <SubType>UserControl</SubType>
-    </Compile>
+    </None>
     <Compile Include="Src\Gui\BrushRegistry.cs" />
     <Compile Include="Src\Gui\HRuler.cs">
       <SubType>Component</SubType>
@@ -209,10 +210,10 @@
     <Compile Include="Src\Document\BookmarkManager\Bookmark.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkEventHandler.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\ASPX.xshd" />
-    <EmbeddedResource Include="Resources\BAT-Mode.xshd" />
+    <None Include="Resources\ASPX.xshd" />
+    <None Include="Resources\BAT-Mode.xshd" />
     <EmbeddedResource Include="Resources\CPP-Mode.xshd" />
-    <EmbeddedResource Include="Resources\Coco-Mode.xshd" />
+    <None Include="Resources\Coco-Mode.xshd" />
     <EmbeddedResource Include="Resources\CSharp-Mode.xshd" />
     <EmbeddedResource Include="Resources\HTML-Mode.xshd" />
     <None Include="ClassDiagram.cd" />
@@ -228,7 +229,7 @@
     <EmbeddedResource Include="Resources\VBNET-Mode.xshd" />
     <EmbeddedResource Include="Resources\XML-Mode.xshd" />
     <Compile Include="Src\Util\FileReader.cs" />
-    <EmbeddedResource Include="Resources\Boo.xshd" />
+    <None Include="Resources\Boo.xshd" />
     <Compile Include="Src\Gui\DrawableLine.cs" />
     <Compile Include="Src\Gui\ToolTipRequestEventArgs.cs" />
     <Compile Include="Src\Document\HighlightingStrategy\SpanStack.cs" />
