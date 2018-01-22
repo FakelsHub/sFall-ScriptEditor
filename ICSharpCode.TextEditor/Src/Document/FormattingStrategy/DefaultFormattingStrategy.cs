@@ -44,15 +44,24 @@ namespace ICSharpCode.TextEditor.Document
 				}
 			}
 
-            if (smart) {
-                if (lineText.TrimEnd(whitespaceChars).EndsWith("begin", StringComparison.OrdinalIgnoreCase)) {
-                    LineSegment line = textArea.Document.GetLineSegment(lineNumber + 2);
-                    if (textArea.Document.GetText(line).TrimStart(' ', '\t').Length == 0)
-                        textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\n");
-
-                    whitespaces.Append(new string(whitespaceChars[0], textArea.Document.TextEditorProperties.IndentationSize));
-                }
-            }
+			if (smart) {
+				bool append = false;
+				string endWord = lineText.TrimEnd(whitespaceChars).ToLowerInvariant();
+				if (endWord.EndsWith(" else") || endWord.EndsWith(" then"))
+					append = true; 
+				else if (endWord.EndsWith(" begin")) {
+					LineSegment line = textArea.Document.GetLineSegment(lineNumber + 2);
+					if (textArea.Document.GetText(line).TrimStart(whitespaceChars).Length == 0) {
+						if (lineText.TrimStart(whitespaceChars).ToLowerInvariant().StartsWith("if "))
+							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end else begin\r\n");
+						else
+							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\r\n");
+					}
+					append = true;
+				}
+				if (append)
+					whitespaces.Append(new string(whitespaceChars[0], textArea.Document.TextEditorProperties.IndentationSize));
+			}
 
 			return whitespaces.ToString();
 		}
