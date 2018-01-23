@@ -32,6 +32,10 @@ namespace ICSharpCode.TextEditor
 		OverwriteMode
 	}
 	
+	public enum ImplementationMode {
+		SoftwareMode,
+		Win32Mode
+	}
 	
 	public class Caret : System.IDisposable
 	{
@@ -46,6 +50,14 @@ namespace ICSharpCode.TextEditor
 		Point    currentPos   = new Point(-1, -1);
 		Ime      ime          = null;
 		CaretImplementation caretImplementation;
+		
+		static ImplementationMode mode = ImplementationMode.Win32Mode;
+		
+		public static ImplementationMode GraphicsMode{
+			set { 
+				mode = value; 
+			}
+		}
 		
 		/// <value>
 		/// The 'prefered' xPos in which the caret moves, when it is moved
@@ -121,7 +133,7 @@ namespace ICSharpCode.TextEditor
 			this.textArea = textArea;
 			textArea.GotFocus  += new EventHandler(GotFocus);
 			textArea.LostFocus += new EventHandler(LostFocus);
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			if (mode == ImplementationMode.SoftwareMode || Environment.OSVersion.Platform == PlatformID.Unix)
 				caretImplementation = new ManagedCaret(this);
 			else
 				caretImplementation = new Win32Caret(this);
@@ -170,7 +182,7 @@ namespace ICSharpCode.TextEditor
 						caretCreated = caretImplementation.Create(2, textArea.TextView.FontHeight);
 						break;
 					case CaretMode.OverwriteMode:
-						caretCreated = caretImplementation.Create((int)textArea.TextView.SpaceWidth, textArea.TextView.FontHeight);
+						caretCreated = caretImplementation.Create(textArea.TextView.SpaceWidth, textArea.TextView.FontHeight);
 						break;
 				}
 			}
@@ -372,7 +384,7 @@ namespace ICSharpCode.TextEditor
 			public override bool Create(int width, int height)
 			{
 				this.visible = true;
-				this.width = width - 2;
+				this.width = width;
 				this.height = height;
 				timer.Enabled = true;
 				return true;
@@ -394,7 +406,10 @@ namespace ICSharpCode.TextEditor
 			public override void PaintCaret(Graphics g)
 			{
 				if (visible && blink)
-					g.DrawRectangle(Pens.Gray, x, y, width, height);
+					if (parentCaret.CaretMode == CaretMode.OverwriteMode)
+						g.FillRectangle(BrushRegistry.GetBrush(Color.FromArgb(128, 0, 0, 0)), x + 1, y, width, height);
+					else
+						g.DrawRectangle(Pens.Black, x, y, width - 1, height);
 			}
 			public override void Destroy()
 			{
