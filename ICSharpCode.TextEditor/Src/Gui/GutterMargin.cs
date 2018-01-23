@@ -45,9 +45,8 @@ namespace ICSharpCode.TextEditor
 		
 		public override Size Size {
 			get {
-				return new Size((int)(textArea.TextView.WideSpaceWidth
-				                      * Math.Max(3, (int)Math.Log10(textArea.Document.TotalNumberOfLines) + 1)),
-				                -1);
+				return new Size((int)((textArea.TextView.WideSpaceWidth
+				                      * Math.Max(2, (int)Math.Log10(textArea.Document.TotalNumberOfLines) + 1)) + 5), -1);
 			}
 		}
 		
@@ -72,29 +71,31 @@ namespace ICSharpCode.TextEditor
 			HighlightColor lineNumberPainterColor = textArea.Document.HighlightingStrategy.GetColorFor("LineNumbers");
 			int fontHeight = textArea.TextView.FontHeight;
 			Brush fillBrush = textArea.Enabled ? BrushRegistry.GetBrush(lineNumberPainterColor.BackgroundColor) : SystemBrushes.InactiveBorder;
-			Brush drawBrush = BrushRegistry.GetBrush(lineNumberPainterColor.Color);
+			Font lineFont = lineNumberPainterColor.GetFont(TextEditorProperties.FontContainer);
 			for (int y = 0; y < (DrawingPosition.Height + textArea.TextView.VisibleLineDrawingRemainder) / fontHeight + 1; ++y) {
 				int ypos = drawingPosition.Y + fontHeight * y  - textArea.TextView.VisibleLineDrawingRemainder;
 				Rectangle backgroundRectangle = new Rectangle(drawingPosition.X, ypos, drawingPosition.Width, fontHeight);
-				if (rect.IntersectsWith(backgroundRectangle)) {
+				//if (rect.IntersectsWith(backgroundRectangle)) {
 					g.FillRectangle(fillBrush, backgroundRectangle);
 					int curLine = textArea.Document.GetFirstLogicalLine(textArea.Document.GetVisibleLine(textArea.TextView.FirstVisibleLine) + y);
-					
 					if (curLine < textArea.Document.TotalNumberOfLines) {
+						Brush drawBrush = (curLine != textArea.Caret.Line) 
+										   ? BrushRegistry.GetBrush(lineNumberPainterColor.Color)
+										   : drawBrush = BrushRegistry.GetBrush(Color.Blue);
 						g.DrawString((curLine + 1).ToString(),
-						             lineNumberPainterColor.GetFont(TextEditorProperties.FontContainer),
+						             lineFont,
 						             drawBrush,
 						             backgroundRectangle,
 						             numberStringFormat);
 					}
-				}
-                if (!textArea.Document.TextEditorProperties.EnableFolding) {
-                    g.DrawLine(BrushRegistry.GetPen(lineNumberPainterColor.Color),
-                                       base.drawingPosition.X + 23,
-                                       backgroundRectangle.Y,
-                                       base.drawingPosition.X + 23,
-                                       backgroundRectangle.Bottom);
-                }
+				//}
+			}
+			if (!textArea.Document.TextEditorProperties.EnableFolding) {
+					g.DrawLine(BrushRegistry.GetPen(lineNumberPainterColor.Color),
+					                   rect.X + Size.Width - 3,
+					                   rect.Y,
+					                   rect.X + Size.Width - 3,
+					                   rect.Bottom);
 			}
 		}
 
