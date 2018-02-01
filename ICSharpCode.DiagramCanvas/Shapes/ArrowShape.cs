@@ -23,8 +23,8 @@ namespace ICSharpCode.ClassDiagram
             path.StartFigure();
             path.AddPolygon(new PointF[]{
                 //          x     y
-                new PointF(1.0f, 0.5f),
-                new PointF(1.5f, 0.5f),
+                new PointF(1.0f, -0.25f),
+                new PointF(1.5f, -0.25f),
                 new PointF(1.5f, 1.5f),
 
                 new PointF(2.5f, 1.5f),
@@ -51,17 +51,18 @@ namespace ICSharpCode.ClassDiagram
 		
 		public override float ShapeWidth
 		{
-			get { return 4.0f; }
+			get { return 5.0f; }
 		}
 		
 		public override float ShapeHeight
 		{
-			get { return 3.0f; }
+			get { return 4.0f; }
 		}
 		
 		public override void Draw(Graphics graphics)
 		{
 			if (graphics == null) return;
+			graphics.TranslateTransform(0.5f, 0.5f);
 			graphics.FillPath(Brushes.Black, path);
 		}
 	}

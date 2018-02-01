@@ -36,37 +36,23 @@ namespace ICSharpCode.ClassDiagram
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.panel1.SuspendLayout();
+            this.CanvasPicture = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.CanvasPicture)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox1
+            // CanvasPicture
             // 
-            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(155, 167);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1Paint);
-            this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBox1MouseClick);
-            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1MouseDown);
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1MouseMove);
-            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox1MouseUp);
-            // 
-            // panel1
-            // 
-            this.panel1.AllowDrop = true;
-            this.panel1.AutoScroll = true;
-            this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(253, 259);
-            this.panel1.TabIndex = 1;
+            this.CanvasPicture.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CanvasPicture.Location = new System.Drawing.Point(0, 0);
+            this.CanvasPicture.Name = "CanvasPicture";
+            this.CanvasPicture.Size = new System.Drawing.Size(150, 150);
+            this.CanvasPicture.TabIndex = 0;
+            this.CanvasPicture.TabStop = false;
+            this.CanvasPicture.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBoxPaint);
+            this.CanvasPicture.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureBoxMouseClick);
+            this.CanvasPicture.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBoxMouseDown);
+            this.CanvasPicture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBoxMouseMove);
+            this.CanvasPicture.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBoxMouseUp);
             // 
             // ClassCanvas
             // 
@@ -74,21 +60,21 @@ namespace ICSharpCode.ClassDiagram
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.BackColor = System.Drawing.Color.White;
-            this.Controls.Add(this.panel1);
+            this.AutoSize = true;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.Controls.Add(this.CanvasPicture);
             this.Cursor = System.Windows.Forms.Cursors.Default;
+            this.DoubleBuffered = true;
             this.Name = "ClassCanvas";
-            this.Size = new System.Drawing.Size(253, 259);
+            this.Size = new System.Drawing.Size(250, 250);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ClassCanvasDragDrop);
             this.DragOver += new System.Windows.Forms.DragEventHandler(this.ClassCanvasDragOver);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ClassCanvasKeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ClassCanvasKeyUp);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.CanvasPicture)).EndInit();
             this.ResumeLayout(false);
 
-		}
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.PictureBox pictureBox1;
+        }
+        private System.Windows.Forms.PictureBox CanvasPicture;
 	}
 }

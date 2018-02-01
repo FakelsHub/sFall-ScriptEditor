@@ -152,7 +152,7 @@ namespace ICSharpCode.ClassDiagram
 		{
 			ValueChangingEventArgs<SizeF> e = new ValueChangingEventArgs<SizeF>(new SizeF(width, height));
 			SizeChanging (this, e);
-			if (e.Cancel) return;
+			if (e.Cancel) return; // TODO: изменять размер всегда, имеется баг
 
 			if (AllowWidthModifications())
 				base.Width = e.Value.Width;
@@ -246,7 +246,7 @@ namespace ICSharpCode.ClassDiagram
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Brush ShadowBrush = new SolidBrush(Color.FromArgb(64,0,0,0));
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-		public static readonly Font MessagesFont = new Font (FontFamily.GenericSansSerif, 12, FontStyle.Regular, GraphicsUnit.Pixel);
+		public static readonly Font MessagesFont = new Font (FontFamily.GenericSansSerif, 14, FontStyle.Regular, GraphicsUnit.Pixel);
 		
 		/// <summary>
 		/// Draws the item decorators to the given graphics object.
@@ -287,6 +287,11 @@ namespace ICSharpCode.ClassDiagram
 			decorators.Remove(decorator);
 		}
 		
+		public void ClearDecorator()
+		{
+			decorators.Clear();
+		}
+
 		protected void DrawDecorators (Graphics graphics)
 		{
 			foreach (RectangleDecorator decorator in decorators)
@@ -333,10 +338,7 @@ namespace ICSharpCode.ClassDiagram
 			
 			if (DragAreaHitTest(pos))
 			{
-				dragPos = pos;
-				dragOfst.X = X - dragPos.X;
-				dragOfst.Y = Y - dragPos.Y;
-				dragged = true;
+				DragMousePos(pos);
 			}
 		}
 		
@@ -374,6 +376,14 @@ namespace ICSharpCode.ClassDiagram
 			}
 		}
 		
+		public void DragMousePos (PointF pos)
+		{
+			dragPos = pos;
+			dragOfst.X = X - dragPos.X;
+			dragOfst.Y = Y - dragPos.Y;
+			dragged = true;
+		}
+
 		#endregion
 		
 		#region Interactivity

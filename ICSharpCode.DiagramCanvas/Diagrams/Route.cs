@@ -68,7 +68,7 @@ namespace ICSharpCode.Diagrams
 			get { return from as NodeCanvasItem; }
 		}
 
-        // получить координаты для стартовой точки options
+        // РїРѕР»СѓС‡РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґР»СЏ СЃС‚Р°СЂС‚РѕРІРѕР№ С‚РѕС‡РєРё options
 		private PointF GetConnectionPointPosition (IRectangle rect)
 		{
             foreach (LinkTo link in NodeItem.GetNodeData.LinkedToNodes)
@@ -83,7 +83,7 @@ namespace ICSharpCode.Diagrams
             return new PointF(rect.X + rect.ActualWidth, rect.Y + rect.ActualHeight / 2);
 		}
         
-        // получить координаты для конечной точки, тут высчитывается середина
+        // РїРѕР»СѓС‡РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґР»СЏ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё, С‚СѓС‚ РІС‹СЃС‡РёС‚С‹РІР°РµС‚СЃСЏ СЃРµСЂРµРґРёРЅР°
 		private static PointF GetConnectionPointPosition (IRectangle rect, ConnectionPoint point)
 		{
             switch (point)
@@ -96,7 +96,7 @@ namespace ICSharpCode.Diagrams
 			return new PointF(rect.X + rect.ActualWidth / 2, rect.Y + rect.ActualHeight / 2); //Center
 		}
 		
-        // выяснить к какой стороне ближе всего провести линию
+        // РІС‹СЏСЃРЅРёС‚СЊ Рє РєР°РєРѕР№ СЃС‚РѕСЂРѕРЅРµ Р±Р»РёР¶Рµ РІСЃРµРіРѕ РїСЂРѕРІРµСЃС‚Рё Р»РёРЅРёСЋ
 		private void GetClosestConnectionPoints(out ConnectionPoint fromPoint, out ConnectionPoint toPoint)
 		{
 			float shortestDist = float.MaxValue;
@@ -258,7 +258,7 @@ namespace ICSharpCode.Diagrams
 				case ConnectionPoint.West: dir4 = Direction.Right; break;
 			}
 			
-            //построение соеденительной линии из коротких сегментов
+            //РїРѕСЃС‚СЂРѕРµРЅРёРµ СЃРѕРµРґРµРЅРёС‚РµР»СЊРЅРѕР№ Р»РёРЅРёРё РёР· РєРѕСЂРѕС‚РєРёС… СЃРµРіРјРµРЅС‚РѕРІ
 			if ((dir1 == Direction.Down && dir4 == Direction.Up) ||
 			    (dir4 == Direction.Down && dir1 == Direction.Up))
 			{

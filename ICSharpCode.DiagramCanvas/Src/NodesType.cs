@@ -2,7 +2,8 @@
 {
 	public enum NodesType {
 		Default,
-        DialogStart,
-        DialogEnd
+		DialogStart,
+		DialogEnd,
+		Unused
 	}
 }

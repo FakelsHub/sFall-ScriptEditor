@@ -74,21 +74,21 @@ namespace ICSharpCode.ClassDiagram
 			if (grip == SizeGripPositions.North)
 			{
 				pos.X = Rectangle.ActualWidth / 2;
-				pos.Y = -4;
+				pos.Y = -6;
 			}
 			else if (grip == SizeGripPositions.East)
 			{
-				pos.X = Rectangle.ActualWidth + 4;
+				pos.X = Rectangle.ActualWidth + 6;
 				pos.Y = Rectangle.ActualHeight / 2;
 			}
 			else if (grip == SizeGripPositions.South)
 			{
 				pos.X = Rectangle.ActualWidth / 2;
-				pos.Y = Rectangle.ActualHeight + 4;
+				pos.Y = Rectangle.ActualHeight + 6;
 			}
 			else if (grip == SizeGripPositions.West)
 			{
-				pos.X = - 4;
+				pos.X = - 6;
 				pos.Y = Rectangle.ActualHeight / 2;
 			}
 			
@@ -111,8 +111,8 @@ namespace ICSharpCode.ClassDiagram
 		
 		private static bool IsInGrip (PointF pos, PointF gripPos)
 		{
-			return (pos.X >= gripPos.X - 3 && pos.Y >= gripPos.Y - 3 &&
-			        pos.X <= gripPos.X + 3 && pos.Y <= gripPos.Y + 3);
+			return (pos.X >= gripPos.X - 6 && pos.Y >= gripPos.Y - 6 &&
+			        pos.X <= gripPos.X + 6 && pos.Y <= gripPos.Y + 6);
 		}
 		
 		public override void DrawToGraphics(Graphics graphics)

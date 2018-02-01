@@ -4,24 +4,25 @@ namespace ICSharpCode.ClassDiagram
 {
 	public interface INode
 	{
- 		string Name {
+		string Name {
+			get;
+			set;
+		}
+
+		List<LinkTo> LinkedToNodes {
+			get;
+			set;
+		}
+		
+		List<string> LinkedFromNodes {
 			get;
 		}
 
-        List<LinkTo> LinkedToNodes {
-			get;
-            set;
-		}
-		
-        List<string> LinkedFromNodes {
+		List<ContentBody> NodeContent {
 			get;
 		}
-                
-        List<ContentBody> NodeContent {
-			get;
-		}
-        		
-        NodesType NodeType {
+
+		NodesType NodeType {
 			get;
 		}
 	}

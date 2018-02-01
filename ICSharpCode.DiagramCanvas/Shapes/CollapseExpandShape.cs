@@ -84,12 +84,12 @@ namespace ICSharpCode.ClassDiagram
 			
 		public override float ShapeWidth
 		{
-			get { return 20; }
+			get { return 24.0f; }
 		}
 		
 		public override float ShapeHeight
 		{
-			get { return 20; }
+			get { return 24.0f; }
 		}
 	}
 }

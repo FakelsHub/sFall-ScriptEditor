@@ -26,8 +26,9 @@ namespace ICSharpCode.ClassDiagram
 		
 		static Pen InitPen ()
 		{
-			Pen pen = new Pen(Color.Black);
+			Pen pen = new Pen(Color.FromArgb(192, 0, 0, 0));
 			pen.DashStyle = DashStyle.Dot;
+			pen.Width = 2f;
 			return pen;
 		}
 		
@@ -38,8 +39,8 @@ namespace ICSharpCode.ClassDiagram
 			if (graphics == null) return;
 
 			graphics.DrawRectangle(pen,
-			                       Rectangle.AbsoluteX - 4, Rectangle.AbsoluteY - 4,
-			                       Rectangle.ActualWidth + 8, Rectangle.ActualHeight + 8);
+			                       Rectangle.AbsoluteX - 6, Rectangle.AbsoluteY - 6,
+			                       Rectangle.ActualWidth + 12, Rectangle.ActualHeight + 12);
 		}
 		
 		public override void HandleMouseClick(PointF pos) { }

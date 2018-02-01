@@ -21,7 +21,7 @@ namespace ICSharpCode.Diagrams
 		
 		private IRectangle container;
 		
-		public string Name;
+		//public string Name;
 		
 		public IRectangle Container 
 		{
@@ -227,7 +227,7 @@ namespace ICSharpCode.Diagrams
 		
 		public override string ToString()
 		{
-			return Name + " (" + this.GetType().ToString() + ")";
+			return /* Name + */" (" + this.GetType().ToString() + ")";
 		}
 		
 	}

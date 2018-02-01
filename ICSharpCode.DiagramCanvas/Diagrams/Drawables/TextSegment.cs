@@ -19,6 +19,7 @@ namespace ICSharpCode.Diagrams.Drawables
 		Brush brush = Brushes.Black;
 		Graphics g;
 		string text;
+		int index;  // индекс строки кода в ContentBody
 		StringFormat sf = new StringFormat();
 		
 		public TextSegment (Graphics graphics, string text)
@@ -27,14 +28,21 @@ namespace ICSharpCode.Diagrams.Drawables
 		}
 		
 		public TextSegment (Graphics graphics, string text, Font font, bool resizable, StringAlignment alignment = StringAlignment.Near)
+			: this (graphics, text, -1, font, resizable, alignment)
+		{
+		}
+
+		public TextSegment (Graphics graphics, string text, int index, Font font, bool resizable, StringAlignment alignment = StringAlignment.Near)
 		{
 			if (graphics == null) throw new ArgumentNullException("graphics");
 			this.g = graphics;
 			this.text = text;
+			this.index = index;
 			this.font = font;
 			sf.Trimming = StringTrimming.EllipsisCharacter;
-            sf.Alignment = alignment;
-            sf.LineAlignment = StringAlignment.Center;
+			sf.Alignment = alignment;
+			sf.LineAlignment = StringAlignment.Center;
+			sf.FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.LineLimit;
 			MeasureString();
 			if (resizable)
 				Width = -1;
@@ -58,6 +66,12 @@ namespace ICSharpCode.Diagrams.Drawables
 				return base.Width;
 			}
 			set { base.Width = value; }
+		}
+
+		public int IndexContent
+		{
+			get { return index; }
+			//set { index = value; }
 		}
 
 		public float TextWidth

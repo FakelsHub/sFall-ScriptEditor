@@ -20,8 +20,21 @@ namespace ICSharpCode.ClassDiagram
 	/// </summary>
 	public class RouteStartShape : RouteShape
 	{
-        static Pen stroke = new Pen(Color.FromArgb(128, 0, 0, 0), 1);
-        static Brush fill = new SolidBrush(Color.FromArgb(200, 0, 0, 0));
+        Pen stroke = new Pen(Color.FromArgb(128, 0, 0, 0), 2);
+        Brush fill = new SolidBrush(Color.FromArgb(200, 0, 0, 0));
+
+		public RouteStartShape() { }
+
+		public RouteStartShape(Color stroke)
+		{
+			this.stroke = new Pen(stroke, 2);
+		}
+
+		public RouteStartShape(Color stroke, Color fill)
+		{
+			this.stroke = new Pen(stroke, 2);
+			this.fill = new SolidBrush(fill);
+		}
 
 		protected override void Paint (Graphics graphics)
 		{

@@ -24,15 +24,11 @@ namespace ICSharpCode.ClassDiagram
 	//TODO - complete note item
 	public class NoteCanvasItem : CanvasItem
 	{
-		private string note = "<Text editing not implemented yet.>";
-		private TextBox editBox = new TextBox();
+		private string note = " Click here to text input...";
+		private TextBox editBox;
+		private bool editing = false;
 		
-		public NoteCanvasItem()
-		{
-			editBox.BackColor = Color.LightYellow;
-			editBox.BorderStyle = BorderStyle.None;
-			editBox.Multiline = true;
-		}
+		public NoteCanvasItem() { }
 		
 		public string Note
 		{
@@ -66,27 +62,48 @@ namespace ICSharpCode.ClassDiagram
 		
 		public override Control GetEditingControl()
 		{
-			editBox.Width = (int) Width - 8;
-			editBox.Height = (int) Height - 8;
-			editBox.Left = (int) AbsoluteX + 4;
-			editBox.Top = (int) AbsoluteY + 4;
+			editBox.ForeColor = Color.Red;
+			editBox.BackColor = Color.LightYellow;
+			editBox.BorderStyle = BorderStyle.None;
+			editBox.Multiline = true;
+			
+			editBox.Width = (int) Width - 10;
+			editBox.Height = (int) Height - 10;
+			editBox.Left = (int) AbsoluteX + 6;
+			editBox.Top = (int) AbsoluteY + 5;
+			
 			return editBox;
 		}
 		
+		public bool IsEditing { get; private set; } 
+
 		public override bool StartEditing()
 		{
-			editBox.Text = note;
-			return true;
+			editBox = new TextBox();
+			if (editing) {
+				editBox.Text = note;
+				editBox.SelectionStart = note.Length;
+			}
+			
+			return IsEditing = true;
 		}
 		
 		public override void StopEditing()
 		{
-			note = editBox.Text;
+			if (editBox == null)
+				return;
+			
+			if (editBox.Text.Length > 0) { 
+				note = editBox.Text;
+				editing = true;
+			}
 			if (editBox.Parent != null)
 				editBox.Parent.Controls.Remove(editBox);
+			
+			IsEditing = false;
 		}
 
-        public override bool IsVResizable
+		public override bool IsVResizable
 		{
 			get { return true; }
 		}
@@ -94,13 +111,13 @@ namespace ICSharpCode.ClassDiagram
 		#region Storage
 		protected override XmlElement CreateXmlElement(XmlDocument doc)
 		{
-			return doc.CreateElement("Comment");
+			return doc.CreateElement("Note");
 		}
 		
 		protected override void FillXmlElement(XmlElement element, XmlDocument document)
 		{
 			base.FillXmlElement(element, document);
-			element.SetAttribute("CommentText", Note);
+			element.SetAttribute("NoteText", (editing) ? Note : "");
 		}
 		
 		protected override void FillXmlPositionElement(XmlElement position, XmlDocument document)
@@ -112,7 +129,11 @@ namespace ICSharpCode.ClassDiagram
 		public override void LoadFromXml (XPathNavigator navigator)
 		{
 			base.LoadFromXml(navigator);
-			Note = navigator.GetAttribute("CommentText", "");
+			string text = navigator.GetAttribute("NoteText", "");
+			if (text != String.Empty) {
+				Note = text;
+				editing = true;
+			}
 		}
 		
 		protected override void ReadXmlPositionElement(XPathNavigator navigator)
@@ -126,12 +147,12 @@ namespace ICSharpCode.ClassDiagram
 		#region Geometry
 		public override float Width
 		{
-			set { base.Width = Math.Max (value, 40.0f); }
+			set { base.Width = Math.Max (value, 80.0f); }
 		}
 		
 		public override float Height
 		{
-			set { base.Height = Math.Max (value, 40.0f); }
+			set { base.Height = Math.Max (value, 30.0f); }
 		}
 		#endregion
 	}

@@ -1,9 +1,19 @@
-﻿namespace ICSharpCode.ClassDiagram
+﻿namespace ScriptEditor.CodeTranslation
 {
-	public enum opCodeType {
+    public enum OpcodeType
+    {
         None,
+
+        Option,
+        giq_option,
+        gsay_option,
+
         Reply,
-        Options,
-        Messages
+        gsay_reply,
+
+        Message,
+        gsay_message,
+
+        call
     }
 }
