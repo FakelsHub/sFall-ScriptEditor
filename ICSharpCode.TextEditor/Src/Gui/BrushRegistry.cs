@@ -22,6 +22,7 @@ namespace ICSharpCode.TextEditor
 		static Dictionary<Color, Brush> brushes = new Dictionary<Color, Brush>();
 		static Dictionary<Color, Pen> pens = new Dictionary<Color, Pen>();
 		static Dictionary<Color, Pen> dotPens = new Dictionary<Color, Pen>();
+		static Dictionary<Color, Pen> dashPens = new Dictionary<Color, Pen>();
 		
 		public static Brush GetBrush(Color color)
 		{
@@ -47,7 +48,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		static readonly float[] dotPattern = { 1, 1, 1, 1 };
+		//static readonly float[] dotPattern = { 1, 1, 1, 1 };
 		
 		public static Pen GetDotPen(Color color)
 		{
@@ -55,8 +56,23 @@ namespace ICSharpCode.TextEditor
 				Pen pen;
 				if (!dotPens.TryGetValue(color, out pen)) {
 					pen = new Pen(color);
-					pen.DashPattern = dotPattern;
+					//pen.DashPattern = dotPattern;
+					pen.DashStyle = DashStyle.Dot;
 					dotPens.Add(color, pen);
+				}
+				return pen;
+			}
+		}
+		
+		public static Pen GetDashPen(Color color)
+		{
+			lock (dashPens) {
+				Pen pen;
+				if (!dashPens.TryGetValue(color, out pen)) {
+					pen = new Pen(color);
+					pen.DashStyle = DashStyle.Dash;
+					pen.Width = 2.0f;
+					dashPens.Add(color, pen);
 				}
 				return pen;
 			}

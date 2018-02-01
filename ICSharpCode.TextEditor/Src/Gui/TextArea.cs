@@ -190,7 +190,7 @@ namespace ICSharpCode.TextEditor
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 //			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 //			SetStyle(ControlStyles.UserPaint, true);
-			SetStyle(ControlStyles.Opaque, false);
+//			SetStyle(ControlStyles.Opaque, true);
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			SetStyle(ControlStyles.Selectable, true);
 			
@@ -279,6 +279,8 @@ namespace ICSharpCode.TextEditor
 		
 		public void OptionsChanged()
 		{
+			this.BackColor = Enabled ? Document.HighlightingStrategy.GetColorFor("Default").BackgroundColor : SystemColors.InactiveBorder;
+			
 			UpdateMatchingBracket();
 			textView.OptionsChanged();
 			caret.RecreateCaret();
@@ -498,6 +500,7 @@ namespace ICSharpCode.TextEditor
 		
 		protected override void OnPaintBackground(System.Windows.Forms.PaintEventArgs pevent)
 		{
+			base.OnPaintBackground(pevent);
 		}
 		
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
@@ -512,6 +515,7 @@ namespace ICSharpCode.TextEditor
 				&& clipRectangle.Width == this.Width && clipRectangle.Height == this.Height;
 			
 			g.TextRenderingHint = this.TextEditorProperties.TextRenderingHint;
+			g.TextContrast = 0;
 			
 			if (updateMargin != null) {
 				updateMargin.Paint(g, updateMargin.DrawingPosition);
@@ -564,7 +568,7 @@ namespace ICSharpCode.TextEditor
 			// we cannot update the caret position here, it's not allowed to call the caret API inside WM_PAINT
 			//Caret.UpdateCaretPosition();
 			
-			base.OnPaint(e);
+			//base.OnPaint(e);
 		}
 		void DocumentFoldingsChanged(object sender, EventArgs e)
 		{

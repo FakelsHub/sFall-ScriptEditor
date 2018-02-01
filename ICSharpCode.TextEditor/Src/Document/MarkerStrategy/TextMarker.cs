@@ -15,7 +15,8 @@ namespace ICSharpCode.TextEditor.Document
 		Invisible,
 		SolidBlock,
 		Underlined,
-		WaveLine
+		WaveLine,
+		RoundStroke
 	}
 	
 	/// <summary>

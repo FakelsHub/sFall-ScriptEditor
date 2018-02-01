@@ -66,7 +66,13 @@ namespace ICSharpCode.TextEditor.Document
 		string      lineTerminator = "\r\n";
 		bool        autoInsertCurlyBracket = true;
 		bool        supportReadOnlySegments = false;
+		bool        nativeDrawText     = false;
 		
+		public bool NativeDrawText {
+			get { return nativeDrawText;  }
+			set { nativeDrawText = value; }
+		}
+
 		public int TabIndent {
 			get {
 				return tabIndent;

@@ -173,5 +173,10 @@ namespace ICSharpCode.TextEditor.Document
 			get;
 			set;
 		}
+		
+		bool NativeDrawText {
+			get;
+			set;
+		}
 	}
 }
