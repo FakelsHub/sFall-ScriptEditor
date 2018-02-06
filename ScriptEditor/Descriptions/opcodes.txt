@@ -150,7 +150,8 @@ void SetTextColor (int R, int G, int B) | - Sets text color.
 void HideMouse | - Hide mouse cursor.
 void ShowMouse | - Show mouse cursor.
 void MouseShape (sting pcxfilename, int x, int y) | - Changing image for mouse cursor.
-void AddNamedEvent (string event_name, procedure callback_proc) | - Associate an event name "event_name" with a handler procedure.
+void AddNamedHandler (string event_name, procedure callback_proc) | - Associate an event name "event_name" with a handler procedure.
+void AddNamedEvent (string event_name, procedure callback_proc) | - Associate an event name "event_name" with a handler procedure. | | Note: The event will be deleted after it is called.
 void SignalNamed (string event_name) | - Call an event named by "event_name".
 void ClearNamed (string event_name) | - Delete the specified event.
 snd_handler soundplay (string file, int mode) | - Plays a sound file.
@@ -377,6 +378,8 @@ boolean violence_filter_setting() | - Returns the current setting of the violenc
 void wield_obj_critter(ObjectPtr who, ObjectPtr obj) | - Sets up an animation causing a critter (who) to wield an object (obj) in that critters’ inventory. This puts that object in the critter’s hand.
 void wm_area_set_pos(int areaIdx, int xPos, int yPos) | - Sets the World Map coordinates for a given area/town (areaIdx) to a given x and y position.
 void world_map() | - Sends a request for the game engine to bring up the World Map screen, for the player to move around to different locations.
+string tokenize(string MainString, string Token, char Delimiter) | - Parses a string to retrieve values stored in the form of a list delimited by a single character. | Parameters: | MainString - String containing substrings and delimiters. | Token - Previous substring or 0 for the first substring. | Delimiter - Delimiting character that delimits tokens and substrings. | Return value: A string value for the substring retrieved. Returns 0 if token is not found. | | NOTE: The script considers the string "0" as equal to the integer 0. Therefore, in order to store values of "0", a special check is required. Add an integer 1 to the beginning of the return value and if it was a string "0", the result will be a string "10". If it was an integer 0, the result will be an integer 1.
+
 
 // unknown
 int skill_contest() | - Returns the value of a completed skill vs skill contest (to run through is_success & is_critical).
@@ -655,12 +658,14 @@ void set_inven_ap_cost
 
 
 // SFALL OPCODES with descriptions (will override entries from above)
+
 int  key_pressed(int dxScancode)
 void tap_key(int dxScancode)
 int  get_mouse_x()
 int  get_mouse_y()
 int  get_mouse_buttons() | - Returns the number of the mouse button that is currently pressed (1 - left, 2 - right, 3 - middle) and 0 otherwise.
 
+void block_combat(bool value) | - Deny the player to enter combat mode.
 int game_loaded() | - Returns 1 the first time it is called after a new game or game load, and 0 any time after.
 int get_ini_setting(string setting) | - Reads an integer value from an ini file in the fallout directory. 
 string get_ini_string(string setting) | - Reads a string value from an ini file in the fallout directory. 

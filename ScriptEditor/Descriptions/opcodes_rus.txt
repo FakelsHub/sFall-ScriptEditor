@@ -540,6 +540,9 @@ int INV (int bit_num) | - Инверсия битовой маски; | Аргу
  
 void debug_msg (string text) | - Выводит в отладочное окно, отладочное сообщение. | Аргументы: | • text - строка сообщения;
 
+string tokenize(string MainString, string Token, char Delimiter) | - Разбирает строку в виде списка разделенным одним символом(делителем) на подстроки, и возвращает значение для указанного токена. | Аргумены: | • MainString - Строка, содержащая подстроки и разделители. | • Token - Предыдущая подстрока или 0 для первой подстроки. | • Delimiter - Символ разделитель, который ограничивает токены и подстроки. | Возвращаемое значение: Строковое значение для полученной подстроки. Возвращает 0, если токен не найден. | | Примечание. Функция считает строку "0" равной целому числу 0. Поэтому для хранения значений "0" требуется специальная проверка. Добавьте целое число 1 в начало возвращаемого значения и если оно было строкой "0", результатом будет строка "10". Если бы это было целое число 0, результатом будет целое число 1.
+
+
 // VANILLA EXTEND MACROS
 
 void self_attack_dude | - Заставляет криттера атаковать игрока, или убегать с поля боя если установлен флаг FLEE. | Макрос: command.h
@@ -610,8 +613,8 @@ void ShowMouse | - Отображает скрытый курсор мыши.
 
 void MouseShape (sting pcxfilename, int x, int y) | - Изменение изображения для курсора мышки. | Аргументы: | • pcxfilename - имя файла pcx, который будет использован в качестве изображения для курсора; | • x и y - смещение точки приложения курсора (при x = 0 и y = 0 точка приложения - левый верхний угол картинки); | | Примечание: Созданный этой командой курсор работает с интерфейсными окнами даже в режиме game_ui_disable. | Если НЕ включен режим game_ui_disable, то при выходе курсора за границу интерфейсного окна, он автоматически меняется на стандартный. | Применение этой команды полностью решает проблему "протыкаемости" интерфейсных окон.
 
-void AddNamedEvent (string event_name, procedure callback_proc) | - Связать событие с именем event_name с процедурой-обработчиком. | Аргументы: | • event_name - имя события; | • callback_proc - процедура, которая будет вызываться при наступлении данного события (см. SignalNamed);
-
+void AddNamedHandler (string event_name, procedure callback_proc) | - Связать событие с именем event_name с процедурой-обработчиком. | Аргументы: | • event_name - имя события; | • callback_proc - процедура, которая будет вызываться при наступлении данного события (см. SignalNamed);
+void AddNamedEvent (string event_name, procedure callback_proc) | - Связать событие с именем event_name с процедурой-обработчиком. | Аргументы: | • event_name - имя события; | • callback_proc - процедура, которая будет вызываться при наступлении данного события (см. SignalNamed); | | Примечание: Событие будет удалено после его вызова (см. ClearNamed).
 void SignalNamed (string event_name) | - Вызвать событие с именем event_name. | Аргументы: | • event_name - имя события; 
 void ClearNamed (string event_name) | - Удалить указанное событие. | Аргументы: | • event_name - имя события;
 
@@ -776,7 +779,7 @@ void stop_game()
 void resume_game()
 
 void mark_movie_played(int id)
-void set_movie_path(string filename, int movieid)
+void set_movie_path(string filename, int movie id)
 
 int  play_sfall_sound(string file, int loop)
 void stop_sfall_sound(int ptr)
@@ -854,16 +857,17 @@ int  get_weapon_ammo_count(objptr weapon)
 void set_weapon_ammo_count(objptr weapon, int count)
 
 int   list_begin(int type)
-int   list_next(int listid)
-void  list_end(int listid)
+int   list_next(int list id)
+void  list_end(int list id)
 array list_as_array(int type)
 
 int get_attack_type()
 int get_window_under_mouse()
 
 // SFALL OPCODES with descriptions
+void block_combat(bool value) | - Заблокировать возможность входить в режим боя.
 
-int get_perk_available(int perk) | - Получить ...
+int get_perk_available(int perk) | - Получить текущий уровень для указанного перка.
 int get_perk_owed() | - Получить количество задолженности для перков, которые игрок может взять. 
 void set_perk_owed(int value) | - Установить количество задолженности для перков, которые игрок может взять. 
 
@@ -970,7 +974,7 @@ void reg_anim_take_out(ObjectPtr, holdFrameID, delay) | - Воспроизвед
 void reg_anim_turn_towards(ObjectPtr, tile/target, delay)  - makes object change it's direction to face given tile num or target object.
 int metarule2_explosions(int arg1, int arg2) | - Позволяет динамически изменять некоторые параметры взрыва (дальняя атака). | Все измененные параметры автоматически сбрасываются в состояние по умолчанию для движка после каждого действия атаки. | Макросы к функции доступны в sfall.h.
 void set_attack_explosion_pattern(x, y) | - Изменяет паттерн для взрыва. Аргумент Х означает: 1 - уменьшенная паттерн взрыва (3 эффекта генерируются вместо 7), 0 - полный шаблон паттерна. | Аргумент Y в настоящее время не используется.
-void set_attack_explosion_art(x, y) | - Изменяет индификатор FID для последующего взрыва. Аргумент x - это идентификатор кадра (последние 3 байта, без типа объекта). | Аргумент Y в настоящее время не используется.
+void set_attack_explosion_art(x, y) | - Изменяет идентификатор FID для последующего взрыва. Аргумент x - это идентификатор кадра (последние 3 байта, без типа объекта). | Аргумент Y в настоящее время не используется.
 void set_attack_explosion_radius(x) | - Изменяет радиус для взрыва последующей атаки (этот радиус ограничен до 8 включительно).
 void set_attack_is_explosion_fire | - Установить взрывной эффект с повреждением типа огонь для последующей атаки, при использовании оружия с типовым повреждением "Fire". В этом случае все цели в радиусе взрыва получат урон типа Fire, а не Explosion.
 
