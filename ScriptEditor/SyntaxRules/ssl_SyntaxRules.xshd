@@ -1,7 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SyntaxDefinition name = "Original" extensions = ".ssl">
+
+  <Environment>
+    <Selection    bgcolor = "#B4C3D7"/>
+    <CaretMarker  color = "#F5F5FF"/>
+    <VRuler       color = "#40A0A0A0"/>
+
+    <SpaceMarkers color = "LightGray"/>
+    <TabMarkers   color = "DarkOrange"/>
+  </Environment>
+  
   <Properties>
     <Property name="LineComment" value="//"/>
+    <Property name="BlockCommentBegin" value="/*"/>
+    <Property name="BlockCommentEnd" value="*/"/>
   </Properties>
 
   <Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
@@ -905,6 +917,8 @@
         <Key word = "create_spatial" />
         <Key word = "art_exists" />
         <Key word = "obj_is_carrying_obj" />
+        <Key word = "block_combat" />
+
         <Key word = "sfall_func0" />
         <Key word = "sfall_func1" />
         <Key word = "sfall_func2" />
@@ -969,7 +983,6 @@
         <Key word = "intface_show" />
         <Key word = "intface_is_hidden" />
         <Key word = "exec_map_update_scripts" />
-
         <Key word = "car_gas_amount" />
         <Key word = "get_flags" />
         <Key word = "get_ini_section" />
@@ -982,6 +995,9 @@
         <Key word = "set_flags" />
         <Key word = "set_outline" />
         <Key word = "tile_refresh_display" />
+        <Key word = "get_cursor_mode" />
+        <Key word = "set_cursor_mode" />
+        <Key word = "item_weight" />
       </KeyWords>
 
       <KeyWords name = "OpKeywords" bold="false" italic="false" color="Indigo">
@@ -1075,6 +1091,12 @@
         <Key word = "ONE_GAME_WEEK" />
         <Key word = "ONE_GAME_MONTH" />
 
+        <Key word = "COMBAT_SUBTYPE_WEAPON_USED" />
+        <Key word = "COMBAT_SUBTYPE_HIT_SUCCEEDED" />
+        <Key word = "COMBAT_SUBTYPE_SEQUENCING" />
+        <Key word = "COMBAT_SUBTYPE_TURN" />
+        <Key word = "COMBAT_SUBTYPE_NONCOM_TURN" />
+
         <Key word = "ROLL_CRITICAL_FAILURE" />
         <Key word = "ROLL_FAILURE" />
         <Key word = "ROLL_SUCCESS" />
@@ -1148,6 +1170,17 @@
         <Key word = "STAT_current_rad" />
         <Key word = "STAT_real_max_stat" />
 
+        <Key word = "PCSTAT_unspent_skill_points" />
+        <Key word = "PCSTAT_level" />
+        <Key word = "PCSTAT_experience" />
+        <Key word = "PCSTAT_reputation" />
+        <Key word = "PCSTAT_karma" />
+        <Key word = "PCSTAT_max_pc_stat" />
+
+        <Key word = "CR_BODY_BIPED" />
+        <Key word = "CR_BODY_QUADRUPED" />
+        <Key word = "CR_BODY_ROBOTIC" />
+
         <Key word = "OBJ_TYPE_ITEM" />
         <Key word = "OBJ_TYPE_CRITTER" />
         <Key word = "OBJ_TYPE_SCENERY" />
@@ -1174,9 +1207,49 @@
         <Key word = "DMG_BYPASS_ARMOR" />
         <Key word = "DMG_NOANIMATE" />
 
-        <Key word = "RELEASE" />
-        <Key word = "DEBUG" />
-        <Key word = "SFALL_SC_EVALUATION" />
+        <Key word = "DAM_KNOCKED_OUT" />
+        <Key word = "DAM_KNOCKED_DOWN" />
+        <Key word = "DAM_CRIP_LEG_LEFT" />
+        <Key word = "DAM_CRIP_LEG_RIGHT" />
+        <Key word = "DAM_CRIP_ARM_LEFT" />
+        <Key word = "DAM_CRIP_ARM_RIGHT" />
+        <Key word = "DAM_BLIND" />
+        <Key word = "DAM_DEAD" />
+        <Key word = "DAM_HIT" />
+        <Key word = "DAM_CRITICAL" />
+        <Key word = "DAM_ON_FIRE" />
+        <Key word = "DAM_BYPASS" />
+        <Key word = "DAM_EXPLODE" />
+        <Key word = "DAM_DESTROY" />
+        <Key word = "DAM_DROP" />
+        <Key word = "DAM_LOSE_TURN" />
+        <Key word = "DAM_HIT_SELF" />
+        <Key word = "DAM_LOSE_AMMO" />
+        <Key word = "DAM_DUD" />
+        <Key word = "DAM_HURT_SELF" />
+        <Key word = "DAM_RANDOM_HIT" />
+        <Key word = "DAM_CRIP_RANDOM" />
+        <Key word = "DAM_BACKWASH" />
+        <Key word = "DAM_PERFORM_REVERSE" />
+
+        <Key word = "KILL_TYPE_men_kills" />
+        <Key word = "KILL_TYPE_women_kills" />
+        <Key word = "KILL_TYPE_children_kills" />
+        <Key word = "KILL_TYPE_super_mutant_kills" />
+        <Key word = "KILL_TYPE_ghoul_kills" />
+        <Key word = "KILL_TYPE_brahmin_kills" />
+        <Key word = "KILL_TYPE_radscorpion_kills" />
+        <Key word = "KILL_TYPE_rat_kills" />
+        <Key word = "KILL_TYPE_floater_kills" />
+        <Key word = "KILL_TYPE_centaur_kills" />
+        <Key word = "KILL_TYPE_robot_kills" />
+        <Key word = "KILL_TYPE_dog_kills" />
+        <Key word = "KILL_TYPE_manti_kills" />
+        <Key word = "KILL_TYPE_deathclaw_kills" />
+        <Key word = "KILL_TYPE_plant_kills" />
+        <Key word = "KILL_TYPE_gecko_kills" />
+        <Key word = "KILL_TYPE_alien_kills" />
+        <Key word = "KILL_TYPE_giant_ant_kills" />
 
         <Key word = "WORLDMAP" />
         <Key word = "LOCALMAP" />
@@ -1227,6 +1300,114 @@
         <Key word = "HOOK_ADJUSTFID" />
         <Key word = "HOOK_COMBATTURN" />
         <Key word = "HOOK_CARTRAVEL" />
+
+        <Key word = "LIST_CRITTERS" />
+        <Key word = "LIST_GROUNDITEMS" />
+        <Key word = "LIST_SCENERY" />
+        <Key word = "LIST_WALLS" />
+        <Key word = "LIST_MISC" />
+        <Key word = "LIST_SPATIAL" />
+        <Key word = "LIST_ALL" />
+
+        <Key word = "GAME_MSG_COMBAT" />
+        <Key word = "GAME_MSG_AI" />
+        <Key word = "GAME_MSG_SCRNAME" />
+        <Key word = "GAME_MSG_MISC" />
+        <Key word = "GAME_MSG_CUSTOM" />
+        <Key word = "GAME_MSG_INVENTRY" />
+        <Key word = "GAME_MSG_ITEM" />
+        <Key word = "GAME_MSG_LSGAME" />
+        <Key word = "GAME_MSG_MAP" />
+        <Key word = "GAME_MSG_OPTIONS" />
+        <Key word = "GAME_MSG_PERK" />
+        <Key word = "GAME_MSG_PIPBOY" />
+        <Key word = "GAME_MSG_QUESTS" />
+        <Key word = "GAME_MSG_PROTO" />
+        <Key word = "GAME_MSG_SCRIPT" />
+        <Key word = "GAME_MSG_SKILL" />
+        <Key word = "GAME_MSG_SKILLDEX" />
+        <Key word = "GAME_MSG_STAT" />
+        <Key word = "GAME_MSG_TRAIT" />
+        <Key word = "GAME_MSG_WORLDMAP" />
+        <Key word = "GAME_MSG_PRO_ITEM" />
+        <Key word = "GAME_MSG_PRO_CRIT" />
+        <Key word = "GAME_MSG_PRO_SCEN" />
+        <Key word = "GAME_MSG_PRO_WALL" />
+        <Key word = "GAME_MSG_PRO_TILE" />
+        <Key word = "GAME_MSG_PRO_MISC" />
+
+        <Key word = "OUTLINE_NONE" />
+        <Key word = "OUTLINE_RED_GLOW" />
+        <Key word = "OUTLINE_RED" />
+        <Key word = "OUTLINE_GREY" />
+        <Key word = "OUTLINE_GREEN_GLOW" />
+        <Key word = "OUTLINE_YELLOW" />
+        <Key word = "OUTLINE_DARK_YELLOW" />
+        <Key word = "OUTLINE_PURPLE" />
+
+        <Key word = "BLOCKING_TYPE_BLOCK" />
+        <Key word = "BLOCKING_TYPE_SHOOT" />
+        <Key word = "BLOCKING_TYPE_AI" />
+        <Key word = "BLOCKING_TYPE_SIGHT" />
+
+        <Key word = "CURSOR_MOVEMENT" />
+        <Key word = "CURSOR_COMMAND" />
+        <Key word = "CURSOR_TARGETING" />
+
+        <Key word = "FLAG_MOUSE_3D" />
+        <Key word = "FLAG_WALKTHRU" />
+        <Key word = "FLAG_FLAT" />
+        <Key word = "FLAG_NOBLOCK" />
+        <Key word = "FLAG_LIGHTING" />
+        <Key word = "FLAG_TEMP" />
+        <Key word = "FLAG_MULTIHEX" />
+        <Key word = "FLAG_NOHIGHLIGHT" />
+        <Key word = "FLAG_USED" />
+        <Key word = "FLAG_TRANSRED" />
+        <Key word = "FLAG_TRANSNONE" />
+        <Key word = "FLAG_TRANSWALL" />
+        <Key word = "FLAG_TRANSGLASS" />
+        <Key word = "FLAG_TRANSSTEAM" />
+        <Key word = "FLAG_TRANSENERGY" />
+        <Key word = "FLAG_LEFT_HAND" />
+        <Key word = "FLAG_RIGHT_HAND" />
+        <Key word = "FLAG_WORN" />
+        <Key word = "FLAG_HIDDENITEM" />
+        <Key word = "FLAG_WALLTRANSEND" />
+        <Key word = "FLAG_LIGHTTHRU" />
+        <Key word = "FLAG_SEEN" />
+        <Key word = "FLAG_SHOOTTHRU" />
+
+        <Key word = "CFLG_BARTER" />
+        <Key word = "CFLG_NOSTEAL" />
+        <Key word = "CFLG_NODROP" />
+        <Key word = "CFLG_NOLIMBS" />
+        <Key word = "CFLG_NOAGES" />
+        <Key word = "CFLG_NOHEAL" />
+        <Key word = "CFLG_INVULN" />
+        <Key word = "CFLG_FLATTN" />
+        <Key word = "CFLG_SPECIAL" />
+        <Key word = "CFLG_RANGED" />
+        <Key word = "CFLG_NOKNOCKDOWN" />
+
+        <Key word = "WPN_ANIM_NONE" />
+        <Key word = "WPN_ANIM_KNIFE" />
+        <Key word = "WPN_ANIM_CLUB" />
+        <Key word = "WPN_ANIM_SLEDGEHAMMER" />
+        <Key word = "WPN_ANIM_SPEAR" />
+        <Key word = "WPN_ANIM_PISTOL" />
+        <Key word = "WPN_ANIM_SMG" />
+        <Key word = "WPN_ANIM_RIFLE" />
+        <Key word = "WPN_ANIM_BIG_GUN" />
+        <Key word = "WPN_ANIM_MINIGUN" />
+        <Key word = "WPN_ANIM_ROCKET_LAUNCHER" />
+
+        <Key word = "OBJECT_VISIBLE" />
+        <Key word = "OBJECT_INVISIBLE" />
+
+        <Key word = "RELEASE" />
+        <Key word = "DEBUG" />
+        <Key word = "SFALL_SC_EVALUATION" />
       </KeyWords> 
     </RuleSet>
 
