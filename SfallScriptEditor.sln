@@ -4,7 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptEditor", "ScriptEditor\ScriptEditor.csproj", "{F2211228-0028-4951-A423-302B66C5CB1B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D} = {2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}
-		{08F772A1-F0BE-433E-8B37-F6522953DB05} = {08F772A1-F0BE-433E-8B37-F6522953DB05}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", "ICSharpCode.TextEditor\ICSharpCode.TextEditor.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
