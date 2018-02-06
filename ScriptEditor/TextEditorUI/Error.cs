@@ -1,31 +1,43 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using System.Text.RegularExpressions;
+
+using ICSharpCode.TextEditor.Document;
 
 namespace ScriptEditor.TextEditorUI
 {
-    public enum ErrorType { Error, Warning, Message, Search }
+    public enum ErrorType { None, Error, Warning, Message, Search, Parser }
 
     public class Error
-    {
-        public ErrorType type = ErrorType.Error;
+    {                                //@"\[\w+\]\s*\<([^\>]+)\>\s*\:(\-?\d+):?(\-?\d+)?\:\s*(.*)"
+        private const string pattern = @"(\[\w+\])?\s*\<?([^\>?]+)\>?\s*\:(\-?\d+):?(\-?\d+|\s\w+)?\:\s*(.*)";
+        
+        public ErrorType type = ErrorType.None;
         public string message;
         public string fileName;
         public int line;
-        public int column;
-        public int len;
-        public TextLocation ErrorPosition;
+        public int column = -1;
+        public int len = -1;
 
-        public Error() { }
+        public Error(ErrorType type)
+        {
+            this.type = type;
+        }
+        
+        public Error(int line, int len)
+        {
+            this.line = line;
+            this.len = len;
+        }
 
         public Error(string line, string column)
         {
-            ErrorPosition.Line = int.Parse(line) - 1;
-            ErrorPosition.Column = int.Parse(column) - 1;
+            this.line = int.Parse(line) - 1;
+            int col;
+            int.TryParse(column, out col);
+            this.column = col - 1;
         }
 
         public Error(ErrorType type, string message, string fileName, int line, int column = -1)
@@ -50,26 +62,29 @@ namespace ScriptEditor.TextEditorUI
         {
             return message;
         }
-
+        // for compile
         public static void BuildLog(List<Error> errors, string output, string srcfile)
         {
-            foreach (string s in output.Split(new char[] { '\n' })) {
-                if (s.StartsWith("[Error]") || s.StartsWith("[Warning]") || s.StartsWith("[Message]")) {
-                    var error = new Error();
-                    if (s[1] == 'E') {
-                        error.type = ErrorType.Error;
-                    } else if (s[1] == 'W') {
+            errors.Clear();
+            string[] log = output.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            for (int s = 0; s < log.Length; s++)
+            {
+                bool warning = (log[s].IndexOf(": warning:") > 0);
+                if (log[s].StartsWith("[Error]") || log[s].StartsWith("[Warning]") || log[s].StartsWith("[Message]") || warning) {
+                    var error = new Error(ErrorType.Message);
+                    if (warning || log[s][1] == 'W')
                         error.type = ErrorType.Warning;
-                    } else {
-                        error.type = ErrorType.Message;
+                    else if (log[s][1] == 'E')
+                        error.type = ErrorType.Error;
+
+                    GetLogText(log, s, error);
+
+                    // File path correct
+                    if ((Settings.useMcpp || Settings.useWatcom) && error.fileName != "none") {
+                        string scrName = Path.GetFileName(srcfile);
+                        if (error.fileName.IndexOf(scrName) > 0)
+                            error.fileName = srcfile;
                     }
-                    Match m = Regex.Match(s, @"\[\w+\]\s*\<([^\>]+)\>\s*\:(\-?\d+):?(\-?\d+)?\:\s*(.*)");
-                    error.fileName = m.Groups[1].Value;
-                    error.line = int.Parse(m.Groups[2].Value);
-                    if (m.Groups[3].Value.Length > 0) {
-                        error.column = int.Parse(m.Groups[3].Value);
-                    }
-                    error.message = m.Groups[4].Value.TrimEnd();
                     if (error.fileName != "none" && !Path.IsPathRooted(error.fileName)) {
                         error.fileName = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(srcfile), error.fileName));
                     }
@@ -78,58 +93,80 @@ namespace ScriptEditor.TextEditorUI
             }
         }
 
-        public static string ParserLog(string log, TabInfo tab, List<Error> errors)
+        private static void GetLogText(string[] log, int s, Error error)
         {
-            if (tab.error) {
+            Match m = Regex.Match(log[s], pattern);
+            error.fileName = m.Groups[2].Value.Replace('/', '\\');
+            error.line = int.Parse(m.Groups[3].Value);
+            if (m.Groups[4].Value.Length > 0 && !char.IsWhiteSpace(m.Groups[4].Value[0]))
+                error.column = int.Parse(m.Groups[4].Value);
+
+            error.message = m.Groups[5].Value.TrimEnd();
+            if (error.type == ErrorType.Warning)
+                error.message += ": " + log[s + 1].Trim();
+        }
+
+        // for parser
+        public static string ParserLog(string log, TabInfo tab)
+        {
+            if (tab.parserErrors.Count > 0) {
                 List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(0, tab.textEditor.Document.TextLength);
                 foreach (TextMarker m in marker) { 
                     if (m.TextMarkerType == TextMarkerType.WaveLine) 
                         tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
                 }
-                tab.error = false;
+                tab.parserErrors.Clear();
             }
+            
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("------ Script: {0} < Parse Time: {1} > ------\r\n", 
+                            tab.filename, DateTime.Now.ToString("HH:mm:ss"));
             bool warn = false;
-            string[] sLog = log.Split('\n');
-            log = string.Empty;
+            string[] sLog = log.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < sLog.Length; i++)
             {
-                sLog[i] = sLog[i].TrimEnd();
                 if (sLog[i].StartsWith("[Error]")) {
-                    if (log.Length > 0) log += Environment.NewLine;
+                    sb.AppendLine();
                     warn = false;
-                    if (TextEditor.ParsingErrors) HighlightError(sLog[i], tab, errors);
+                    if (TextEditor.ParsingErrors)
+                        HighlightError(sLog[i], tab);
                 }
                 if (sLog[i].StartsWith("[Warning]")) {
-                    if (!Settings.parserWarn){
-                    warn = true;
-                    continue;
+                    if (!Settings.parserWarn) {
+                        warn = true;
+                        continue;
                     }
-                    if (log.Length > 0) log += Environment.NewLine;
+                    var error = new Error(ErrorType.Warning);
+                    GetLogText(sLog, i, error);
+                    //error.type = ErrorType.Parser;
+                    tab.parserErrors.Add(error);
+                    sb.AppendLine();
                 }
-                if (!warn) log += sLog[i] + Environment.NewLine;
+                if (!warn) 
+                    sb.AppendLine(sLog[i]);
             }
+
             tab.textEditor.Refresh();
-            if (log.Length > 2)
-                log = "------ Script: " + tab.filename
-                + " < Parse Time: " + DateTime.Now.ToString("HH:mm:ss")
-                + " > ------" + Environment.NewLine + log;
-            return log;
+
+            return sb.ToString();
         }
 
-        private static void HighlightError(string error, TabInfo tab, List<Error> errors)
+        private static void HighlightError(string error, TabInfo tab)
         {
-            string[] str = error.Split(new char[] {':'}, 4);
-            if (str.Length < 3 || Path.GetFileName(str[1].TrimEnd('>')) != tab.filename) return; 
-            TextLocation ErrorPosition = new Error(str[2], "1").ErrorPosition;
-            int offset = tab.textEditor.Document.PositionToOffset(ErrorPosition);
-            int len = TextUtilities.GetLineAsString(tab.textEditor.Document, ErrorPosition.Line).Length;
+            Match m = Regex.Match(error, pattern);
+            Error ePosition = new Error(m.Groups[3].Value, m.Groups[4].Value);
+            string message = m.Groups[5].Value.TrimEnd();
+            string fpath = m.Groups[2].Value;
 
-            TextMarker tm = new TextMarker(offset, len, TextMarkerType.WaveLine, System.Drawing.Color.Red);
-            tm.ToolTip = str[str.Length - 1];
-            tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
-            tab.error = true;
+            if (Path.GetFileName(fpath) == tab.filename) {
+                LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
+                TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, System.Drawing.Color.FromArgb(160, 255, 0, 0));
+                tm.ToolTip = message;
+                tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
+                fpath = tab.filepath;
+            }
             // add to error tab
-            errors.Add(new Error(ErrorType.Error, tm.ToolTip, tab.filepath, int.Parse(str[2]), 1));
+            tab.parserErrors.Add(new Error(ErrorType.Error, message, fpath, ePosition.line + 1, ePosition.column));
         }
     }
 }

@@ -23,7 +23,7 @@ namespace ScriptEditor.CodeTranslation
             line = d.declared;
         }
 
-        public string ToString(bool fullSpec = true)
+        public string ToString(bool fullSpec)
         {
             string s = string.Empty;
             if (fullSpec) {
@@ -53,13 +53,27 @@ namespace ScriptEditor.CodeTranslation
                     args += " := " + variables[i].initialValue;
             }
             args += ")";
-            if (fullSpec || args.Length > 2) s += args;
+            if (fullSpec || args.Length > 2)
+                s += args;
+
+            #if DEBUG
+                if (fullSpec)
+                    s += String.Format(" [start:{0} end:{1} decl:{2}]", d.start, d.end, d.declared);
+            #endif
+
             return s;
         }
-        public bool IsImported()
+
+        public bool IsImported
         {
-            return (d.type & ProcType.Import) > 0;
+            get { return (d.type & ProcType.Import) > 0; }
         }
+
+        public bool IsExported
+        {
+            get {return (d.type & ProcType.Export) > 0; }
+        }
+
         public override string ToString()
         {
             return ToString(true);

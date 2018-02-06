@@ -8,11 +8,17 @@ namespace ScriptEditor.TextEditorUI
     {
         public readonly string text;
         public readonly TabInfo tab;
+        public int status;
 
         public WorkerArgs(string text, TabInfo tab)
         {
             this.text = text;
             this.tab = tab;
+        }
+
+        public override string ToString()
+        {
+            return status.ToString();
         }
     }
 }

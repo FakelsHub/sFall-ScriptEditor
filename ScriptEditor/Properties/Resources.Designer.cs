@@ -60,6 +60,13 @@ namespace ScriptEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Icon CodeText {
+            get {
+                object obj = ResourceManager.GetObject("CodeText", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.IO.UnmanagedMemoryStream CompileError {
             get {
                 return ResourceManager.GetStream("CompileError", resourceCulture);
@@ -72,21 +79,114 @@ namespace ScriptEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap KeepWindowOff {
+            get {
+                object obj = ResourceManager.GetObject("KeepWindowOff", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap KeepWindowOn {
+            get {
+                object obj = ResourceManager.GetObject("KeepWindowOn", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap macros {
+            get {
+                object obj = ResourceManager.GetObject("macros", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на /*******************************************************************************
+        ///        Name:
+        ///        Location:
+        ///        Description:
+        ///
+        ///            Created:
+        ///            Updated:
+        ///
+        ///*******************************************************************************/
+        ///
+        ////* Sfall script compiler options */
+        ///#define SFALL_SC_EVALUATION   (true)  // short-circuit evaluation
+        ///
+        ////* Include Files */
+        ///#include &quot;define.h&quot;
+        ///#include &quot;command.h&quot;
+        ///#include &quot;sfall_headers\sfall.h&quot;
+        ///
+        ////* Standard Script Procedures */
+        ///pr [остаток строки не уместился]&quot;;.
+        /// </summary>
         internal static string newScript {
             get {
                 return ResourceManager.GetString("newScript", resourceCulture);
             }
         }
         
+        internal static System.Drawing.Bitmap opcode {
+            get {
+                object obj = ResourceManager.GetObject("opcode", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap procedure {
+            get {
+                object obj = ResourceManager.GetObject("procedure", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///&lt;SyntaxDefinition name = &quot;UserWords&quot;&gt;
+        ///
+        ///  &lt;KeyWords name = &quot;SpecMacros&quot; bold=&quot;true&quot; italic=&quot;false&quot; bgcolor=&quot;DimGray&quot; color=&quot;White&quot;&gt;
+        ///    &lt;Key word = &quot;DEBUGMSG&quot; /&gt;
+        ///  &lt;/KeyWords&gt;
+        ///  
+        ///  &lt;KeyWords name = &quot;UserMacros&quot; bold=&quot;true&quot; italic=&quot;false&quot; color=&quot;Green&quot;&gt;
+        ///    &lt;Key word = &quot;&quot; /&gt;
+        ///  &lt;/KeyWords&gt;
+        ///  
+        ///&lt;/SyntaxDefinition&gt;
+        ///.
+        /// </summary>
         internal static string User_SyntaxRules {
             get {
                 return ResourceManager.GetString("User_SyntaxRules", resourceCulture);
             }
         }
         
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на // The file contains a description of the user functions.
+        /////
+        ///// Structure:
+        ///// &quot;function name&quot;&lt;d&gt;&quot;short description of the function&quot;&lt;s&gt;&quot;code that will be inserted into the script&quot;&lt;cr&gt;
+        ///// &lt;m&gt; &quot;node name menu&quot;
+        ///// &lt;m+&gt; &quot;name for sub node&quot;
+        ///// &lt;m-&gt; close menu node.
+        ///// &lt;-&gt; delimiter (only for the top level)
+        ///// &lt;cr&gt; carriage return to a new line (optional)
+        ///// 
+        ///// In the &quot;Menu Node&quot;, &quot;function name&quot;, &quot;short description of the function&quot; and
+        ///// &quot;code that will be inserted into the script&quot; can contain any ch [остаток строки не уместился]&quot;;.
+        /// </summary>
         internal static string UserFunctions {
             get {
                 return ResourceManager.GetString("UserFunctions", resourceCulture);
+            }
+        }
+        
+        internal static System.Drawing.Bitmap variable {
+            get {
+                object obj = ResourceManager.GetObject("variable", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

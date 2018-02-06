@@ -1,34 +1,39 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+
 using ScriptEditor.TextEditorUI;
 
 namespace ScriptEditor.CodeTranslation
 {
     public struct ProcBlock
     {
-        public int begin;
-        public int end;
+        public int declar;      // Строка декларации процедуры
+        public int begin;       // Строка указывающая на begin процедуры
+        public int end;         // Строка указывающая на end процедуры
         public bool copy;
     }
     
     /// <summary>
     /// Class for parsing procedures SSL code w/o external parser.dll
     /// </summary>
-    public static class Parser
+    public class Parser
     {
         private static List<string> procNameList = new List<string>();
         private static TextEditor scrptEditor;
 
-        const int PROC_LEN = 10; 
-        const string PROCEDURE = "procedure ";
+        private static string[] bufferSSL; // text buffer for ssl script code
+
+        public const int PROC_LEN = 10; 
+        public const string PROCEDURE = "procedure ";
         const string BEGIN = "begin";
         const string END = "end";
         public const string INCLUDE = "#include ";
         public const string DEFINE = "#define ";
-        public const string COMMENT = "//";
+        const string COMMENT = "//";
 
         public static List<string> ProceduresListName
         {
@@ -36,35 +41,6 @@ namespace ScriptEditor.CodeTranslation
                 GetNamesProcedures();
                 return procNameList; 
             }
-        }
-
-        public static void InternalParser(TabInfo _ti, Form frm)
-        {
-            scrptEditor = frm as TextEditor;
-            TextEditor.parserRunning = true; // internal parse work
-            File.WriteAllText(Compiler.parserPath, _ti.textEditor.Text);
-            ProgramInfo _pi = new ProgramInfo(CountProcedures, 0);
-            _ti.parseInfo = InternalProcParse(_pi, _ti.textEditor.Text, _ti.filepath);
-            TextEditor.parserRunning = false;
-        }
-
-        // Update to data location of procedures
-        public static ProgramInfo UpdateProcsPI(ProgramInfo _pi, string file, string filepath)
-        {
-            ProgramInfo update_pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), file, filepath);
-            for (int i = 0; i < _pi.procs.Length; i++)
-            {
-                foreach (Procedure p in update_pi.procs)
-                {
-                    if (String.Equals(_pi.procs[i].name, p.name, StringComparison.OrdinalIgnoreCase) && _pi.procs[i].fdeclared == p.fdeclared) {
-                        _pi.procs[i].d.start = p.d.start;
-                        _pi.procs[i].d.end = p.d.end;
-                        _pi.procs[i].d.declared = p.d.declared;
-                        break;
-                    }
-                }
-            }
-            return _pi;
         }
 
         private static int CountProcedures
@@ -75,28 +51,108 @@ namespace ScriptEditor.CodeTranslation
             }
         }
 
-        // Get procedure data
-        private static ProgramInfo InternalProcParse(ProgramInfo _pi, string text, string scriptFile)
+        /// <summary>
+        /// Internal parse script
+        /// </summary>
+        /// <param name="_ti"></param>
+        /// <param name="frm"></param>
+        public Parser(TabInfo _ti, Form frm)
         {
-            #region Procedures data
+            scrptEditor = frm as TextEditor;
+            TextEditor.parserRunning = true; // internal parse work
+            
+            UpdateParseSSL(_ti.textEditor.Text, false);
+            
+            ProgramInfo _pi = new ProgramInfo(CountProcedures, 0);
+            _ti.parseInfo = InternalProcParse(_pi, _ti.textEditor.Text, _ti.filepath);
+            
+            TextEditor.parserRunning = false;
+        }
+
+        /// <summary>
+        /// Update to data location of procedures
+        /// </summary>
+        /// <param name="_pi"></param>
+        /// <param name="textscript"></param>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        public static ProgramInfo UpdateProcsPI(ProgramInfo _pi, string textscript, string filepath)
+        {
+            List<Procedure> _proc = _pi.procs.ToList();
+
+            UpdateParseSSL(textscript, false);
+            ProgramInfo update_pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
+            
+            for (int i = 0; i < _proc.Count; i++)
+            {
+                bool exist = false;
+                foreach (Procedure p in update_pi.procs)
+                {
+                    if (String.Equals(_proc[i].name, p.name, StringComparison.OrdinalIgnoreCase)
+                        && _proc[i].fdeclared == p.fdeclared) {
+                        _proc[i].d.start = p.d.start;
+                        _proc[i].d.end = p.d.end;
+                        _proc[i].d.declared = p.d.declared;
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist) // remove unused procedure
+                    _proc.RemoveAt(i--);
+            }
+
+            for (int i = 0; i < update_pi.procs.Length; i++)
+            {
+                bool exist = false;
+                for (int j = 0; j < _proc.Count; j++)
+                {
+                    if (String.Equals(update_pi.procs[i].name, _proc[j].name, StringComparison.OrdinalIgnoreCase)
+                        && update_pi.procs[i].fdeclared == _proc[j].fdeclared) {
+                            exist = true;
+                            break;
+                    }
+                }
+                if (!exist) // Add new procedure
+                    _proc.Insert(i, update_pi.procs[i]);
+            }
+
+            _pi.procs = _proc.ToArray();
+            _pi.RebuildProcedureDictionary();
+            
+            return _pi;
+        }
+
+        /// <summary>
+        /// Получит новые данные о процедурах из кода скрипта
+        /// </summary>
+        /// <param name="_pi"></param>
+        /// <param name="text">Текущий текст скрипта</param>
+        /// <param name="scriptFile">Файл скрипта</param>
+        /// <returns></returns>
+        private static ProgramInfo InternalProcParse(ProgramInfo _pi, string text, string scriptFile, bool bufferUpdate = true)
+        {
+            #region Procedures info data
             /*  pi.procs[].d.start        - номер строки начала тела процедуры
              *  pi.procs[].d.end          - номер строки конца тела процедуры
              *  pi.procs[].d.declared     - номер строки с объявление процедуры
              *  pi.procs[].name           - имя процедуры
-             *  pi.procs[].fdeclared      - путь и имя файла к скрипту (pi.procs[].fstart тоже самое)
+             *  pi.procs[].fdeclared      - путь и имя к файлу где объявлена процедура 
+             *  pi.procs[].fstart         - путь и имя к файлу где расположана процедура    
              *  pi.procs[].filename       - имя файла скрипта */
             #endregion
+            
+            if (bufferUpdate)
+                UpdateParseSSL(text);
 
             ProcBlock be_block = new ProcBlock();
-            UpdateParseSSL(text, false);
             for (int i = 0; i < _pi.procs.Length; i++)
             {
                 _pi.procs[i] = new Procedure();
                 _pi.procs[i].name = procNameList[i];
                 _pi.procs[i].d.declared = GetDeclarationProcedureLine(_pi.procs[i].name) + 1;
                 be_block = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
-                _pi.procs[i].d.start = be_block.begin + 1;
-                _pi.procs[i].d.end = be_block.end + 1;
+                _pi.procs[i].d.start = (be_block.begin >= 0) ? be_block.begin + 1 : -1;
+                _pi.procs[i].d.end = (be_block.end >= 0) ? be_block.end + 1 : -1;
                 _pi.procs[i].fdeclared = Path.GetFullPath(scriptFile);
                 _pi.procs[i].fstart = _pi.procs[i].fdeclared;
                 _pi.procs[i].filename = Path.GetFileName(scriptFile).ToLowerInvariant();
@@ -104,159 +160,218 @@ namespace ScriptEditor.CodeTranslation
                 _pi.procs[i].variables = new Variable[0];    // empty not used
             }
             _pi.parsed = true;
+            
+            bufferSSL = null;
+            
             return _pi;
         }
 
-        // Обновить данные begin...end блоков процедур
+        /// <summary>
+        /// Обновить данные для процедур позицию строк деклараций и блоков begin...end из кода скрипта
+        /// </summary>
+        /// <param name="_pi">Данные которые требуется обновить</param>
+        /// <param name="text">Текущий текст скрипта</param>
+        /// <param name="scriptFile">Файл скрипта</param>
         public static void UpdateProcInfo(ref ProgramInfo _pi, string text, string scriptFile)
         {
-            ProcBlock be_block = new ProcBlock();
             UpdateParseSSL(text);
+            
+            ProcBlock be_block = new ProcBlock();
             for (int i = 0; i < _pi.procs.Length; i++)
             {
-                if (_pi.procs[i].fdeclared != scriptFile) continue;
+                if (_pi.procs[i].fdeclared != scriptFile) 
+                    continue;
                 _pi.procs[i].d.declared = GetDeclarationProcedureLine(_pi.procs[i].name) + 1;
                 be_block = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
-                _pi.procs[i].d.start = be_block.begin + 1;
-                _pi.procs[i].d.end = be_block.end + 1;
+                _pi.procs[i].d.start = (be_block.begin >= 0) ? be_block.begin + 1 : -1;
+                _pi.procs[i].d.end = (be_block.end >= 0) ? be_block.end + 1 : -1;
             }
-        } 
+            _pi.RebuildProcedureDictionary();
 
-        // Получить список всех процедур из скрипта
+            bufferSSL = null;
+        }
+
+        // Get new procedure data of script
+        public static Procedure[] GetProcsData(string textscript, string filepath)
+        {
+            UpdateParseSSL(textscript, false);
+            
+            ProgramInfo _pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
+            
+            return _pi.procs;
+        }
+
+        // Получить список всех процедур из текущего буфера
         private static void GetNamesProcedures()
         {
             int _comm = 0;
             procNameList.Clear();
-            string[] file = File.ReadAllLines(Compiler.parserPath);
-            for (int i = 0; i < file.Length; i++)
+            
+            for (int i = 0; i < bufferSSL.Length; i++)
             {
                 bool _add = true;
-                file[i] = file[i].TrimStart();
-                if (CommentBlockParse(ref file[i], ref _comm)) continue;
-                if (file[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
+                bufferSSL[i] = bufferSSL[i].TrimStart();
+                
+                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                    continue;
+                
+                if (bufferSSL[i].StartsWith("import", StringComparison.OrdinalIgnoreCase)
+                    || bufferSSL[i].StartsWith("export", StringComparison.OrdinalIgnoreCase)) {
+                    bufferSSL[i] = bufferSSL[i].Remove(0, 7).TrimStart();
+                }
+
+                if (bufferSSL[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
-                    string pName = file[i].Substring(PROC_LEN, file[i].Length - PROC_LEN);
+                    string pName = bufferSSL[i].Substring(PROC_LEN, bufferSSL[i].Length - PROC_LEN);
+                    
                     // delete Begin or other information from procedure name
                     int z = pName.IndexOf(';');
-                    if (z > 0) pName = pName.Remove(z);
+                    if (z > 0)
+                        pName = pName.Remove(z);
+
                     z = pName.IndexOf('(');
-                    if (z > 0) pName = pName.Remove(z);
+                    if (z > 0)
+                        pName = pName.Remove(z);
+                    
                     z = pName.IndexOf(BEGIN);
-                    if (z > 0) pName = pName.Remove(z);
+                    if (z > 0)
+                        pName = pName.Remove(z);
+                    
                     z = pName.IndexOf(COMMENT);
-                    if (z < 0) z = pName.IndexOf("/*");
-                    if (z > 0) pName = pName.Remove(z);
+                    if (z < 0)
+                        z = pName.IndexOf("/*");
+                    if (z > 0)
+                        pName = pName.Remove(z);
+                    
                     pName = pName.Trim();
                     //
-                    foreach (string name in procNameList) {
+                    foreach (string name in procNameList)
+                    {
                         if (String.Equals(pName, name, StringComparison.OrdinalIgnoreCase)) {
                             _add = false;
                             break;
                         }
                     }
-                    if (_add) procNameList.Add(pName);  
+                    if (_add)
+                        procNameList.Add(pName);  
                 }            
             }
         }
 
-        // Получить номер строки с объявленой процедурой
+        /// <summary>
+        /// Получить номер строки объявления для процедуры
+        /// </summary>
+        /// <param name="pName">Имя процедуры</param>
+        /// <returns>Номер строки в коде скрипта (-1 если строка декларация процедуры не найдена)</returns>
         public static int GetDeclarationProcedureLine(string pName)
         {
-            string[] file = File.ReadAllLines(Compiler.parserPath);
             pName = pName.ToLowerInvariant();
             int pLen = pName.Length;
-            for (int i = 0; i < file.Length; i++) {
-                file[i] = file[i].Trim();
+            
+            for (int i = 0; i < bufferSSL.Length; i++)
+            {
+                bufferSSL[i] = bufferSSL[i].Trim();
+                
                 // TODO: возможно тут нужна проверка на закоментированный блок /* */
-                if (IsProcedure(ref file[i], pName)) {
-                    if (file[i].Length <= (PROC_LEN + pLen)) continue; // broken declare
-                    RemoveDebrisLine(file, pLen, i);
-                    if (file[i].LastIndexOf(';') >= (PROC_LEN + pLen)) return i; //found
+                
+                if (bufferSSL[i].StartsWith("import") || bufferSSL[i].StartsWith("export"))
+                    bufferSSL[i] = bufferSSL[i].Remove(0, 7).TrimStart();
+
+                if (IsProcedure(ref bufferSSL[i], pName)) {
+                    if (bufferSSL[i].Length <= (PROC_LEN + pLen))
+                        continue; // broken declare
+
+                   RemoveDebrisLine(ref bufferSSL[i], pLen);
+                    
+                    if (bufferSSL[i].LastIndexOf(';') >= (PROC_LEN + pLen))
+                        return i; //found
                 }
             }
             return -1; // not found
         }
 
-        // Получить последнию строку в списке 'procedure declaration'
+        /// <summary>
+        /// Получить номер последней строки в списке процедурных деклараций
+        /// </summary>
+        /// <returns>Номер строки в коде (0 если строку не удалось получить)</returns>
         public static int GetEndLineProcDeclaration()
         {
             int _comm = 0;
-            string[] file = File.ReadAllLines(Compiler.parserPath);
-            for (int i = 0; i < file.Length; i++) 
+            
+            for (int i = 0; i < bufferSSL.Length; i++) 
             {
-                file[i] = file[i].Trim();
-                if (CommentBlockParse(ref file[i], ref _comm)) continue;
+                bufferSSL[i] = bufferSSL[i].Trim();
+                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                    continue;
+                
                 // убираем лишнее
-                RemoveDebrisLine(file, 0-PROC_LEN, i);
-                if (file[i].EndsWith(BEGIN)) {
-                    if (!file[i].StartsWith(PROCEDURE) && !file[i - 1].StartsWith(PROCEDURE)) 
+                RemoveDebrisLine(ref bufferSSL[i], 0-PROC_LEN);
+                
+                if (bufferSSL[i].EndsWith(BEGIN)) {
+                    if (!bufferSSL[i].StartsWith(PROCEDURE) && !bufferSSL[i - 1].StartsWith(PROCEDURE)) 
                         continue; 
                     for (int j = i - 1; j > 0; j--) {
-                       if (file[j].StartsWith(PROCEDURE)) return j + 1;
+                       if (bufferSSL[j].StartsWith(PROCEDURE)) 
+                           return j + 1;
                     }
-                    if (++i <= file.Length) continue;
+                    if (++i <= bufferSSL.Length)
+                        continue;
                     return -1;  // procedure block is broken
                 }
             }
             return 0; // not found procedure declaration
         }
 
-        // Получить последнию строку declaration
-        public static int GetEndRegionDeclaration(string text, int line)
-        {
-            int _comm = 0;
-            string[] file = text.Split('\n');
-            for (int i = line; i > 0; i--)
-            {
-                file[i] = file[i].TrimStart();
-                if (CommentBlockParse(ref file[i], ref _comm)) continue;
-                RemoveDebrisLine(file, 0-PROC_LEN, i);
-                if (file[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase))
-                    return i;  // found end declaration
-            }
-            return -1; // not found
-        }
-
-        // Получить для заданной процедуры номера строк блока Begin...End
+        /// <summary>
+        /// Получить для указанной процедуры номера ее строк Begin...End блока 
+        /// </summary>
+        /// <param name="pName">Имя процедуры</param>
+        /// <param name="startline">Строка в коде с которой необходимо начать поиск</param>
+        /// <param name="procBegin">procBegin=True - получить номер строки процедуры, а не строки Begin блока</param>
         public static ProcBlock GetProcBeginEndBlock(string pName, int startline = 0, bool procBegin = false)
         {
-            ProcBlock block = new ProcBlock();
             int _begin = 0, _proc = 0, _comm = 0, lineProc = 0;
-            string[] file = File.ReadAllLines(Compiler.parserPath);
+            ProcBlock block = new ProcBlock() { declar = -1 };
+            
             pName = pName.ToLowerInvariant();
             int pLen = pName.Length;
-            if (startline < 0) startline = 0;
-            for (int i = startline; i < file.Length; i++)
+            if (startline < 0)
+                startline = 0;
+            
+            for (int i = startline; i < bufferSSL.Length; i++)
             {
-                file[i] = file[i].Trim();
-                if (CommentBlockParse(ref file[i], ref _comm)) continue;
-
+                bufferSSL[i] = bufferSSL[i].Trim();
+                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                    continue;
                 // ищем начало процедуры с искомым именем
-                if (_proc == 0 && IsProcedure(ref file[i], pName))
+                if (_proc == 0 && IsProcedure(ref bufferSSL[i], pName))
                 {   // нашли procedure name, проверяем 100% совпадает c искомым?
+                    block.declar = i;
                     string s = " ";
-                    if (file[i].Length > PROC_LEN + pLen) s = file[i].Substring(PROC_LEN + pLen, 1);
-                    if (s != " " && s != "(") continue; //не совпадает, ищем дальше
+                    if (bufferSSL[i].Length > PROC_LEN + pLen)
+                        s = bufferSSL[i].Substring(PROC_LEN + pLen, 1);
+                    if (s != " " && s != "(")
+                        continue; //не совпадает, ищем дальше
                     _proc++; // совпадает, проверяем это процедура или ее объявление
                     // убираем лишнее
-                    RemoveDebrisLine(file, pLen, i);
-                    if (file[i].EndsWith(BEGIN)) {
+                    RemoveDebrisLine(ref bufferSSL[i], pLen);
+                    if (bufferSSL[i].EndsWith(BEGIN)) {
                         block.begin = i; //да это процедура, присваеваем значение строки в begin
                         _begin++;
                         continue;
                     } else { // нет, продолжаем искать begin
-                        lineProc = i; // save for procBegin
+                        lineProc = i; // save for procBegin, строка Procedure name
                         continue;
                     }
                 } // ищем begin от процедуры.
                 else if (_proc > 0 && _begin == 0) {
-                    if (file[i].StartsWith(BEGIN)) {
+                    if (bufferSSL[i].StartsWith(BEGIN)) {
                         _begin++; // нашли begin
                         block.begin = (procBegin) ? lineProc : i; // возвращаем номер строки с процедурой
                         continue;
                     }
                     // в процессе проверяем и любое объявление процедур
-                    if (file[i].StartsWith(PROCEDURE)) {
+                    if (bufferSSL[i].StartsWith(PROCEDURE)) {
                         // нашли - откат назад, будем продолжать искать нашу "procedure Name"
                         _proc--;
                         i--;
@@ -265,49 +380,59 @@ namespace ScriptEditor.CodeTranslation
                 }
                 // нашли begin, теперь ищем начало следующей процедуры
                 // и от ее позиции будем искать 'END' принадлежащий к искомой "procedure Name"
-                if (_proc > 0 && _begin > 0 && file[i].StartsWith(PROCEDURE)) {
-                    // нашли следующую процедуруh);
+                if (_proc > 0 && _begin > 0 && bufferSSL[i].StartsWith(PROCEDURE)) {
+                    // нашли следующую процедуру
                     for (int j = i - 1; j > 0; j--) // back find 
                     {   
-                        if (file[j].StartsWith(END)) {
+                        if (bufferSSL[j].StartsWith(END)) {
                             // found "end"
                             block.end = j;
                             return block ; // return
                         } else if (j <= block.begin) {
-                            scrptEditor.intParserPrint("[Parsing Error] Line#" + (block.begin + 1) + ": When parsing of procedure '" + pName + "' construct keyword 'End' not found.\r\n");
-                            block.end = block.begin + 1;
-                            return block; // procedure block is broken
+                            block.end = i - 1;
+                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}'" + 
+                                                                     " of the keyword 'end' was not found.\r\n", block.end + 1, pName));
+                            return block; // procedure block end is broken
                         } 
                     }
                 } 
             }
             // обработка вслучае последней процедуры в скрипте
             if (block.end == 0 && _proc > 0 && _begin > 0) {
-                for (int i = file.Length - 1; i > 0; i--) // back find 
+                for (int i = bufferSSL.Length - 1; i > 0; i--) // back find 
                 {
-                    if (file[i].StartsWith(END)) {
+                    if (bufferSSL[i].StartsWith(END)) {
                         block.end = i;
                         return block;
                     }
                 }
             }
-            scrptEditor.intParserPrint("[Parsing Error] When parsing of procedure '" + pName + "' construct Begin...End, an unexpected error occurred.\r\n");
             block.begin = -1;
             block.end = -1;
-            return block; // что-то пошло не так, достигнут конец файла
+            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing the procedure '{1}' an unexpected error occurred," +
+                                                     " the construction of the code 'begin...end' was not determined.\r\n", block.declar + 1, pName));
+            return block;
         }
 
-        private static void RemoveDebrisLine(string[] file, int pLen, int i)
+        /// <summary>
+        /// Удаляет все комментарии из текстовой строки
+        /// </summary>
+        /// <param name="pLen">Позиция в строке откуда будет начат поиск</param>
+        private static void RemoveDebrisLine(ref string buff, int pLen)
         {
-            int z = file[i].IndexOf(COMMENT, PROC_LEN + pLen);
-            if (z < 0) z = file[i].IndexOf("/*", PROC_LEN + pLen);
-            if (z > 0) file[i] = file[i].Remove(z).TrimEnd();
+            int z = buff.IndexOf(COMMENT, PROC_LEN + pLen);
+            if (z < 0)
+                z = buff.IndexOf("/*", PROC_LEN + pLen);
+            if (z > 0)
+                buff = buff.Remove(z).TrimEnd();
         }
 
         // Comment block parse
-        private static bool CommentBlockParse(ref string sLine, ref int _comm)
+        public static bool CommentBlockParse(ref string sLine, ref int _comm)
         {
-            if (sLine.StartsWith(COMMENT) || sLine.Length < 2) return true;
+            if (sLine.Length < 2 || sLine.StartsWith(COMMENT))
+                return true;
+
             int cStart = sLine.IndexOf("/*");
             if (cStart != -1 && _comm == 0) { // sLine.StartsWith("/*")
                 // удаление из строки закомментированного блока '/* ... */'
@@ -316,7 +441,8 @@ namespace ScriptEditor.CodeTranslation
                     _comm++;
                     sLine = string.Empty; // clear comment line
                     return true;
-                } else sLine = sLine.Remove(cStart, (cEnd + 2) - cStart).Insert(cStart, " ").TrimStart();
+                } else 
+                    sLine = sLine.Remove(cStart, (cEnd + 2) - cStart).Insert(cStart, " ").TrimStart();
             }
             else if (_comm > 0) {
                 if (sLine.IndexOf("*/") > 0 || sLine.StartsWith("*/")) {
@@ -334,57 +460,153 @@ namespace ScriptEditor.CodeTranslation
             return false;
         }
 
+        // Определить содержит ли проверяемая строка коючевое слово "procedure " c указанным именем
         private static bool IsProcedure(ref string sLine, string pName)
         {
             if (sLine.StartsWith(PROCEDURE)) {
-                // удаление двойных пробелов в строке процедуры
-                char[] ch  = sLine.ToCharArray();
-                for (int i = 9; i < ch.Length; i++)
-                    if (ch[i] == ' ' && ch[i + 1] == ' ') ch[i] = '\0';
-                sLine = new string(ch).Replace("\0", "");
-                if (sLine.StartsWith(PROCEDURE + pName)) return true;
+                // удаление двойных пробелов между словом процедура и ее именем
+                int z = sLine.IndexOf("  ", 9);
+                if (z > 0) {
+                    int x = sLine.IndexOf("//", 9);
+                    if (x == -1)
+                        x = sLine.IndexOf("/*", 9);
+                    
+                    int y = sLine.IndexOfAny(new char[] {';', ')'}, 9);
+                    if (y > 0) { // определяем наименьшее значение x и y
+                        if (x == -1 || y < x) // позиция скобки не находится в комментариях
+                            x = y;        
+                    }
+                    if (x == -1 || z < x) // двойные пробелы расположены не за пределами проверки
+                        sLine = RemoveDoubleWhiteSpaces(sLine, z, x);
+                }
+                if (sLine.StartsWith(PROCEDURE + pName)) {
+                    int ePos = PROC_LEN + pName.Length;
+                    // проверяем следующий символ за именем процедуры
+                    if (ePos >= sLine.Length || sLine[ePos] == ';' || sLine[ePos] == '('
+                        || (!char.IsLetterOrDigit(sLine[ePos]) && !char.IsPunctuation(sLine[ePos])))
+                        return true; // строка с именем процедуры совпадает
+                }
             }
             return false;
         }
 
-        public static void UpdateParseSSL(string sText, bool check = true, bool lower = true)
+        private static string RemoveDoubleWhiteSpaces(string sLine, int start, int end)
         {
-            while (check && TextEditor.parserRunning) System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
-            File.WriteAllText(Compiler.parserPath, (lower) ? sText.ToLowerInvariant(): sText);
+            char[] ch  = sLine.ToCharArray();
+            end = (end > 0) ? end : ch.Length;
+            for (int i = start; i < end; i++)
+            {
+                if (char.IsWhiteSpace(ch[i]) && char.IsWhiteSpace(ch[i + 1]))
+                    ch[i] = '\0';
+            }
+            return new string(ch).Replace("\0", string.Empty);
         }
 
-        public static bool CheckExistsProcedureName(string pName)
+        /// <summary>
+        /// Занести во временный буфер текст скрипта
+        /// </summary>
+        /// <param name="sText">Код скрипта</param>
+        /// <param name="lower"></param>
+        public static void UpdateParseSSL(string sText, bool lower = true)
         {
-            string[] file = File.ReadAllLines(Compiler.parserPath);
-            pName = pName.ToLowerInvariant();
-            for (int i = 0; i < file.Length; i++)
+            char delimeter = '\n';
+            bufferSSL = (lower) ? sText.ToLowerInvariant().Split(delimeter)
+                                : sText.Split(delimeter);
+        }
+        
+        #region Get declaration region
+        /// <summary>
+        /// Получить номера строк для региона деклараций
+        /// </summary>
+        public static ProcBlock GetRegionDeclaration(string text, int lineStart)
+        {
+            bufferSSL = text.Split(new char[]{'\n'}, lineStart + 1);
+            int lenBuff = bufferSSL.Length - 1;
+            
+            int _comm = 0;
+            bool ret = false;
+            bool check = false;
+
+            ProcBlock block = new ProcBlock() { begin = 0, end = -1 };
+
+            for (int i = 0; i < lenBuff; i++)
             {
-                file[i] = file[i].Trim();
-                // TODO: возможна тут нужна проверка на закоментированный блок /* */
-                if (IsProcedure(ref file[i], pName)) {
-                    MessageBox.Show("This procedure has already declared.", "Info");
-                    return true; // found
+                bufferSSL[i] = bufferSSL[i].Trim();
+                if (ret) {
+                    if (bufferSSL[i].Length == 0) {
+                        check = false;
+                        continue;
+                    } else {
+                        block.begin = (check) ? i - 1 : i; // found begin declaration
+                        break;
+                    }
+                }
+                check = (bufferSSL[i].Length > 0);
+                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                    continue;
+                ret = true;
+            }
+                        
+            for (int i = lineStart - 1; i > block.begin; i--)
+            {
+                if (bufferSSL[i].Trim().Length > 0) {
+                    block.end = i;  // found end declaration
+                    break;
                 }
             }
-            return false; // not found
+            return block;
         }
 
-        public static Procedure GetProcedurePosition(Procedure[] procScript, int linePosition)
+        public static List<ProcBlock> GetDeclarationVariableBlock(string text, int start = 0)
         {
-            linePosition++;
-            foreach (Procedure proc in procScript)
+            List<ProcBlock> list = new List<ProcBlock>();
+            ProcBlock block = new ProcBlock() { begin = -1, end = -1 };
+            
+            int _comm = 0;
+            bufferSSL = text.Split(new char[]{'\n'});
+            int lenBuff = bufferSSL.Length;
+            
+            for (int i = start; i < lenBuff; i++)
             {
-                if (linePosition >= proc.d.start & linePosition <= proc.d.end)
-                    return proc;
-            }
-            return null;
-        }
+                string buffer = bufferSSL[i].TrimStart().ToLower();
+                if (CommentBlockParse(ref buffer, ref _comm))
+                    continue;
+                RemoveDebrisLine(ref buffer, -10);
 
+                if (block.begin == -1 && buffer.StartsWith("variable ")) {
+                    int boffset = buffer.IndexOf(" " + BEGIN) + 1;
+                    if (boffset > 0) {
+                        buffer = buffer.Remove(boffset + BEGIN.Length);
+                        
+                        int z = buffer.IndexOf("  ", 8);
+                        if (z > 0)
+                            buffer = RemoveDoubleWhiteSpaces(buffer, z, boffset);
+
+                        if (buffer.StartsWith("variable " + BEGIN)) {
+                            block.begin = i;
+                            continue;
+                        }
+                    }   
+                }
+                else if (block.begin > -1 && buffer.StartsWith(END)) {
+                    block.end = i;
+                    list.Add(block);
+                    block = new ProcBlock() { begin = -1, end = -1 };
+                } 
+                else if (block.begin > -1 && (buffer.StartsWith("variable ") || buffer.StartsWith(PROCEDURE)))
+                    block.begin = -1;
+            }
+            return list;
+        }
+        #endregion 
+
+        #region Include files
         public static List<string> GetAllIncludes(TabInfo tab)
         {
             List<string> include = new List<string>();
-            string[] lines = tab.textEditor.Document.TextContent.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = tab.textEditor.Document.TextContent.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             string dir = Path.GetDirectoryName(tab.filepath);
+            
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = lines[i].Trim();
@@ -394,7 +616,7 @@ namespace ScriptEditor.CodeTranslation
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    includePath(ref text[1], dir);
+                    OverrideIncludePath(ref text[1], dir);
                     include.Add(text[1]);
                 }
             }
@@ -402,17 +624,40 @@ namespace ScriptEditor.CodeTranslation
         }
 
         // Override includes path
-        public static void includePath(ref string iPath, string dir)
+        public static bool OverrideIncludePath(ref string iPath, string dir)
         {
             if (!Path.IsPathRooted(iPath)) {
-                if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null)
-                    iPath = Path.GetFullPath(Path.Combine(Settings.PathScriptsHFile, iPath));
-                else
-                    iPath = Path.GetFullPath(Path.Combine(dir, iPath));
-            } // переопределять и неотносительные пути (все headers файлы должны лежать в одной папке)
-            else if (Settings.overrideIncludesPath && Settings.PathScriptsHFile != null) {
-                iPath = Path.Combine(Settings.PathScriptsHFile, Path.GetFileName(iPath));
+                if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
+                    iPath = Path.GetFullPath(Path.Combine(Settings.pathHeadersFiles, iPath));
+                    return true;
+                } else { //если не указана папка c .h файлами то переопределять путь 
+                    //относительно папки скрипта или каталога программы
+                    string temp = Path.GetFullPath(Path.Combine(dir, iPath));
+                    if (!File.Exists(temp))
+                        iPath = Path.GetFullPath(Path.Combine(Settings.ProgramFolder, iPath));
+                    else
+                        iPath = temp; //source script dir
+                    return true;
+                }
+            } // переопределить неотносительные пути в случае отсутвия такого .h файла
+              // при переопрелелении пути в таком случае все .h файлы должны находится в одной папке
+            else if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
+                if (!File.Exists(iPath)) {
+                    iPath = Path.Combine(Settings.pathHeadersFiles, Path.GetFileName(iPath));
+                    return true;
+                }
             }
+            return false;
         }
+
+        public static bool OverrideIncludePath(ref string iPath)
+        {
+            if (Path.IsPathRooted(iPath) && !File.Exists(iPath)) {
+                iPath = Path.Combine(Settings.pathHeadersFiles, Path.GetFileName(iPath));
+                return true;
+            }
+            return false;
+        }
+        #endregion
     }
 }

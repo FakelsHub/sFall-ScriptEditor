@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.XPath;
 
-namespace ScriptEditor.TextEditorUI
+namespace ScriptEditor.SyntaxRules
 {
     public class SyntaxFile
     {

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -9,37 +6,41 @@ namespace ScriptEditor
 {
     partial class AboutBox : Form
     {
-        const string appName = "Sfall Script Editor";
-
+        public const string appName = "Sfall Script Editor";
+        public static readonly string appVersion = Application.ProductVersion + " RC";
+        
         public AboutBox()
         {
             InitializeComponent();
             this.Text += appName + " - extended version by Mr.Stalin";
             this.labelProductName.Text = appName;
-            this.labelVersion.Text = String.Format("Version {0} beta", AssemblyVersion);
+            this.labelVersion.Text = String.Format("Version {0}", appVersion);
             this.labelCopyright.Text = AssemblyCopyright;
-            this.textBoxDescription.Text = string.Format(
-@"The sfall script compiler, for sfall {0}
-updated by phobos2077 at 2016.10.14
-
-Code editor control is from ICSharpCode.TextEditor 3.2.1 (LGPL)
+            this.textBoxDescription.Text =
+@"Code editor control is from ICSharpCode.TextEditor 3.2.1 (LGPL)
+and ICSharpCode.DiagramCanvas 3.2.1 (LGPL)
 http://www.icsharpcode.net/opensource/sd/
 Copyright 2002-2010 by AlphaSierraPapa, Christoph Wille
+Controls modified by Mr.Stalin
 
 Script compilation is handled by sslc sfall edition
+The sfall script compiler, for sfall 4.0.0 
+Updated by phobos2077
 
 Script preprocessing handled by mcpp 2.7.2 (BCD)
 Copyright (c) 1998, 2002-2008 Kiyoshi Matsui
 
-Preprocessing Open Watcom C32 Compiler Version 1.9
-Copyright (c) 1984-2002 Sybase, Inc.
+Script preprocessing handled by Open Watcom C32
+Optimizing Compiler version 2.0 beta (01/11/2017)
+Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved.
+Copyright (c) 2002-2017 The Open Watcom Contributors.
 
-Script decompilation handled by int2ssl 8.3.0
+Script decompilation handled by int2ssl 8.4.2
 Copyright (C) Anchorite (TeamX), 2005-2009
 Continued by Nirran, phobos2077
 
 See licences.txt for licence texts.
-", AssemblyVersion);
+";
         }
 
         #region Assembly Attribute Accessors

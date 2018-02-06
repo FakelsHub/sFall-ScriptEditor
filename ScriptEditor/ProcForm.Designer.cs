@@ -32,7 +32,7 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.ProcedureName = new System.Windows.Forms.TextBox();
+            this.tbName = new System.Windows.Forms.TextBox();
             this.Cancel = new System.Windows.Forms.Button();
             this.Create = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
@@ -53,11 +53,11 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(148, 19);
+            this.radioButton2.Location = new System.Drawing.Point(141, 19);
             this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(111, 17);
+            this.radioButton2.Size = new System.Drawing.Size(118, 17);
             this.radioButton2.TabIndex = 2;
-            this.radioButton2.Text = "Insert after current";
+            this.radioButton2.Text = "Insert after selected";
             this.radioButton2.UseVisualStyleBackColor = true;
             // 
             // radioButton1
@@ -66,10 +66,10 @@
             this.radioButton1.Checked = true;
             this.radioButton1.Location = new System.Drawing.Point(16, 19);
             this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(85, 17);
+            this.radioButton1.Size = new System.Drawing.Size(113, 17);
             this.radioButton1.TabIndex = 1;
             this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Paste to end";
+            this.radioButton1.Text = "Paste at end script";
             this.radioButton1.UseVisualStyleBackColor = true;
             // 
             // checkBox1
@@ -77,18 +77,19 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(16, 42);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(167, 17);
+            this.checkBox1.Size = new System.Drawing.Size(203, 17);
             this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Copy from selected procedure";
+            this.checkBox1.Text = "Copy from current selected procedure";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
-            // ProcedureName
+            // tbName
             // 
-            this.ProcedureName.Location = new System.Drawing.Point(12, 12);
-            this.ProcedureName.Name = "ProcedureName";
-            this.ProcedureName.Size = new System.Drawing.Size(346, 20);
-            this.ProcedureName.TabIndex = 1;
-            this.ProcedureName.WordWrap = false;
+            this.tbName.HideSelection = false;
+            this.tbName.Location = new System.Drawing.Point(12, 12);
+            this.tbName.Name = "tbName";
+            this.tbName.Size = new System.Drawing.Size(346, 20);
+            this.tbName.TabIndex = 1;
+            this.tbName.WordWrap = false;
             // 
             // Cancel
             // 
@@ -119,7 +120,7 @@
             this.ClientSize = new System.Drawing.Size(370, 114);
             this.Controls.Add(this.Create);
             this.Controls.Add(this.Cancel);
-            this.Controls.Add(this.ProcedureName);
+            this.Controls.Add(this.tbName);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
@@ -129,6 +130,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Create Procedure";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProcForm_FormClosing);
             this.Shown += new System.EventHandler(this.ProcForm_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -142,9 +144,9 @@
         private System.Windows.Forms.Button Cancel;
         protected internal System.Windows.Forms.GroupBox groupBox1;
         protected internal System.Windows.Forms.CheckBox checkBox1;
-        protected internal System.Windows.Forms.TextBox ProcedureName;
         protected internal System.Windows.Forms.Button Create;
         private System.Windows.Forms.RadioButton radioButton1;
         protected internal System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.TextBox tbName;
     }
 }

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+using ICSharpCode.TextEditor.Document;
 
 using ScriptEditor.CodeTranslation;
 using ScriptEditor.TextEditorUI;
-
-using ICSharpCode.TextEditor.Document;
-using System.Text.RegularExpressions;
+using ScriptEditor.TextEditorUtilities;
 
 namespace ScriptEditor
 {
@@ -16,85 +17,68 @@ namespace ScriptEditor
     {
         private List<DialogueParser> Arguments = new List<DialogueParser>();
 
-        private List<int> nodesNavigation = new List<int>();
+        private List<string> nodesNavigation = new List<string>();
         private int currentNavigation = 0;
 
         private TabInfo sourceTab;
-        private IDocument document;
-        private Procedure[] scrProc;
 
-        private string msgPath;
+        private IDocument document
+        {
+            get { return sourceTab.textEditor.Document; }
+        }
+
+        private Procedure[] scrProc
+        {
+            get { return sourceTab.parseInfo.procs; }
+        }
+
+        private int readMsgNum = -1;
         private string[] MessagesData;
         
         private bool allow;
         private bool user;
+        private bool needUpdate;
 
         public bool InitReady 
         {
             get { return (MessagesData != null); }
         }
 
-        public DialogPreview(TabInfo sourceTab, string msgPath)
+        public DialogPreview(TabInfo sourceTab)
         {
             InitializeComponent();
-            
+
             this.Text += sourceTab.filename;
             this.sourceTab = sourceTab;
-            this.document = sourceTab.textEditor.Document;
-            this.scrProc = sourceTab.parseInfo.procs;
-            this.msgPath = msgPath;
-            
-            Parser.UpdateParseSSL(document.TextContent, true, false);
-            foreach (string name in Parser.ProceduresListName)
-            {
-                if (name.StartsWith("node", StringComparison.OrdinalIgnoreCase) 
-                    || name.Equals("talk_p_proc", StringComparison.OrdinalIgnoreCase))
-                    NodesComboBox.Items.Add(name);
-            }
 
-            Procedure curProc = Parser.GetProcedurePosition(scrProc, sourceTab.textEditor.ActiveTextAreaControl.Caret.Line);
+            NodesComboBox.Items.AddRange(DialogueParser.GetAllNodesName(scrProc).ToArray());
+
+            Procedure curProc = sourceTab.parseInfo.GetProcedurePosition(sourceTab.textEditor.ActiveTextAreaControl.Caret.Line);
             if (curProc == null || !NodesComboBox.Items.Contains(curProc.name)) {
-                int indx = GetProcedureIndex("talk_p_proc");
-                if (indx == -1) return;
+                int indx = sourceTab.parseInfo.GetProcedureIndex("talk_p_proc");
+                if (indx == -1)
+                    return;
                 curProc = scrProc[indx];
             }
             
-            MessagesData = File.ReadAllLines(msgPath, Settings.EncCodePage);
+            MessagesData = File.ReadAllLines(sourceTab.msgFilePath, Settings.EncCodePage);
 
             NodesComboBox.Text = curProc.name;
-            nodesNavigation.Add(GetProcedureIndex(curProc.name));
+            nodesNavigation.Add(curProc.name);
             GotoNode(curProc);
         }
 
         private void GotoNode(Procedure curProc)
         {
-            int offset = document.GetLineSegment(curProc.d.start).Offset;
-            LineSegment end = document.GetLineSegment(curProc.d.end - 2);
-            int length = (end.Offset + end.Length) - offset;
             Arguments.Clear();
             dgvMessages.Rows.Clear();
-            if (length < 10) return;
-            ParseNode(document.GetText(offset, length));
+
+            string body = Utilities.GetProcedureCode(document, curProc);
+            if (body == null)
+                return;
+            DialogueParser.ParseNodeCode(body, Arguments, sourceTab.parseInfo);
+
             BuildMessageDialog();
-        }
-        
-        private void ParseNode(string text)
-        {
-            Regex regex = new Regex(OpcodeType.call.ToString(), RegexOptions.IgnoreCase);
-
-            string[] bodyNode = text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string line in bodyNode)
-            {
-                string str = line.Trim();
-
-                DialogueParser.ReplySubParse(Arguments, str, OpcodeType.Message);
-                DialogueParser.ReplySubParse(Arguments, str, OpcodeType.Reply);
-                DialogueParser.OptionSubParse(Arguments, str);
-                
-                MatchCollection matches = regex.Matches(str);
-                foreach (Match m in matches)
-                    Arguments.Add(new DialogueParser(str, m.Index + 4));
-            }
         }
       
         private void BuildMessageDialog()
@@ -102,37 +86,65 @@ namespace ScriptEditor
             int number = 0;
             if (femaleToolStripMenuItem.Checked)
                 int.TryParse(toolStripTextBox.Text, out number);
-            
-            string msg;
+
+            string msg, msgPath = null;
+
             foreach (DialogueParser line in Arguments)
             {
                 int n = number;
-                if (line.msgNum > 0) {
-                    msg = MessageFile.GetMessages(MessagesData, number + line.msgNum);
+                bool error = false;
+                if (line.numberMsgLine > 0) {
+                    
+                    if (readMsgNum != line.numberMsgFile) {
+                        if (line.numberMsgFile != -1) {
+                            string path;
+                            if (!MessageFile.GetPath(sourceTab, line.numberMsgFile, out path)) {
+                                msg = String.Format(MessageFile.msgfileError, line.numberMsgFile);
+                                msgPath = null;
+                                error = true;
+                                goto skip;
+                            }
+                            msgPath = path;
+                        } else
+                            msgPath = sourceTab.msgFilePath;
+
+                        readMsgNum = line.numberMsgFile;
+                        MessagesData = File.ReadAllLines(msgPath, Settings.EncCodePage);
+                    }
+
+                    msg = MessageFile.GetMessages(MessagesData, number + line.numberMsgLine);
                     if (msg == null && number > 0) {
-                        msg = MessageFile.GetMessages(MessagesData, line.msgNum);
+                        msg = MessageFile.GetMessages(MessagesData, line.numberMsgLine);
                         n = 0;
                     }
-                    if (msg == null) 
-                        msg = "Error: <Text was not found in msg file>";
+                    if (msg == null) {
+                        msg = MessageFile.messageError;
+                        error = true;
+                    }
                 } else
-                    msg = line.code;
-
-                if (line.iq != null)
-                    msg = (char)0x25CF + " " + msg;
-
-                dgvMessages.Rows.Add(line.toNode.Trim('"', ' '), msg, line.iq, (line.msgNum > 0) ? n + line.msgNum : line.msgNum);
-                if (!line.toNode.StartsWith("["))
-                    dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Style.ForeColor = Color.Blue;
+                    msg = "<" + line.shortcode + ">";
+skip:
+                dgvMessages.Rows.Add(line.toNode.Trim('"', ' '), msg, line.iq, (line.numberMsgLine > 0) ? n + line.numberMsgLine : line.numberMsgLine);
+                dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[0].Tag = line.opcode;
+                if (line.opcode == OpcodeType.Option) {
+                    dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Value = (char)0x25CF + " " + msg;
+                    if (!error)
+                        dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Style.ForeColor = Color.Blue;
+                }
+                if (line.numberMsgFile != -1)
+                    dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[3].Tag = msgPath;
+                if (error)
+                    dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Style.ForeColor = Color.Red;
             }
         }
 
         private void dgvMessages_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            string node;
+            string node = dgvMessages.CurrentRow.Cells[0].Value.ToString();
+            OpcodeType opcode = (OpcodeType)dgvMessages.CurrentRow.Cells[0].Tag;
+            
             if (e.ColumnIndex == 1) {
-                node = dgvMessages.CurrentRow.Cells[0].Value.ToString();
-                if (!node.StartsWith("[")) {
+                if (opcode == OpcodeType.Option || opcode == OpcodeType.call) {
                     OptionsTextLabel.Text = dgvMessages.CurrentRow.Cells[1].Value.ToString();
                     user = false;
                     NodesComboBox.Text = node;
@@ -141,9 +153,7 @@ namespace ScriptEditor
                         JumpProcedure(node);
                 }
             } else if (e.ColumnIndex == 0) {
-                node = dgvMessages.CurrentRow.Cells[0].Value.ToString();
-
-                if (node.StartsWith("["))
+                if (opcode == OpcodeType.Reply || opcode == OpcodeType.Message)
                     node = NodesComboBox.Text;
 
                 JumpProcedure(node);
@@ -152,17 +162,23 @@ namespace ScriptEditor
         
         private void JumpProcedure(string nodeName)
         {                
-            int index = GetProcedureIndex(nodeName);
-            if (index == -1) return;
+            int index = sourceTab.parseInfo.GetProcedureIndex(nodeName);
+            if (index == -1)
+                return;
 
-            TextEditor te = this.Owner as TextEditor;  
+            TextEditor te = this.Owner as TextEditor; 
             te.SelectLine(scrProc[index].fstart, scrProc[index].d.start, true);
         }
 
         private void dgvMessages_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 3)
-                MessageEditor.MessageEditorInit(msgPath, (int)dgvMessages.CurrentRow.Cells[3].Value);
+            if (e.ColumnIndex == 3) {
+                int nLine = (int)dgvMessages.CurrentRow.Cells[3].Value;
+                if (nLine != -1) {
+                    string path = (string)dgvMessages.CurrentRow.Cells[3].Tag ?? sourceTab.msgFilePath;
+                    MessageEditor.MessageEditorInit(path, nLine).ShowDialog();
+                }
+            }
         }
         
         private void AddToNavigation(string node)
@@ -171,50 +187,37 @@ namespace ScriptEditor
             if (++currentNavigation < count) {   
                 nodesNavigation.RemoveRange(currentNavigation, count - currentNavigation);
             }
-            nodesNavigation.Add(GetProcedureIndex(node));
-        }
-
-        private int GetProcedureIndex(string name)
-        {
-            for (int i = 0; i < scrProc.Length;  i++)
-            {
-                if (scrProc[i].name == name)
-                    return i;
-            }
-            return -1;
+            nodesNavigation.Add(node);
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             if (currentNavigation == 0) return;
-            int index = nodesNavigation[--currentNavigation];
+            string name = nodesNavigation[--currentNavigation];
             allow = false;
-            NodesComboBox.Text = scrProc[index].name;
-            GotoNode(scrProc[index]);
+            NodesComboBox.Text = name;
+            GotoNode(scrProc[sourceTab.parseInfo.GetProcedureIndex(name)]);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             if (currentNavigation >= nodesNavigation.Count - 1) return; 
-            int index = nodesNavigation[++currentNavigation];
+            string name = nodesNavigation[++currentNavigation];
             allow = false;
-            NodesComboBox.Text = scrProc[index].name;
-            GotoNode(scrProc[index]);
+            NodesComboBox.Text = name;
+            GotoNode(scrProc[sourceTab.parseInfo.GetProcedureIndex(name)]);
         }
 
         private void NodesComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!scrProc.Equals(sourceTab.parseInfo.procs))
-                scrProc = sourceTab.parseInfo.procs;        //Update procedures info
-
             if (allow) {
-                int index = GetProcedureIndex(NodesComboBox.Text);
+                string name = NodesComboBox.Text;
                 if (user) {
                     nodesNavigation.Clear();
                     currentNavigation = 0;
-                    nodesNavigation.Add(index);
+                    nodesNavigation.Add(name);
                 }
-                GotoNode(scrProc[index]);
+                GotoNode(scrProc[sourceTab.parseInfo.GetProcedureIndex(name)]);
             } else 
                 allow = true;
             user = false;
@@ -229,7 +232,40 @@ namespace ScriptEditor
         {
             toolStripTextBox.Enabled = femaleToolStripMenuItem.Checked;
             //update messages
-            GotoNode(scrProc[GetProcedureIndex(NodesComboBox.Text)]);
+            GotoNode(scrProc[sourceTab.parseInfo.GetProcedureIndex(NodesComboBox.Text)]);
+        }
+
+        private void DialogPreview_Activated(object sender, EventArgs e)
+        {
+            if (!needUpdate)
+                return;
+            
+            List<string> nodes = DialogueParser.GetAllNodesName(scrProc);
+            if (NodesComboBox.Items.Count != nodes.Count) {
+                var sItem = NodesComboBox.SelectedItem;
+                
+                allow = false;
+                NodesComboBox.Items.Clear();
+                NodesComboBox.Items.AddRange(nodes.ToArray());
+                
+                if (sItem == null)
+                    return;
+                
+                foreach (var item in NodesComboBox.Items)
+                {
+                    if (item.ToString() == sItem.ToString()) {
+                        NodesComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+            needUpdate = false;
+        }
+
+        private void DialogPreview_Shown(object sender, EventArgs e)
+        {
+            TextEditor te = this.Owner as TextEditor;
+            te.ParserUpdatedInfo += delegate { needUpdate = true; };
         }
     }
 }

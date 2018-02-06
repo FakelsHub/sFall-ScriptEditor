@@ -27,7 +27,7 @@ namespace ScriptEditor.TextEditorUI
         {
             TreeNode ND;
             string codeName;
-            string[] lines = File.ReadAllLines(file, Encoding.Default);
+            string[] lines = File.ReadAllLines(file);
             for (int i = 0; i < lines.Length; i++) 
             {
                 lines[i] = lines[i].Trim();

@@ -4,11 +4,13 @@ rem *** Example user config for compiling script file ***
 if not exist %1 goto NOFILE
 set namescript=%~n1
 
+set ipath=%2
+
 rem Preprocessor definition for conditional compilation option
-set def=%2
+set def=%3
 
 rem Compiling with Short-Circuit Evaluation option
-set shortCircuit=%3
+set shortCircuit=%4
 
 rem Set path to compile scripts
 set pathcompile=..\
@@ -21,7 +23,7 @@ echo ---------------------------------------------------------------------------
 echo   Compilation script: 
 echo   %1
 echo -------------------------------------------------------------------------------
-wcc386.exe %1 /p /fo=%namescript%.i /w %def%
+wcc386.exe %1 -p -fo=%namescript%.i -w -i=%ipath% %def%
 if not exist %namescript%.i goto ERROR
 echo   Preprocessing script: OK.
 
@@ -29,7 +31,7 @@ ren %namescript%.i %namescript%.ssl
 if exist %namescript%.int del %namescript%.int
 
 rem compiling script with original fallout Bis compiler
-dos4gw.exe bcompile.exe %namescript%.ssl
+dos32a.exe bcompile.exe %namescript%.ssl
 if exist %namescript%.int goto COMPILE
 echo   [Warning] BIS Compilation script error.
 

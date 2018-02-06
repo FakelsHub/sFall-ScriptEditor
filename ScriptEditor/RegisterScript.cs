@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
-using Path = System.IO.Path;
-using File = System.IO.File;
+
+using ScriptEditor.TextEditorUtilities;
 
 namespace ScriptEditor
 {
     public partial class RegisterScript : Form
     {
+        private static TextEditor TE;
+        
         private class Entry
         {
             public int row;
@@ -34,7 +36,7 @@ namespace ScriptEditor
             public string GetMsgAsString()
             {
                 if (Settings.EncCodePage.CodePage == 866) 
-                    name = name.Replace(Convert.ToChar(0x0425), Convert.ToChar(0x58)); //Replacement of Russian letter "X", to English letter
+                    name = name.Replace('\u0425', '\u0058'); //Replacement of Russian letter "X", to English letter
                 return ("{" + (row + 101) + "}{" + msglip + "}{" + name + "}").PadRight(60) + "# " + script.PadRight(16) + "; " + desc;
             }
         }
@@ -89,7 +91,7 @@ namespace ScriptEditor
 
             dgvScripts.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
             char[] space = new char[] { ' ' };
-            lines = new List<string>(File.ReadAllLines(lst));
+            lines = new List<string>(File.ReadAllLines(lst, System.Text.Encoding.Default));
             if (script != null) {
                 DefinetextBox.Text = SCRIPT_H + Path.GetFileNameWithoutExtension(script).ToUpper();
                 for (int i = 0; i < lines.Count; i++)
@@ -160,12 +162,13 @@ namespace ScriptEditor
                 msgPath = null;
             }
             string scriptH = null;
-            if (Settings.PathScriptsHFile == null) {
+            if (Settings.pathScriptsHFile == null) {
                 if (Settings.showWarnings) MessageBox.Show("The path to scripts.h has not been set.", "Warning");
             } else {
-                scriptH = Settings.PathScriptsHFile + "\\SCRIPTS.H";
+                scriptH = Settings.pathScriptsHFile;
                 if (!File.Exists(scriptH)) scriptH = null;
             } // Show form
+            TE = (TextEditor)ActiveForm;
             (new RegisterScript(script, lstPath, msgPath, scriptH)).ShowDialog();
         }
 
@@ -191,7 +194,7 @@ namespace ScriptEditor
             }
             foreach (Entry entry in entries) 
                 lines.Add(entry.GetAsString());
-            File.WriteAllLines(lstPath, lines.ToArray());
+            File.WriteAllLines(lstPath, lines.ToArray(), System.Text.Encoding.Default);
             lines.Clear();
             if (msgPath != null) {
                 linesMsg.Add(DESCMSG);
@@ -329,8 +332,30 @@ namespace ScriptEditor
         private void dgvScripts_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             SelectLine.col = e.ColumnIndex;
-            SelectLine.row = e.RowIndex;
+            SelectLine.row = e.RowIndex;     
         }
 
+        private void dgvScripts_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 1 && e.RowIndex > -1)
+                OpenScript(dgvScripts.Rows[e.RowIndex].Cells[2].Value.ToString());
+        }
+
+        private void OpenScript(string scriptName)
+        {
+            if (Settings.outputDir == null)
+                return;
+
+            string pathScript = Path.Combine(Settings.outputDir, scriptName);
+            if (!File.Exists(pathScript)) {
+                var undat = new UndatFile();
+                if (!undat.UnpackFile(ref pathScript)) {
+                    if (pathScript != null)
+                        MessageBox.Show("Unpack script file error.", "Open Script");
+                    return;
+                }
+            }
+            TE.Open(pathScript, TextEditor.OpenType.File, false);
+        }
     }
 }

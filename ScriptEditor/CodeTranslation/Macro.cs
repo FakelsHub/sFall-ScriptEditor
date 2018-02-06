@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace ScriptEditor.CodeTranslation
 {
@@ -13,6 +14,7 @@ namespace ScriptEditor.CodeTranslation
 
         public NameType Type() { return NameType.Macro; }
         public Reference[] References() { return null; }
+
         public void Deceleration(out string file, out int line)
         {
             file = fdeclared;
@@ -29,12 +31,21 @@ namespace ScriptEditor.CodeTranslation
 
         public override string ToString()
         {
-            string declare = fdeclared.Remove(0, fdeclared.LastIndexOf('\\') + 1);
+            string declare = fdeclared.Substring(fdeclared.LastIndexOf('\\') + 1);
             if (declare == "parser.ssl")
                 declare = string.Empty;
             else
                 declare = "\n\nDeclare file: " + declare;
             return "Define: " + name + "\n" + def + declare;
         }
+
+        public string ToString(bool a)
+        {
+            return "Define: " + name;
+        }
+
+        public bool IsImported { get { return false; } }
+
+        public bool IsExported { get { return false; } }
     }
 }

@@ -31,6 +31,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.NodesComboBox = new System.Windows.Forms.ToolStripComboBox();
@@ -206,7 +207,6 @@
             // 
             this.dgvMessages.AllowUserToAddRows = false;
             this.dgvMessages.AllowUserToDeleteRows = false;
-            this.dgvMessages.AllowUserToOrderColumns = true;
             this.dgvMessages.AllowUserToResizeRows = false;
             this.dgvMessages.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.dgvMessages.BackgroundColor = System.Drawing.SystemColors.Control;
@@ -226,7 +226,7 @@
             this.dgvMessages.RowHeadersVisible = false;
             this.dgvMessages.RowHeadersWidth = 35;
             this.dgvMessages.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dgvMessages.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dgvMessages.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMessages.Size = new System.Drawing.Size(715, 355);
             this.dgvMessages.TabIndex = 0;
             this.dgvMessages.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessages_CellContentClick);
@@ -234,6 +234,9 @@
             // 
             // Column3
             // 
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.LemonChiffon;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.Column3.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column3.HeaderText = "Procedure";
             this.Column3.Name = "Column3";
             this.Column3.ReadOnly = true;
@@ -244,8 +247,10 @@
             // Column2
             // 
             this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.LemonChiffon;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
             this.Column2.HeaderText = "Text";
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
@@ -253,8 +258,10 @@
             // 
             // Column4
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column4.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.LemonChiffon;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
+            this.Column4.DefaultCellStyle = dataGridViewCellStyle3;
             this.Column4.HeaderText = "IQ";
             this.Column4.Name = "Column4";
             this.Column4.ReadOnly = true;
@@ -266,19 +273,20 @@
             // 
             // Column1
             // 
-            this.Column1.ActiveLinkColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column1.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.LemonChiffon;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.DodgerBlue;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle4;
             this.Column1.FillWeight = 1F;
             this.Column1.HeaderText = "Line";
             this.Column1.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
-            this.Column1.LinkColor = System.Drawing.SystemColors.ControlText;
+            this.Column1.LinkColor = System.Drawing.Color.DodgerBlue;
             this.Column1.Name = "Column1";
             this.Column1.ReadOnly = true;
             this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column1.Text = "";
             this.Column1.ToolTipText = "Line number in the message file.";
-            this.Column1.VisitedLinkColor = System.Drawing.SystemColors.ControlText;
+            this.Column1.VisitedLinkColor = System.Drawing.Color.DodgerBlue;
             this.Column1.Width = 35;
             // 
             // DialogPreview
@@ -294,6 +302,8 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dialog Preview - ";
+            this.Activated += new System.EventHandler(this.DialogPreview_Activated);
+            this.Shown += new System.EventHandler(this.DialogPreview_Shown);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -319,11 +329,11 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripLabel OptionsTextLabel;
+        private System.Windows.Forms.ToolStripMenuItem JumpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewLinkColumn Column1;
-        private System.Windows.Forms.ToolStripMenuItem JumpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox;
     }
 }

@@ -15,6 +15,7 @@ namespace ScriptEditor.CodeTranslation
 
         public NameType Type() { return d.type == VarType.Local ? NameType.LVar : NameType.GVar; }
         public Reference[] References() { return references; }
+
         public void Deceleration(out string file, out int line)
         {
             file = fdeclared;
@@ -43,9 +44,20 @@ namespace ScriptEditor.CodeTranslation
                 s += " := " + initialValue;
             return s;
         }
-        public bool IsImported()
+
+        public bool IsImported
         {
-            return d.type == VarType.Import;
+            get { return d.type == VarType.Import; }
+        }
+
+        public bool IsExported
+        {
+            get { return d.type == VarType.Export; }
+        }
+
+        public string ToString(bool a)
+        { 
+            return null;
         }
     }
 }

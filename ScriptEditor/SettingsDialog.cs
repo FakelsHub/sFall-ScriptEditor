@@ -5,27 +5,32 @@ namespace ScriptEditor
 {
     public partial class SettingsDialog : Form
     {
-        private string outpath;
-        private string scriptshpath;
+        private string outPath;
+        private string scriptsHPath;
+        private string headersFilesPath;
 
         public SettingsDialog()
         {
-            outpath = Settings.outputDir;
-            scriptshpath = Settings.PathScriptsHFile;
+            outPath = Settings.outputDir;
+            scriptsHPath = Settings.pathScriptsHFile;
+            headersFilesPath = Settings.pathHeadersFiles;
             InitializeComponent();
-            cbDebug.Checked = Settings.showDebug;
+            cbUseMcpp.Checked = Settings.useMcpp;
             cbIncludePath.Checked = Settings.overrideIncludesPath;
             cbOptimize.SelectedIndex = (Settings.optimize == 255 ? 1 : Settings.optimize);
             cbWarnings.Checked = Settings.showWarnings;
+            cbDebug.Checked = Settings.showDebug;
             cbWarnFailedCompile.Checked = Settings.warnOnFailedCompile;
             cbMultiThread.Checked = Settings.multiThreaded;
             cbAutoOpenMessages.Checked = Settings.autoOpenMsgs;
             tbLanguage.Text = Settings.language;
             cbTabsToSpaces.Checked = Settings.tabsToSpaces;
-            tbTabSize.Text = Convert.ToString(Settings.tabSize);
+            tbTabSize.Value = Settings.tabSize;
             cbEnableParser.Checked = Settings.enableParser;
             cbShortCircuit.Checked = Settings.shortCircuit;
             cbAutocomplete.Checked = Settings.autocomplete;
+            cbNonColor.Checked = Settings.autocompleteColor;
+            cbAutoPaired.Checked = Settings.autoInputPaired;
             Highlight_comboBox.SelectedIndex = Settings.highlight;
             HintLang_comboBox.SelectedIndex = Settings.hintsLang;
             if (!Settings.enableParser) cbParserWarn.Enabled = false;
@@ -33,48 +38,72 @@ namespace ScriptEditor
             cbWatcom.Checked = Settings.useWatcom;
             cbCompilePath.Checked = Settings.ignoreCompPath;
             cbUserCompile.Checked = Settings.userCmdCompile;
+            cbAssociateID.Checked = Settings.associateID;
+            cbShowTips.Checked = Settings.showTips;
+            cbShortDesc.Checked = Settings.shortDesc;
+            cbStorePosition.Checked = Settings.storeLastPosition;
             foreach (var item in Settings.msgListPath)
                 msgPathlistView.Items.Add(item.ToString());
             SetLabelText();
+
+            int dsize = 80;
+            for (int i=0; i < Settings.Fonts.Families.Length; i++)
+            {
+                string fontName = Settings.Fonts.Families[i].Name;
+                dsize = Math.Max((int)(fontName.Length * 6.5f), dsize);
+                cbFonts.Items.Add(fontName);
+            }
+            if (cbFonts.Items.Count > 1) {
+                cbFonts.DropDownWidth = dsize;
+                cbFonts.SelectedIndex = Settings.selectFont;
+            } else
+                cbFonts.SelectedIndex = 0;
         }
 
         private void SetLabelText()
         {
-            textBox2.Text = outpath == null ? "<unset>" : outpath;
-            textBox1.Text = scriptshpath == null ? "<unset>" : scriptshpath;  
+            textBox2.Text = outPath == null ? "<unset>" : outPath;
+            tbScriptsHPath.Text = scriptsHPath == null ? "<unset>" : scriptsHPath;
+            textBox1.Text = headersFilesPath == null ? "<unset>" : headersFilesPath;
         }
 
         private void SettingsDialog_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Settings.showDebug = cbDebug.Checked;
+        {            
+            Settings.useMcpp = cbUseMcpp.Checked;
             Settings.overrideIncludesPath = cbIncludePath.Checked;
             Settings.optimize = (byte)cbOptimize.SelectedIndex;
+            Settings.showDebug = cbDebug.Checked;
             Settings.showWarnings = cbWarnings.Checked;
             Settings.warnOnFailedCompile = cbWarnFailedCompile.Checked;
             Settings.multiThreaded = cbMultiThread.Checked;
-            Settings.outputDir = outpath;
+            Settings.outputDir = outPath;
             Settings.autoOpenMsgs = cbAutoOpenMessages.Checked;
-            Settings.PathScriptsHFile = scriptshpath;
+            Settings.pathScriptsHFile = scriptsHPath;
+            Settings.pathHeadersFiles = headersFilesPath;
             Settings.language = tbLanguage.Text.Length == 0 ? "english" : tbLanguage.Text;
             Settings.tabsToSpaces = cbTabsToSpaces.Checked;
-            try {
-                Settings.tabSize = Convert.ToInt32(tbTabSize.Text);
-            } catch (System.FormatException) {
+            Settings.tabSize = (int)tbTabSize.Value;
+            if (Settings.tabSize < 1 || Settings.tabSize > 30)
                 Settings.tabSize = 3;
-            }
-            if (Settings.tabSize < 1 || Settings.tabSize > 30) {
-                Settings.tabSize = 3;
-            }
+
             Settings.enableParser = cbEnableParser.Checked;
             Settings.shortCircuit = cbShortCircuit.Checked;
             Settings.autocomplete = cbAutocomplete.Checked;
+            Settings.autocompleteColor = cbNonColor.Checked;
+            Settings.autoInputPaired = cbAutoPaired.Checked;
             Settings.highlight = (byte)Highlight_comboBox.SelectedIndex;
             Settings.hintsLang = (byte)HintLang_comboBox.SelectedIndex;
             Settings.parserWarn = cbParserWarn.Checked;
             Settings.useWatcom = cbWatcom.Checked;
             Settings.ignoreCompPath = cbCompilePath.Checked;
             Settings.userCmdCompile = cbUserCompile.Checked;
+            Settings.associateID = cbAssociateID.Checked;
+            Settings.showTips = cbShowTips.Checked;
+            Settings.shortDesc = cbShortDesc.Checked;
             Settings.msgListPath.Clear();
+            Settings.selectFont= (byte)cbFonts.SelectedIndex;
+            Settings.storeLastPosition = cbStorePosition.Checked;
+
             foreach (ListViewItem item in msgPathlistView.Items)
                 Settings.msgListPath.Add(item.Text);
             Settings.Save();
@@ -82,29 +111,21 @@ namespace ScriptEditor
 
         private void bChange_Click(object sender, EventArgs e)
         {
+            folderBrowserDialog1.Description = "Select compiled scripts folder";
+            folderBrowserDialog1.SelectedPath = outPath;
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
-                outpath = folderBrowserDialog1.SelectedPath;
+                outPath = folderBrowserDialog1.SelectedPath;
                 SetLabelText();
             }
         }
 
         private void bScriptsH_Click(object sender, EventArgs e)
         {
+            openFileDialog1.InitialDirectory = scriptsHPath ?? headersFilesPath;
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {
-                scriptshpath = System.IO.Path.GetDirectoryName(openFileDialog1.FileName);
+                scriptsHPath = openFileDialog1.FileName;
                 SetLabelText();
             }
-        }
-
-        void TbTabSizeTextChanged(object sender, EventArgs e)
-        {
-            int n;
-            try {
-                n = Convert.ToInt32(tbTabSize.Text);
-            } catch (System.FormatException) {
-                n = 3;
-            }
-            tbTabSize.Text = Convert.ToString(n);
         }
 
         private void cbEnableParser_CheckedChanged(object sender, EventArgs e)
@@ -125,24 +146,29 @@ namespace ScriptEditor
 
         private void deletePathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (msgPathlistView.Items == null) return;
+            if (msgPathlistView.Items == null)
+                return;
             msgPathlistView.Items.RemoveAt(msgPathlistView.FocusedItem.Index);
         }
 
         private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (msgPathlistView.Items == null) return;
+            if (msgPathlistView.Items == null)
+                return;
             int sInd = msgPathlistView.FocusedItem.Index;
-            if (sInd == 0) return;
+            if (sInd == 0)
+                return;
             string iPath = msgPathlistView.Items[--sInd].Text;
             PathItemSub(sInd, iPath);
         }
 
         private void modeDownToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (msgPathlistView.Items == null) return;
+            if (msgPathlistView.Items == null)
+                return;
             int sInd = msgPathlistView.FocusedItem.Index;
-            if (sInd == msgPathlistView.Items.Count - 1) return;
+            if (sInd == msgPathlistView.Items.Count - 1)
+                return;
             string iPath = msgPathlistView.Items[++sInd].Text;
             PathItemSub(sInd, iPath);
         }
@@ -169,9 +195,26 @@ namespace ScriptEditor
         {
             cbCompilePath.Enabled = !cbUserCompile.Checked;
             textBox2.Enabled = !cbUserCompile.Checked & !cbCompilePath.Checked;;
-            //cbWatcom.Enabled = !cbUserCompile.Checked;
-            cbOptimize.Enabled = !cbUserCompile.Checked;
-            cbDebug.Enabled = !cbUserCompile.Checked;
+            cbWatcom.Enabled = !cbUserCompile.Checked;
+            //cbOptimize.Enabled = !cbUserCompile.Checked;
+            cbUseMcpp.Enabled = !cbUserCompile.Checked & !cbWatcom.Checked;
+        }
+
+        private void bHeaders_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1.Description = "Select headers files folder";
+            folderBrowserDialog1.SelectedPath = headersFilesPath;
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
+                headersFilesPath = folderBrowserDialog1.SelectedPath;
+                if (scriptsHPath == null)
+                    scriptsHPath = headersFilesPath + @"\SCRIPTS.H";
+                SetLabelText();
+            }
+        }
+
+        private void cbWatcom_CheckedChanged(object sender, EventArgs e)
+        {
+            cbUseMcpp.Enabled = !cbWatcom.Checked;
         }
     }
 }

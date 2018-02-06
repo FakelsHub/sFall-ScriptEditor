@@ -2,129 +2,237 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
-using ScriptEditor.CodeTranslation;
-using ScriptEditor.TextEditorUI;
+using System.ComponentModel;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+
+using ScriptEditor.CodeTranslation;
+using ScriptEditor.TextEditorUI;
+using ScriptEditor.TextEditorUtilities;
+
 
 namespace ScriptEditor
 {
     partial class TextEditor
     {
         #region ParseFunction
+        public event EventHandler ParserUpdatedInfo; // Event for update nodes diagram
 
         private bool firstParse;
-
-        public void intParserPrint(string info) {
-            if (!Settings.enableParser) tbOutputParse.Text = info + tbOutputParse.Text;
+        
+        public void intParserPrint(string info)
+        {
+            if (!Settings.enableParser)
+                tbOutputParse.Text = info + tbOutputParse.Text;
         }
 
         // Parse first open script
         private void FirstParseScript(TabInfo cTab)
         {
-            while (parserRunning) System.Threading.Thread.Sleep(1); //Avoid stomping on files while the parser is running
             tbOutputParse.Text = string.Empty;
-            Parser.InternalParser(cTab, this);
+
+            firstParse = true;
+            
+            DEBUGINFO("First Parse...");
+            new Parser(cTab, this);
+            
+            while (parserRunning) 
+                System.Threading.Thread.Sleep(10); //Avoid stomping on files while the parser is running
+            
+            var ExtParser = new ParserDLL(firstParse);
+            cTab.parseInfo = ExtParser.Parse(cTab.textEditor.Text, cTab.filepath, cTab.parseInfo);
+            DEBUGINFO("External first parse status: " + ExtParser.LastStatus);
+
+            GetParserErrorLog(cTab);
+
+            if (cTab.parseInfo.parseError) {
+                tabControl2.SelectedIndex = 2;
+                maximize_log();
+            }
+
             cTab.textEditor.Document.FoldingManager.UpdateFoldings(cTab.filename, cTab.parseInfo);
             cTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-            if (tbOutputParse.Text.Length > 0)
-                tabControl2.SelectedIndex = 0;
-            firstParse = true; // prevention of repeated passage with parser turned off
-        }
-
-        private void ParseScript(int delay = 1)
-        {
-            if (!Settings.enableParser && !firstParse) {
-                if (delay > 1) timer2Next = DateTime.Now + TimeSpan.FromSeconds(2);
-                if (!timer2.Enabled) timer2.Start();
-            }
-            timerNext = DateTime.Now + TimeSpan.FromSeconds(delay);
-            if (!timer.Enabled) timer.Start(); // External Parser begin
 
             firstParse = false;
         }
 
+        // Parse script
+        private void ParseScript(int delay = 2)
+        {
+            if (!Settings.enableParser) {
+                int iDelay;
+                if (delay > 1)
+                    iDelay = delay / 2;
+                else
+                    iDelay = 0;
+                intParser_TimeNext = DateTime.Now + TimeSpan.FromSeconds(iDelay);
+                if (!intParserTimer.Enabled)
+                    intParserTimer.Start();
+            } else {
+                intParser_TimeNext = DateTime.Now + TimeSpan.FromMilliseconds(500);
+                if (!intParserTimer.Enabled)
+                    intParserTimer.Start();
+            }
+
+            extParser_TimeNext = DateTime.Now + TimeSpan.FromSeconds(delay);
+            if (!extParserTimer.Enabled)
+                extParserTimer.Start(); // External Parser begin
+        }
+        
+        //Force update parser data
+        private void ForceParseScript()
+        {
+            // останавливаем ранее сработавшие таймеры
+            intParserTimer.Stop();
+            extParserTimer.Stop();
+
+            if (Settings.enableParser && currentTab.parseInfo.parseData) {
+                TextEditor.parserRunning = true; // parse work
+                bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
+            } else {
+                new Parser(currentTab, this);
+                ParserCompleted(currentTab);
+            }
+        }
+
         // Delay timer for internal parsing
-        void timer2_Tick(object sender, EventArgs e)
+        void InternalParser_Tick(object sender, EventArgs e)
         {
             if (currentTab == null /*|| !currentTab.shouldParse*/) {
-                timer2.Stop();
+                intParserTimer.Stop();
+                DEBUGINFO("Stop: Internal Parser");
                 return;
             }
-            if (DateTime.Now > timer2Next && !parserRunning) {
-                timer2.Stop();
-                tbOutputParse.Text = string.Empty;
-                Parser.InternalParser(currentTab, this);
-                currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, currentTab.parseInfo);
-                currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-                UpdateNames();
+            if (DateTime.Now > intParser_TimeNext && !parserRunning) {
+                DEBUGINFO("Run: Internal Parser");
+                intParserTimer.Stop();
+                if (!Settings.enableParser) { // Parser off
+                    tbOutputParse.Text = string.Empty;
+                    parserLabel.Text = "Parser: Get only macros";
+                    parserLabel.ForeColor = Color.Crimson;
+
+                    new Parser(currentTab, this);
+                    ParserCompleted(currentTab);
+                } 
+                else //Quick update procedure data
+                    Parser.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
             }
         }
 
         // Timer for parsing
-        void timer_Tick(object sender, EventArgs e)
+        void ExternalParser_Tick(object sender, EventArgs e)
         {
             if (currentTab == null || !currentTab.shouldParse) {
-                timer.Stop();
+                extParserTimer.Stop();
+                DEBUGINFO("Stop: External Parser");
                 return;
             }
-            if (DateTime.Now > timerNext && !bwSyntaxParser.IsBusy && !parserRunning) {
-                parserLabel.Text = (Settings.enableParser) ? "Parser: Working" : "Parser: Get only macros";
-                parserLabel.ForeColor = Color.Crimson;
+            if (DateTime.Now > extParser_TimeNext && !bwSyntaxParser.IsBusy && !parserRunning) {
+                if (autoComplete.IsVisible)
+                    return;
+
+                DEBUGINFO("Run: External Parser");
                 parserRunning = true;
-                bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentTab.textEditor.Document.TextContent, currentTab));
-                timer.Stop();
+                if (Settings.enableParser) {
+                    parserLabel.Text = "Parser: Working";
+                    parserLabel.ForeColor = Color.Crimson;
+                }
+                bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
+                extParserTimer.Stop();
             }
         }
 
         // Parse Start
-        private void bwSyntaxParser_DoWork(object sender, System.ComponentModel.DoWorkEventArgs eventArgs)
+        private void bwSyntaxParser_DoWork(object sender, DoWorkEventArgs eventArgs)
         {
             WorkerArgs args = (WorkerArgs)eventArgs.Argument;
-            var compiler = new Compiler();
-            args.tab.parseInfo = compiler.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
-            eventArgs.Result = args.tab;
+            var ExtParser = new ParserDLL(false);
+            args.tab.parseInfo = ExtParser.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
+            args.status = ExtParser.LastStatus;
+            eventArgs.Result = args;
             parserRunning = false;
         }
 
         // Parse Stop
-        private void bwSyntaxParser_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private void bwSyntaxParser_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (currentTab.needsParse)
-                    dgvErrors.Rows.Clear();
-            if (File.Exists("errors.txt")) {
-                try { //в случаях ошибки в parser.dll, не закрывается созданный им файл, что приводит к ошибке доступа
-                    List<Error> errors = new List<Error>();
-                    tbOutputParse.Text = Error.ParserLog(File.ReadAllText("errors.txt"), currentTab, errors); //+tbOutputParse.Text;
-                    File.Delete("errors.txt");
-                    foreach (Error err in errors)
-                        dgvErrors.Rows.Insert(0, err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
-                } catch {}
-            }
-            if (!(e.Result is TabInfo)) {
+            if (!Settings.enableParser)
+                return; // выход для предотвращения второго прохода когда внешний парсер выключен
+
+            DEBUGINFO(">>> Ext parse status: " + e.Result.ToString());
+
+            if (!(((WorkerArgs)e.Result).tab is TabInfo))
                 throw new Exception("TabInfo is expected!");
-            }
-            var tab = e.Result as TabInfo;
+
+            ParserCompleted(((WorkerArgs)e.Result).tab as TabInfo);
+        }
+
+        private void ParserCompleted(TabInfo tab)
+        {
+            if (ParserUpdatedInfo != null)
+                    ParserUpdatedInfo(this, EventArgs.Empty); // Event for update
+
+            GetParserErrorLog(tab);
+
             if (currentTab == tab) {
                 if (tab.filepath != null) {
                     if (tab.parseInfo.parsed) {
-                        tab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, tab.parseInfo);
+                        tab.textEditor.Document.FoldingManager.UpdateFoldings(tab.filename, tab.parseInfo);
                         tab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-                        if (tab.parseInfo.procs.Length > 0) Outline_toolStripButton.Enabled = true;
-                        UpdateNames(); // Update Tree Variables/Pocedures
-                        parserLabel.Text = (Settings.enableParser) ? "Parser: Complete": parseoff + " [only macros]";
+                        if (tab.parseInfo.procs.Length > 0)
+                            Outline_toolStripButton.Enabled = true;
+                        
+                        UpdateNames(); // Update Tree Variables/Procedures
+                        
+                        if (Settings.enableParser)
+                            parserLabel.Text = (!tab.parseInfo.parseError) ? "Parser: Complete" : "Parser: Script syntax error (see parser errors log)";
+                        else
+                            parserLabel.Text = parseoff + " [Get only macros]";
                         tab.needsParse = false;
                     } else {
-                        parserLabel.Text = (Settings.enableParser) ? "Parser: Failed parsing (see parser errors tab)" : parseoff + " [only macros]";
+                        parserLabel.Text = (Settings.enableParser) ? "Parser: Failed script parsing (see parser errors log)" : parseoff + " [Get only macros]";
                         //currentTab.needsParse = true; // требуется обновление
                     }
                 } else {
-                    parserLabel.Text = (Settings.enableParser) ? "Parser: Only local macros" : parseoff;
+                    parserLabel.Text = (Settings.enableParser) ? "Parser: Get only local macros" : parseoff;
                 }
+            }
+        }
+
+        private void GetParserErrorLog(TabInfo tab)
+        {
+            string log = String.Empty;
+            if (File.Exists("errors.txt")) {
+                try { 
+                    log = File.ReadAllText("errors.txt");
+                    File.Delete("errors.txt");    
+                } catch (FileLoadException) {
+                    //в случаях ошибки в parser.dll, не освобождается созданный им файл, что приводит к ошибке доступа
+                    /* TODO: Требуется обработка ошибка по доступу к файлу  */
+                }
+            }
+            tab.parserLog = Error.ParserLog(log, tab);
+            OutputErrorLog(tab);
+        }
+
+        private void OutputErrorLog(TabInfo tab)
+        {
+            dgvErrors.Rows.Clear();
+            if (Settings.enableParser && tsmShowParserLog.Checked) {
+                tbOutputParse.Text = tab.parserLog;
+                foreach (Error err in tab.parserErrors)
+                    dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
+            }
+            if (tab.buildLog != null && tsmShowBuildLog.Checked) {
+                tbOutput.Text = tab.buildLog;
+                dgvErrors.Rows.Add("Build Log");
+                dgvErrors.Rows[dgvErrors.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Gainsboro;
+                foreach (Error err in tab.buildErrors)
+                    dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
             }
         }
 
@@ -134,23 +242,13 @@ namespace ScriptEditor
                 currentTab.changed = true;
                 SetTabTextChange(currentTab.index);
             }
-            if (currentTab.shouldParse /*&& Settings.enableParser*/) { // if the parser is disabled then nothing
+            if (currentTab.shouldParse) {
                 if (currentTab.shouldParse && !currentTab.needsParse) {
                     currentTab.needsParse = true;
-                    parserLabel.Text = "Parser: Out of date";
+                    parserLabel.Text = "Parser: Update change";
                 }
                 // Update parse info
                 ParseScript(4);
-            }
-            var caret = currentTab.textEditor.ActiveTextAreaControl.Caret;
-            string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, caret.Offset - 1);
-            if (word.Length < 2) {
-                if (lbAutocomplete.Visible) {
-                    lbAutocomplete.Hide();
-                }
-                if (toolTipAC.Active) {
-                    toolTipAC.Hide(panel1);
-                }
             }
         }
         #endregion
@@ -177,19 +275,19 @@ namespace ScriptEditor
                 if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
                     if (currentTab == null)
                         return false;
-                    if (Utilities.SearchAndScroll(currentTab, regex, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType))
+                    if (Utilities.SearchAndScroll(currentActiveTextAreaCtrl, regex, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType))
                         return true;
                 } else if (sf.rbAll.Checked) {
                     int starttab = currentTab == null ? 0 : currentTab.index;
                     int endtab = starttab == 0 ? tabs.Count - 1 : starttab - 1;
                     int tab = starttab - 1;
-                    int caretOffset = currentTab.textEditor.ActiveTextAreaControl.Caret.Offset;
+                    int caretOffset = currentActiveTextAreaCtrl.Caret.Offset;
                     do {
                         if (++tab == tabs.Count)
                             tab = 0; //restart tab
                         int start, len;
                         if (Utilities.Search(tabs[tab].textEditor.Text, sf.tbSearch.Text, regex, caretOffset + 1, false, sf.cbCase.Checked, out start, out len)) {
-                            Utilities.FindSelected(tabs[tab], start, len, ref PosChangeType);
+                            Utilities.FindSelected(tabs[tab].textEditor.ActiveTextAreaControl, start, len, ref PosChangeType);
                             if (currentTab == null || currentTab.index != tab)
                                 tabControl1.SelectTab(tab);
                             return true;
@@ -268,7 +366,8 @@ namespace ScriptEditor
                 };
                 sf.lbFindFiles.MouseDoubleClick += delegate (object a1, MouseEventArgs a2) {
                     string file = sf.lbFindFiles.SelectedItem.ToString();
-                    Utilities.SearchAndScroll(Open(file, OpenType.File), (Regex)sf.lbFindFiles.Tag, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType);
+                    Utilities.SearchAndScroll(Open(file, OpenType.File).textEditor.ActiveTextAreaControl,
+                                             (Regex)sf.lbFindFiles.Tag, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType);
                 };
                 sf.bSearch.Click += new EventHandler(bSearch_Click);
                 sf.bReplace.Click += new EventHandler(bReplace_Click);
@@ -280,7 +379,7 @@ namespace ScriptEditor
             }
             string str = "";
             if (currentTab != null) {
-                str = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
+                str = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
             }
             if (str.Length == 0 || str.Length > 255) {
                 str = Clipboard.GetText();
@@ -294,7 +393,8 @@ namespace ScriptEditor
         private void bSearch_Click(object sender, EventArgs e)
         {
             sf.tbSearch.Text = sf.tbSearch.Text.Trim();
-            if (sf.tbSearch.Text.Length == 0) return;
+            if (sf.tbSearch.Text.Length == 0)
+                return;
             SubSearchInternal(null, null);
         }
 
@@ -307,17 +407,18 @@ namespace ScriptEditor
                 List<int> lengths = new List<int>(), offsets = new List<int>();
                 if (!SubSearchInternal(offsets, lengths))
                     return;
-                for (int i = offsets.Count - 1; i >= 0; i--) {
-                    currentTab.textEditor.Document.Replace(offsets[i], lengths[i], sf.tbReplace.Text);
+                for (int i = offsets.Count - 1; i >= 0; i--)
+                {
+                    currentDocument.Replace(offsets[i], lengths[i], sf.tbReplace.Text);
                 }
             } else {
-                currentTab.textEditor.ActiveTextAreaControl.Caret.Column--;
+                currentActiveTextAreaCtrl.Caret.Column--;
                 if (!SubSearchInternal(null, null))
                     return;
-                ISelection selected = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0];
-                currentTab.textEditor.Document.Replace(selected.Offset, selected.Length, sf.tbReplace.Text);
+                ISelection selected = currentActiveTextAreaCtrl.SelectionManager.SelectionCollection[0];
+                currentDocument.Replace(selected.Offset, selected.Length, sf.tbReplace.Text);
                 selected.EndPosition = new TextLocation(selected.StartPosition.Column + sf.tbReplace.Text.Length, selected.EndPosition.Line);
-                currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(selected);
+                currentActiveTextAreaCtrl.SelectionManager.SetSelection(selected);
             }
         }
 
@@ -325,45 +426,60 @@ namespace ScriptEditor
         private void FindForwardButton_Click(object sender, EventArgs e)
         {
             string find = SearchTextComboBox.Text.Trim();
-            if (find.Length == 0 || currentTab == null) return;
-            int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset + 1, CaseButton.Checked, WholeWordButton.Checked);
-            if (z != -1) Utilities.FindSelected(currentTab, z, find.Length, ref PosChangeType);
-            else DontFind.Play();
+            if (find.Length == 0 || currentTab == null)
+                return;
+            int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentActiveTextAreaCtrl.Caret.Offset + 1,
+                                            CaseButton.Checked, WholeWordButton.Checked);
+            if (z != -1) 
+                Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType);
+            else 
+                DontFind.Play();
             addSearchTextComboBox(find);
         }
 
         private void FindBackButton_Click(object sender, EventArgs e)
         {
             string find = SearchTextComboBox.Text.Trim();
-            if (find.Length == 0 || currentTab == null) return;
-            int offset = currentTab.textEditor.ActiveTextAreaControl.Caret.Offset;
+            if (find.Length == 0 || currentTab == null)
+                return;
+            int offset = currentActiveTextAreaCtrl.Caret.Offset;
             string text = currentTab.textEditor.Text.Remove(offset);
             int z = Utilities.SearchPanel(text, find, offset - 1, CaseButton.Checked, WholeWordButton.Checked, true);
-            if (z != -1) Utilities.FindSelected(currentTab, z, find.Length, ref PosChangeType);
-            else DontFind.Play();
+            if (z != -1)
+                Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType);
+            else 
+                DontFind.Play();
             addSearchTextComboBox(find);
         }
 
         private void ReplaceButton_Click(object sender, EventArgs e)
         {
             string find = SearchTextComboBox.Text.Trim();
-            if (find.Length == 0) return;
+            if (find.Length == 0)
+                return;
             string replace = ReplaceTextBox.Text.Trim();
-            int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset, CaseButton.Checked, WholeWordButton.Checked);
-            if (z != -1) Utilities.FindSelected(currentTab, z, find.Length, ref PosChangeType, replace);
-            else DontFind.Play();
+            int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentActiveTextAreaCtrl.Caret.Offset, 
+                                            CaseButton.Checked, WholeWordButton.Checked);
+            if (z != -1) 
+                Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType, replace);
+            else 
+                DontFind.Play();
             addSearchTextComboBox(find);
         }
 
         private void ReplaceAllButton_Click(object sender, EventArgs e)
         {
             string find = SearchTextComboBox.Text.Trim();
-            if (find.Length == 0) return;
+            if (find.Length == 0)
+                return;
+
             string replace = ReplaceTextBox.Text.Trim();
             int z, offset = 0;
             do {
-                z = Utilities.SearchPanel(currentTab.textEditor.Text, find, offset, CaseButton.Checked, WholeWordButton.Checked);
-                if (z != -1) currentTab.textEditor.ActiveTextAreaControl.Document.Replace(z, find.Length, replace);
+                z = Utilities.SearchPanel(currentTab.textEditor.Text, find, offset, 
+                                            CaseButton.Checked, WholeWordButton.Checked);
+                if (z != -1) 
+                    currentActiveTextAreaCtrl.Document.Replace(z, find.Length, replace);
                 offset = z + 1;
             } while (z != -1);
             addSearchTextComboBox(find);
@@ -371,14 +487,18 @@ namespace ScriptEditor
 
         private void SendtoolStripButton_Click(object sender, EventArgs e)
         {
-            string word = currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
-            if (word == string.Empty) word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.ActiveTextAreaControl.Caret.Offset);
-            if (word != string.Empty) SearchTextComboBox.Text = word;
+            string word = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
+            if (word == string.Empty) 
+                word = TextUtilities.GetWordAt(currentDocument, currentActiveTextAreaCtrl.Caret.Offset);
+            if (word != string.Empty) 
+                SearchTextComboBox.Text = word;
         }
 
         private void quickFindToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null) return;
+            if (currentTab == null)
+                return;
+
             SendtoolStripButton.PerformClick();
             FindForwardButton.PerformClick();
             if (!SearchToolStrip.Visible) {
@@ -402,25 +522,32 @@ namespace ScriptEditor
         private void findReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TextLocation tl = (TextLocation)editorMenuStrip.Tag;
-            string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
+            string word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
 
-            Reference[] refs = currentTab.parseInfo.LookupReferences(word, currentTab.filename, tl.Line);
+            Reference[] refs = currentTab.parseInfo.LookupReferences(word, currentTab.filepath, tl.Line);
             if (refs == null)
                 return;
             if (refs.Length == 0) {
-                MessageBox.Show("No references found", "Message");
+                MessageBox.Show("No references found", "Reference", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             DataGridView dgv = CommonDGV.DataGridCreate();
             dgv.DoubleClick += dgvErrors_DoubleClick;
 
-            foreach (var r in refs) {
-                Error error = new Error() {
+            foreach (var r in refs)
+            {
+                Error error = new Error(ErrorType.Search) {
                     fileName = r.file,
                     line = r.line,
-                    message = String.Compare(Path.GetFileName(r.file), currentTab.filename, true) == 0 ? TextUtilities.GetLineAsString(currentTab.textEditor.Document, r.line - 1).TrimStart() : word
+                    column = TextUtilities.GetLineAsString(currentDocument, r.line - 1).IndexOf(word, StringComparison.OrdinalIgnoreCase),
+                    len = word.Length,
+                    message = (String.Compare(Path.GetFileName(r.file), currentTab.filename, true) == 0) 
+                               ? TextUtilities.GetLineAsString(currentDocument, r.line - 1).TrimStart() 
+                               : "< Preview is not possible: for viewing goto this the reference link >"
                 };
-                dgv.Rows.Add(r.file, error.line.ToString(), error);
+                if (error.column > 0)
+                    error.column++;
+                dgv.Rows.Add(r.file, r.line, error);
             }
 
             TabPage tp = new TabPage("'" + word + "' references");
@@ -435,11 +562,10 @@ namespace ScriptEditor
         private void findDeclerationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TextLocation tl = (TextLocation)editorMenuStrip.Tag;
-            string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
+            string word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
             string file;
             int line;
-            currentTab.parseInfo.LookupDecleration(word, currentTab.filename, tl.Line, out file, out line);
-            if (file.ToLower() == Compiler.parserPath.ToLower()) file = currentTab.filepath;
+            currentTab.parseInfo.LookupDecleration(word, currentTab.filepath, tl.Line, out file, out line);
             SelectLine(file, line);
         }
 
@@ -448,15 +574,20 @@ namespace ScriptEditor
             string word, file = currentTab.filepath;
             int line;
             if (((ToolStripDropDownItem)sender).Tag != null) { // "Button"
-                if (!currentTab.shouldParse) return;
+                if (!currentTab.shouldParse)
+                    return;
+
                 Parser.UpdateParseSSL(currentTab.textEditor.Text);
-                TextLocation tl = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
-                word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
+                TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
+                word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 line = Parser.GetProcBeginEndBlock(word, 0, true).begin;
-                if (line != -1) line++; else return;
+                if (line != -1)
+                    line++; 
+                else 
+                    return;
             } else {
                 TextLocation tl = (TextLocation)editorMenuStrip.Tag;
-                word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(tl));
+                word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 currentTab.parseInfo.LookupDefinition(word, out file, out line);
             }
             SelectLine(file, line);
@@ -465,394 +596,381 @@ namespace ScriptEditor
         private void openIncludeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TextLocation tl = (TextLocation)editorMenuStrip.Tag;
-            string[] line = TextUtilities.GetLineAsString(currentTab.textEditor.Document, tl.Line).Split('"');
+            string[] line = TextUtilities.GetLineAsString(currentDocument, tl.Line).Split('"');
             if (line.Length < 2)
                 return;
-            if (Path.IsPathRooted(line[1]) && File.Exists(line[1]))
-                Open(line[1], OpenType.File, false);
-            else {
-                if (currentTab.filepath == null) {
-                    MessageBox.Show("Cannot open includes given via a relative path for an unsaved script", "Error");
-                    return;
-                }
-                Parser.includePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
-                Open(line[1], OpenType.File, false);
+
+            if (!Settings.overrideIncludesPath && currentTab.filepath == null && !Path.IsPathRooted(line[1])) {
+                MessageBox.Show("Cannot open includes given via a relative path for an unsaved script", "Error");
+                return;
             }
+            
+            Parser.OverrideIncludePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
+            if (Open(line[1], OpenType.File, false) == null)
+                MessageBox.Show("Header file not found!", null, MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
 
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Utilities.RefactorRename((IParserInfo)renameToolStripMenuItem.Tag, currentTab.textEditor);
-        }
-
-        private void highlightToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Utilities.HighlightingSelectedText(currentTab.textEditor);
-            currentTab.textEditor.Refresh();
+            Refactor.Rename((IParserInfo)renameToolStripMenuItem.Tag, currentDocument, currentTab.parseInfo);
         }
         #endregion
-
-        #region Autocomplete function
-        private void lbAutoCompleteKey(PreviewKeyDownEventArgs a2)
+        
+        #region Autocomplete and tips function control
+        private void TextArea_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (lbAutocomplete.Visible) {
-                if (a2.KeyCode == Keys.Tab || a2.KeyCode == Keys.Down) {
-                    lbAutocompleteShiftCaret = true;
-                    lbAutocomplete.SelectedIndex = 0;
-                    lbAutocomplete.Focus();
+            PosChangeType = PositionType.OverridePos; // Save position change for navigation, if key was pressed
+            
+            if (autoComplete.IsVisible) {
+                autoComplete.TA_PreviewKeyDown(e);
+                if (Settings.autocomplete && e.KeyCode == Keys.Back) {
+                    autoComplete.GenerateList(String.Empty, currentTab, 
+                        currentActiveTextAreaCtrl.Caret.Offset - 1, toolTips.Tag, true);
                 }
-                else if (a2.KeyCode == Keys.Enter && lbAutocomplete.SelectedIndex != -1) {
-                    lbAutocomplete_Paste(null, null);
-                }
-                else if (a2.KeyCode == Keys.Enter || a2.KeyCode == Keys.Up || a2.KeyCode == Keys.Escape)
-                    lbAutocomplete.Hide();
             } else {
-                if (toolTipAC.Active && a2.KeyCode != Keys.Left && a2.KeyCode != Keys.Right)
-                    toolTipAC.Hide(panel1);
+                if (toolTips.Active) {
+                    if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
+                        || (toolTips.Tag != null && !(bool)toolTips.Tag))
+                            toolTips.Hide(panel1);
+                }
             }
-        }
-
-        private void lbAutocomplete_Paste(object sender, MouseEventArgs e)
-        {
-            lbAutocompleteShiftCaret = false;
-            KeyValuePair<int, string> selection = (KeyValuePair<int, string>)lbAutocomplete.Tag;
-            AutoCompleteItem item = (AutoCompleteItem)lbAutocomplete.SelectedItem;
-            int startOffs = selection.Key - selection.Value.Length;
-            currentTab.textEditor.Document.Replace(startOffs, selection.Value.Length, item.name);
-            currentTab.textEditor.ActiveTextAreaControl.TextArea.Focus();
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = currentTab.textEditor.Document.OffsetToPosition(startOffs + item.name.Length);
-            lbAutocomplete.Hide();
-        }
-
-        void LbAutocompleteKeyDown(object snd, KeyEventArgs evt)
-        {
-            if (evt.KeyCode == Keys.Enter && lbAutocomplete.SelectedIndex != -1) {
-                lbAutocomplete_Paste(null, null);
-            } else if (evt.KeyCode == Keys.Escape) {
-                currentTab.textEditor.ActiveTextAreaControl.TextArea.Focus();
-                lbAutocomplete.Hide();
+            if (e.KeyCode == Keys.Tab) {
+                if (Utilities.AutoCompleteKeyWord(currentActiveTextAreaCtrl)) {
+                    e.IsInputKey = true;
+                    autoComplete.ShiftCaret = false;
+                }
             }
-        }
-
-        void LbAutocompleteSelectedIndexChanged(object sender, EventArgs e)
-        {
-            AutoCompleteItem acItem = (AutoCompleteItem)lbAutocomplete.SelectedItem;
-            if (acItem != null) {
-                toolTipAC.Show(acItem.hint, panel1, lbAutocomplete.Left + lbAutocomplete.Width + 10, lbAutocomplete.Top, 50000);
-            }
-        }
-
-        void LbAutocompleteVisibleChanged(object sender, EventArgs e)
-        {
-            if (toolTipAC.Active) toolTipAC.Hide(panel1);
-        }
-
-        private void lbAutocomplete_MouseMove(object sender, MouseEventArgs e)
-        {
-            int item = 0;
-            if (e.Y != 0)
-                item = e.Y / lbAutocomplete.ItemHeight;
-            lbAutocomplete.SelectedIndex = lbAutocomplete.TopIndex + item;
-        }
-
-        private void lbAutocomplete_MouseEnter(object sender, EventArgs e)
-        {
-            if (lbAutocomplete.SelectedIndex < 0) return;
-            lbAutocomplete.Focus();
         }
 
         private void TextArea_MouseWheel(object sender, MouseEventArgs e)
         {
-           if (lbAutocomplete.Visible && e.Delta != 0) {
-               int h = 50 + currentTab.textEditor.ActiveTextAreaControl.Height;
-               var tePos = currentTab.textEditor.ActiveTextAreaControl.FindForm().PointToClient(currentTab.textEditor.ActiveTextAreaControl.Parent.PointToScreen(currentTab.textEditor.ActiveTextAreaControl.Location));
-               var caretPos = currentTab.textEditor.ActiveTextAreaControl.Caret.ScreenPosition;
-               tePos.Offset(caretPos);
-               if (e.Delta < 0) tePos.Offset(-5, -32);
-               else tePos.Offset(-5, 70);
-               if (tePos.Y > h || tePos.Y < 50) lbAutocomplete.Hide();
-               lbAutocomplete.Location = tePos;
-           }
+            autoComplete.TA_MouseScroll(currentTab.textEditor.ActiveTextAreaControl, e);
+            
+            if (toolTips.Active)
+                toolTips.Hide(panel1);
+        }
+        
+        private void TextEditor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+                autoComplete.Hide();
+        }
+
+        private void TextEditor_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+                autoComplete.UnHide();
+        }
+        
+        private void autocompleteCallToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Settings.autocomplete) { 
+                Caret caret = currentActiveTextAreaCtrl.Caret;
+                if (!Utilities.CheckColorPosition(currentDocument, caret.Position))
+                    autoComplete.GenerateList(String.Empty, currentTab, caret.Offset, null);
+            }
         }
         #endregion
 
-        #region Function Back/Forward
-        internal enum PositionType { AddPos, NoSave, SaveChange, Disabled }
-        // AddPos - При перемещении добавлять новую позицию в историю.
-        // NoSave - Не сохранять следующее перемещение в историю.
-        // SaveChange - Изменить следующее перемещение в текущей позиции истории.
-        // Disabled - Не сохранять все последуюшие перемещения в историю (до явного включения функции).
+        #region Navigation Back/Forward
+        /*
+         * AddPos       - Добавлять в историю новую позицию перемещения.
+         * NoStore      - Не сохранять следующее перемещение в историю.
+         * OverridePos  - Перезаписать позицию перемещения в текущей позиции истории.
+         * Disabled     - Не сохранять все последуюшие перемещения в историю (до явного включения функции).
+         */
+        internal enum PositionType { AddPos, NoStore, OverridePos, Disabled }
 
         private void SetBackForwardButtonState() 
         {
-            if (currentTab.history.pointerCur > 0) {
+            if (currentTab.history.pointerCur > 0)
                 Back_toolStripButton.Enabled = true;
-            } else {
+            else
                 Back_toolStripButton.Enabled = false;
-            }
-            if (currentTab.history.pointerCur == currentTab.history.pointerEnd || currentTab.history.pointerCur < 0) {
+            
+            if (currentTab.history.pointerCur == currentTab.history.pointerEnd || currentTab.history.pointerCur < 0)
                 Forward_toolStripButton.Enabled = false;
-            } else if (currentTab.history.pointerCur > 0 || currentTab.history.pointerCur < currentTab.history.pointerEnd) { 
+            else if (currentTab.history.pointerCur > 0 || currentTab.history.pointerCur < currentTab.history.pointerEnd)
                 Forward_toolStripButton.Enabled = true;
-            }
         }
 
         private void Caret_PositionChanged(object sender, EventArgs e)
         {
             string ext = Path.GetExtension(currentTab.filename).ToLower();
-            if (ext != ".ssl" && ext != ".h") return;
+            if (ext != ".ssl" && ext != ".h")
+                return;
 
-            TextLocation _position = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
+            TextLocation _position = currentActiveTextAreaCtrl.Caret.Position;
             int curLine = _position.Line + 1;
             LineStripStatusLabel.Text = "Line: " + curLine;
             ColStripStatusLabel.Text = "Col: " + (_position.Column + 1);
-            if (PosChangeType >= PositionType.Disabled) return;
-            if (PosChangeType >= PositionType.NoSave) {
-                if (PosChangeType == PositionType.SaveChange && currentTab.history.pointerCur != -1) {
+            
+            if (PosChangeType == PositionType.Disabled)
+                return;
+        PosChange:
+            if (PosChangeType >= PositionType.NoStore) { // also OverridePos
+                if (PosChangeType == PositionType.OverridePos && currentTab.history.pointerCur != -1)
                     currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
-                }
+                
                 PosChangeType = PositionType.AddPos; // set default
                 return;
             }
+
             if (curLine != currentTab.history.prevPosition) {
                 currentTab.history.pointerCur++;
-                int size = currentTab.history.linePosition.Length;
-                if (currentTab.history.pointerCur >= size) {
-                    Array.Resize(ref currentTab.history.linePosition, size + 1); 
-                }
-                currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
+                if (currentTab.history.pointerCur >= currentTab.history.linePosition.Count)
+                    currentTab.history.linePosition.Add(_position);
+                else
+                    currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
                 currentTab.history.prevPosition = curLine;
                 currentTab.history.pointerEnd = currentTab.history.pointerCur;
+            } else {
+                PosChangeType = PositionType.OverridePos;
+                goto PosChange;
             }
+
             SetBackForwardButtonState();  
         }
 
         private void Back_toolStripButton_Click(object sender, EventArgs e)
         {
-            if (currentTab == null || currentTab.history.pointerCur == 0) return;
+            if (currentTab == null || currentTab.history.pointerCur == 0)
+                return;
+            
             currentTab.history.pointerCur--;
             GotoViewLine(); 
         }
 
         private void Forward_toolStripButton_Click(object sender, EventArgs e)
         {
-            if (currentTab == null || currentTab.history.pointerCur >= currentTab.history.pointerEnd) return;
+            if (currentTab == null || currentTab.history.pointerCur >= currentTab.history.pointerEnd)
+                return;
+            
             currentTab.history.pointerCur++;
             GotoViewLine();
         }
 
         private void GotoViewLine()
         {
-            PosChangeType = PositionType.NoSave;
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Position = currentTab.history.linePosition[currentTab.history.pointerCur];
-            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(currentTab.textEditor.ActiveTextAreaControl.Caret.Line, 0);
+            PosChangeType = PositionType.NoStore;
+            TextLocation _position = currentTab.history.linePosition[currentTab.history.pointerCur];
+            currentActiveTextAreaCtrl.Caret.Position = _position;
+            currentTab.history.prevPosition = _position.Line + 1;
+
+            int firstLine = currentActiveTextAreaCtrl.TextArea.TextView.FirstVisibleLine;
+            int lastLine = firstLine + currentActiveTextAreaCtrl.TextArea.TextView.VisibleLineCount - 1;
+            if (_position.Line <= firstLine || _position.Line + 1 >= lastLine)
+                currentActiveTextAreaCtrl.CenterViewOn(currentActiveTextAreaCtrl.Caret.Line, 0);
+            
             SetBackForwardButtonState();
         }
         #endregion
 
-        #region Create/Rename/Delete/Move Procedure Function
+        #region Procedure function Create/Rename/Delete/Move 
         // Create Handlers Procedures
         public void CreateProcBlock(string name)
         {
-            Parser.UpdateParseSSL(currentTab.textEditor.Text);
-            if (Parser.CheckExistsProcedureName(name)) return;
+            if (currentTab.parseInfo.CheckExistsName(name, false)) {
+                MessageBox.Show("A procedure with this name has already been declared.", "Info");
+                return;
+            }
+
             byte inc = 0;
-            if (name == "look_at_p_proc" || name == "description_p_proc") inc++;
-            ProcForm CreateProcFrm = new ProcForm();
-            CreateProcFrm.ProcedureName.Text = name;
-            CreateProcFrm.ProcedureName.ReadOnly = true;
-            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) {
+            if (name == "look_at_p_proc" || name == "description_p_proc")
+                inc++;
+            
+            ProcForm CreateProcFrm = new ProcForm(name, true);
+            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure)
                 CreateProcFrm.checkBox1.Enabled = false;
-            } else CreateProcFrm.groupBox1.Enabled = false;
+            else 
+                CreateProcFrm.groupBox1.Enabled = false;
+            
             ProcTree.HideSelection = false;
+
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
                 ProcTree.HideSelection = true;
                 return;
             }
+
             ProcBlock block = new ProcBlock();
             if (CreateProcFrm.radioButton2.Checked) {
-                block = Parser.GetProcBeginEndBlock(((Procedure)ProcTree.SelectedNode.Tag).name);
+                var proc = (Procedure)ProcTree.SelectedNode.Tag;
+                block.begin = proc.d.start;
+                block.end = proc.d.end;
+                block.declar = proc.d.declared;  
             }
-            InsertProcedure(CreateProcFrm.ProcedureName.Text, block, CreateProcFrm.radioButton2.Checked, inc);
+
+            PrepareInsertProcedure(CreateProcFrm.ProcedureName, block, CreateProcFrm.radioButton2.Checked, inc);
+            
             CreateProcFrm.Dispose();
+            ProcTree.HideSelection = true;
         }
 
         // Create Procedures
         private void createProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcForm CreateProcFrm = new ProcForm();
-            TextLocation textloc = currentTab.textEditor.ActiveTextAreaControl.Caret.Position;
-            string word = TextUtilities.GetWordAt(currentTab.textEditor.Document, currentTab.textEditor.Document.PositionToOffset(textloc));
-            CreateProcFrm.ProcedureName.Text = word;
-            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) {}
-            else CreateProcFrm.groupBox1.Enabled = false;
+            string word = null;
+            if (currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected)
+                word = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
+            ProcForm CreateProcFrm = new ProcForm(word, false, true);
+
+            if ((ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) == false)
+                CreateProcFrm.groupBox1.Enabled = false;
+            
             ProcTree.HideSelection = false;
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
                 ProcTree.HideSelection = true;
                 return;
             }
-            Parser.UpdateParseSSL(currentTab.textEditor.Text);
-            string name = CreateProcFrm.ProcedureName.Text;
-            if (Parser.CheckExistsProcedureName(name)) return;
+
+            string name = CreateProcFrm.CheckName;
+            if (currentTab.parseInfo.CheckExistsName(name, NameType.Proc)) {
+                MessageBox.Show("A procedure with this name has already been declared.", "Info");
+                return;
+            }
+            
             ProcBlock block = new ProcBlock();
             if (CreateProcFrm.checkBox1.Checked || CreateProcFrm.radioButton2.Checked) {
-                block = Parser.GetProcBeginEndBlock(((Procedure)ProcTree.SelectedNode.Tag).name);
+                var proc = (Procedure)ProcTree.SelectedNode.Tag;
+                block.begin = proc.d.start;
+                block.end = proc.d.end;
+                block.declar = proc.d.declared;
                 block.copy = CreateProcFrm.checkBox1.Checked;
             }
-            InsertProcedure(name, block, CreateProcFrm.radioButton2.Checked);
+
+            name = CreateProcFrm.ProcedureName;
+            PrepareInsertProcedure(name, block, CreateProcFrm.radioButton2.Checked);
+            
             CreateProcFrm.Dispose();
+            ProcTree.HideSelection = true;
         }
 
         // Create procedure block
-        private void InsertProcedure(string name, ProcBlock block, bool after = false, byte overrides = 0)
+        private void PrepareInsertProcedure(string name, ProcBlock block, bool after = false, byte overrides = 0)
         {
-            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-            int findLine, caretline = 2;
+            int procLine, declrLine, caretline = 3;
             string procbody;
+            
             //Copy from procedure
             if (block.copy) {
-                procbody = GetSelectBlockText(block.begin + 1, block.end, 0);
+                procbody = Utilities.GetRegionText(currentDocument, block.begin, block.end - 2) + Environment.NewLine;
                 overrides = 1;
-            } else procbody = "script_overrides;\r\n\r\n".PadLeft(Settings.tabSize);
+            } else 
+                procbody = new string(' ', Settings.tabSize) + ("script_overrides;\r\n\r\n");
+            
             string procblock = (overrides > 0)
-                       ? "\r\nprocedure " + name + " begin\r\n" + procbody + "end\r\n"
-                       : "\r\nprocedure " + name + " begin\r\n\r\nend\r\n";
-            if (after) findLine = Parser.GetDeclarationProcedureLine(((Procedure)ProcTree.SelectedNode.Tag).name) + 1;
-                else findLine = Parser.GetEndLineProcDeclaration(); 
-            if (findLine == -1) {
-                findLine = 0;
+                       ? "\r\nprocedure " + name + " begin\r\n" + procbody + "end"
+                       : "\r\nprocedure " + name + " begin\r\n\r\nend";
+            
+            // declaration line
+            if (after)
+                declrLine = block.declar;
+            else {
+                Parser.UpdateParseSSL(currentTab.textEditor.Text);
+                declrLine = Parser.GetEndLineProcDeclaration();
+            }
+            if (declrLine == -1) {
+                declrLine = 0;
                 MessageBox.Show("The declaration procedure is broken, declaration written to beginning of script.", "Warning");
             }
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
-            int offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, findLine));
-            currentTab.textEditor.Document.Insert(offset, "procedure " + name + ";" + Environment.NewLine);
-            // proc body
-            if (after) findLine = block.end + 1 ; // after current procedure
-                else findLine = currentTab.textEditor.Document.TotalNumberOfLines - 1; // paste to end script
-            int len = TextUtilities.GetLineAsString(currentTab.textEditor.Document, findLine).Length;
-            if (len > 0) {
-                procblock = Environment.NewLine + procblock;
-                caretline++;
-            }
-            offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(len, findLine));
-            currentTab.textEditor.Document.Insert(offset, procblock);
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Column = 0;
-            currentTab.textEditor.ActiveTextAreaControl.Caret.Line = findLine + (caretline + overrides);
-            currentTab.textEditor.ActiveTextAreaControl.CenterViewOn(findLine + (caretline + overrides), 0);
-            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
+            // procedure line
+            if (after) {
+                procLine = block.end; // after current procedure
+                if (TextUtilities.GetLineAsString(currentDocument, procLine + 1).Trim().Length > 0)
+                    procblock += Environment.NewLine;
+            } else
+                procLine = currentDocument.TotalNumberOfLines - 1; // paste to end script
+            
+            Utilities.InsertProcedure(currentActiveTextAreaCtrl, name, procblock, declrLine, procLine, ref caretline);
+            
+            caretline += procLine + overrides;
+            currentActiveTextAreaCtrl.Caret.Column = 0;
+            currentActiveTextAreaCtrl.Caret.Line = caretline;
+            currentActiveTextAreaCtrl.CenterViewOn(caretline, 0);
+            
+            ForceParseScript();
             SetFocusDocument();
         }
 
         // Rename Procedures
         private void renameProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ProcTree.SelectedNode == null) return;
-            string oldName = ((Procedure)ProcTree.SelectedNode.Tag).name; //original name
+            Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
+            if (proc == null)
+                return;
+            
+            string oldName = proc.name; //original name
+            
             ProcTree.HideSelection = false;
-            Utilities.RenameProcedure(oldName, currentTab.textEditor);
+            string newName = Refactor.RenameProcedure(oldName, currentDocument, currentTab.parseInfo);
             ProcTree.HideSelection = true;
-            SetFocusDocument();
+            
+            if (newName != null) {
+                ForceParseScript();
+                SetFocusDocument();
+            }
         }
 
         // Delete Procedures
         private void deleteProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ProcTree.SelectedNode == null) return;
-            if (MessageBox.Show("Are you sure you want to delete \"" + ((Procedure)ProcTree.SelectedNode.Tag).name + "\" procedure?",
-                "Warning", MessageBoxButtons.YesNo) == DialogResult.No) return;
-            Parser.UpdateParseSSL(currentTab.textEditor.Text);
-            string def_poc;
-            string procName = ((Procedure)ProcTree.SelectedNode.Tag).name;
-            ProcBlock block = Parser.GetProcBeginEndBlock(procName, 0, true);
-            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-            DeleteProcedure(procName, block, out def_poc);
-            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
+            Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
+            if (proc == null)
+                return;
+
+            //if (proc.IsImported) {
+            //    MessageBox.Show("You can't delete the imported procedure.");
+            //    return;
+            //}
+
+            if (MessageBox.Show("Are you sure you want to delete \"" + proc.name + "\" procedure?",
+                "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
+                return;
+
+            Utilities.PrepareDeleteProcedure(proc, currentDocument);
+            currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
+
+            ForceParseScript();
             SetFocusDocument();
-        }
-
-        private void DeleteProcedure(string procName, ProcBlock block, out string def_poc)
-        {
-            int offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, block.begin));
-            int len = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, block.end)) - offset;
-            len += TextUtilities.GetLineAsString(currentTab.textEditor.Document, block.end).Length;
-            currentTab.textEditor.Document.Remove(offset, len + 2);
-            // declare
-            int declarLine = Parser.GetDeclarationProcedureLine(procName);
-            if (declarLine > -1 & declarLine != block.begin) {
-                def_poc = TextUtilities.GetLineAsString(currentTab.textEditor.Document, declarLine);
-                offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, declarLine));
-                currentTab.textEditor.Document.Remove(offset, def_poc.Length + 2);
-            }
-            else def_poc = null;
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.ClearSelection();
-        }
-
-        //Select block and return text
-        private string GetSelectBlockText(int _begin, int _end, int _ecol = -1, int _bcol = 0)
-        {
-            if (_ecol == -1) _ecol = TextUtilities.GetLineAsString(currentTab.textEditor.Document, _end).Length;
-            currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SetSelection(new TextLocation(_bcol, _begin), new TextLocation(_ecol, _end));
-            return currentTab.textEditor.ActiveTextAreaControl.SelectionManager.SelectedText;
-        }
-
-        //Update Procedure Tree
-        private void SetFocusDocument()
-        {
-            TextArea_SetFocus(null, null);
-            if (Settings.enableParser) {
-                timerNext = DateTime.Now;
-                timer.Start(); // Parser begin
-            } else {
-                ParseScript();
-                Outline_toolStripButton.Enabled = true;
-            }
-            ProcTree.HideSelection = true;
-        }
-
-        private void ProcMnContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) {
-                ProcMnContext.Items[1].Enabled = true;
-                ProcMnContext.Items[3].Enabled = true; // moved disabled
-                ProcMnContext.Items[4].Enabled = true;
-                ProcMnContext.Items[4].Text = "Delete: " + ((Procedure)ProcTree.SelectedNode.Tag).name;
-            } else {
-                ProcMnContext.Items[1].Enabled = false;
-                ProcMnContext.Items[3].Enabled = false;
-                ProcMnContext.Items[4].Enabled = false;
-                ProcMnContext.Items[4].Text = "Delete procedure";
-            }
         }
 
         private void MoveProcedure(int sIndex)
         {
             bool moveToEnd = false;
             int root = ProcTree.Nodes.Count - 1;
-            Parser.UpdateParseSSL(currentTab.textEditor.Text);
-            string moveName = ProcTree.Nodes[root].Nodes[moveActive].Text;
+            
             if (sIndex > moveActive) {
                 if (sIndex >= (ProcTree.Nodes[root].Nodes.Count - 1))
                     moveToEnd = true;
                 else 
                     sIndex++;
             }
+
+            Procedure moveProc = (Procedure)ProcTree.Nodes[root].Nodes[moveActive].Tag;
             // copy body
-            ProcBlock block = Parser.GetProcBeginEndBlock(moveName, 0, true);
-            string copy_procbody = Environment.NewLine + GetSelectBlockText(block.begin, block.end, 1000);
+            Parser.UpdateParseSSL(currentDocument.TextContent);
+            ProcBlock block = Parser.GetProcBeginEndBlock(moveProc.name, 0, true);
+            block.declar = moveProc.d.declared;
+            
             string copy_defproc;
-            currentTab.textEditor.Document.UndoStack.StartUndoGroup();
-            //
-            DeleteProcedure(moveName, block, out copy_defproc);
-            Parser.UpdateParseSSL(currentTab.textEditor.Text);
-            //
+            string copy_procbody = Environment.NewLine + Utilities.GetRegionText(currentDocument, block.begin, block.end);
+
+            currentDocument.UndoStack.StartUndoGroup();
+            currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
+            
+            Utilities.DeleteProcedure(currentDocument, block, out copy_defproc);
+
             string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
+            
+            Parser.UpdateParseSSL(currentDocument.TextContent);
             // insert declration
             int offset;
             if (copy_defproc != null) {
                 int p_def = Parser.GetDeclarationProcedureLine(name);
-                if (moveToEnd) p_def++;
-                offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, p_def));
-                currentTab.textEditor.Document.Insert(offset, copy_defproc + Environment.NewLine);
+                if (moveToEnd)
+                    p_def++;
+                offset = currentDocument.PositionToOffset(new TextLocation(0, p_def));
+                currentDocument.Insert(offset, copy_defproc + Environment.NewLine);
             }
             //paste proc block
             block = Parser.GetProcBeginEndBlock(name, 0, true);
@@ -864,46 +982,52 @@ namespace ScriptEditor
                 p_begin = block.begin;
                 copy_procbody += Environment.NewLine;
             }
-            offset = currentTab.textEditor.Document.PositionToOffset(new TextLocation(0, p_begin));
-            offset += TextUtilities.GetLineAsString(currentTab.textEditor.Document, p_begin).Length;
-            currentTab.textEditor.Document.Insert(offset, copy_procbody);
-            currentTab.textEditor.Document.UndoStack.EndUndoGroup();
-            //
-            if (sIndex > moveActive && !moveToEnd) sIndex--;
+            offset = currentDocument.PositionToOffset(new TextLocation(0, p_begin));
+            offset += TextUtilities.GetLineAsString(currentDocument, p_begin).Length;
+            currentDocument.Insert(offset, copy_procbody);
+            currentDocument.UndoStack.EndUndoGroup();
+            
+            // Перемещение процедуры в дереве
+            if (sIndex > moveActive && !moveToEnd)
+                sIndex--;
+
             TreeNode nd = ProcTree.Nodes[root].Nodes[moveActive];
             ProcTree.Nodes[root].Nodes.RemoveAt(moveActive);
             ProcTree.Nodes[root].Nodes.Insert(sIndex, nd);
             ProcTree.SelectedNode = ProcTree.Nodes[root].Nodes[sIndex];
             ProcTree.Focus();
             ProcTree.Select();
-            Parser.UpdateProcInfo(ref currentTab.parseInfo, currentTab.textEditor.Text, currentTab.filepath);
-            currentTab.textEditor.Document.FoldingManager.UpdateFoldings(currentTab.filename, currentTab.parseInfo);
-            currentTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
+
+            Parser.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
+            currentDocument.FoldingManager.UpdateFoldings(currentTab.filename, currentTab.parseInfo);
+            currentDocument.FoldingManager.NotifyFoldingsChanged(null);
         }
 
         private void moveProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ProcTree.SelectedNode == null) return;
+            if (ProcTree.SelectedNode == null)
+                return;
             if (moveActive == -1) {
                 moveActive = ProcTree.SelectedNode.Index;
                 ProcTree.SelectedNode.ForeColor = Color.Red;
-                ProcTree.Cursor = Cursors.Hand;
+                ProcTree.Cursor = Cursors.HSplit;
                 ProcTree.AfterSelect -= TreeView_AfterSelect;
                 ProcTree.SelectedNode = ProcTree.Nodes[0];
-                ProcTree.AfterSelect += new TreeViewEventHandler(ProcTree_AfterSelect);
+                ProcTree.AfterSelect += ProcTree_AfterSelect;
             }
         }
 
         private void ProcTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (e.Node.Parent == null || e.Node.Parent.Text != TREEPROCEDURES[1]) return;
+            if (e.Node.Parent == null || e.Node.Parent.Text != TREEPROCEDURES[1])
+                return;
             ProcTree.AfterSelect -= ProcTree_AfterSelect;
             currentTab.textEditor.TextChanged -= textChanged;
             MoveProcedure(e.Node.Index);
             currentTab.textEditor.TextChanged += textChanged;
             ProcTree.AfterSelect += TreeView_AfterSelect;
             ProcTree.SelectedNode.ForeColor = Color.Black;
-            ProcTree.Cursor = Cursors.Default;
+            ProcTree.Cursor = Cursors.Hand;
             moveActive = -1;
         }
 
@@ -913,7 +1037,7 @@ namespace ScriptEditor
                 ProcTree.AfterSelect -= ProcTree_AfterSelect;
                 ProcTree.AfterSelect += TreeView_AfterSelect;
                 ProcTree.Nodes[ProcTree.Nodes.Count - 1].Nodes[moveActive].ForeColor = Color.Black;
-                ProcTree.Cursor = Cursors.Default;
+                ProcTree.Cursor = Cursors.Hand;
                 moveActive = -1;
             }
         }
@@ -922,6 +1046,29 @@ namespace ScriptEditor
         {
             if (e.Button == MouseButtons.Right) {
                 ProcTree_MouseLeave(null, null);
+            }
+        }
+
+        private void ProcMnContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Parent != null 
+                && (int)ProcTree.SelectedNode.Parent.Tag == 1 /*&& ProcTree.SelectedNode.Tag is Procedure*/) {
+                Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
+                string pName = proc.name.ToLower();
+                if (pName.IndexOf("node") > -1 || pName == "talk_p_proc")
+                    editNodeCodeToolStripMenuItem.Enabled = true;
+                else
+                    editNodeCodeToolStripMenuItem.Enabled = false;
+                renameProcedureToolStripMenuItem.Enabled = true;
+                moveProcedureToolStripMenuItem.Enabled = true;
+                deleteProcedureToolStripMenuItem.Enabled = true;
+                deleteProcedureToolStripMenuItem.Text = "Delete: " + proc.name;
+            } else {
+                editNodeCodeToolStripMenuItem.Enabled = false;
+                renameProcedureToolStripMenuItem.Enabled = false;
+                moveProcedureToolStripMenuItem.Enabled = false;
+                deleteProcedureToolStripMenuItem.Enabled = false;
+                deleteProcedureToolStripMenuItem.Text = "Delete procedure";
             }
         }
         #endregion

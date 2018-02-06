@@ -216,9 +216,9 @@
             // lbFindFiles
             // 
             this.lbFindFiles.FormattingEnabled = true;
+            this.lbFindFiles.HorizontalScrollbar = true;
             this.lbFindFiles.Location = new System.Drawing.Point(13, 254);
             this.lbFindFiles.Name = "lbFindFiles";
-            this.lbFindFiles.ScrollAlwaysVisible = true;
             this.lbFindFiles.Size = new System.Drawing.Size(402, 173);
             this.lbFindFiles.TabIndex = 21;
             // 

@@ -1,25 +1,21 @@
 @echo off
 set fscript=%1
 set pfile=%2
-set def=%3
+set param=%3
+set path=%4
+set scrpath=%5
+set def=%6
 
-echo ---------------------------------------------------------
-echo Open Watcom preprocessing script:
-echo    %1
-echo ---------------------------------------------------------
-wcc386.exe %fscript% /pc /fo=%pfile% %def% 
+echo Include path: %scrpath%
+echo Script preprocessing path: %fscript%
+
+wcc386.exe %fscript% -p%param% -fr=wcc -eq -ef -fo=%pfile% -i=%path% -i=%scrpath% %def% 
 
 if not exist %pfile% goto FAILED
-
-echo Created preprocessing file for compiling:
-echo    %~dp2%~n1_[wcc].ssl 
-
-echo [Done] Preprocessing script successfully completed.
 goto DONE
 
 :FAILED
-echo [Error] Preprocessing script failed...
 Exit 1
-
 :DONE
+
 

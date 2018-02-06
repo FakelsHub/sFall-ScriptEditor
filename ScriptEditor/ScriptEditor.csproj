@@ -10,9 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ScriptEditor</RootNamespace>
     <AssemblyName>SfallScriptEditor</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
@@ -81,7 +81,9 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="CodeTranslation\DialogueParser.cs" />
+    <Compile Include="CodeTranslation\Macros.cs" />
     <Compile Include="CodeTranslation\Parser.cs" />
+    <Compile Include="CodeTranslation\ParserDLL.cs" />
     <Compile Include="DialogPreview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,6 +91,12 @@
       <DependentUpon>DialogPreview.cs</DependentUpon>
     </Compile>
     <Compile Include="FileAssociation.cs" />
+    <Compile Include="NodeDiagram.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NodeDiagram.Designer.cs">
+      <DependentUpon>NodeDiagram.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProcForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,7 +106,7 @@
     <Compile Include="TextEditorPartial.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextEditorUI\AutoCompleteItem.cs" />
+    <Compile Include="TextEditorUI\CompleteList\AutoCompleteItem.cs" />
     <Compile Include="BatchCompiler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -161,12 +169,22 @@
     <Compile Include="TextEditor.Designer.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextEditorUI\Nodes\FlowchartTE.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextEditorUI\Nodes\FlowchartTE.Designer.cs">
+      <DependentUpon>FlowchartTE.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextEditorUI\Functions.cs" />
+    <Compile Include="TextEditorUI\Nodes\TemplateNode.cs" />
+    <Compile Include="TextEditorUI\ToolTips\TipPainter.cs" />
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
-    <Compile Include="TextEditorUI\CodeFolder.cs" />
+    <Compile Include="CodeTranslation\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
     <Compile Include="SyntaxRules\SyntaxFile.cs" />
-    <Compile Include="TextEditorUI\MessageFile.cs" />
+    <Compile Include="TextEditorUI\InputBox.cs" />
+    <Compile Include="TextEditorUtilities\MessageFile.cs" />
+    <Compile Include="TextEditorUI\ProgressBar.cs" />
     <Compile Include="TextEditorUI\TabInfo.cs" />
     <Compile Include="MessageEditor.cs">
       <SubType>Form</SubType>
@@ -174,8 +192,13 @@
     <Compile Include="MessageEditor.Designer.cs">
       <DependentUpon>MessageEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextEditorUI\Utilities.cs" />
+    <Compile Include="TextEditorUI\ToolTips\ToolTipRequest.cs" />
+    <Compile Include="TextEditorUtilities\MessageStructure.cs" />
+    <Compile Include="TextEditorUtilities\Refactor.cs" />
+    <Compile Include="TextEditorUtilities\UndatFile.cs" />
+    <Compile Include="TextEditorUtilities\Utilities.cs" />
     <Compile Include="TextEditorUI\WorkerArgs.cs" />
+    <Compile Include="TextEditorUI\CompleteList\AutoComplete.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutBox.resx">
@@ -192,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Headers.resx">
       <DependentUpon>Headers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NodeDiagram.resx">
+      <DependentUpon>NodeDiagram.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProcForm.resx">
       <DependentUpon>ProcForm.cs</DependentUpon>
@@ -215,6 +241,9 @@
     <EmbeddedResource Include="MessageEditor.resx">
       <DependentUpon>MessageEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TextEditorUI\Nodes\FlowchartTE.resx">
+      <DependentUpon>FlowchartTE.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -231,6 +260,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Descriptions\UserFunctions.ini" />
+    <None Include="Resources\mcpp.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\usercomp.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -247,7 +279,18 @@
     </None>
     <None Include="SyntaxRules\ssl+_SyntaxRules.xshd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
+    <None Include="Resources\KeepWindowOff.png" />
+    <None Include="Resources\KeepWindowOn.png" />
+    <None Include="Resources\UtilityText.ico" />
+    <None Include="Resources\icon_fcd.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\type_icon\macros.bmp" />
+    <None Include="Resources\type_icon\opcode.bmp" />
+    <None Include="Resources\type_icon\procedure.bmp" />
+    <None Include="Resources\type_icon\variable.bmp" />
     <Content Include="SyntaxRules\User_SyntaxRules.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -296,6 +339,7 @@
       <Name>ICSharpCode.TextEditor</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

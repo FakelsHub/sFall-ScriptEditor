@@ -26,7 +26,6 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -37,11 +36,14 @@
             this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cLip = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.playerMarkerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+            this.playerMarkerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+            this.addDescriptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox = new System.Windows.Forms.GroupBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.toolStrip = new System.Windows.Forms.ToolStrip();
@@ -91,12 +93,11 @@
             // dgvMessage
             // 
             this.dgvMessage.AllowUserToAddRows = false;
-            this.dgvMessage.AllowUserToDeleteRows = false;
             this.dgvMessage.AllowUserToOrderColumns = true;
             this.dgvMessage.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.dgvMessage.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvMessage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dgvMessage.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
+            this.dgvMessage.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -112,33 +113,31 @@
             this.cDescription,
             this.cLip});
             this.dgvMessage.ContextMenuStrip = this.contextMenuStrip1;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMessage.DefaultCellStyle = dataGridViewCellStyle5;
             this.dgvMessage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvMessage.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dgvMessage.EnableHeadersVisualStyles = false;
             this.dgvMessage.GridColor = System.Drawing.Color.Silver;
             this.dgvMessage.Location = new System.Drawing.Point(4, 17);
             this.dgvMessage.MultiSelect = false;
             this.dgvMessage.Name = "dgvMessage";
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            this.dgvMessage.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            this.dgvMessage.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dgvMessage.RowHeadersVisible = false;
             this.dgvMessage.RowTemplate.Height = 18;
             this.dgvMessage.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dgvMessage.ShowEditingIcon = false;
+            this.dgvMessage.ShowRowErrors = false;
             this.dgvMessage.Size = new System.Drawing.Size(819, 541);
             this.dgvMessage.TabIndex = 0;
             this.dgvMessage.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvMessage_CellBeginEdit);
+            this.dgvMessage.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellClick);
+            this.dgvMessage.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellDoubleClick);
             this.dgvMessage.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellEndEdit);
+            this.dgvMessage.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvMessage_CellMouseClick);
             this.dgvMessage.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellValueChanged);
             this.dgvMessage.SelectionChanged += new System.EventHandler(this.dgvMessage_SelectionChanged);
             this.dgvMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvMessage_KeyPress);
@@ -149,14 +148,15 @@
             this.EntryCol.Name = "EntryCol";
             this.EntryCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.EntryCol.Visible = false;
-            this.EntryCol.Width = 57;
+            this.EntryCol.Width = 5;
             // 
             // cLine
             // 
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Info;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.LightYellow;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.HotTrack;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Chocolate;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.SteelBlue;
             this.cLine.DefaultCellStyle = dataGridViewCellStyle2;
             this.cLine.HeaderText = "Line";
             this.cLine.Name = "cLine";
@@ -168,7 +168,8 @@
             // 
             this.cDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.SteelBlue;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.cDescription.DefaultCellStyle = dataGridViewCellStyle3;
             this.cDescription.HeaderText = "Message or comment text";
@@ -181,6 +182,7 @@
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle4.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             dataGridViewCellStyle4.ForeColor = System.Drawing.Color.DimGray;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.SteelBlue;
             this.cLip.DefaultCellStyle = dataGridViewCellStyle4;
             this.cLip.HeaderText = "Lip File";
             this.cLip.Name = "cLip";
@@ -190,43 +192,52 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.playerMarkerToolStripMenuItem,
             this.sendLineToolStripMenuItem,
+            this.toolStripSeparator12,
+            this.playerMarkerToolStripMenuItem,
             this.toolStripSeparator11,
             this.moveUpToolStripMenuItem,
-            this.moveDownToolStripMenuItem});
+            this.moveDownToolStripMenuItem,
+            this.toolStripSeparator14,
+            this.addDescriptionToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(176, 98);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 132);
+            // 
+            // sendLineToolStripMenuItem
+            // 
+            this.sendLineToolStripMenuItem.Name = "sendLineToolStripMenuItem";
+            this.sendLineToolStripMenuItem.ShortcutKeyDisplayString = "MMB / Alt+S";
+            this.sendLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.sendLineToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.sendLineToolStripMenuItem.Text = "Send Line";
+            this.sendLineToolStripMenuItem.ToolTipText = "Send current line number to an open script.";
+            this.sendLineToolStripMenuItem.Click += new System.EventHandler(this.SendStripButton_Click);
+            // 
+            // toolStripSeparator12
+            // 
+            this.toolStripSeparator12.Name = "toolStripSeparator12";
+            this.toolStripSeparator12.Size = new System.Drawing.Size(178, 6);
             // 
             // playerMarkerToolStripMenuItem
             // 
             this.playerMarkerToolStripMenuItem.Name = "playerMarkerToolStripMenuItem";
             this.playerMarkerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.playerMarkerToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.playerMarkerToolStripMenuItem.Text = "Player Marker";
+            this.playerMarkerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.playerMarkerToolStripMenuItem.Text = "Set Player Marker";
             this.playerMarkerToolStripMenuItem.ToolTipText = "Set player options marker";
             this.playerMarkerToolStripMenuItem.Click += new System.EventHandler(this.playerMarkerToolStripMenuItem_Click);
-            // 
-            // sendLineToolStripMenuItem
-            // 
-            this.sendLineToolStripMenuItem.Name = "sendLineToolStripMenuItem";
-            this.sendLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.sendLineToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.sendLineToolStripMenuItem.Text = "Send Line";
-            this.sendLineToolStripMenuItem.ToolTipText = "Send current line number to an open script.";
-            this.sendLineToolStripMenuItem.Click += new System.EventHandler(this.SendStripButton_Click);
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(178, 6);
             // 
             // moveUpToolStripMenuItem
             // 
             this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
             this.moveUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.moveUpToolStripMenuItem.Text = "Move Up";
             this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
             // 
@@ -234,9 +245,22 @@
             // 
             this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
             this.moveDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.moveDownToolStripMenuItem.Text = "Move Down";
             this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator14
+            // 
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(178, 6);
+            // 
+            // addDescriptionToolStripMenuItem
+            // 
+            this.addDescriptionToolStripMenuItem.Name = "addDescriptionToolStripMenuItem";
+            this.addDescriptionToolStripMenuItem.ShowShortcutKeys = false;
+            this.addDescriptionToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.addDescriptionToolStripMenuItem.Text = "Add/Edit comment for line";
+            this.addDescriptionToolStripMenuItem.Click += new System.EventHandler(this.addDescriptionToolStripMenuItem_Click);
             // 
             // groupBox
             // 
@@ -424,7 +448,7 @@
             this.DeleteLineStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.DeleteLineStripButton.Name = "DeleteLineStripButton";
             this.DeleteLineStripButton.Size = new System.Drawing.Size(23, 23);
-            this.DeleteLineStripButton.ToolTipText = "Delete current line [Delete]";
+            this.DeleteLineStripButton.ToolTipText = "Delete current line [Ctrl+Delete]";
             this.DeleteLineStripButton.Click += new System.EventHandler(this.DeleteLineStripButton_Click);
             // 
             // toolStripSeparator2
@@ -540,8 +564,9 @@
             this.ColorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ColorComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.ColorComboBox.Items.AddRange(new object[] {
-            "Gainsboro",
-            "PaleGreen"});
+            "LightYellow",
+            "PaleGreen",
+            "Lavender"});
             this.ColorComboBox.Name = "ColorComboBox";
             this.ColorComboBox.Size = new System.Drawing.Size(75, 21);
             this.ColorComboBox.SelectedIndexChanged += new System.EventHandler(this.ColorComboBox_SelectedIndexChanged);
@@ -575,13 +600,13 @@
             this.FontSizeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.FontSizeComboBox.Items.AddRange(new object[] {
             "9",
+            "10",
             "12",
             "14",
             "16",
             "18",
             "20",
-            "24",
-            "26"});
+            "24"});
             this.FontSizeComboBox.Name = "FontSizeComboBox";
             this.FontSizeComboBox.Size = new System.Drawing.Size(75, 21);
             this.FontSizeComboBox.ToolTipText = "Hotkey change size [Ctlr + NumPlus] and [Ctlr + NumMinus]";
@@ -703,6 +728,9 @@
         private System.Windows.Forms.ToolStripComboBox FontSizeComboBox;
         private System.Windows.Forms.ToolStripComboBox ColorComboBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
+        private System.Windows.Forms.ToolStripMenuItem addDescriptionToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn EntryCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn cLine;
         private System.Windows.Forms.DataGridViewTextBoxColumn cDescription;
