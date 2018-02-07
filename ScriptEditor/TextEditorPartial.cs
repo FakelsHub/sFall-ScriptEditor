@@ -627,17 +627,20 @@ namespace ScriptEditor
                     autoComplete.GenerateList(String.Empty, currentTab, 
                         currentActiveTextAreaCtrl.Caret.Offset - 1, toolTips.Tag, true);
                 }
-            } else {
-                if (toolTips.Active) {
-                    if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
-                        || (toolTips.Tag != null && !(bool)toolTips.Tag))
-                            toolTips.Hide(panel1);
+            }
+            if (toolTips.Active) {
+                if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
+                    || (toolTips.Tag != null && !(bool)toolTips.Tag)) {
+                    toolTips.Hide(panel1);
+                    toolTips.Active = false;
                 }
             }
             if (e.KeyCode == Keys.Tab) {
                 if (Utilities.AutoCompleteKeyWord(currentActiveTextAreaCtrl)) {
                     e.IsInputKey = true;
                     autoComplete.ShiftCaret = false;
+                    if (autoComplete.IsVisible)
+                        autoComplete.Close();
                 }
             }
         }
@@ -646,8 +649,10 @@ namespace ScriptEditor
         {
             autoComplete.TA_MouseScroll(currentTab.textEditor.ActiveTextAreaControl, e);
             
-            if (toolTips.Active)
+            if (toolTips.Active) {
                 toolTips.Hide(panel1);
+                toolTips.Active = false;
+            }
         }
         
         private void TextEditor_KeyDown(object sender, KeyEventArgs e)

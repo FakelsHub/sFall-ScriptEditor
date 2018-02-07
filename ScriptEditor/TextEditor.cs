@@ -113,7 +113,7 @@ namespace ScriptEditor
             win32RenderTextToolStripMenuItem.Checked = Settings.winAPITextRender;
             SizeFontToString();
 
-            toolTips.Active = Settings.showTips;
+            toolTips.Active = false;
             toolTips.Draw += delegate(object sender, DrawToolTipEventArgs e) { TipPainter.DrawInfo(e); }; 
                 
             autoComplete = new AutoComplete(panel1, Settings.autocompleteColor);
@@ -999,7 +999,7 @@ namespace ScriptEditor
                 if (autoComplete.IsVisible)
                     autoComplete.Close();
 
-                if (toolTips.Active && currentTab.parseInfo != null && e.KeyChar == '(') {
+                if (Settings.showTips && currentTab.parseInfo != null && e.KeyChar == '(') {
                     string word = TextUtilities.GetWordAt(currentDocument, caret.Offset - 1);
                     if (word != String.Empty) {
                         string item = ProgramInfo.LookupOpcodesToken(word);
@@ -1021,8 +1021,10 @@ namespace ScriptEditor
                     currentDocument.Insert(caret.Offset, bracket);
                 }
             } else if (e.KeyChar == ')' || e.KeyChar == ']' || e.KeyChar == '}') {
-                if (toolTips.Active)
+                if (toolTips.Active) {
                     toolTips.Hide(panel1);
+                    toolTips.Active = false;
+                }
 
                 if (Settings.autoInputPaired) {
                     char bracket = '(';
@@ -1045,7 +1047,7 @@ namespace ScriptEditor
 
         void TextArea_KeyUp(object sender, KeyEventArgs e)
         {
-            if (!toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue)))
+            if (!Settings.showTips || toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue)))
                return;
 
             var caret = currentActiveTextAreaCtrl.Caret;
@@ -1072,9 +1074,10 @@ namespace ScriptEditor
             Point pos = caret.GetScreenPosition(caret.Line, caret.Column - offset);
             var tab = tabControl1.TabPages[currentTab.index];
             pos.Offset(tab.FindForm().PointToClient(tab.Parent.PointToScreen(tab.Location)));
-            offset = (autoComplete.IsVisible) ? -20 : 20;
+            offset = (autoComplete.IsVisible) ? -25 : 20;
             pos.Offset(0, offset);
             
+            toolTips.Active = true;
             toolTips.Tag = tag;
             toolTips.Show(tipText, panel1, pos, duration);
         }
@@ -1228,8 +1231,10 @@ namespace ScriptEditor
                 if (e.Button == MouseButtons.Middle) {
                     Utilities.HighlightingSelectedText(currentActiveTextAreaCtrl);
                     currentTab.textEditor.Refresh();
-                } else if (toolTips.Active && e.Button == MouseButtons.Left)
+                } else if (toolTips.Active && e.Button == MouseButtons.Left) {
                     toolTips.Hide(panel1);
+                    toolTips.Active = false;
+                }
             };
             te.ActiveTextAreaControl.TextArea.ToolTipRequest += new ToolTipRequestEventHandler(TextArea_ToolTipRequest);
             te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
