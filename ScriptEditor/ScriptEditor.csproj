@@ -272,7 +272,6 @@
     <None Include="SyntaxRules\msg_SyntaxRules.xshd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="SyntaxRules\ssl_SyntaxRules.xshd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
