@@ -151,6 +151,11 @@ namespace ICSharpCode.ClassDiagram
 			set { wireOnlySelect = value; }
 		}
 
+		public int NodesTotalCount
+		{
+			get { return itemsList.Count; }
+		}
+
 		// for last item
 		public bool NodeIsSelected
 		{
