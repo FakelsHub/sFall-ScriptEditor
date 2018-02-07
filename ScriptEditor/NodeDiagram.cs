@@ -750,7 +750,7 @@ namespace ScriptEditor
 
         private void CreatetoolStripButton_Click(object sender, EventArgs e)
         {
-            if (NodesData.Count > 0)
+            if (nodesCanvas.NodesTotalCount > 0)
                 if (MessageBox.Show("Do you want to clean up the existing flowchart and create a new one?", "Create New",
                     MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
@@ -765,6 +765,8 @@ namespace ScriptEditor
                 nodesCanvas.Refresh();
 
             HelpTip.Show("NOTE: Save the flowchart file to the subfolder 'fcd' of the source script, so that the editor next time automatically opens the flowchart file.", nodesCanvas, 10, 10, 10000);
+
+            nodesCanvas.Select();
         }
 
         private void renameNodeToolStripMenuItem_Click(object sender, EventArgs e)
