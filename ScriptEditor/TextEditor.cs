@@ -1003,8 +1003,11 @@ namespace ScriptEditor
                     string word = TextUtilities.GetWordAt(currentDocument, caret.Offset - 1);
                     if (word != String.Empty) {
                         string item = ProgramInfo.LookupOpcodesToken(word);
-                        if (item != null)
-                            item = item.Remove(item.IndexOf("\n"));
+                        if (item != null) {
+                            int z = item.IndexOf('\n');
+                            if (z > 0)
+                                item = item.Remove(z);
+                        }
                         if (item == null)
                             item = currentTab.parseInfo.LookupToken(word, null, 0, true);
                         if (item != null)
