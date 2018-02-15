@@ -521,7 +521,7 @@ namespace ScriptEditor
         #region References/DeclerationDefinition & Include function
         private void findReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TextLocation tl = (TextLocation)editorMenuStrip.Tag;
+            TextLocation tl = currentActiveTextAreaCtrl.Caret.Position; //(TextLocation)editorMenuStrip.Tag;
             string word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
 
             Reference[] refs = currentTab.parseInfo.LookupReferences(word, currentTab.filepath, tl.Line);
@@ -561,7 +561,7 @@ namespace ScriptEditor
 
         private void findDeclerationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TextLocation tl = (TextLocation)editorMenuStrip.Tag;
+            TextLocation tl = currentActiveTextAreaCtrl.Caret.Position; //(TextLocation)editorMenuStrip.Tag;
             string word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
             string file;
             int line;
@@ -573,12 +573,13 @@ namespace ScriptEditor
         {
             string word, file = currentTab.filepath;
             int line;
+            TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
             if (((ToolStripDropDownItem)sender).Tag != null) { // "Button"
                 if (!currentTab.shouldParse)
                     return;
 
                 Parser.UpdateParseSSL(currentTab.textEditor.Text);
-                TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
+                
                 word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 line = Parser.GetProcBeginEndBlock(word, 0, true).begin;
                 if (line != -1)
@@ -586,7 +587,7 @@ namespace ScriptEditor
                 else 
                     return;
             } else {
-                TextLocation tl = (TextLocation)editorMenuStrip.Tag;
+                //TextLocation tl = (TextLocation)editorMenuStrip.Tag;
                 word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 currentTab.parseInfo.LookupDefinition(word, out file, out line);
             }
@@ -595,7 +596,7 @@ namespace ScriptEditor
 
         private void openIncludeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TextLocation tl = (TextLocation)editorMenuStrip.Tag;
+            TextLocation tl = currentActiveTextAreaCtrl.Caret.Position; //(TextLocation)editorMenuStrip.Tag;
             string[] line = TextUtilities.GetLineAsString(currentDocument, tl.Line).Split('"');
             if (line.Length < 2)
                 return;

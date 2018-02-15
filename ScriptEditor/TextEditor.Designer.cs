@@ -2223,7 +2223,8 @@ namespace ScriptEditor {
             this.toolStripSeparator36,
             this.openIncludeToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip1";
-            this.editorMenuStrip.Size = new System.Drawing.Size(215, 386);
+            this.editorMenuStrip.Size = new System.Drawing.Size(215, 364);
+            this.editorMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.editorMenuStrip_Closed);
             this.editorMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.editorMenuStrip_Opening);
             // 
             // highlightToolStripMenuItem
@@ -2270,6 +2271,7 @@ namespace ScriptEditor {
             // findReferencesToolStripMenuItem
             // 
             this.findReferencesToolStripMenuItem.Name = "findReferencesToolStripMenuItem";
+            this.findReferencesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F12)));
             this.findReferencesToolStripMenuItem.Size = new System.Drawing.Size(214, 22);
             this.findReferencesToolStripMenuItem.Text = "Find references";
             this.findReferencesToolStripMenuItem.Click += new System.EventHandler(this.findReferencesToolStripMenuItem_Click);

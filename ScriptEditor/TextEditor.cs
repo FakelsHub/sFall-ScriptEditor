@@ -1097,11 +1097,11 @@ namespace ScriptEditor
         private void UpdateEditorToolStripMenu()
         {
             TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
-            editorMenuStrip.Tag = tl;
+            //editorMenuStrip.Tag = tl;
             // includes
             string line = TextUtilities.GetLineAsString(currentDocument, tl.Line).Trim();
-            if (line.TrimStart().StartsWith(Parser.INCLUDE)) {
-                openIncludeToolStripMenuItem.Enabled = true;
+            if (!line.TrimStart().StartsWith(Parser.INCLUDE)) {
+                openIncludeToolStripMenuItem.Enabled = false;
             }
             
             // skip for specific color text
@@ -1171,6 +1171,14 @@ namespace ScriptEditor
                 renameToolStripMenuItem.Text += ": Out of data";
                 renameToolStripMenuItem.ToolTipText = "The parser data is missing.";
             }
+        }
+
+        private void editorMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            findReferencesToolStripMenuItem.Enabled = true;
+            findDeclerationToolStripMenuItem.Enabled = true;
+            findDefinitionToolStripMenuItem.Enabled = true;
+            openIncludeToolStripMenuItem.Enabled = true;
         }
 
         #region Control set states
@@ -1723,7 +1731,7 @@ namespace ScriptEditor
                 renameToolStripMenuItem.Enabled = false;
                 renameToolStripMenuItem.ToolTipText = (currentTab.needsParse)? "Waiting get parsing data..." : ""; 
             }
-            openIncludeToolStripMenuItem.Enabled = false;
+            //openIncludeToolStripMenuItem.Enabled = false;
             findReferencesToolStripMenuItem.Enabled = false;
             findDeclerationToolStripMenuItem.Enabled = false;
             findDefinitionToolStripMenuItem.Enabled = false;
