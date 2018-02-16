@@ -620,7 +620,7 @@ namespace ScriptEditor
         #region Autocomplete and tips function control
         private void TextArea_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            PosChangeType = PositionType.OverridePos; // Save position change for navigation, if key was pressed
+            //PosChangeType = PositionType.OverridePos; // Save position change for navigation, if key was pressed
             
             if (autoComplete.IsVisible) {
                 autoComplete.TA_PreviewKeyDown(e);
@@ -722,13 +722,14 @@ namespace ScriptEditor
                 return;
             }
 
-            if (curLine != currentTab.history.prevPosition) {
+            int diff = Math.Abs(curLine - currentTab.history.prevPosition);
+            currentTab.history.prevPosition = curLine;
+            if (diff > 1) {
                 currentTab.history.pointerCur++;
                 if (currentTab.history.pointerCur >= currentTab.history.linePosition.Count)
                     currentTab.history.linePosition.Add(_position);
                 else
                     currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
-                currentTab.history.prevPosition = curLine;
                 currentTab.history.pointerEnd = currentTab.history.pointerCur;
             } else {
                 PosChangeType = PositionType.OverridePos;
