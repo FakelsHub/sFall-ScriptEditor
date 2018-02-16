@@ -56,8 +56,8 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             AutoComleteList.BackColor = Color.FromArgb(250, 250, 255);
             AutoComleteList.Cursor = Cursors.Help;
             AutoComleteList.ItemHeight = height;
-            AutoComleteList.MaximumSize = new Size(300, (countItems * height) + 4);
-            AutoComleteList.MinimumSize = new Size(100, height + 3);
+            AutoComleteList.MaximumSize = new Size(350, (countItems * height) + 4);
+            AutoComleteList.MinimumSize = new Size(120, height + 3);
             AutoComleteList.Font = colored ? font.BoldFont : font.RegularFont;
             AutoComleteList.Visible = false;
             AutoComleteList.DrawMode = DrawMode.OwnerDrawFixed;
@@ -112,6 +112,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         {
             hidden = false;
             AutoComleteList.Hide();
+            AutoComleteList.Items.Clear();
         }
 
         public void Show()
@@ -186,7 +187,8 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                     
                     // size
                     AutoComleteList.Height = AutoComleteList.PreferredHeight - 3;
-                    AutoComleteList.Width = (maxLen * 10) + shift_x;
+                    AutoComleteList.Width = (maxLen * 10) + shift_x
+                                             + ((AutoComleteList.Items.Count > countItems) ? 15 : 0);
 
                     if (!AutoComleteList.Visible || back) {
                         var caretPos = TAC.Caret.ScreenPosition;
