@@ -945,13 +945,14 @@ namespace ScriptEditor
         {
             bool moveToEnd = false;
             int root = ProcTree.Nodes.Count - 1;
-            
+
             if (sIndex > moveActive) {
                 if (sIndex >= (ProcTree.Nodes[root].Nodes.Count - 1))
                     moveToEnd = true;
-                else 
+                else
                     sIndex++;
-            }
+            } else if (sIndex == moveActive)
+                return; //exit move
 
             Procedure moveProc = (Procedure)ProcTree.Nodes[root].Nodes[moveActive].Tag;
             // copy body
