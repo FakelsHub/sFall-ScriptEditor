@@ -460,12 +460,21 @@ namespace ScriptEditor.TextEditorUtilities
             ISegment segmentE = document.GetLineSegment(block.end);
             int len = (segmentE.Offset + segmentE.Length) - segmentS.Offset;
             
-            int inc = 0;
-            if (document.GetLineSegment(block.end + 1).Length == 0) {
-                inc = 2;
-                len += 2;
-            }
-            document.Remove(segmentS.Offset + inc, len + 2);
+            int inc_s = 0;
+            int inc_e = 2;
+            if (block.end < document.TotalNumberOfLines - 1) {
+                if (segmentS.Offset + len + 4 <= document.TextLength) {
+                    if (document.GetLineSegment(block.end + 1).Length == 0) {
+                        if (block.begin > 0 && document.GetLineSegment(block.begin - 1).Length == 0) {
+                            len += inc_s = 2;
+                        }
+                    }
+                }
+                else
+                    inc_e = 0;
+            } else
+                inc_e = 0;
+            document.Remove(segmentS.Offset + inc_s, len + inc_e);
 
             // declare
             int declarLine = block.declar - 1;
