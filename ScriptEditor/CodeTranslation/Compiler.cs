@@ -14,7 +14,7 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public class Compiler
     {
-        const string bakupFile = @"\BakupSSL.tmp";
+        const string bakupFile = @"\BakupINT.tmp";
 
         private static readonly string decompilationPath = Path.Combine(Settings.scriptTempPath, "decomp.ssl");
         private static readonly string preprocessPath = Path.Combine(Settings.scriptTempPath, "preprocess.ssl");
@@ -211,15 +211,16 @@ namespace ScriptEditor.CodeTranslation
                 var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
                 ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir, shortCircuit));
                 
+                string bakupPath = Settings.scriptTempPath + bakupFile;
                 if (File.Exists(outputSSL))
-                    File.Move(outputSSL, sourceDir + bakupFile);
+                    File.Copy(outputSSL, bakupPath, true);
 
                 success = RunProcess(psi, Path.GetDirectoryName(infile), ref output);
 
                 if (success)
-                    File.Delete(sourceDir + bakupFile);
-                else if (File.Exists(sourceDir + bakupFile))
-                    File.Move(sourceDir + bakupFile, outputSSL);
+                    File.Delete(bakupPath);
+                else if (File.Exists(bakupPath))
+                    File.Move(bakupPath, outputSSL);
 #endif
             }
             if (errors != null && !Settings.userCmdCompile) 
