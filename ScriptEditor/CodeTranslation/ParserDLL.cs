@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.ExceptionServices;
 
 namespace ScriptEditor.CodeTranslation
 {
@@ -64,7 +65,8 @@ namespace ScriptEditor.CodeTranslation
         {
             this.firstParse = firstPass;
         }
-        
+
+        [HandleProcessCorruptedStateExceptions]
         public ProgramInfo Parse(string text, string filepath, ProgramInfo prev_pi)
         {
             // Parse disabled, get only macros
