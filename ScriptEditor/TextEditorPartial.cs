@@ -210,9 +210,11 @@ namespace ScriptEditor
                 try { 
                     log = File.ReadAllText("errors.txt");
                     File.Delete("errors.txt");    
-                } catch (FileLoadException) {
+                } catch (IOException) {
                     //в случаях ошибки в parser.dll, не освобождается созданный им файл, что приводит к ошибке доступа
-                    /* TODO: Требуется обработка ошибка по доступу к файлу  */
+                    File.Copy("errors.txt", "parser.log");
+                    log = File.ReadAllText("parser.log");
+                    File.Delete("parser.log");
                 }
             }
             tab.parserLog = Error.ParserLog(log, tab);

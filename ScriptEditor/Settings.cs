@@ -286,6 +286,7 @@ namespace ScriptEditor
             } else 
                 foreach (string file in Directory.GetFiles(scriptTempPath))
                     File.Delete(file);
+            File.Delete("errors.txt"); 
 
             if (!Directory.Exists(SettingsFolder)) {
                 Directory.CreateDirectory(SettingsFolder);
@@ -318,7 +319,7 @@ namespace ScriptEditor
             try {
                 foreach (string file in Directory.GetFiles(Settings.ResourcesFolder + @"\fonts\", "*.ttf"))
                     Fonts.AddFontFile(file);
-            } catch (System.IO.DirectoryNotFoundException ) { }
+            } catch (DirectoryNotFoundException ) { }
         }
             
         
