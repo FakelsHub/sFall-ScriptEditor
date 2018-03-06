@@ -185,12 +185,14 @@ namespace ScriptEditor
             // set it back to whatever it was
             //TopMost = top;
         }
-
-        void DEBUGINFO(string line) { }
 #else
         private void ShowMe() {}
+#endif
 
-        void DEBUGINFO(string line) { tbOutput.Text = line + "\r\n" + tbOutput.Text; }
+#if TRACE
+    void DEBUGINFO(string line) { tbOutput.Text = line + "\r\n" + tbOutput.Text; }
+#else
+    void DEBUGINFO(string line) { }
 #endif
 
         private void TextEditor_Load(object sender, EventArgs e)
