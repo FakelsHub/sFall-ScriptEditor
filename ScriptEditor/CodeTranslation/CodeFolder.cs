@@ -14,19 +14,19 @@ namespace ScriptEditor.CodeTranslation
     {
         public List<FoldMarker> GenerateFoldMarkers(IDocument document, string fileName, object parseInformation)
         {
-            ProgramInfo pi = (ProgramInfo)parseInformation;
+            Procedure[] procs = (Procedure[])parseInformation;
 
-            List<FoldMarker> list = new List<FoldMarker>(pi.procs.Length);
+            List<FoldMarker> list = new List<FoldMarker>(procs.Length);
             int minStart = -1;
             fileName = fileName.ToLowerInvariant();
-            for (int i = 0; i < pi.procs.Length; i++) {
-                if (pi.procs[i].filename != fileName || pi.procs[i].d.start >= pi.procs[i].d.end)
+            for (int i = 0; i < procs.Length; i++) {
+                if (procs[i].filename != fileName || procs[i].d.start >= procs[i].d.end)
                     continue;
-                int dstart = pi.procs[i].d.start - 1;
+                int dstart = procs[i].d.start - 1;
                 if (minStart > dstart || minStart == -1)
                     minStart = dstart;
-                int len = document.GetLineSegment(pi.procs[i].d.end - 1).Length;
-                list.Add(new FoldMarker(document, dstart, 0, pi.procs[i].d.end - 1, len, FoldType.MemberBody, " " + pi.procs[i].name.ToUpperInvariant() + " "));
+                int len = document.GetLineSegment(procs[i].d.end - 1).Length;
+                list.Add(new FoldMarker(document, dstart, 0, procs[i].d.end - 1, len, FoldType.MemberBody, " " + procs[i].name.ToUpperInvariant() + " "));
             }
 
             if (list.Count > 0 && Path.GetExtension(fileName) == ".ssl") {
@@ -43,5 +43,23 @@ namespace ScriptEditor.CodeTranslation
 
             return list;
         }
-    }   
+
+        /// <summary>
+        /// Update Foldings
+        /// </summary>
+        internal static void UpdateFolding(IDocument document, string filename, Procedure[] parseInformation)
+        {
+            document.FoldingManager.UpdateFoldings(filename, parseInformation);
+            document.FoldingManager.NotifyFoldingsChanged(null);
+        }
+
+        /// <summary>
+        /// Get information about the location of procedures for updating Foldings
+        /// </summary>
+        internal static void UpdateFolding(IDocument document, string filepath)
+        {
+            Procedure[] parseInformation = Parser.GetProcsData(document.TextContent, filepath);
+            UpdateFolding(document, Path.GetFileName(filepath), parseInformation);
+        }
+    }
 }

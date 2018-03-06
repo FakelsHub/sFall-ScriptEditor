@@ -47,15 +47,14 @@ namespace ScriptEditor
             cTab.parseInfo = ExtParser.Parse(cTab.textEditor.Text, cTab.filepath, cTab.parseInfo);
             DEBUGINFO("External first parse status: " + ExtParser.LastStatus);
 
+            CodeFolder.UpdateFolding(cTab.textEditor.Document, cTab.filename, cTab.parseInfo.procs);
+
             GetParserErrorLog(cTab);
 
             if (cTab.parseInfo.parseError) {
                 tabControl2.SelectedIndex = 2;
                 maximize_log();
             }
-
-            cTab.textEditor.Document.FoldingManager.UpdateFoldings(cTab.filename, cTab.parseInfo);
-            cTab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
 
             firstParse = false;
         }
@@ -107,6 +106,7 @@ namespace ScriptEditor
                 DEBUGINFO("Stop: Internal Parser");
                 return;
             }
+
             if (DateTime.Now > intParser_TimeNext && !parserRunning) {
                 DEBUGINFO("Run: Internal Parser");
                 intParserTimer.Stop();
@@ -116,10 +116,13 @@ namespace ScriptEditor
                     parserLabel.ForeColor = Color.Crimson;
 
                     new Parser(currentTab, this);
+                    CodeFolder.UpdateFolding(currentTab.textEditor.Document, currentTab.filename, currentTab.parseInfo.procs);
                     ParserCompleted(currentTab);
-                } 
-                else //Quick update procedure data
+                } else {
+                    CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
+                    //Quick update procedure data
                     Parser.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
+                }
             }
         }
 
@@ -181,9 +184,7 @@ namespace ScriptEditor
             if (currentTab == tab) {
                 if (tab.filepath != null) {
                     if (tab.parseInfo.parsed) {
-                        tab.textEditor.Document.FoldingManager.UpdateFoldings(tab.filename, tab.parseInfo);
-                        tab.textEditor.Document.FoldingManager.NotifyFoldingsChanged(null);
-                        if (tab.parseInfo.procs.Length > 0)
+                        if (tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) //tab.parseInfo.procs.Length
                             Outline_toolStripButton.Enabled = true;
                         
                         UpdateNames(); // Update Tree Variables/Procedures

@@ -1271,7 +1271,7 @@ namespace ScriptEditor
             ShowTabsSpaces();
             ShowLineNumbers(null, null);
            
-            if (currentTab.parseInfo != null && currentTab.parseInfo.procs.Length > 0)
+            if (currentTab.parseInfo != null && currentDocument.FoldingManager.FoldMarker.Count > 0) //currentTab.parseInfo.procs.Length
                 Outline_toolStripButton.Enabled = true;
             else
                 Outline_toolStripButton.Enabled = false;
@@ -1375,6 +1375,7 @@ namespace ScriptEditor
                 if (!String.Equals(Path.GetExtension(ct.filename), ".msg", StringComparison.OrdinalIgnoreCase)) {
                     ct.textEditor.TextEditorProperties.ConvertTabsToSpaces = Settings.tabsToSpaces;
                     ct.textEditor.TextEditorProperties.ShowVerticalRuler = Settings.showVRuler;
+                    ct.textEditor.TextEditorProperties.VerticalRulerRow = Settings.tabSize;
                     ct.textEditor.SetHighlighting((Settings.highlight == 0) ? "Original" : "F-Geck");
                     if (alsoFont)
                         Settings.SetTextAreaFont(ct.textEditor);
