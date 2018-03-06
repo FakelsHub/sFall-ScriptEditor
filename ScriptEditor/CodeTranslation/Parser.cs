@@ -7,6 +7,8 @@ using System.Windows.Forms;
 
 using ScriptEditor.TextEditorUI;
 
+using ICSharpCode.TextEditor.Document;
+
 namespace ScriptEditor.CodeTranslation
 {
     public struct ProcBlock
@@ -194,7 +196,7 @@ namespace ScriptEditor.CodeTranslation
         // Get new procedure data of script
         public static Procedure[] GetProcsData(string textscript, string filepath)
         {
-            UpdateParseSSL(textscript, false);
+            UpdateParseSSL(textscript, false); // Не переводить в нижний регист для правильных имен процедур
             
             ProgramInfo _pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
             
@@ -588,7 +590,8 @@ namespace ScriptEditor.CodeTranslation
                         }
                     }   
                 }
-                else if (block.begin > -1 && buffer.StartsWith(END)) {
+                else if (block.begin > -1 && buffer.StartsWith(END) && (buffer.Length == 3 
+                         || (buffer.Length > 3 && !TextUtilities.IsLetterDigitOrUnderscore(buffer[3])))) {
                     block.end = i;
                     list.Add(block);
                     block = new ProcBlock() { begin = -1, end = -1 };
