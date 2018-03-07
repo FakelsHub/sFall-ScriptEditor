@@ -636,7 +636,7 @@ namespace ScriptEditor
                 if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
                     || (toolTips.Tag != null && !(bool)toolTips.Tag)) {
                     toolTips.Hide(panel1);
-                    toolTips.Active = false;
+                    toolTips.Tag = toolTips.Active = false;
                 }
             }
             if (e.KeyCode == Keys.Tab) {
@@ -651,11 +651,14 @@ namespace ScriptEditor
 
         private void TextArea_MouseWheel(object sender, MouseEventArgs e)
         {
+            if (e.Delta == 0)
+                return;
+            
             autoComplete.TA_MouseScroll(currentTab.textEditor.ActiveTextAreaControl, e);
             
             if (toolTips.Active) {
                 toolTips.Hide(panel1);
-                toolTips.Active = false;
+                toolTips.Tag = toolTips.Active = false;
             }
         }
         

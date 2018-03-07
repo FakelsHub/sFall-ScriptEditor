@@ -217,18 +217,24 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
         public void TA_MouseScroll(TextAreaControl ATAC, MouseEventArgs e)
         {
-            if (IsVisible && e.Delta != 0) {
-                int h = 50 + ATAC.Height;
+            if (IsVisible /*&& e.Delta != 0*/) {
+                int shiftY = 50;
+                int bottom = shiftY + ATAC.Height + ATAC.Location.Y;
+                int top = shiftY + ATAC.Parent.Height - ATAC.Height;
+
                 var tePos = ATAC.FindForm().PointToClient(ATAC.Parent.PointToScreen(ATAC.Location));
                 var caretPos = ATAC.Caret.ScreenPosition;
                
                 tePos.Offset(caretPos);
-                if (e.Delta < 0) 
-                    tePos.Offset(0, -32);
-                else 
-                    tePos.Offset(0, 70);
+                if (e.Button == MouseButtons.None) {
+                    if (e.Delta < 0)
+                        tePos.Offset(0, -32);
+                    else
+                        tePos.Offset(0, 70);
+                } else
+                    tePos.Offset(0, e.Delta + 18);
 
-                if (tePos.Y > h || tePos.Y < 50) {
+                if (tePos.Y > bottom || tePos.Y < ATAC.Location.Y + shiftY) {
                     Close();
                     return;
                 } else

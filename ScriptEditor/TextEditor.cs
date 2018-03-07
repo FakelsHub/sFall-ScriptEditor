@@ -1028,7 +1028,7 @@ namespace ScriptEditor
             } else if (e.KeyChar == ')' || e.KeyChar == ']' || e.KeyChar == '}') {
                 if (toolTips.Active) {
                     toolTips.Hide(panel1);
-                    toolTips.Active = false;
+                    toolTips.Tag = toolTips.Active = false;
                 }
 
                 if (Settings.autoInputPaired) {
@@ -1077,8 +1077,8 @@ namespace ScriptEditor
             int offset = TextUtilities.FindWordStart(currentDocument, caret.Offset - 1);
             offset = caret.Offset - offset;
             Point pos = caret.GetScreenPosition(caret.Line, caret.Column - offset);
-            var tab = tabControl1.TabPages[currentTab.index];
-            pos.Offset(tab.FindForm().PointToClient(tab.Parent.PointToScreen(tab.Location)));
+            pos.Offset(currentActiveTextAreaCtrl.FindForm().PointToClient(
+                       currentActiveTextAreaCtrl.Parent.PointToScreen(currentActiveTextAreaCtrl.Location)));
             offset = (autoComplete.IsVisible) ? -25 : 20;
             pos.Offset(0, offset);
             
@@ -1240,13 +1240,17 @@ namespace ScriptEditor
             te.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
             te.ActiveTextAreaControl.TextArea.PreviewKeyDown += TextArea_PreviewKeyDown;
             te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
+            te.ActiveTextAreaControl.VScrollBar.Scroll += delegate(object sender, ScrollEventArgs e) {
+                var e1 = new MouseEventArgs(MouseButtons.Left, 1, 0, 0, e.OldValue - e.NewValue);
+                TextArea_MouseWheel(sender, e1); 
+            };
             te.ActiveTextAreaControl.TextArea.MouseClick += delegate(object sender, MouseEventArgs e) {
                 if (e.Button == MouseButtons.Middle) {
                     Utilities.HighlightingSelectedText(currentActiveTextAreaCtrl);
                     currentTab.textEditor.Refresh();
                 } else if (toolTips.Active && e.Button == MouseButtons.Left) {
                     toolTips.Hide(panel1);
-                    toolTips.Active = false;
+                    toolTips.Tag = toolTips.Active = false;
                 }
             };
             te.ActiveTextAreaControl.TextArea.ToolTipRequest += new ToolTipRequestEventHandler(TextArea_ToolTipRequest);
