@@ -401,6 +401,7 @@ namespace ScriptEditor
             ti.history.pointerCur = -1;
             ti.textEditor = te;
             
+            bool createNew = false;
             if (type == OpenType.None) { // only for new create script
                 sfdScripts.FileName = "NewScript";
                 if (sfdScripts.ShowDialog() == DialogResult.OK) {
@@ -409,7 +410,8 @@ namespace ScriptEditor
                     ti.changed = true;
                     te.Text = Properties.Resources.newScript;
                 } else
-                    return null; 
+                    return null;
+                createNew = true;
             } //else
               //  ti.changed = false;
             
@@ -439,7 +441,8 @@ namespace ScriptEditor
                     tp.ToolTipText = ti.filepath;
                 string ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
-                    te.ActiveTextAreaControl.JumpTo(Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant()));
+                    if (!createNew && Settings.storeLastPosition)
+                        te.ActiveTextAreaControl.JumpTo(Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant()));
                     if (formatCodeToolStripMenuItem.Checked)
                         te.Text = Utilities.FormattingCode(te.Text);
                     ti.shouldParse = true;

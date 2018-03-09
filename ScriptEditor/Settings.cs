@@ -137,7 +137,7 @@ namespace ScriptEditor
 
         public static int GetLastScriptPosition(string script)
         {
-            if (storeLastPosition && scriptPosition.ContainsKey(script))
+            if (scriptPosition.ContainsKey(script))
                 return (ushort)scriptPosition[script];
             else 
                 return 0;
