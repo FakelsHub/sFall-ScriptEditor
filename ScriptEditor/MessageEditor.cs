@@ -16,7 +16,7 @@ namespace ScriptEditor
     partial class MessageEditor : Form
     {
         public event SendLineHandler SendMsgLine;
-                
+        
         private List<string> linesMsg;
         private string msgPath;
         private bool returnLine;
@@ -485,7 +485,8 @@ namespace ScriptEditor
         {
             int Line = 0, nLine;
             bool _comm = false;
-            dgvMessage.EndEdit();
+            bool isEdit = dgvMessage.IsCurrentCellInEditMode;
+            
             for (int n = SelectLine.row; n >= 0; n--)
             {
                 if (int.TryParse((string)dgvMessage.Rows[n].Cells[1].Value, out Line)) break;
@@ -505,20 +506,33 @@ namespace ScriptEditor
                     }
                 }
             }
+
+            dgvMessage.EndEdit();
+
             if ((string)dgvMessage.Rows[SelectLine.row].Cells[1].Value != string.Empty) SelectLine.row++;
             InsertRow(SelectLine.row, new Entry("{" + Line + "}{}{}"));
             msgSaveButton.Enabled = true;
             allow = false;
             try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
             catch { };
+            
+            if (isEdit)
+                dgvMessage.BeginEdit(false);
         }
 
         private void InsertEmptyStripButton_Click(object sender, EventArgs e)
         {
-            InsertRow(++SelectLine.row, new Entry(""));
+            if (sender != null)
+                SelectLine.row++;
+            
+            InsertRow(SelectLine.row, new Entry(""));
             allow = false;
+            
+            if (sender == null)
+                SelectLine.row++;
             try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
             catch { };
+
             msgSaveButton.Enabled = true;
         }
 
@@ -540,6 +554,8 @@ namespace ScriptEditor
 
         private void InsertCommentStripButton_Click(object sender, EventArgs e)
         {
+            if (dgvMessage.IsCurrentCellInEditMode)
+                return;
             string comment = COMMENT;
             if ((string)dgvMessage.Rows[SelectLine.row].Cells[1].Value == String.Empty) {
                 comment += dgvMessage.Rows[SelectLine.row].Cells[2].Value;
@@ -690,7 +706,6 @@ namespace ScriptEditor
 
         private void dgvMessage_KeyPress(object sender, KeyPressEventArgs e)
         {
-            
             if (!Char.IsControl(e.KeyChar)) {
                 if (SelectLine.col == 1)
                     dgvMessage.BeginEdit(true);
@@ -708,13 +723,23 @@ namespace ScriptEditor
                     _cell.Value = data;
                     returnLine = false;
                 }
-            } 
-            else if (e.KeyChar == 13 && !dgvMessage.MultiSelect) { // Enter
-                SelectLine.row--;
-                InsertEmptyStripButton_Click(null, null);
             }
         }
 
+        private void dgvMessage_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && e.Control && !dgvMessage.MultiSelect) {
+                InsertEmptyStripButton_Click(sender, EventArgs.Empty);
+                e.SuppressKeyPress = true;
+            } else if (e.KeyCode == Keys.Enter && e.Shift && !dgvMessage.MultiSelect) {
+                InsertEmptyStripButton_Click(null, EventArgs.Empty);
+                e.SuppressKeyPress = true;
+            } else if (e.KeyCode == Keys.Enter && !dgvMessage.MultiSelect) {
+                IncAddStripButton_Click(null, EventArgs.Empty);
+                e.SuppressKeyPress = true;
+            }
+        }
+ 
         private void playerMarkerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Entry entry = (Entry)dgvMessage.Rows[SelectLine.row].Cells[0].Value;

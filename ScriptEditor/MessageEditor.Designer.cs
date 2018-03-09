@@ -82,6 +82,8 @@
             this.encodingTextDOSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.comentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).BeginInit();
@@ -140,6 +142,7 @@
             this.dgvMessage.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvMessage_CellMouseClick);
             this.dgvMessage.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellValueChanged);
             this.dgvMessage.SelectionChanged += new System.EventHandler(this.dgvMessage_SelectionChanged);
+            this.dgvMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvMessage_KeyDown);
             this.dgvMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvMessage_KeyPress);
             // 
             // EntryCol
@@ -343,7 +346,7 @@
             this.msgSaveButton.Name = "msgSaveButton";
             this.msgSaveButton.Size = new System.Drawing.Size(51, 23);
             this.msgSaveButton.Text = "Save";
-            this.msgSaveButton.ToolTipText = "Save messageg file";
+            this.msgSaveButton.ToolTipText = "Save messageg file. [Ctrl+S]";
             this.msgSaveButton.Click += new System.EventHandler(this.msgSaveButton_ButtonClick);
             // 
             // toolStripSeparator8
@@ -409,7 +412,7 @@
             this.IncAddStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.IncAddStripButton.Name = "IncAddStripButton";
             this.IncAddStripButton.Size = new System.Drawing.Size(23, 23);
-            this.IncAddStripButton.ToolTipText = "Add next number line [Alt+A]";
+            this.IncAddStripButton.ToolTipText = "Add next number line [Alt+A or Enter]";
             this.IncAddStripButton.Click += new System.EventHandler(this.IncAddStripButton_Click);
             // 
             // InsertEmptyStripButton
@@ -419,7 +422,8 @@
             this.InsertEmptyStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.InsertEmptyStripButton.Name = "InsertEmptyStripButton";
             this.InsertEmptyStripButton.Size = new System.Drawing.Size(23, 23);
-            this.InsertEmptyStripButton.ToolTipText = "Add empty line [Enter]";
+            this.InsertEmptyStripButton.ToolTipText = "Insert an empty line below the current line. [Ctrl+Enter] \r\nor [Shift+Enter] - In" +
+                "sert an empty line above the current line.";
             this.InsertEmptyStripButton.Click += new System.EventHandler(this.InsertEmptyStripButton_Click);
             // 
             // InsertCommentStripButton
@@ -432,7 +436,7 @@
             this.InsertCommentStripButton.Name = "InsertCommentStripButton";
             this.InsertCommentStripButton.Size = new System.Drawing.Size(26, 23);
             this.InsertCommentStripButton.Text = "#";
-            this.InsertCommentStripButton.ToolTipText = "Insert comment line";
+            this.InsertCommentStripButton.ToolTipText = "Insert comment line. [Alt+C]";
             this.InsertCommentStripButton.Click += new System.EventHandler(this.InsertCommentStripButton_Click);
             // 
             // toolStripSeparator5
@@ -624,11 +628,13 @@
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addToolStripMenuItem});
+            this.addToolStripMenuItem,
+            this.comentToolStripMenuItem,
+            this.saveToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
-            this.toolStripDropDownButton2.Size = new System.Drawing.Size(29, 23);
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(29, 20);
             this.toolStripDropDownButton2.Text = "toolStripDropDownButton2";
             this.toolStripDropDownButton2.Visible = false;
             this.toolStripDropDownButton2.Click += new System.EventHandler(this.SendStripButton_Click);
@@ -637,9 +643,25 @@
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.addToolStripMenuItem.Text = "add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.IncAddStripButton_Click);
+            // 
+            // comentToolStripMenuItem
+            // 
+            this.comentToolStripMenuItem.Name = "comentToolStripMenuItem";
+            this.comentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+            this.comentToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.comentToolStripMenuItem.Text = "coment";
+            this.comentToolStripMenuItem.Click += new System.EventHandler(this.InsertCommentStripButton_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.saveToolStripMenuItem.Text = "save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.msgSaveButton_ButtonClick);
             // 
             // openFileDialog
             // 
@@ -735,5 +757,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cLine;
         private System.Windows.Forms.DataGridViewTextBoxColumn cDescription;
         private System.Windows.Forms.DataGridViewTextBoxColumn cLip;
+        private System.Windows.Forms.ToolStripMenuItem comentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     }
 }
