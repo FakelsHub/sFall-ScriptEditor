@@ -53,6 +53,8 @@ namespace ScriptEditor
         private bool SplitEvent;
         internal static bool ParsingErrors = true;
 
+        private int showTipsColumn;
+
         private TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
 
@@ -1026,10 +1028,7 @@ namespace ScriptEditor
                     currentDocument.Insert(caret.Offset, bracket);
                 }
             } else if (e.KeyChar == ')' || e.KeyChar == ']' || e.KeyChar == '}') {
-                if (toolTips.Active) {
-                    toolTips.Hide(panel1);
-                    toolTips.Tag = toolTips.Active = false;
-                }
+                if (toolTips.Active) ToolTipsHide();
 
                 if (Settings.autoInputPaired) {
                     char bracket = '(';
@@ -1081,7 +1080,9 @@ namespace ScriptEditor
                        currentActiveTextAreaCtrl.Parent.PointToScreen(currentActiveTextAreaCtrl.Location)));
             offset = (autoComplete.IsVisible) ? -25 : 20;
             pos.Offset(0, offset);
-            
+
+            if (tag) showTipsColumn = caret.Offset;
+
             toolTips.Active = true;
             toolTips.Tag = tag;
             toolTips.Show(tipText, panel1, pos, duration);
@@ -1249,8 +1250,7 @@ namespace ScriptEditor
                     Utilities.HighlightingSelectedText(currentActiveTextAreaCtrl);
                     currentTab.textEditor.Refresh();
                 } else if (toolTips.Active && e.Button == MouseButtons.Left) {
-                    toolTips.Hide(panel1);
-                    toolTips.Tag = toolTips.Active = false;
+                     ToolTipsHide();
                 }
             };
             te.ActiveTextAreaControl.TextArea.ToolTipRequest += new ToolTipRequestEventHandler(TextArea_ToolTipRequest);

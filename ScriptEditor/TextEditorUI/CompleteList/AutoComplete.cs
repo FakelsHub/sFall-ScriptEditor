@@ -26,7 +26,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 				                        new PointF(0, 0), new PointF(0, height),
 				                        Color.White, Color.FromArgb(240, 190, 100));
 
-        public bool ShiftCaret { get; set; }
+        public bool ShiftCaret { get; set; } // используется для возврата курсора каретки на ключевое слово.
         
         bool colored;
         public bool Colored { 
@@ -263,11 +263,24 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                 e.IsInputKey = true;
             } else if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Up && AutoComleteList.SelectedIndex == -1)
                       || e.KeyCode == Keys.Escape || e.KeyCode == Keys.Space) {
-                Close();
-                ShiftCaret = false;
-                TAC.Caret.Position = TAC.Document.OffsetToPosition(WordPosition.Key);
-                TAC.TextArea.Focus();
+                    ACListClose();
+            } else if (!e.Shift && !e.Control && !e.Alt) {
+                    int caret = TAC.Caret.Offset;
+                    if (e.KeyCode == Keys.Left)
+                        caret--;
+                    //else if (e.KeyCode == Keys.Right)
+                    //    caret++;
+                    if (!TextUtilities.IsLetterDigitOrUnderscore(TAC.Document.GetCharAt(caret)))
+                        Close();
             }
+        }
+
+        private void ACListClose()
+        { 
+            Close();
+            ShiftCaret = false;
+            TAC.Caret.Position = TAC.Document.OffsetToPosition(WordPosition.Key);
+            TAC.TextArea.Focus();
         }
 
         private void ACL_MouseClick(object sender, MouseEventArgs e)
@@ -280,10 +293,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             if ((e.KeyCode == Keys.Tab || e.KeyCode == Keys.Enter) && AutoComleteList.SelectedIndex != -1)
                 PasteSelectedItem();
             else if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Space) {
-                Close();
-                ShiftCaret = false;
-                TAC.Caret.Position = TAC.Document.OffsetToPosition(WordPosition.Key);
-                TAC.TextArea.Focus();
+                ACListClose();
             } else if (e.KeyCode == Keys.Left ) {
                 TAC.TextArea.Focus();
                 TAC.Caret.Column -= 1;

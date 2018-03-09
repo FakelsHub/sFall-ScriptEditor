@@ -633,13 +633,24 @@ namespace ScriptEditor
                 }
             }
             if (toolTips.Active) {
-                if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
+                if (e.KeyCode == Keys.Up || (e.KeyCode == Keys.Down && !autoComplete.IsVisible) 
+                    || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
                     || (toolTips.Tag != null && !(bool)toolTips.Tag)) {
-                    toolTips.Hide(panel1);
-                    toolTips.Tag = toolTips.Active = false;
+                        ToolTipsHide();
+                }
+                else if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right) {
+                    int caret = currentActiveTextAreaCtrl.Caret.Offset;
+                    int offset = caret;
+                    if (e.KeyCode == Keys.Left)
+                        caret--;
+                    else {
+                        caret++;
+                        offset = TextUtilities.SearchBracketForward(currentDocument, showTipsColumn + 1, '(', ')');
+                    }
+                    if (showTipsColumn >= caret || caret > offset) ToolTipsHide();
                 }
             }
-            if (e.KeyCode == Keys.Tab) {
+            if (e.KeyCode == Keys.Tab) { // Закрытие списка, если нажата клавиша таб после ключевого слова
                 if (Utilities.AutoCompleteKeyWord(currentActiveTextAreaCtrl)) {
                     e.IsInputKey = true;
                     autoComplete.ShiftCaret = false;
@@ -655,11 +666,17 @@ namespace ScriptEditor
                 return;
             
             autoComplete.TA_MouseScroll(currentTab.textEditor.ActiveTextAreaControl, e);
+
+            if (toolTips.Active) ToolTipsHide();
+        }
+
+        private void ToolTipsHide()
+        {
+            if (autoComplete.IsVisible && (bool)toolTips.Tag)
+                autoComplete.Close();
             
-            if (toolTips.Active) {
-                toolTips.Hide(panel1);
-                toolTips.Tag = toolTips.Active = false;
-            }
+            toolTips.Hide(panel1);
+            toolTips.Tag = toolTips.Active = false;
         }
         
         private void TextEditor_KeyDown(object sender, KeyEventArgs e)
