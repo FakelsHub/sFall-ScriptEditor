@@ -312,6 +312,7 @@ namespace ScriptEditor {
             this.FunctionTreeLeft.TabIndex = 0;
             this.FunctionTreeLeft.TabStop = false;
             this.FunctionTreeLeft.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.FunctionsTree_NodeMouseClick);
+            this.FunctionTreeLeft.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FunctionTreeLeft_MouseMove);
             // 
             // splitContainer2
             // 
@@ -1041,6 +1042,7 @@ namespace ScriptEditor {
             this.FunctionsTree.TabIndex = 0;
             this.FunctionsTree.TabStop = false;
             this.FunctionsTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.FunctionsTree_NodeMouseClick);
+            this.FunctionsTree.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FunctionTreeLeft_MouseMove);
             // 
             // statusStrip
             // 

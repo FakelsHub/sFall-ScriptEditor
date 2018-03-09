@@ -2091,6 +2091,10 @@ namespace ScriptEditor
         private void FunctionsTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Tag != null && currentTab != null) {
+                if (e.X < e.Node.Bounds.X || e.X > e.Node.Bounds.Right ||
+                    e.Y < e.Node.Bounds.Y || e.Y > e.Node.Bounds.Bottom)
+                    return;
+
                 string space = new string(' ', currentActiveTextAreaCtrl.Caret.Column);
                 string code = e.Node.Tag.ToString();
                 if (code.Contains("<cr>"))
@@ -2099,6 +2103,17 @@ namespace ScriptEditor
                     code += " ";
                 currentActiveTextAreaCtrl.TextArea.InsertString(code);
             }
+        }
+
+        private void FunctionTreeLeft_MouseMove(object sender, MouseEventArgs e)
+        {
+            var treeView = (TreeView)sender;
+            TreeNode node = treeView.GetNodeAt(e.Location);
+            if (node != null && node.Tag != null && (e.X >= node.Bounds.X && e.X <= node.Bounds.Right &&
+                                                     e.Y >= node.Bounds.Y && e.Y <= node.Bounds.Bottom))
+                node.TreeView.Cursor = Cursors.Hand;
+            else if (treeView.Cursor != Cursors.Default)
+                treeView.Cursor = Cursors.Default;
         }
 
         private void FunctionButton_Click(object sender, EventArgs e)
