@@ -125,7 +125,7 @@ namespace ScriptEditor
         {
             dgvMessage.Rows.Add(e, e.msgLine, e.msgText, e.msglip);
             int row = dgvMessage.Rows.Count - 1;
-            dgvMessage.Rows[row].Cells[2].ToolTipText = e.description;
+            dgvMessage.Rows[row].Cells[2].ToolTipText = e.description.Trim();
             if (e.pcMark) 
                 dgvMessage.Rows[row].Cells[2].Style.ForeColor = pcColor;
             if (e.commentLine)
@@ -554,8 +554,9 @@ namespace ScriptEditor
 
         private void InsertCommentStripButton_Click(object sender, EventArgs e)
         {
-            if (dgvMessage.IsCurrentCellInEditMode)
+            if (dgvMessage.IsCurrentCellInEditMode || dgvMessage.MultiSelect)
                 return;
+
             string comment = COMMENT;
             if ((string)dgvMessage.Rows[SelectLine.row].Cells[1].Value == String.Empty) {
                 comment += dgvMessage.Rows[SelectLine.row].Cells[2].Value;
@@ -711,19 +712,24 @@ namespace ScriptEditor
                     dgvMessage.BeginEdit(true);
                 else
                     dgvMessage.BeginEdit(false);
-            } else if (e.KeyChar == 8) { //Backspace
+            } else if (e.KeyChar == 8 && !dgvMessage.MultiSelect) { //Backspace
                 if (SelectLine.col == 1)
                     dgvMessage.BeginEdit(false);
                 else {
-                    var _cell = dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col];
-                    var data = _cell.Value;
-                    returnLine = true;
-                    _cell.Value = "";
-                    dgvMessage.BeginEdit(false);
-                    _cell.Value = data;
-                    returnLine = false;
+                    BackspaceEdit();
                 }
             }
+        }
+
+        private void BackspaceEdit()
+        {
+            var _cell = dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col];
+            var data = _cell.Value;
+            returnLine = true;
+            _cell.Value = "";
+            dgvMessage.BeginEdit(false);
+            _cell.Value = data;
+            returnLine = false;
         }
 
         private void dgvMessage_KeyDown(object sender, KeyEventArgs e)
@@ -737,6 +743,8 @@ namespace ScriptEditor
             } else if (e.KeyCode == Keys.Enter && !dgvMessage.MultiSelect) {
                 IncAddStripButton_Click(null, EventArgs.Empty);
                 e.SuppressKeyPress = true;
+            } else if (e.KeyCode == Keys.Delete && !e.Control && !dgvMessage.MultiSelect) {
+                BackspaceEdit();
             }
         }
  
@@ -795,6 +803,7 @@ namespace ScriptEditor
             NextStripButton.Enabled = status;
             playerMarkerToolStripMenuItem.Enabled = status;
             sendLineToolStripMenuItem.Enabled = status;
+            addDescriptionToolStripMenuItem.Enabled = status;
         }
 
         private void moveUpToolStripMenuItem_Click(object sender, EventArgs e)
@@ -933,7 +942,7 @@ namespace ScriptEditor
             string desc = entry.description;
             if (InputBox.ShowDialog("Add/Edit Description line", ref desc, 125) == DialogResult.OK) {
                 entry.description = desc;
-                dgvMessage.Rows[SelectLine.row].Cells[2].ToolTipText = desc;
+                dgvMessage.Rows[SelectLine.row].Cells[2].ToolTipText = desc.Trim();
 
                 msgSaveButton.Enabled = true;
             }

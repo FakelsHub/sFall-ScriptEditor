@@ -407,7 +407,7 @@
             this.MoveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MoveToolStripButton.Name = "MoveToolStripButton";
             this.MoveToolStripButton.Size = new System.Drawing.Size(23, 23);
-            this.MoveToolStripButton.ToolTipText = "Enable multi selected for move and deleting rows.";
+            this.MoveToolStripButton.ToolTipText = "Enable multi-selective mode for moving and deleting rows.";
             this.MoveToolStripButton.Click += new System.EventHandler(this.MoveToolStripButton_Click);
             // 
             // toolStripSeparator4
