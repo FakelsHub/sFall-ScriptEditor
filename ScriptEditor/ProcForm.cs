@@ -21,8 +21,27 @@ namespace ScriptEditor
             InitializeComponent();
 
             this.proc = proc;
+
+            if (proc && name != null)
+                IncrementNumber(ref name);
+
             tbName.Text = name;
             tbName.ReadOnly = readOnly;
+        }
+
+        private void IncrementNumber(ref string name)
+        {
+            int lenName = name.Length - 1;
+            if (Char.IsDigit(name[lenName])) {
+                int i;
+                for (i = lenName; i > 0; i--) {
+                    if (!Char.IsDigit(name[i]))
+                        break;
+                }
+                int numb = int.Parse(name.Substring(++i));
+                numb++;
+                name = name.Remove(i) + numb.ToString();
+            }
         }
 
         private void ProcForm_Shown(object sender, EventArgs e)

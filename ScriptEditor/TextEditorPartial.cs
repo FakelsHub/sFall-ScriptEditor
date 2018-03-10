@@ -91,9 +91,11 @@ namespace ScriptEditor
 
             if (Settings.enableParser && currentTab.parseInfo.parseData) {
                 TextEditor.parserRunning = true; // parse work
+                CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
             } else {
                 new Parser(currentTab, this);
+                CodeFolder.UpdateFolding(currentTab.textEditor.Document, currentTab.filename, currentTab.parseInfo.procs);
                 ParserCompleted(currentTab);
             }
         }
@@ -840,11 +842,14 @@ namespace ScriptEditor
         private void createProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string word = null;
-            if (currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected)
+            bool IsSelectProcedure = ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure;
+            if (IsSelectProcedure)
+                word = ProcTree.SelectedNode.Name;
+            else if (currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected)
                 word = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
             ProcForm CreateProcFrm = new ProcForm(word, false, true);
 
-            if ((ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure) == false)
+            if (!IsSelectProcedure)
                 CreateProcFrm.groupBox1.Enabled = false;
             
             ProcTree.HideSelection = false;
@@ -904,12 +909,17 @@ namespace ScriptEditor
                 MessageBox.Show("The declaration procedure is broken, declaration written to beginning of script.", "Warning");
             }
             // procedure line
+            int total = currentDocument.TotalNumberOfLines - 1;
             if (after) {
                 procLine = block.end; // after current procedure
-                if (TextUtilities.GetLineAsString(currentDocument, procLine + 1).Trim().Length > 0)
+                if (procLine > total)
+                    procLine = block.end = total;
+                else
+                    block.end++;
+                if (TextUtilities.GetLineAsString(currentDocument, block.end).Trim().Length > 0)
                     procblock += Environment.NewLine;
             } else
-                procLine = currentDocument.TotalNumberOfLines - 1; // paste to end script
+                procLine = total; // paste to end script
             
             Utilities.InsertProcedure(currentActiveTextAreaCtrl, name, procblock, declrLine, procLine, ref caretline);
             
