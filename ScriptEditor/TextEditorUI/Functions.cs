@@ -90,5 +90,14 @@ namespace ScriptEditor.TextEditorUI
                 }
             }
         }
+
+        internal static bool NodeHitCheck(Point location, Rectangle bounds)
+        { 
+            if (location.X >= bounds.X && location.X <= bounds.Right &&
+                location.Y >= bounds.Y && location.Y <= bounds.Bottom)
+                return true;
+            else
+                return false;
+        }
     }
 }
