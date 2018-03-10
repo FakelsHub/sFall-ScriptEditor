@@ -2239,7 +2239,7 @@ namespace ScriptEditor
 
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("explorer", "/select, " + currentTab.filepath);
+            System.Diagnostics.Process.Start("explorer", "/select, " + tabs[(int)cmsTabControls.Tag].filepath);
         }
 
         private void tsmiClearAllLog_Click(object sender, EventArgs e)
@@ -2314,6 +2314,11 @@ namespace ScriptEditor
         private void win32RenderTextToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings.winAPITextRender = win32RenderTextToolStripMenuItem.Checked;
+        }
+
+        private void openInExternalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.OpenInExternalEditor(tabs[(int)cmsTabControls.Tag].filepath);
         }
         #endregion
 

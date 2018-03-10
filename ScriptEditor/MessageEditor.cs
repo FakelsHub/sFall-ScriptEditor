@@ -938,5 +938,11 @@ namespace ScriptEditor
                 msgSaveButton.Enabled = true;
             }
         }
+
+        private void OpenNotepadtoolStripButton_Click(object sender, EventArgs e)
+        {
+            if (msgPath != null)
+                Settings.OpenInExternalEditor(msgPath);
+        }
     }
 }

@@ -210,6 +210,7 @@ namespace ScriptEditor {
             this.closeAllButThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator37 = new System.Windows.Forms.ToolStripSeparator();
             this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openInExternalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ofdScripts = new System.Windows.Forms.OpenFileDialog();
             this.sfdScripts = new System.Windows.Forms.SaveFileDialog();
             this.fbdMassCompile = new System.Windows.Forms.FolderBrowserDialog();
@@ -2132,23 +2133,24 @@ namespace ScriptEditor {
             this.closeAllToolStripMenuItem,
             this.closeAllButThisToolStripMenuItem,
             this.toolStripSeparator37,
-            this.openFolderToolStripMenuItem});
+            this.openFolderToolStripMenuItem,
+            this.openInExternalToolStripMenuItem});
             this.cmsTabControls.Name = "cmsTabControls";
             this.cmsTabControls.ShowImageMargin = false;
-            this.cmsTabControls.Size = new System.Drawing.Size(129, 98);
+            this.cmsTabControls.Size = new System.Drawing.Size(156, 142);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.ShortcutKeyDisplayString = "MMB";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem1_Click);
             // 
             // closeAllToolStripMenuItem
             // 
             this.closeAllToolStripMenuItem.Name = "closeAllToolStripMenuItem";
-            this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.closeAllToolStripMenuItem.Text = "Close All";
             this.closeAllToolStripMenuItem.Click += new System.EventHandler(this.CloseAllToolStripMenuItemClick);
             // 
@@ -2156,22 +2158,30 @@ namespace ScriptEditor {
             // 
             this.closeAllButThisToolStripMenuItem.Name = "closeAllButThisToolStripMenuItem";
             this.closeAllButThisToolStripMenuItem.ShowShortcutKeys = false;
-            this.closeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.closeAllButThisToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.closeAllButThisToolStripMenuItem.Text = "Close All But This";
             this.closeAllButThisToolStripMenuItem.Click += new System.EventHandler(this.CloseAllButThisToolStripMenuItemClick);
             // 
             // toolStripSeparator37
             // 
             this.toolStripSeparator37.Name = "toolStripSeparator37";
-            this.toolStripSeparator37.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator37.Size = new System.Drawing.Size(152, 6);
             // 
             // openFolderToolStripMenuItem
             // 
             this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
             this.openFolderToolStripMenuItem.ShowShortcutKeys = false;
-            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
-            this.openFolderToolStripMenuItem.Text = "Open folder script";
+            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.openFolderToolStripMenuItem.Text = "Open Folder in Explorer";
             this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
+            // 
+            // openInExternalToolStripMenuItem
+            // 
+            this.openInExternalToolStripMenuItem.Name = "openInExternalToolStripMenuItem";
+            this.openInExternalToolStripMenuItem.ShowShortcutKeys = false;
+            this.openInExternalToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.openInExternalToolStripMenuItem.Text = "Open in External Editor";
+            this.openInExternalToolStripMenuItem.Click += new System.EventHandler(this.openInExternalToolStripMenuItem_Click);
             // 
             // ofdScripts
             // 
@@ -2670,5 +2680,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem decompileF1ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator49;
         private System.Windows.Forms.ToolStripMenuItem win32RenderTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openInExternalToolStripMenuItem;
     }
 }

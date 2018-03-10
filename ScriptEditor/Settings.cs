@@ -89,6 +89,7 @@ namespace ScriptEditor
         public static bool saveScriptUTF8 = false;
         public static bool decompileF1 = false;
         public static bool winAPITextRender = true;
+        private static string ExternalEditorExePath;
 
         // for Flowchart
         public static bool autoUpdate = false;
@@ -256,6 +257,9 @@ namespace ScriptEditor
                     saveScriptUTF8 = br.ReadBoolean();
                     decompileF1 = br.ReadBoolean();
                     winAPITextRender = br.ReadBoolean();
+                    ExternalEditorExePath = br.ReadString();
+                    if (ExternalEditorExePath.Length == 0)
+                        ExternalEditorExePath = null;
                 }
                 catch { MessageBox.Show("An error occurred while reading configuration file.\n"
                                         + "File setting.dat may be in wrong format.", "Setting read error"); 
@@ -364,17 +368,17 @@ namespace ScriptEditor
             bw.Write(showWarnings);
             bw.Write(showDebug);
             bw.Write(overrideIncludesPath);
-            bw.Write(outputDir == null ? "" : outputDir);
+            bw.Write(outputDir ?? "");
             bw.Write(warnOnFailedCompile);
             bw.Write(multiThreaded);
-            bw.Write(lastMassCompile == null ? "" : lastMassCompile);
-            bw.Write(lastSearchPath == null ? "" : lastSearchPath);
+            bw.Write(lastMassCompile ?? "");
+            bw.Write(lastSearchPath ?? "");
             WriteWindowPos(bw, 0);
             bw.Write(editorSplitterPosition);
             bw.Write(autoOpenMsgs);
             bw.Write(editorSplitterPosition2);
-            bw.Write(pathHeadersFiles == null ? "" : pathHeadersFiles);
-            bw.Write(language == null ? "english" : language);
+            bw.Write(pathHeadersFiles ?? "");
+            bw.Write(language ?? "english");
             bw.Write(tabsToSpaces);
             bw.Write(tabSize);
             bw.Write(enableParser);
@@ -393,7 +397,7 @@ namespace ScriptEditor
             bw.Write(msgHighlightComment);
             bw.Write(msgHighlightColor);
             bw.Write(msgFontSize);
-            bw.Write(pathScriptsHFile == null ? "" : pathScriptsHFile);
+            bw.Write(pathScriptsHFile ?? "");
             bw.Write(associateID);
             //
             bw.Write(autoUpdate);
@@ -415,6 +419,7 @@ namespace ScriptEditor
             bw.Write(saveScriptUTF8);
             bw.Write(decompileF1);
             bw.Write(winAPITextRender);
+            bw.Write(ExternalEditorExePath ?? "");
             bw.Close();
 
             // Recent files
@@ -449,6 +454,24 @@ namespace ScriptEditor
             if (frm.WindowState != FormWindowState.Minimized) SaveWindowPosition(SavedWindows.Main, mainfrm);
             Save();
             Directory.Delete(scriptTempPath, true);
+        }
+
+        public static void OpenInExternalEditor(string file)
+        {
+            if (ExternalEditorExePath != null && File.Exists(ExternalEditorExePath))
+                System.Diagnostics.Process.Start(ExternalEditorExePath, file);
+            else {
+                var ofd = new OpenFileDialog() {
+                    InitialDirectory = Settings.ProgramFolder,
+                    DefaultExt = "exe",
+                    Filter = "Executable file (.exe)|*.exe",
+                    Title = "Select executable file"
+                };
+                if (ofd.ShowDialog() == DialogResult.OK) { 
+                    ExternalEditorExePath = ofd.FileName;
+                    OpenInExternalEditor(file);
+                }
+            }
         }
 
         struct WindowPos

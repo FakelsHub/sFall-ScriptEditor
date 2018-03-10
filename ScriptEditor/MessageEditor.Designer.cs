@@ -50,6 +50,7 @@
             this.NewStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.msgOpenButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
             this.msgSaveButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.SaveAsStripButton = new System.Windows.Forms.ToolStripButton();
@@ -70,6 +71,8 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.StripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.OpenNotepadtoolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
@@ -133,7 +136,7 @@
             this.dgvMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvMessage.ShowEditingIcon = false;
             this.dgvMessage.ShowRowErrors = false;
-            this.dgvMessage.Size = new System.Drawing.Size(819, 541);
+            this.dgvMessage.Size = new System.Drawing.Size(933, 541);
             this.dgvMessage.TabIndex = 0;
             this.dgvMessage.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvMessage_CellBeginEdit);
             this.dgvMessage.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellClick);
@@ -272,7 +275,7 @@
             this.groupBox.Location = new System.Drawing.Point(0, 26);
             this.groupBox.Name = "groupBox";
             this.groupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox.Size = new System.Drawing.Size(827, 562);
+            this.groupBox.Size = new System.Drawing.Size(941, 562);
             this.groupBox.TabIndex = 1;
             this.groupBox.TabStop = false;
             this.groupBox.Text = "Messages";
@@ -283,6 +286,7 @@
             this.NewStripButton,
             this.toolStripSeparator7,
             this.msgOpenButton,
+            this.toolStripSeparator16,
             this.msgSaveButton,
             this.toolStripSeparator8,
             this.SaveAsStripButton,
@@ -303,11 +307,13 @@
             this.toolStripSeparator3,
             this.StripComboBox,
             this.toolStripSeparator10,
+            this.OpenNotepadtoolStripButton,
+            this.toolStripSeparator15,
             this.toolStripDropDownButton1,
             this.toolStripDropDownButton2});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(827, 26);
+            this.toolStrip.Size = new System.Drawing.Size(941, 26);
             this.toolStrip.TabIndex = 7;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -337,6 +343,11 @@
             this.msgOpenButton.Text = "Open";
             this.msgOpenButton.ToolTipText = "Open message file";
             this.msgOpenButton.ButtonClick += new System.EventHandler(this.msgOpenButton_ButtonClick);
+            // 
+            // toolStripSeparator16
+            // 
+            this.toolStripSeparator16.Name = "toolStripSeparator16";
+            this.toolStripSeparator16.Size = new System.Drawing.Size(6, 26);
             // 
             // msgSaveButton
             // 
@@ -384,8 +395,9 @@
             // 
             // toolStripSeparator9
             // 
+            this.toolStripSeparator9.AutoSize = false;
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 26);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(8, 26);
             // 
             // MoveToolStripButton
             // 
@@ -521,6 +533,22 @@
             this.toolStripSeparator10.Name = "toolStripSeparator10";
             this.toolStripSeparator10.Size = new System.Drawing.Size(10, 26);
             // 
+            // OpenNotepadtoolStripButton
+            // 
+            this.OpenNotepadtoolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.OpenNotepadtoolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("OpenNotepadtoolStripButton.Image")));
+            this.OpenNotepadtoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.OpenNotepadtoolStripButton.Name = "OpenNotepadtoolStripButton";
+            this.OpenNotepadtoolStripButton.Size = new System.Drawing.Size(23, 23);
+            this.OpenNotepadtoolStripButton.ToolTipText = "Open this message file in external editor.";
+            this.OpenNotepadtoolStripButton.Click += new System.EventHandler(this.OpenNotepadtoolStripButton_Click);
+            // 
+            // toolStripSeparator15
+            // 
+            this.toolStripSeparator15.AutoSize = false;
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(8, 26);
+            // 
             // toolStripDropDownButton1
             // 
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -634,7 +662,7 @@
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
-            this.toolStripDropDownButton2.Size = new System.Drawing.Size(29, 20);
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(29, 23);
             this.toolStripDropDownButton2.Text = "toolStripDropDownButton2";
             this.toolStripDropDownButton2.Visible = false;
             this.toolStripDropDownButton2.Click += new System.EventHandler(this.SendStripButton_Click);
@@ -678,7 +706,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(827, 588);
+            this.ClientSize = new System.Drawing.Size(941, 588);
             this.Controls.Add(this.groupBox);
             this.Controls.Add(this.toolStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -759,5 +787,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn cLip;
         private System.Windows.Forms.ToolStripMenuItem comentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
+        private System.Windows.Forms.ToolStripButton OpenNotepadtoolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
     }
 }
