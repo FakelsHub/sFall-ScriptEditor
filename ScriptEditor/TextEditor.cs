@@ -1271,6 +1271,7 @@ namespace ScriptEditor
             CommentStripButton.Enabled = true;
             if (Settings.showLog)
                 splitContainer1.Panel2Collapsed = false;
+            includeFileToCodeToolStripMenuItem.Enabled = true;
         }
 
         private void ControlFormStateOn_Off()
@@ -1320,6 +1321,7 @@ namespace ScriptEditor
             CommentStripButton.Enabled = false;
             Text = SSE.Remove(SSE.Length - 2);
             autoComplete.Close();
+            includeFileToCodeToolStripMenuItem.Enabled = false;
         }
         #endregion
 
@@ -2318,6 +2320,40 @@ namespace ScriptEditor
         private void openInExternalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings.OpenInExternalEditor(tabs[(int)cmsTabControls.Tag].filepath);
+        }
+
+        private void includeFileToCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Settings.pathHeadersFiles == null || !Directory.Exists(Settings.pathHeadersFiles)) {
+                MessageBox.Show("The headers directory does not exist. Check the correctness of the path setting.");
+                return;
+            }
+            Headers Headfrm = new Headers(Headers_toolStripSplitButton.Bounds.Location);
+            Headfrm.SelectHeaderFile += delegate(string sHeaderfile) {
+                if (sHeaderfile != null) {
+                    int beginLine = 1;
+                    foreach (FoldMarker fm in currentDocument.FoldingManager.FoldMarker) {
+                        if (fm.FoldType == FoldType.Region) {
+                            beginLine = fm.StartLine + 1;
+                            break;
+                        }
+                    }
+                    for (int line = beginLine; line < currentDocument.TotalNumberOfLines - 1; line++) {
+                        if (TextUtilities.IsEmptyLine(currentDocument, line)) {
+                            beginLine = line;
+                            break;
+                        }
+                    }
+
+                    string includeText = "#include \"" + sHeaderfile + "\"" + Environment.NewLine;
+                    int offset = currentDocument.PositionToOffset(new TextLocation(0, beginLine));
+                    currentDocument.Insert(offset, includeText);
+                    currentDocument.MarkerStrategy.AddMarker(new TextMarker(offset, includeText.Length, TextMarkerType.SolidBlock, Color.Beige));
+                    currentActiveTextAreaCtrl.ScrollTo(beginLine);
+                    currentActiveTextAreaCtrl.Refresh();
+                }   
+            };
+            Headfrm.Show();
         }
         #endregion
 

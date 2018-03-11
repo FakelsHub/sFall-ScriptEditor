@@ -157,7 +157,9 @@ namespace ScriptEditor {
             this.toolStripSeparator26 = new System.Windows.Forms.ToolStripSeparator();
             this.defineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Headers_toolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.includeFileToCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openAllIncludesScriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator50 = new System.Windows.Forms.ToolStripSeparator();
             this.openHeaderFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
             this.MSG_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
@@ -1663,7 +1665,9 @@ namespace ScriptEditor {
             // 
             this.Headers_toolStripSplitButton.DropDownButtonWidth = 12;
             this.Headers_toolStripSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.includeFileToCodeToolStripMenuItem,
             this.openAllIncludesScriptToolStripMenuItem,
+            this.toolStripSeparator50,
             this.openHeaderFileToolStripMenuItem});
             this.Headers_toolStripSplitButton.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Headers_toolStripSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("Headers_toolStripSplitButton.Image")));
@@ -1674,6 +1678,15 @@ namespace ScriptEditor {
             this.Headers_toolStripSplitButton.Text = "Include";
             this.Headers_toolStripSplitButton.ToolTipText = "Quick open include header files.";
             this.Headers_toolStripSplitButton.ButtonClick += new System.EventHandler(this.Headers_toolStripSplitButton_ButtonClick);
+            // 
+            // includeFileToCodeToolStripMenuItem
+            // 
+            this.includeFileToCodeToolStripMenuItem.Enabled = false;
+            this.includeFileToCodeToolStripMenuItem.Name = "includeFileToCodeToolStripMenuItem";
+            this.includeFileToCodeToolStripMenuItem.ShowShortcutKeys = false;
+            this.includeFileToCodeToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.includeFileToCodeToolStripMenuItem.Text = "Include file to Code";
+            this.includeFileToCodeToolStripMenuItem.Click += new System.EventHandler(this.includeFileToCodeToolStripMenuItem_Click);
             // 
             // openAllIncludesScriptToolStripMenuItem
             // 
@@ -1687,6 +1700,11 @@ namespace ScriptEditor {
             this.openAllIncludesScriptToolStripMenuItem.Text = "Open all include files";
             this.openAllIncludesScriptToolStripMenuItem.ToolTipText = "Open all include file in this script. [Alt+Shift+G]";
             this.openAllIncludesScriptToolStripMenuItem.Click += new System.EventHandler(this.openIncludesScriptToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator50
+            // 
+            this.toolStripSeparator50.Name = "toolStripSeparator50";
+            this.toolStripSeparator50.Size = new System.Drawing.Size(163, 6);
             // 
             // openHeaderFileToolStripMenuItem
             // 
@@ -2137,7 +2155,7 @@ namespace ScriptEditor {
             this.openInExternalToolStripMenuItem});
             this.cmsTabControls.Name = "cmsTabControls";
             this.cmsTabControls.ShowImageMargin = false;
-            this.cmsTabControls.Size = new System.Drawing.Size(156, 142);
+            this.cmsTabControls.Size = new System.Drawing.Size(156, 120);
             // 
             // closeToolStripMenuItem
             // 
@@ -2681,5 +2699,7 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator49;
         private System.Windows.Forms.ToolStripMenuItem win32RenderTextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openInExternalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem includeFileToCodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator50;
     }
 }
