@@ -680,6 +680,42 @@ namespace ScriptEditor.TextEditorUtilities
             
             return keyWordMatch;
         }
+
+        internal static void PasteIncludeFile(TextAreaControl TAC, Point location)
+        {
+            Headers Headfrm = new Headers(location);
+            Headfrm.SelectHeaderFile += delegate(string sHeaderfile)
+            {
+                if (sHeaderfile != null) {
+                    int beginLine = 1, endLine = 1;
+                    foreach (FoldMarker fm in TAC.Document.FoldingManager.FoldMarker) {
+                        if (fm.FoldType == FoldType.Region) {
+                            beginLine = fm.StartLine;
+                            endLine = fm.EndLine;
+                            break;
+                        }
+                    }
+
+                    string includeText = "#include ";
+                    for (int line = endLine; line > 0; line--) {
+                        string ln = TextUtilities.GetLineAsString(TAC.Document, line);
+                        if (ln.TrimStart().StartsWith(includeText, StringComparison.OrdinalIgnoreCase)) {
+                            beginLine = line + 1;
+                            break;
+                        }
+                    }
+
+                    includeText += "\"" + sHeaderfile + "\"" + Environment.NewLine;
+                    int offset = TAC.Document.PositionToOffset(new TextLocation(0, beginLine));
+                    TAC.Document.Insert(offset, includeText);
+                    TAC.Document.MarkerStrategy.AddMarker(new TextMarker(offset, includeText.Length, TextMarkerType.SolidBlock, Color.Beige));
+                    TAC.ScrollTo(beginLine);
+                    TAC.Refresh();
+                }
+            };
+            Headfrm.Show();
+        }
+
     #endregion
 
     #region Script code text functions

@@ -2328,33 +2328,9 @@ namespace ScriptEditor
                 MessageBox.Show("The headers directory does not exist. Check the correctness of the path setting.");
                 return;
             }
-            Headers Headfrm = new Headers(Headers_toolStripSplitButton.Bounds.Location);
-            Headfrm.SelectHeaderFile += delegate(string sHeaderfile) {
-                if (sHeaderfile != null) {
-                    int beginLine = 1;
-                    foreach (FoldMarker fm in currentDocument.FoldingManager.FoldMarker) {
-                        if (fm.FoldType == FoldType.Region) {
-                            beginLine = fm.StartLine + 1;
-                            break;
-                        }
-                    }
-                    for (int line = beginLine; line < currentDocument.TotalNumberOfLines - 1; line++) {
-                        if (TextUtilities.IsEmptyLine(currentDocument, line)) {
-                            beginLine = line;
-                            break;
-                        }
-                    }
-
-                    string includeText = "#include \"" + sHeaderfile + "\"" + Environment.NewLine;
-                    int offset = currentDocument.PositionToOffset(new TextLocation(0, beginLine));
-                    currentDocument.Insert(offset, includeText);
-                    currentDocument.MarkerStrategy.AddMarker(new TextMarker(offset, includeText.Length, TextMarkerType.SolidBlock, Color.Beige));
-                    currentActiveTextAreaCtrl.ScrollTo(beginLine);
-                    currentActiveTextAreaCtrl.Refresh();
-                }   
-            };
-            Headfrm.Show();
+            Utilities.PasteIncludeFile(currentActiveTextAreaCtrl, Headers_toolStripSplitButton.Bounds.Location);
         }
+
         #endregion
 
         #region Dialog System

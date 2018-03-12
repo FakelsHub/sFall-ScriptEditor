@@ -81,25 +81,21 @@ namespace ScriptEditor.TextEditorUtilities
                     if (openCount == 1) { //проверка корректности номера строки в первой группе кавычек
                         int ln = offset - offsetOpen;
                         string str = TAC.Document.GetText(offsetOpen, ln);
-                        int length = str.Length;
-                        for (int i = 0; i < length; i++)
-			            {
-                            if (!char.IsDigit(str[i])) {
+                        
+                        if (str.Trim().Length > 0) {
+                            int number;
+                            if (int.TryParse(str, out number) && number > 0) {
+                                if (numbersLine.Contains(number))
+                                    error_number.Add(new Error(
+                                                     ErrorType.Warning, "Duplicate message line number: " + number, null, offsetOpen, ln));
+                                else
+                                    numbersLine.Add(number);
+                            } else
                                 error_number.Add(new Error(
-                                                ErrorType.Error, "Invalid line number of the message.", null, offsetOpen, ln));
-                                length = -1;
-                                break;
-                            }
-			            }
-                        int number = 0;
-                        if (length > 0) {
-                            number = int.Parse(str);
-                            if (numbersLine.Contains(number))
-                                error_number.Add(new Error(
-                                                 ErrorType.Warning, "Duplicate message line number: " + number, null, offsetOpen, ln));
-                            else
-                                numbersLine.Add(number);
-                        }
+                                                 ErrorType.Error, "Invalid line number of the message.", null, offsetOpen, ln));
+                        } else
+                            error_number.Add(new Error(
+                                                 ErrorType.Error, "Missing line number of the message.", null, offsetOpen, ln));
 
                     } else if (openCount == 3)
                         openCount = 0;
