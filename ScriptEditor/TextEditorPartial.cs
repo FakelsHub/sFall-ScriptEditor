@@ -14,16 +14,19 @@ using ScriptEditor.CodeTranslation;
 using ScriptEditor.TextEditorUI;
 using ScriptEditor.TextEditorUtilities;
 
+using ScriptEditor.SyntaxRules;
 
 namespace ScriptEditor
 {
     partial class TextEditor
     {
+        HighlightWord customHighlight;
+        
         #region ParseFunction
         public event EventHandler ParserUpdatedInfo; // Event for update nodes diagram
 
         private bool firstParse;
-        
+
         public void intParserPrint(string info)
         {
             if (!Settings.enableParser)
@@ -33,6 +36,8 @@ namespace ScriptEditor
         // Parse first open script
         private void FirstParseScript(TabInfo cTab)
         {
+            customHighlight = new HighlightWord();
+
             tbOutputParse.Text = string.Empty;
 
             firstParse = true;
@@ -57,6 +62,8 @@ namespace ScriptEditor
             }
 
             firstParse = false;
+
+            customHighlight.ProceduresHighlight(cTab.textEditor.Document, cTab.parseInfo.procs);
         }
 
         // Parse script
@@ -189,6 +196,8 @@ namespace ScriptEditor
                         if (tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) //tab.parseInfo.procs.Length
                             Outline_toolStripButton.Enabled = true;
                         
+                        customHighlight.ProceduresHighlight(tab.textEditor.Document, tab.parseInfo.procs);
+
                         UpdateNames(); // Update Tree Variables/Procedures
                         
                         if (Settings.enableParser)

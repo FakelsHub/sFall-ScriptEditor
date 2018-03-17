@@ -70,6 +70,6 @@ namespace ScriptEditor.SyntaxRules
             File.Delete(msgRulesPath); 
             File.Delete(ssl0RulesPath);
             File.Delete(ssl1RulesPath);
-        } 
+        }
     }
 }

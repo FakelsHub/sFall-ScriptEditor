@@ -117,6 +117,7 @@
     <Compile Include="ProcForm.Designer.cs">
       <DependentUpon>ProcForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SyntaxRules\HighlightWord.cs" />
     <Compile Include="TextEditorPartial.cs">
       <SubType>Form</SubType>
     </Compile>
