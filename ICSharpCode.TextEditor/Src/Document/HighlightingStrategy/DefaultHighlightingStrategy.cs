@@ -132,7 +132,12 @@ namespace ICSharpCode.TextEditor.Document
 				rules.Add(aRuleSet);
 			}
 		}
-		
+
+		public void AddHighlightWord(string word, Color color, Color bgcolor, bool bold, bool italic)
+		{
+			defaultRuleSet.AddWord(word, color, bgcolor, bold, italic);
+		}
+
 		public void ResolveReferences()
 		{
 			// Resolve references from Span definitions to RuleSets

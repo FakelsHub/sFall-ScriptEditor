@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Xml;
+using System.Drawing;
 
 using ICSharpCode.TextEditor.Util;
 
@@ -177,6 +178,17 @@ namespace ICSharpCode.TextEditor.Document
 			//keyWords.MergeFrom(ruleSet.keyWords);
 			//prevMarkers.MergeFrom(ruleSet.prevMarkers);
 			//nextMarkers.MergeFrom(ruleSet.nextMarkers);
+		}
+
+		public void AddWord(string word, Color color, Color bgcolor, bool bold = false, bool italic = false)
+		{
+			HighlightColor clr;
+			if (bgcolor.IsEmpty)
+				clr = new HighlightColor(color, bold, italic);
+			else
+				clr = new HighlightColor(color, bgcolor, bold, italic);
+
+			keyWords[word] = clr;
 		}
 	}
 }

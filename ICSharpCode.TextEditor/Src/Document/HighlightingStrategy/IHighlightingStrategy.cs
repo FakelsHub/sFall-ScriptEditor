@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace ICSharpCode.TextEditor.Document
 {
@@ -50,6 +51,11 @@ namespace ICSharpCode.TextEditor.Document
 		/// Used internally, do not call
 		/// </remarks>
 		void MarkTokens(IDocument document);
+
+		/// <remarks>
+		/// Add the specified word to the highlighting rule.
+		/// </remarks>
+		void AddHighlightWord(string word, Color color, Color bgcolor, bool bold, bool italic);
 	}
 	
 	public interface IHighlightingStrategyUsingRuleSets : IHighlightingStrategy
