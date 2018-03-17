@@ -403,7 +403,7 @@ namespace ScriptEditor.TextEditorUtilities
         public static int SearchWholeWord(string text, string find, int start, RegexOptions option)
         {
             int z, x;
-            string search = @"\b" + find + @"\b";
+            string search = @"\b" + Regex.Escape(find) + @"\b";
             Regex s_regex = new Regex(search, option);
 
             if (!Search(text, find, s_regex, start, false, false, out z, out x))
