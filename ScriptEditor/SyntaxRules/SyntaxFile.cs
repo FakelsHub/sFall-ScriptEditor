@@ -8,6 +8,8 @@ namespace ScriptEditor.SyntaxRules
     {
         private readonly string syntaxfolder = "SyntaxRules";
 
+        private static readonly string userRules = "User_SyntaxRules.xml";
+
         private static readonly string msgRules = "msg_SyntaxRules.xshd";
         private static readonly string ssl0Rules = "ssl_SyntaxRules.xshd";
         private static readonly string ssl1Rules = "ssl+_SyntaxRules.xshd";
@@ -34,12 +36,12 @@ namespace ScriptEditor.SyntaxRules
             if (!File.Exists(msgRulesPath))
                 File.Copy(Path.Combine(syntaxfolder, msgRules), msgRulesPath);
             
-            if (!File.Exists("User_SyntaxRules.xml"))
-                File.WriteAllText("User_SyntaxRules.xml", Properties.Resources.User_SyntaxRules);
+            if (!File.Exists(userRules))
+                File.WriteAllText(userRules, Properties.Resources.User_SyntaxRules);
 
             try {
                 XmlDocument user = new XmlDocument();
-                user.Load("User_SyntaxRules.xml");
+                user.Load(userRules);
                 XmlNode node = user.LastChild;
 
                 CreateRules(node, ssl0Rules);
@@ -70,6 +72,31 @@ namespace ScriptEditor.SyntaxRules
             File.Delete(msgRulesPath); 
             File.Delete(ssl0RulesPath);
             File.Delete(ssl1RulesPath);
+        }
+
+        public static void AddKeyWord(string keyWord)
+        {
+            XmlDocument user = new XmlDocument();
+            user.Load(userRules);
+
+            XmlElement node = user.SelectSingleNode("//KeyWords[@name = \"UserMacros\"]") as XmlElement;
+            
+            XmlElement key = user.CreateElement("Key");
+            key.SetAttribute("word", keyWord);
+            node.AppendChild(key);
+
+            user.Save(userRules);
+        }
+
+        public static void RemoveKeyWord(string keyWord)
+        {
+            XmlDocument user = new XmlDocument();
+            user.Load(userRules);
+
+            XmlElement node = user.SelectSingleNode("//KeyWords[@name = \"UserMacros\"]/Key[@word = \"" + keyWord + "\"]") as XmlElement;
+            node.ParentNode.RemoveChild(node);
+
+            user.Save(userRules);
         }
     }
 }

@@ -2092,6 +2092,9 @@ namespace ScriptEditor
 
         private void FunctionsTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (e.Button != MouseButtons.Left)
+                return;
+
             if (e.Node.Tag != null && currentTab != null) {
                 if (!Functions.NodeHitCheck(e.Location, e.Node.Bounds))
                     return;
@@ -2107,7 +2110,7 @@ namespace ScriptEditor
                         e.Node.Toggle();
         }
 
-        private void FunctionTreeLeft_MouseMove(object sender, MouseEventArgs e)
+        private void FunctionTree_MouseMove(object sender, MouseEventArgs e)
         {
             var treeView = (TreeView)sender;
             TreeNode node = treeView.GetNodeAt(e.Location);
@@ -2115,6 +2118,57 @@ namespace ScriptEditor
                 node.TreeView.Cursor = Cursors.Hand;
             else if (treeView.Cursor != Cursors.Default)
                 treeView.Cursor = Cursors.Default;
+        }
+
+        private void addUserFunctionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Functions.AddFunction(FunctionTreeLeft.SelectedNode);
+        }
+
+        private void editDescriptionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Functions.EditFunction(FunctionTreeLeft.SelectedNode);
+        }
+
+        private void cmsFunctions_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            addUserFunctionToolStripMenuItem.Enabled = false;
+            editFunctionToolStripMenuItem.Enabled = false;
+            addTreeNodeToolStripMenuItem.Enabled = false;
+            renameTreeNodeToolStripMenuItem.Enabled = false;
+            deleteNodeFuncToolStripMenuItem.Enabled = false;
+
+            var node = FunctionTreeLeft.SelectedNode;
+            if (node != null) {
+                if (node.Tag != null)
+                    editFunctionToolStripMenuItem.Enabled = true;
+
+                if (Functions.IsUserFunction(node)) {
+                    addUserFunctionToolStripMenuItem.Enabled = true;
+                    if (node.Tag == null) {
+                        if (node.Level < 2)
+                            addTreeNodeToolStripMenuItem.Enabled = true;
+                        renameTreeNodeToolStripMenuItem.Enabled = true;
+                    }
+                    if (node.Level > 0 && (node.Nodes.Count == 0 || node.Tag != null))
+                        deleteNodeFuncToolStripMenuItem.Enabled = true;
+                }
+            }
+        }
+
+        private void addTreeNodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Functions.AddNode(FunctionTreeLeft.SelectedNode);
+        }
+
+        private void renameTreeNodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Functions.RenameNode(FunctionTreeLeft.SelectedNode);
+        }
+
+        private void deleteNodeFuncToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Functions.DeleteNode(FunctionTreeLeft.SelectedNode);
         }
 
         private void FunctionButton_Click(object sender, EventArgs e)

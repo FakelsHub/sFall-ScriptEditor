@@ -190,7 +190,7 @@
     <Compile Include="TextEditorUI\Nodes\FlowchartTE.Designer.cs">
       <DependentUpon>FlowchartTE.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextEditorUI\Functions.cs" />
+    <Compile Include="TextEditorUI\Functions\Functions.cs" />
     <Compile Include="TextEditorUI\Nodes\TemplateNode.cs" />
     <Compile Include="TextEditorUI\ToolTips\TipPainter.cs" />
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
@@ -198,6 +198,12 @@
     <Compile Include="TextEditorUI\Error.cs" />
     <Compile Include="SyntaxRules\SyntaxFile.cs" />
     <Compile Include="TextEditorUI\InputBox.cs" />
+    <Compile Include="TextEditorUI\Functions\UserFunction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextEditorUI\Functions\UserFunction.Designer.cs">
+      <DependentUpon>UserFunction.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextEditorUtilities\MessageFile.cs" />
     <Compile Include="TextEditorUI\ProgressBar.cs" />
     <Compile Include="TextEditorUI\TabInfo.cs" />
@@ -259,6 +265,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TextEditorUI\Nodes\FlowchartTE.resx">
       <DependentUpon>FlowchartTE.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextEditorUI\Functions\UserFunction.resx">
+      <DependentUpon>UserFunction.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
