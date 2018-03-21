@@ -247,14 +247,15 @@ namespace ICSharpCode.TextEditor
 			HighlightColor selectedFoldLine = textArea.Document.HighlightingStrategy.GetColorFor("SelectedFoldLine");
 			
 			Rectangle intRect = new Rectangle((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
-			g.FillRectangle(BrushRegistry.GetBrush(foldMarkerColor.BackgroundColor), intRect);
+			g.FillRectangle(BrushRegistry.GetBrush(isSelected ? selectedFoldLine.BackgroundColor : foldMarkerColor.BackgroundColor), intRect);
 			g.DrawRectangle(BrushRegistry.GetPen(isSelected ? selectedFoldLine.Color : foldLineColor.Color), intRect);
 			
 			int space  = (int)Math.Round(((double)rectangle.Height) / 8d) + 1;
 			int mid    = intRect.Height / 2 + intRect.Height % 2;
 			
+			Pen penFold = BrushRegistry.GetPen(isSelected ? selectedFoldLine.Color : foldMarkerColor.Color);
 			// draw minus
-			g.DrawLine(BrushRegistry.GetPen(foldMarkerColor.Color),
+			g.DrawLine(penFold,
 			           rectangle.X + space,
 			           rectangle.Y + mid,
 			           rectangle.X + rectangle.Width - space,
@@ -262,7 +263,7 @@ namespace ICSharpCode.TextEditor
 			
 			// draw plus
 			if (!isOpened) {
-				g.DrawLine(BrushRegistry.GetPen(foldMarkerColor.Color),
+				g.DrawLine(penFold,
 				           rectangle.X + mid,
 				           rectangle.Y + space,
 				           rectangle.X + mid,
