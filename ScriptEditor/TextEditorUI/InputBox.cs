@@ -15,19 +15,20 @@ namespace ScriptEditor.TextEditorUI
 
             textBox.Text = value;
             textBox.SelectionStart = value.Length;
- 
+
             textBox.SetBounds(5, 5, 390, tSize);
             buttonOk.SetBounds(232, tSize + 8, 75, 23);
             buttonCancel.SetBounds(312, tSize + 8, 75, 23);
- 
+
             form.Controls.AddRange(new Control[] { textBox, buttonOk, buttonCancel });
             form.FormBorderStyle = FormBorderStyle.FixedToolWindow;
             form.StartPosition = FormStartPosition.CenterScreen;
+            form.ShowIcon = form.ShowInTaskbar = false;
             //form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
- 
+
             DialogResult dialogResult = form.ShowDialog();
-            value = textBox.Text;
+            value = textBox.Text.Trim();
 
             return dialogResult;
         }

@@ -1049,8 +1049,7 @@ namespace ScriptEditor
             ProcTree.Select();
 
             Parser.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
-            currentDocument.FoldingManager.UpdateFoldings(currentTab.filename, currentTab.parseInfo);
-            currentDocument.FoldingManager.NotifyFoldingsChanged(null);
+            CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
         }
 
         private void moveProcedureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1076,7 +1075,7 @@ namespace ScriptEditor
             MoveProcedure(e.Node.Index);
             currentTab.textEditor.TextChanged += textChanged;
             ProcTree.AfterSelect += TreeView_AfterSelect;
-            ProcTree.SelectedNode.ForeColor = Color.Black;
+            ProcTree.SelectedNode.ForeColor = ProcTree.ForeColor;
             ProcTree.Cursor = Cursors.Hand;
             moveActive = -1;
         }
@@ -1086,7 +1085,7 @@ namespace ScriptEditor
             if (moveActive != -1) {
                 ProcTree.AfterSelect -= ProcTree_AfterSelect;
                 ProcTree.AfterSelect += TreeView_AfterSelect;
-                ProcTree.Nodes[ProcTree.Nodes.Count - 1].Nodes[moveActive].ForeColor = Color.Black;
+                ProcTree.Nodes[ProcTree.Nodes.Count - 1].Nodes[moveActive].ForeColor = ProcTree.ForeColor;
                 ProcTree.Cursor = Cursors.Hand;
                 moveActive = -1;
             }
