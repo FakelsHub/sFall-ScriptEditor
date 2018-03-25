@@ -38,9 +38,10 @@ namespace ScriptEditor
                     if (!Char.IsDigit(name[i]))
                         break;
                 }
+                int numZero = lenName - i;
                 int numb = int.Parse(name.Substring(++i));
                 numb++;
-                name = name.Remove(i) + numb.ToString();
+                name = name.Remove(i) + numb.ToString(new string('0', numZero));
             }
         }
 
