@@ -281,6 +281,9 @@ namespace ICSharpCode.TextEditor
 		{
 			this.BackColor = Enabled ? Document.HighlightingStrategy.GetColorFor("Default").BackgroundColor : SystemColors.InactiveBorder;
 			
+			if (toolTip != null)
+				toolTip.Dispose();
+			
 			UpdateMatchingBracket();
 			textView.OptionsChanged();
 			caret.RecreateCaret();
@@ -350,7 +353,7 @@ namespace ICSharpCode.TextEditor
 			if (toolTip != null && toolTip.Owner != this.FindForm())
 				toolTip.Close();
 			if (toolTip == null || toolTip.IsDisposed)
-				toolTip = new DeclarationViewWindow(this.FindForm());
+				toolTip = new DeclarationViewWindow(this.FindForm(), this);
 			if (text == null) {
 				toolTip.Hide();
 			} else {

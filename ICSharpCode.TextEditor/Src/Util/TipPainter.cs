@@ -16,6 +16,9 @@ namespace ICSharpCode.TextEditor.Util
 		const float HorizontalBorder = 8;
 		const float VerticalBorder   = 6;
 		
+		internal static bool darkScheme = false;
+		public static Color tipTextColor = Color.Black;
+		
 		//static StringFormat centerTipFormat = CreateTipStringFormat();
 		
 		public static Size GetTipSize(Control control, Graphics graphics, Font font, string description)
@@ -137,8 +140,10 @@ namespace ICSharpCode.TextEditor.Util
 					 tipSizeF.Width - HorizontalBorder * 2,
 					 tipSizeF.Height - VerticalBorder * 2);
 				
+				Pen borderFrame = new Pen((darkScheme) ? Color.LightSlateGray : Color.Black);
+				
 				// DrawRectangle draws from Left to Left + Width. A bug? :-/
-				graphics.DrawRectangle(SystemPens.WindowFrame,
+				graphics.DrawRectangle(borderFrame,
 				                       borderRectangle);
 				tipData.Draw(new PointF(HorizontalBorder, VerticalBorder));
 			}

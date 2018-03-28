@@ -220,6 +220,17 @@ namespace ICSharpCode.TextEditor.Document
 		/// <summary>
 		/// Creates a new instance of <see cref="HighlightColor"/>
 		/// </summary>
+		public HighlightColor(Color color, Color backgroundcolor)
+		{
+			hasForeground = true;
+			hasBackground  = true;
+			this.color  = color;
+			this.backgroundcolor  = backgroundcolor;
+		}
+		
+		/// <summary>
+		/// Creates a new instance of <see cref="HighlightColor"/>
+		/// </summary>
 		public HighlightColor(string systemColor, string systemBackgroundColor, bool bold, bool italic)
 		{
 			hasForeground = true;

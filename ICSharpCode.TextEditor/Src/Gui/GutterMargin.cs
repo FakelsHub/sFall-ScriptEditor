@@ -81,7 +81,7 @@ namespace ICSharpCode.TextEditor
 					if (curLine < textArea.Document.TotalNumberOfLines) {
 						Brush drawBrush = (curLine != textArea.Caret.Line) 
 										   ? BrushRegistry.GetBrush(lineNumberPainterColor.Color)
-										   : drawBrush = BrushRegistry.GetBrush(Color.Blue);
+										   : drawBrush = BrushRegistry.GetBrush((textArea.Document.TextEditorProperties.DarkScheme) ? Color.Gold : Color.Blue);
 						g.DrawString((curLine + 1).ToString(),
 						             lineFont,
 						             drawBrush,

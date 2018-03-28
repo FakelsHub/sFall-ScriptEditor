@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 
 using ICSharpCode.TextEditor.Util;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
@@ -28,6 +29,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 	{
 		string description = String.Empty;
 		bool fixedWidth;
+		
+		HighlightColor tipGradient;
 		
 		public string Description {
 			get {
@@ -65,7 +68,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public bool HideOnClick;
 		
-		public DeclarationViewWindow(Form parent)
+		public DeclarationViewWindow(Form parent, TextArea textArea)
 		{
 			SetStyle(ControlStyles.Selectable, false);
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -78,6 +81,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			ShowInTaskbar   = false;
 			Size            = new Size(0, 0);
 			base.CreateHandle();
+
+			tipGradient = textArea.Document.HighlightingStrategy.GetColorFor("TipsGradient");
 
 			//Font = new Font(FontFamily.GenericSansSerif, 9.5f, FontStyle.Regular, GraphicsUnit.Point);
 		}
@@ -128,8 +133,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		{
 			// Draw gradient background
 			LinearGradientBrush gradient = new LinearGradientBrush(pe.ClipRectangle, 
-																   Color.White, 
-																   Color.FromArgb(255, 245, 190),
+																   tipGradient.Color,
+																   tipGradient.BackgroundColor,
 																   LinearGradientMode.Vertical);
 			pe.Graphics.FillRectangle(gradient, pe.ClipRectangle);
 		}

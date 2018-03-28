@@ -47,7 +47,7 @@ namespace ICSharpCode.TextEditor.Document
 		bool        showTabs            = false;
 		bool        showEOLMarker       = false;
 		
-		bool        showInvalidLines    = false;
+		bool        darkScheme          = false;
 		
 		bool        isIconBarVisible    = false;
 		bool        enableFolding       = true;
@@ -163,12 +163,13 @@ namespace ICSharpCode.TextEditor.Document
 				showEOLMarker = value;
 			}
 		}
-		public bool ShowInvalidLines {
+		public bool DarkScheme {
 			get {
-				return showInvalidLines;
+				return darkScheme;
 			}
 			set {
-				showInvalidLines = value;
+				darkScheme = value;
+				ICSharpCode.TextEditor.Util.TipPainter.darkScheme = value;
 			}
 		}
 		public bool IsIconBarVisible {

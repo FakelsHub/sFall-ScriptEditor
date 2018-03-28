@@ -41,7 +41,7 @@
 			<xsd:element name="Default" type="EnvironmentEntry" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="Selection" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="VRuler" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
-			<xsd:element name="InvalidLines" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="TipsGradient" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="CaretMarker" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="CaretLine" type="EnvironmentEntry" minOccurs="0" maxOccurs="1"/>
 			

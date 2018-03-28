@@ -74,7 +74,7 @@ namespace ICSharpCode.TextEditor.Document
 			set;
 		}
 		
-		bool ShowInvalidLines { // is wrapped in text editor control
+		bool DarkScheme { // is wrapped in text editor control
 			get;
 			set;
 		}

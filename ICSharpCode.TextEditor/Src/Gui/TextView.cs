@@ -214,9 +214,9 @@ namespace ICSharpCode.TextEditor
 			//Debug.Assert(lineNumber >= 0);
 			if (lineNumber >= textArea.Document.TotalNumberOfLines) {
 				//g.FillRectangle(backgroundBrush, lineRectangle);
-				if (TextEditorProperties.ShowInvalidLines) {
-					DrawInvalidLineMarker(g, lineRectangle.Left, lineRectangle.Top);
-				}
+				//if (TextEditorProperties.ShowInvalidLines) {
+				//	DrawInvalidLineMarker(g, lineRectangle.Left, lineRectangle.Top);
+				//}
 				if (TextEditorProperties.ShowVerticalRuler) {
 					DrawVerticalRuler(g, lineRectangle);
 				}
@@ -1172,11 +1172,11 @@ namespace ICSharpCode.TextEditor
 				TextRenderer.DrawText(g, text, font, new Point(x, y), color, textFormatFlags);
 		}
 		
-		void DrawInvalidLineMarker(Graphics g, int x, int y)
-		{
-			HighlightColor invalidLinesColor = textArea.Document.HighlightingStrategy.GetColorFor("InvalidLines");
-			DrawString(g, "~", invalidLinesColor.GetFont(TextEditorProperties.FontContainer), invalidLinesColor.Color, x, y);
-		}
+		//void DrawInvalidLineMarker(Graphics g, int x, int y)
+		//{
+		//	HighlightColor invalidLinesColor = textArea.Document.HighlightingStrategy.GetColorFor("InvalidLines");
+		//	DrawString(g, "~", invalidLinesColor.GetFont(TextEditorProperties.FontContainer), invalidLinesColor.Color, x, y);
+		//}
 		
 		void DrawSpaceMarker(Graphics g, Color color, int x, int y)
 		{

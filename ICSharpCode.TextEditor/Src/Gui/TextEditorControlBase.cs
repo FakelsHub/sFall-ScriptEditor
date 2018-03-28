@@ -304,12 +304,12 @@ namespace ICSharpCode.TextEditor
 		[Category("Appearance")]
 		[DefaultValue(false)]
 		[Description("If true invalid lines are marked in the textarea")]
-		public bool ShowInvalidLines {
+		public bool DarkScheme {
 			get {
-				return document.TextEditorProperties.ShowInvalidLines;
+				return document.TextEditorProperties.DarkScheme;
 			}
 			set {
-				document.TextEditorProperties.ShowInvalidLines = value;
+				document.TextEditorProperties.DarkScheme = value;
 				OptionsChanged();
 			}
 		}
