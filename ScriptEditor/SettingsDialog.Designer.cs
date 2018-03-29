@@ -509,7 +509,8 @@
             this.Highlight_comboBox.FormattingEnabled = true;
             this.Highlight_comboBox.Items.AddRange(new object[] {
             "Original",
-            "F-Geck"});
+            "F-Geck",
+            "Dark"});
             this.Highlight_comboBox.Location = new System.Drawing.Point(6, 15);
             this.Highlight_comboBox.Name = "Highlight_comboBox";
             this.Highlight_comboBox.Size = new System.Drawing.Size(79, 21);

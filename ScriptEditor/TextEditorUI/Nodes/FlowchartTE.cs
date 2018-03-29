@@ -94,7 +94,9 @@ namespace ScriptEditor.TextEditorUI.Nodes
             te.TextEditorProperties.IndentationSize = Settings.tabSize;
 
             // Activate the highlighting, use the name from the SyntaxDefinition node.
-            te.SetHighlighting((Settings.highlight == 0) ? "Original" : "F-Geck");
+            te.TextEditorProperties.DarkScheme = ColorTheme.IsDarkTheme;
+            te.SetHighlighting(ColorTheme.HighlightingScheme);
+            te.OptionsChanged();
             
             te.Text = GetProcedureCode(ti.textEditor.Document, cProc);
             textEditor = te;

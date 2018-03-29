@@ -37,7 +37,8 @@ namespace ScriptEditor.TextEditorUI.ToolTips
         public static void DrawInfo(DrawToolTipEventArgs e)
         {
             LinearGradientBrush gradientInfo = new LinearGradientBrush(e.Bounds,
-                                                    Color.White, Color.FromArgb(255, 245, 190),
+                                                    ColorTheme.TipGradient.Color,
+                                                    ColorTheme.TipGradient.BackgroundColor,
                                                     LinearGradientMode.Vertical);
             // Draw the custom background
             e.Graphics.FillRectangle(gradientInfo, e.Bounds);

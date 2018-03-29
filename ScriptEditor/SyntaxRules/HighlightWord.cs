@@ -43,5 +43,12 @@ namespace ScriptEditor.SyntaxRules
             if (needUpdate)
                 document.HighlightingStrategy.MarkTokens(document);
         }
+
+        public void HighlightWordClear()
+        {
+            procedures.Clear();
+            color = Color.Empty;
+            noColor = false;
+        }
     }
 }

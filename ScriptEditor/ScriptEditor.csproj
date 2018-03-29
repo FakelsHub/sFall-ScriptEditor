@@ -121,6 +121,7 @@
     <Compile Include="TextEditorPartial.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TextEditorUI\ColorTheme.cs" />
     <Compile Include="TextEditorUI\CompleteList\AutoCompleteItem.cs" />
     <Compile Include="BatchCompiler.cs">
       <SubType>Form</SubType>
@@ -294,8 +295,15 @@
     <None Include="Resources\wcc.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="SyntaxRules\msgd_SyntaxRules.xshd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="SyntaxRules\msg_SyntaxRules.xshd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SyntaxRules\ssld_SyntaxRules.xshd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="SyntaxRules\ssl_SyntaxRules.xshd">
       <SubType>Designer</SubType>

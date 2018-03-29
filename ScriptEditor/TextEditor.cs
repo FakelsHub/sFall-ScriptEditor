@@ -55,7 +55,7 @@ namespace ScriptEditor
 
         private int showTipsColumn;
 
-        private TreeView VarTree = new TreeView();
+        internal TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
 
         private AutoComplete autoComplete;
@@ -117,7 +117,7 @@ namespace ScriptEditor
 
             toolTips.Active = false;
             toolTips.Draw += delegate(object sender, DrawToolTipEventArgs e) { TipPainter.DrawInfo(e); }; 
-                
+            
             autoComplete = new AutoComplete(panel1, Settings.autocompleteColor);
 
             if (Settings.encoding == (byte)EncodingType.OEM866) {
@@ -128,6 +128,7 @@ namespace ScriptEditor
             // Highlighting
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(SyntaxFile.SyntaxFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
+            ColorTheme.InitTheme(Settings.highlight == 2, this);
 
             // Recent files
             UpdateRecentList();
@@ -369,10 +370,11 @@ namespace ScriptEditor
             te.TextEditorProperties.ShowTabs = Settings.showTabsChar;
             te.TextEditorProperties.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             te.TextEditorProperties.NativeDrawText = Settings.winAPITextRender;
+            te.TextEditorProperties.DarkScheme = ColorTheme.IsDarkTheme;
 
             if (type == OpenType.File && String.Compare(Path.GetExtension(file), ".msg", true) == 0) {
                 te.Document.TextEditorProperties.Encoding = Settings.EncCodePage;
-                te.SetHighlighting("Message");
+                te.SetHighlighting(ColorTheme.IsDarkTheme ? "MessageDark": "Message");
                 te.TextEditorProperties.EnableFolding = false;
                 te.TextEditorProperties.ConvertTabsToSpaces = false;
                 te.TextEditorProperties.ShowVerticalRuler = false;
@@ -380,12 +382,13 @@ namespace ScriptEditor
                 te.TextEditorProperties.ShowLineNumbers = false;
                 te.TextEditorProperties.Font = new Font("Verdana", 10, FontStyle.Regular, GraphicsUnit.Point);
             } else {
-                te.SetHighlighting((Settings.highlight == 0) ? "Original" : "F-Geck"); // Activate the highlighting, use the name from the SyntaxDefinition node.
+                te.SetHighlighting(ColorTheme.HighlightingScheme); // Activate the highlighting, use the name from the SyntaxDefinition node.
                 te.Document.FoldingManager.FoldingStrategy = new CodeFolder();
                 te.TextEditorProperties.ConvertTabsToSpaces = Settings.tabsToSpaces;
                 te.TextEditorProperties.ShowSpaces = Settings.showTabsChar;
                 te.TextEditorProperties.IndentStyle = IndentStyle.Smart;
-                te.VRulerRow = Settings.tabSize;
+                te.TextEditorProperties.ShowVerticalRuler = Settings.showVRuler;
+                te.TextEditorProperties.VerticalRulerRow = Settings.tabSize;
                 //te.TextEditorProperties.CaretLine = true;
                 Settings.SetTextAreaFont(te);
             }
@@ -755,7 +758,7 @@ namespace ScriptEditor
             TreeNode rootNode;
             foreach (var s in TREEPROCEDURES) {
                 rootNode = ProcTree.Nodes.Add(s);
-                rootNode.ForeColor = Color.DarkBlue;
+                rootNode.ForeColor = Color.DodgerBlue;
                 rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
             }
             ProcTree.Nodes[0].ToolTipText = "Procedures declared and located in headers files";
@@ -797,7 +800,7 @@ namespace ScriptEditor
                     
                 foreach (var s in TREEVARIABLES) {
                     rootNode = VarTree.Nodes.Add(s);
-                    rootNode.ForeColor = Color.DarkBlue;
+                    rootNode.ForeColor = Color.DodgerBlue;
                     rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
                 }
                 foreach (Variable var in currentTab.parseInfo.vars) {
@@ -816,7 +819,7 @@ namespace ScriptEditor
                 if (VarTree.Nodes[0].Nodes.Count == 0) VarTree.Nodes[0].ForeColor = Color.Gray;
                 if (VarTree.Nodes[1].Nodes.Count == 0) VarTree.Nodes[1].ForeColor = Color.Gray;  
                 
-                foreach (TreeNode node in VarTree.Nodes) 
+                foreach (TreeNode node in VarTree.Nodes)
                     SetNodeCollapseStatus(node);
                 
                 VarTree.EndUpdate();
@@ -1225,6 +1228,7 @@ namespace ScriptEditor
             VarTree.AfterExpand += Tree_AfterExpandCollapse;
             VarTree.Dock = DockStyle.Fill;
             VarTree.BackColor = Color.FromArgb(250, 250, 255);
+            VarTree.Cursor = Cursors.Hand;
             VarTab.Padding = new Padding(0, 2, 2, 2);
             VarTab.BackColor = SystemColors.ControlLightLight;
             VarTab.Controls.Add(VarTree);            
@@ -1379,6 +1383,8 @@ namespace ScriptEditor
 
         private void ApplySettingsTabs(bool alsoFont = false)
         {
+            ColorTheme.SetTheme();
+
             // Apply settings to all open documents
             foreach (TabInfo ct in tabs) {
                 ct.textEditor.TextEditorProperties.TabIndent = Settings.tabSize;
@@ -1387,12 +1393,18 @@ namespace ScriptEditor
                     ct.textEditor.TextEditorProperties.ConvertTabsToSpaces = Settings.tabsToSpaces;
                     ct.textEditor.TextEditorProperties.ShowVerticalRuler = Settings.showVRuler;
                     ct.textEditor.TextEditorProperties.VerticalRulerRow = Settings.tabSize;
-                    ct.textEditor.SetHighlighting((Settings.highlight == 0) ? "Original" : "F-Geck");
+                    ct.textEditor.SetHighlighting(ColorTheme.HighlightingScheme);
+
                     if (alsoFont)
                         Settings.SetTextAreaFont(ct.textEditor);
-                    ct.textEditor.Refresh();
-                } else
+                    //ct.textEditor.Refresh();
+                    customHighlight.HighlightWordClear();
+                    customHighlight.ProceduresHighlight(ct.textEditor.Document, ct.parseInfo.procs);
+                } else {
                     ct.textEditor.Encoding = Settings.EncCodePage;
+                    ct.textEditor.SetHighlighting(ColorTheme.IsDarkTheme ? "MessageDark" : "Message");
+                }
+                ct.textEditor.DarkScheme = ColorTheme.IsDarkTheme; //Установка с обновлением параметров.
             }
         }
 

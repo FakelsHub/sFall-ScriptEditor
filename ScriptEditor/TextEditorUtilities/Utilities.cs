@@ -534,7 +534,8 @@ namespace ScriptEditor.TextEditorUtilities
                 char chS = (seek > 0) ? TAC.Document.GetCharAt(seek - 1) : ' ';
                 char chE = ((seek + wordLen) < TAC.Document.TextLength) ? TAC.Document.GetCharAt(seek + wordLen) : ' ';
                 if (!(Char.IsLetter(chS) || chS == '_') && !(Char.IsLetter(chE) || chE == '_'))
-                    TAC.Document.MarkerStrategy.AddMarker(new TextMarker(seek, sWord.Length, TextMarkerType.SolidBlock, Color.GreenYellow, Color.Black));
+                    TAC.Document.MarkerStrategy.AddMarker(new TextMarker(seek, sWord.Length, TextMarkerType.SolidBlock,
+                                                          ColorTheme.SelectedHighlight.BackgroundColor, ColorTheme.SelectedHighlight.Color));
                 seek += wordLen;
             }
             TAC.SelectionManager.ClearSelection();
@@ -547,12 +548,12 @@ namespace ScriptEditor.TextEditorUtilities
             HighlightColor hc = TAC.Document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
             if (hc == null)
                 return; 
-            if (hc.BackgroundColor == Color.LightGray) {
+            if (hc.BackgroundColor == ColorTheme.CodeFunctions) {
                 int sStart= tl.Column, sEnd = tl.Column + 1;
                 for (int i = sEnd; i < (sEnd + 32); i++)
                 {
                     hc = TAC.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
-                    if (hc == null || hc.BackgroundColor != Color.LightGray) {
+                    if (hc == null || hc.BackgroundColor != ColorTheme.CodeFunctions) {
                         sEnd = i;
                         break;
                     }
@@ -560,7 +561,7 @@ namespace ScriptEditor.TextEditorUtilities
                 for (int i = sStart; i > 0; i--)
                 {
                     hc = TAC.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
-                    if (hc == null || hc.BackgroundColor != Color.LightGray) {
+                    if (hc == null || hc.BackgroundColor != ColorTheme.CodeFunctions) {
                         sStart = i + 1;
                         break;
                     }
@@ -708,7 +709,7 @@ namespace ScriptEditor.TextEditorUtilities
                     includeText += "\"" + sHeaderfile + "\"" + Environment.NewLine;
                     int offset = TAC.Document.PositionToOffset(new TextLocation(0, beginLine));
                     TAC.Document.Insert(offset, includeText);
-                    TAC.Document.MarkerStrategy.AddMarker(new TextMarker(offset, includeText.Length, TextMarkerType.SolidBlock, Color.Beige));
+                    TAC.Document.MarkerStrategy.AddMarker(new TextMarker(offset, includeText.Length, TextMarkerType.SolidBlock, ColorTheme.IncludeHighlight));
                     TAC.ScrollTo(beginLine);
                     TAC.Refresh();
                 }

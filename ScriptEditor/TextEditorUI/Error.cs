@@ -160,7 +160,7 @@ namespace ScriptEditor.TextEditorUI
 
             if (Path.GetFileName(fpath) == tab.filename) {
                 LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
-                TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, System.Drawing.Color.FromArgb(160, 255, 0, 0));
+                TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightError);
                 tm.ToolTip = message;
                 tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
                 fpath = tab.filepath;

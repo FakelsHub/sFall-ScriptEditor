@@ -15,8 +15,6 @@ namespace ScriptEditor.TextEditorUI
         const string fnFile = "Functions";
         const string fnUserFile = "UserFunctions.ini";
 
-        private static Color DarkPurple = Color.FromArgb(100, 0, 100);
-
         public static void CreateTree(TreeView Tree)
         {
             int Node = -1, mNode = -1, sNode = -1, ssNode = -1, aNode = 0;
@@ -78,7 +76,7 @@ namespace ScriptEditor.TextEditorUI
                         ND.ToolTipText = lines[i].Substring(n + 3, m - (n + 3));
                         ND.Tag = lines[i].Substring(m + 3, lines[i].Length - (m + 3));
                         ND.NodeFont = new Font("Arial", 8, FontStyle.Bold);
-                        ND.ForeColor = DarkPurple;
+                        ND.ForeColor = ColorTheme.TreeNameFunction;
                         switch (mNode) {
                             case -1:
                                 Tree.Nodes[Node].Nodes.Add(ND);
@@ -142,7 +140,7 @@ namespace ScriptEditor.TextEditorUI
             newNode.ToolTipText = desc;
             newNode.Tag = code;
             newNode.NodeFont = new Font("Arial", 8, FontStyle.Bold);
-            newNode.ForeColor = DarkPurple;
+            newNode.ForeColor = ColorTheme.TreeNameFunction;
 
             pn.Nodes.Insert(index, newNode);
             newNode.EnsureVisible();
@@ -260,12 +258,12 @@ namespace ScriptEditor.TextEditorUI
         private static string GetKeyWord(string code)
         {
             for (int i = 0; i < code.Length; i++)
-			{
-			    if (!Char.IsLetterOrDigit(code[i]) && code[i] != '_') {
+            {
+                if (!Char.IsLetterOrDigit(code[i]) && code[i] != '_') {
                     code = code.Remove(i);
                     break;
                 }
-			}
+            }
             return code;
         }
 
