@@ -36,11 +36,13 @@ namespace ScriptEditor.CodeTranslation
                 if (dRegion.end > dRegion.begin)
                     list.Add(new FoldMarker(document, dRegion.begin, 0, dRegion.end, 1000, FoldType.Region, " - Declaration Region - "));
             }
-
-            List<ProcBlock> blockList = Parser.GetDeclarationVariableBlock(document.TextContent);
-            foreach (ProcBlock block in blockList)
-                list.Add(new FoldMarker(document, block.begin, 0, block.end, 1000, FoldType.TypeBody, " - Variables - "));
-
+            // Get variable and #if foldings block
+            List<ProcBlock> blockList = Parser.GetFoldingBlock(document.TextContent);
+            foreach (ProcBlock block in blockList) {
+                string str = block.copy ? TextUtilities.GetLineAsString(document, block.begin) + " " 
+                                        : " - Variables - ";
+                list.Add(new FoldMarker(document, block.begin, 0, block.end, 1000, FoldType.TypeBody, str));
+            }
             return list;
         }
 

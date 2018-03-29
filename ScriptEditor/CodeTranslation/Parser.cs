@@ -559,11 +559,12 @@ namespace ScriptEditor.CodeTranslation
             return block;
         }
 
-        public static List<ProcBlock> GetDeclarationVariableBlock(string text, int start = 0)
+        public static List<ProcBlock> GetFoldingBlock(string text, int start = 0)
         {
             List<ProcBlock> list = new List<ProcBlock>();
             ProcBlock block = new ProcBlock() { begin = -1, end = -1 };
-            
+            ProcBlock ifblock = new ProcBlock() { begin = -1, end = -1, copy = true};
+
             int _comm = 0;
             bufferSSL = text.Split(new char[]{'\n'});
             int lenBuff = bufferSSL.Length;
@@ -574,6 +575,16 @@ namespace ScriptEditor.CodeTranslation
                 if (CommentBlockParse(ref buffer, ref _comm))
                     continue;
                 RemoveDebrisLine(ref buffer, -10);
+
+                if (ifblock.begin == -1 && buffer.StartsWith("#if ")) {
+                    ifblock.begin = i;
+                    continue;
+                } else if (ifblock.begin > -1 && buffer.StartsWith("#endif")) { 
+                    ifblock.end = i;
+                    list.Add(ifblock);
+                    ifblock = new ProcBlock() { begin = -1, end = -1, copy = true};
+                    continue;
+                }
 
                 if (block.begin == -1 && buffer.StartsWith("variable ")) {
                     int boffset = buffer.IndexOf(" " + BEGIN) + 1;
