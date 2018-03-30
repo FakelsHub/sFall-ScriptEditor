@@ -840,7 +840,7 @@ namespace ScriptEditor
                     nodes = ProcTree.Nodes.Find(((Procedure)selectedNode).name, true);
                 else if (selectedNode is Variable)
                     nodes = ProcTree.Nodes.Find(((Variable)selectedNode).name, true);
-                if (nodes.Length > 0)
+                if (nodes != null && nodes.Length > 0)
                     ProcTree.SelectedNode = nodes[0];
             }
 
@@ -1051,7 +1051,7 @@ namespace ScriptEditor
                 }
             } else {
                 if (Settings.autocomplete) {
-                    if (!Utilities.CheckColorPosition(currentDocument, caret.Position))
+                    if (!ColorTheme.CheckColorPosition(currentDocument, caret.Position))
                         autoComplete.GenerateList(e.KeyChar.ToString(), currentTab, caret.Offset - 1, toolTips.Tag);
                 }
             }
@@ -1119,7 +1119,7 @@ namespace ScriptEditor
             }
             
             // skip for specific color text
-            if (Utilities.CheckColorPosition(currentDocument, tl))
+            if (ColorTheme.CheckColorPosition(currentDocument, tl))
                 return; 
             
             //Refactor name

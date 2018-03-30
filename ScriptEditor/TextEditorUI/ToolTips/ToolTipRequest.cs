@@ -12,10 +12,7 @@ namespace ScriptEditor.TextEditorUI.ToolTips
     {
         public static void Show(TabInfo ti, IDocument document, ToolTipRequestEventArgs args)
         {
-            HighlightColor hc = document.GetLineSegment(args.LogicalPosition.Line).GetColorForPosition(args.LogicalPosition.Column);
-            
-            if (hc == null || hc.Color == Color.Green || hc.Color == Color.Brown 
-                || hc.Color == Color.DarkGreen || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xD0))
+            if (ColorTheme.CheckColorPosition(document, new TextLocation(args.LogicalPosition.Column, args.LogicalPosition.Line), true))
                 return;
             
             string word = TextUtilities.GetWordAt(document, document.PositionToOffset(args.LogicalPosition));

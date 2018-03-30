@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 namespace ScriptEditor.TextEditorUI
@@ -143,6 +144,27 @@ namespace ScriptEditor.TextEditorUI
                 else
                     NodeColorUpdate(nd);
             }  
+        }
+
+        // Check for specific color text
+        internal static bool CheckColorPosition(IDocument document, TextLocation tl, bool result = false)
+        { 
+            HighlightColor hc = document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
+            if (hc != null) {
+                if (IsDarkTheme) {
+                    if (hc.Color == Color.PaleGreen || hc.Color == Color.LightGreen
+                        || hc.BackgroundColor == CodeFunctions)
+                        return true;
+                } else {
+                    if (hc.Color == Color.Green || hc.Color == Color.Brown || hc.Color == Color.DarkGreen
+                        || hc.BackgroundColor == CodeFunctions || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xD0))
+                        return true;
+                }
+
+            } else if (result)
+                return true;
+
+            return false;
         }
     }
 }

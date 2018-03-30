@@ -706,7 +706,7 @@ namespace ScriptEditor
         {
             if (Settings.autocomplete) { 
                 Caret caret = currentActiveTextAreaCtrl.Caret;
-                if (!Utilities.CheckColorPosition(currentDocument, caret.Position))
+                if (!ColorTheme.CheckColorPosition(currentDocument, caret.Position))
                     autoComplete.GenerateList(String.Empty, currentTab, caret.Offset, null);
             }
         }

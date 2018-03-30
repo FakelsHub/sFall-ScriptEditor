@@ -592,22 +592,11 @@ namespace ScriptEditor.TextEditorUtilities
             }
         }
         
-        // Check for specific color text
-        internal static bool CheckColorPosition(IDocument document, TextLocation tl)
-        { 
-            HighlightColor hc = document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
-            if (hc != null && (hc.Color == Color.Green || hc.Color == Color.Brown || hc.Color == Color.DarkGreen 
-                || hc.BackgroundColor == Color.LightGray || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xD0)))
-                return true;
-
-            return false;
-        }
-
         // Paste autocomplete KeyWord construction code
         internal static bool AutoCompleteKeyWord(TextAreaControl TAC)
         {
             Caret caret = TAC.Caret;
-            if (CheckColorPosition(TAC.Document, caret.Position))
+            if (ColorTheme.CheckColorPosition(TAC.Document, caret.Position))
                 return false;
             
             int lineShift = 2, columnShift = 1, offsetShift = 1;
