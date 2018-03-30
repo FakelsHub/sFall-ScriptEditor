@@ -1049,14 +1049,19 @@ namespace ScriptEditor
                         //currentActiveTextAreaCtrl.TextArea.Refresh();
                     }
                 }
-            } else if (Settings.autocomplete) {
-                if (!Utilities.CheckColorPosition(currentDocument, caret.Position))
-                    autoComplete.GenerateList(e.KeyChar.ToString(), currentTab, caret.Offset - 1, toolTips.Tag);
-            }    
+            } else {
+                if (Settings.autocomplete) {
+                    if (!Utilities.CheckColorPosition(currentDocument, caret.Position))
+                        autoComplete.GenerateList(e.KeyChar.ToString(), currentTab, caret.Offset - 1, toolTips.Tag);
+                }
+            }
         }
 
         void TextArea_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.OemSemicolon)
+                Utilities.FormattingCodeSmart(currentActiveTextAreaCtrl);
+
             if (!Settings.showTips || toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue)))
                return;
 

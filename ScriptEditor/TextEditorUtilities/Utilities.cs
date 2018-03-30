@@ -41,7 +41,26 @@ namespace ScriptEditor.TextEditorUtilities
             }
             TAC.Document.Replace(offset, textCode.Length, FormattingCode(textCode));
         }
-                
+
+        public static void FormattingCodeSmart(TextAreaControl TAC) 
+        {
+            string textCode = TextUtilities.GetLineAsString(TAC.Document, TAC.Caret.Line);
+
+            int col = TAC.Caret.Column;
+            int offset = TAC.Caret.Offset - col;
+
+            if (col < textCode.Length)
+                textCode = textCode.Remove(col);
+
+            string formatText = FormattingCode(textCode);
+
+            int diffLen = formatText.Length - textCode.Length;
+            if (diffLen > 0) {
+                TAC.Document.Replace(offset, textCode.Length, formatText);
+                TAC.Caret.Column += diffLen;
+            }
+        }
+
         public static string FormattingCode(string textCode) 
         {
             string[] pattern = { ":=", "!=", "==", ">=", "<=", "+=", "-=", "*=", "/=", "%=", ",", ">", "<", "+", "-", "*", "/", "%" };
@@ -95,7 +114,8 @@ namespace ScriptEditor.TextEditorUtilities
                         }
 
                         // insert right space
-                        if (!Char.IsWhiteSpace(linecode[i], n + p.Length)) {
+                        int cPos = n + p.Length;
+                        if (linecode[i].Length > cPos && !Char.IsWhiteSpace(linecode[i], cPos)) {
                             if (p.Length == 2)
                                 linecode[i] = linecode[i].Insert(n + 2, space);
                             else {
