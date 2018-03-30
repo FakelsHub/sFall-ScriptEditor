@@ -27,10 +27,12 @@ namespace ScriptEditor.TextEditorUI.ToolTips
                 }
             }
 
+            document.TextEditorProperties.BoldFontTipsTile = true;
             string lookup = ProgramInfo.LookupOpcodesToken(word); // show opcodes help
-            if (lookup == null && ti.parseInfo != null )
+            if (lookup == null && ti.parseInfo != null) {
                 lookup = ti.parseInfo.LookupToken(word, ti.filepath, args.LogicalPosition.Line + 1);
-            if (lookup != null) {
+                document.TextEditorProperties.BoldFontTipsTile = false;
+            } if (lookup != null) {
                 args.ShowToolTip(lookup);
             }
         }
