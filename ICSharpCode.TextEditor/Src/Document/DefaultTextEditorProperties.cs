@@ -325,5 +325,11 @@ namespace ICSharpCode.TextEditor.Document
 				supportReadOnlySegments = value;
 			}
 		}
+		
+		public bool BoldFontTipsTile {
+			set {
+				ICSharpCode.TextEditor.Util.TipPainterTools.boldTile = value;
+			}
+		}
 	}
 }

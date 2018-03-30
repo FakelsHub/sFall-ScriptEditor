@@ -15,6 +15,8 @@ namespace ICSharpCode.TextEditor.Util
 	{
 		const int SpacerSize = 4;
 		
+		public static bool boldTile = false;
+		
 		public static Size GetLeftHandSideDrawingSizeHelpTipFromCombinedDescription(Control control,
 		                                                                            Graphics graphics,
 		                                                                            Font font,
@@ -219,7 +221,14 @@ namespace ICSharpCode.TextEditor.Util
 				
 				TipSpacer countSpacer = new TipSpacer(graphics, new SizeF(IsVisibleText(countMessage) ? 4 : 0, 0));
 				
-				TipText descriptionTip = new TipText(graphics, font, basicDescription);
+				Font boldfont = font;
+				if (boldTile && documentation != null)
+					boldfont = new Font(font, FontStyle.Bold);
+				
+				TipText descriptionTip = new TipText(graphics, boldfont, basicDescription);
+				
+				if (boldTile && documentation != null)
+					descriptionTip.Color = Color.FromArgb(60, 60, 60);
 				
 				TipSpacer docSpacer = new TipSpacer(graphics, new SizeF(0, IsVisibleText(documentation) ? 4 : 0));
 				

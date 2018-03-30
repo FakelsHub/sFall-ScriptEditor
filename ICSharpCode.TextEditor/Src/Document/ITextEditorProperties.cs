@@ -178,5 +178,9 @@ namespace ICSharpCode.TextEditor.Document
 			get;
 			set;
 		}
+		
+		bool BoldFontTipsTile {
+			set;
+		}
 	}
 }
