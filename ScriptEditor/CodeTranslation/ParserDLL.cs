@@ -101,7 +101,8 @@ namespace ScriptEditor.CodeTranslation
 
             pi.parseError = (lastStatus != 0 & Settings.enableParser);
             // Macros
-            new GetMacros(text.Split('\n'), filepath, Path.GetDirectoryName(filepath), pi.macros);
+            string[] scriptCode = text.Split('\n');
+            new GetMacros(scriptCode, filepath, Path.GetDirectoryName(filepath), pi.macros);
             if (lastStatus >= 1)
                 return pi; // parse failed, return macros and previous parsed data Procs/Vars
             //
@@ -207,6 +208,8 @@ namespace ScriptEditor.CodeTranslation
                             for (int k = 0; k < var.d.numRefs; k++)
                                 var.references[k] = Reference.FromPtr(tmp[k * 2], tmp[k * 2 + 1]);
                         }
+                        var.adeclared = ParseProcedureArguments(pi.procs[i].d.start, var.d.declared,
+                                                                var.name.ToLower(), scriptCode);
                     }
                 }
             }
@@ -218,6 +221,33 @@ namespace ScriptEditor.CodeTranslation
         {
             int strlen = (namelist[name - 5] << 8) + namelist[name - 6];
             return Encoding.ASCII.GetString(namelist, name - 4, strlen).TrimEnd('\0');
+        }
+
+        private int ParseProcedureArguments(int start, int end, string vName, string[] code)
+        {
+            int len = Parser.VARIABLE.Length + vName.Length + 1;
+            for (int i = start - 1; i > end; i--)
+            {
+                string line = code[i].TrimStart().ToLower();
+                if (len > line.Length)
+                    continue;
+         TryPass:
+                int x = line.IndexOf(Parser.VARIABLE + vName);
+                if (line[x + len] == '_' || Char.IsLetterOrDigit(line[x + len])) {
+                    line = line.Remove(x, len);
+                    goto TryPass;
+                }
+                if (x > -1) {
+                    int z = line.IndexOf(Parser.BEGIN);
+                    if (z > -1 && x > z)
+                        break;
+                    
+                    return i + 1;
+                }
+                if (line.StartsWith(Parser.PROCEDURE))
+                     break;
+            }
+            return -1;
         }
 
         private void ParseOverrideIncludes(string text)

@@ -115,12 +115,20 @@ namespace ScriptEditor.TextEditorUtilities
                     offset = z + newName.Length;
                 }
             }
-            int decline = var.d.declared - 1;
+
+            int decline = var.adeclared;
+            if (decline > 0) {
+                decline--;
+                z = Utilities.SearchWholeWord(TextUtilities.GetLineAsString(document, decline), var.name, 0, option);
+                document.Replace(document.GetLineSegment(decline).Offset + z, nameLen, newName);
+            }
+
+            decline = var.d.declared - 1;
             for (int i = decline; i > 0; i--)
             {
                 z = Utilities.SearchWholeWord(TextUtilities.GetLineAsString(document, i), var.name, 0, option);
                 if (z == -1)
-                    continue; 
+                    continue;
                 LineSegment ls = document.GetLineSegment(i);
                 document.Replace(ls.Offset + z, nameLen, newName);
                 break;

@@ -80,7 +80,8 @@ namespace ScriptEditor.CodeTranslation
             if (file != null) {
                 file = file.ToLowerInvariant();
                 for (int i = 0; i < procs.Length; i++) {
-                    if (line >= procs[i].d.start && line <= procs[i].d.end && String.Compare(file, procs[i].fdeclared, true) == 0) {
+                    if ((line == procs[i].d.declared || line >= procs[i].d.start && line <= procs[i].d.end)
+                        && String.Compare(file, procs[i].fdeclared, true) == 0) {
                         foreach (Variable var in procs[i].variables) {
                             if (string.Compare(var.name, token, true) == 0)
                                 return var;

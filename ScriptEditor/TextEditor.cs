@@ -1132,7 +1132,7 @@ namespace ScriptEditor
                 NameType nt = NameType.None;
                 IParserInfo item = null;
                 string word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
-                item = currentTab.parseInfo.Lookup(word, currentTab.filepath, tl.Line);
+                item = currentTab.parseInfo.Lookup(word, currentTab.filepath, tl.Line + 1);
                 if (item != null) {
                     nt = item.Type();
                     renameToolStripMenuItem.Tag = item;
@@ -1145,7 +1145,9 @@ namespace ScriptEditor
                         findReferencesToolStripMenuItem.Enabled = true;
                         findDeclerationToolStripMenuItem.Enabled = true;
                         findDefinitionToolStripMenuItem.Enabled = false;
-                        renameToolStripMenuItem.Text += (nt == NameType.LVar) ? ": Local Variable" : ": Script Variable";
+                        renameToolStripMenuItem.Text += (nt == NameType.LVar)
+                                                        ? (((Variable)item).IsArgument ? ": Argument Variable" : ": Local Variable")
+                                                        : ": Script Variable";
                         if (item.IsExported)
                             renameToolStripMenuItem.ToolTipText = "Note: Renaming exported variables will result in an error in the scripts using this variable.";
                         break;

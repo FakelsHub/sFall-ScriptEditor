@@ -29,13 +29,14 @@ namespace ScriptEditor.CodeTranslation
 
         private static string[] bufferSSL; // text buffer for ssl script code
 
-        public const int PROC_LEN = 10; 
+        public const int PROC_LEN = 10;
         public const string PROCEDURE = "procedure ";
-        const string BEGIN = "begin";
+        public const string BEGIN = "begin";
         const string END = "end";
         public const string INCLUDE = "#include ";
         public const string DEFINE = "#define ";
         const string COMMENT = "//";
+        public const string VARIABLE = "variable ";
 
         public static List<string> ProceduresListName
         {
@@ -586,7 +587,7 @@ namespace ScriptEditor.CodeTranslation
                     continue;
                 }
 
-                if (block.begin == -1 && buffer.StartsWith("variable ")) {
+                if (block.begin == -1 && buffer.StartsWith(VARIABLE)) {
                     int boffset = buffer.IndexOf(" " + BEGIN) + 1;
                     if (boffset > 0) {
                         buffer = buffer.Remove(boffset + BEGIN.Length);
@@ -595,7 +596,7 @@ namespace ScriptEditor.CodeTranslation
                         if (z > 0)
                             buffer = RemoveDoubleWhiteSpaces(buffer, z, boffset);
 
-                        if (buffer.StartsWith("variable " + BEGIN)) {
+                        if (buffer.StartsWith(VARIABLE + BEGIN)) {
                             block.begin = i;
                             continue;
                         }
@@ -607,7 +608,7 @@ namespace ScriptEditor.CodeTranslation
                     list.Add(block);
                     block = new ProcBlock() { begin = -1, end = -1 };
                 } 
-                else if (block.begin > -1 && (buffer.StartsWith("variable ") || buffer.StartsWith(PROCEDURE)))
+                else if (block.begin > -1 && (buffer.StartsWith(VARIABLE) || buffer.StartsWith(PROCEDURE)))
                     block.begin = -1;
             }
             return list;

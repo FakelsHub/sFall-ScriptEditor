@@ -12,6 +12,7 @@ namespace ScriptEditor.CodeTranslation
         public VariableData d;
         public Reference[] references;
         public string initialValue;
+        public int adeclared = -1;
 
         public NameType Type() { return d.type == VarType.Local ? NameType.LVar : NameType.GVar; }
         public Reference[] References() { return references; }
@@ -27,7 +28,7 @@ namespace ScriptEditor.CodeTranslation
             string s = "";
             switch (d.type) {
                 case VarType.Local:
-                    s = "Local variable ";
+                    s = (IsArgument) ? "Argument variable " : "Local variable ";
                     break;
                 case VarType.Global:
                     s = "Variable ";
@@ -53,6 +54,11 @@ namespace ScriptEditor.CodeTranslation
         public bool IsExported
         {
             get { return d.type == VarType.Export; }
+        }
+
+        public bool IsArgument
+        {
+            get { return adeclared > 0; }
         }
 
         public string ToString(bool a)
