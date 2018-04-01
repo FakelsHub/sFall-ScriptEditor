@@ -516,7 +516,22 @@ namespace ScriptEditor.CodeTranslation
             bufferSSL = (lower) ? sText.ToLowerInvariant().Split(delimeter)
                                 : sText.Split(delimeter);
         }
-        
+
+        public static void FixProcedureBegin(string file)
+        {
+            List<string> script = File.ReadAllLines(file).ToList();
+            for (int i = 0; i < script.Count; i++)
+            {
+                if (script[i].StartsWith(Parser.PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
+                    if (script[i + 1].StartsWith(Parser.BEGIN, StringComparison.OrdinalIgnoreCase)) {
+                        script[i] += '\u0020' + script[i + 1];
+                        script.RemoveAt(i + 1);
+                    }
+                }
+            }
+            File.WriteAllLines(file, script);
+        }
+
         #region Get declaration region
         /// <summary>
         /// Получить номера строк для региона деклараций

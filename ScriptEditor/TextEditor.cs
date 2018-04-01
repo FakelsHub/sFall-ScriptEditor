@@ -341,8 +341,11 @@ namespace ScriptEditor
                     if (decomp == null) {
                         MessageBox.Show("Decompilation of '" + file + "' was not successful", "Error");
                         return null;
-                    } else
+                    } else {
                         file = decomp;
+                        // fix for procedure begin
+                        Parser.FixProcedureBegin(file);
+                    }
                 } else {
                     //Check if the file is already open
                     for (int i = 0; i < tabs.Count; i++)
