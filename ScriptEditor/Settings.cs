@@ -167,6 +167,11 @@ namespace ScriptEditor
             if (!b) recent.Add(s);
         }
 
+        public static void ClearRecent()
+        {
+            recent.Clear();
+        }
+
         public static string[] GetRecent() { return recent.ToArray(); }
         public static string[] GetMsgRecent() { return recentMsg.ToArray(); }
 

@@ -1200,6 +1200,19 @@ namespace ScriptEditor
             openIncludeToolStripMenuItem.Enabled = true;
         }
 
+        private void recentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int count = Open_toolStripSplitButton.DropDownItems.Count;
+            if (count < 4 || MessageBox.Show("Do you want to clear the list of recent files ?",
+                                             "Recent files", MessageBoxButtons.YesNo) == DialogResult.No)
+                return;
+
+            for (int i = 3; i < count; i++)
+                Open_toolStripSplitButton.DropDownItems.RemoveAt(3);
+
+            Settings.ClearRecent();
+        }
+
         #region Control set states
         private void InitControlEvent()
         {   // Parser
