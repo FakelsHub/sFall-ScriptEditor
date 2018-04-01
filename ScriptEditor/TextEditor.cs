@@ -968,12 +968,14 @@ namespace ScriptEditor
             // Expand or Collapse folding
             foreach (FoldMarker fm in currentDocument.FoldingManager.FoldMarker) {
                 if (OnlyProcStripButton.Checked) {
-                    if (/*fm.FoldType == FoldType.MemberBody &&*/ fm.StartLine == start.Line)
-                        fm.IsFolded = false;
-                    else 
-                        fm.IsFolded = true;
+                    if (fm.FoldType == FoldType.MemberBody || fm.FoldType == FoldType.Region) {
+                        if (fm.StartLine == start.Line)
+                            fm.IsFolded = false;
+                        else if (fm.FoldType != FoldType.Region)
+                            fm.IsFolded = true;
+                    }
                 } else {
-                    if (/*fm.FoldType == FoldType.MemberBody &&*/ fm.StartLine == start.Line) {
+                    if (fm.StartLine == start.Line) {
                         fm.IsFolded = false;
                         break;
                     }
