@@ -2042,13 +2042,13 @@ namespace ScriptEditor
             bool addSearchText = true;
             foreach (var item in SearchTextComboBox.Items)
             {
-                if (world == item.ToString()){
+                if (world == item.ToString()) {
                     addSearchText = false;
                     break;
                 }
             }
             if (addSearchText)
-                SearchTextComboBox.Items.Add(world);
+                SearchTextComboBox.Items.Insert(0, world);
         }
 
         private void DecIndentStripButton_Click(object sender, EventArgs e)

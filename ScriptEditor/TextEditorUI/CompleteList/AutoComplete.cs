@@ -53,7 +53,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             this.font = new FontContainer(new Font((family ?? FontFamily.GenericMonospace), 10, FontStyle.Regular, GraphicsUnit.Point));
 
             AutoComleteList = new ListBox();
-            AutoComleteList.BackColor = Color.FromArgb(250, 250, 255);
+            AutoComleteList.BackColor = Color.GhostWhite;
             AutoComleteList.Cursor = Cursors.Help;
             AutoComleteList.ItemHeight = height;
             AutoComleteList.MaximumSize = new Size(350, (countItems * height) + 4);
