@@ -268,7 +268,10 @@ namespace ScriptEditor.CodeTranslation
 
         public string Decompile(string infile)
         {
-            string[] program = { "int2ssl.exe", "int2ssl_v35.exe" };
+            List<string> program = new List<string>{ "int2ssl.exe", "int2ssl_v35.exe" };
+            if (Settings.oldDecompile)
+                program.RemoveAt(0);
+
             foreach (string exe in program) 
             {
                 var exePath = Path.Combine(Settings.ResourcesFolder, exe);

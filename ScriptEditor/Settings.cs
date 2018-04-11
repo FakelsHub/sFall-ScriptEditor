@@ -88,6 +88,7 @@ namespace ScriptEditor
         public static bool storeLastPosition = true;
         public static bool saveScriptUTF8 = false;
         public static bool decompileF1 = false;
+        public static bool oldDecompile = false;
         public static bool winAPITextRender = true;
         private static string ExternalEditorExePath;
 
@@ -265,6 +266,7 @@ namespace ScriptEditor
                     ExternalEditorExePath = br.ReadString();
                     if (ExternalEditorExePath.Length == 0)
                         ExternalEditorExePath = null;
+                    oldDecompile = br.ReadBoolean();
                 }
                 catch { MessageBox.Show("An error occurred while reading configuration file.\n"
                                         + "File setting.dat may be in wrong format.", "Setting read error"); 
@@ -425,6 +427,7 @@ namespace ScriptEditor
             bw.Write(decompileF1);
             bw.Write(winAPITextRender);
             bw.Write(ExternalEditorExePath ?? "");
+            bw.Write(oldDecompile);
             bw.Close();
 
             // Recent files

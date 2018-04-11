@@ -113,6 +113,7 @@ namespace ScriptEditor
             decompileF1ToolStripMenuItem.Checked = Settings.decompileF1;
             saveUTF8ToolStripMenuItem.Checked = Settings.saveScriptUTF8;
             win32RenderTextToolStripMenuItem.Checked = Settings.winAPITextRender;
+            oldDecompileToolStripMenuItem.Checked = Settings.oldDecompile;
             SizeFontToString();
 
             toolTips.Active = false;
@@ -2422,6 +2423,10 @@ namespace ScriptEditor
             Utilities.PasteIncludeFile(currentActiveTextAreaCtrl, Headers_toolStripSplitButton.Bounds.Location);
         }
 
+        private void oldDecompileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings.oldDecompile = oldDecompileToolStripMenuItem.Checked;
+        }
         #endregion
 
         #region Dialog System

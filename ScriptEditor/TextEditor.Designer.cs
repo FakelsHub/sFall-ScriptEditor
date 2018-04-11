@@ -187,6 +187,7 @@ namespace ScriptEditor {
             this.Preprocess_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
             this.decompileF1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.oldDecompileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator49 = new System.Windows.Forms.ToolStripSeparator();
             this.pDefineStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.Help_toolStripButton = new System.Windows.Forms.ToolStripSplitButton();
@@ -1868,6 +1869,7 @@ namespace ScriptEditor {
             this.Preprocess_ToolStripMenuItem,
             this.toolStripSeparator25,
             this.decompileF1ToolStripMenuItem,
+            this.oldDecompileToolStripMenuItem,
             this.toolStripSeparator49,
             this.pDefineStripComboBox});
             this.qCompile_toolStripSplitButton.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -1952,9 +1954,21 @@ namespace ScriptEditor {
             this.decompileF1ToolStripMenuItem.ShowShortcutKeys = false;
             this.decompileF1ToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.decompileF1ToolStripMenuItem.Text = "Decompile mode Fallout 1";
-            this.decompileF1ToolStripMenuItem.ToolTipText = "Decompile .int scripts of the format the game Fallout 1.\r\n(used option -1 for int" +
-                "2ssl.exe)";
+            this.decompileF1ToolStripMenuItem.ToolTipText = "Forced to decompile scripts of the format Fallout 1.\r\n(used option -1 for int2ssl" +
+                ".exe)";
             this.decompileF1ToolStripMenuItem.Click += new System.EventHandler(this.decompileF1ToolStripMenuItem_Click);
+            // 
+            // oldDecompileToolStripMenuItem
+            // 
+            this.oldDecompileToolStripMenuItem.CheckOnClick = true;
+            this.oldDecompileToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.oldDecompileToolStripMenuItem.Name = "oldDecompileToolStripMenuItem";
+            this.oldDecompileToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.oldDecompileToolStripMenuItem.Text = "Use old decompiler";
+            this.oldDecompileToolStripMenuItem.ToolTipText = "When decompiling a script, forced used the earlier version of the decompiler (int" +
+                "2ssl v3.5).\r\nThis option allows to solve some problems that are present in the l" +
+                "ater versions of the decompiler.";
+            this.oldDecompileToolStripMenuItem.Click += new System.EventHandler(this.oldDecompileToolStripMenuItem_Click);
             // 
             // toolStripSeparator49
             // 
@@ -2786,5 +2800,6 @@ namespace ScriptEditor {
         internal System.Windows.Forms.TreeView FunctionTreeLeft;
         internal System.Windows.Forms.TreeView FunctionsTree;
         internal System.Windows.Forms.TreeView ProcTree;
+        private System.Windows.Forms.ToolStripMenuItem oldDecompileToolStripMenuItem;
     }
 }
