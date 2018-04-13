@@ -256,7 +256,7 @@ namespace ScriptEditor
                 currentTab.changed = true;
                 SetTabTextChange(currentTab.index);
             }
-            if (currentTab.shouldParse) {
+            if (sender != null && currentTab.shouldParse) {
                 if (currentTab.shouldParse && !currentTab.needsParse) {
                     currentTab.needsParse = true;
                     parserLabel.Text = "Parser: Update change";
@@ -1034,6 +1034,7 @@ namespace ScriptEditor
             }
             offset = currentDocument.PositionToOffset(new TextLocation(0, p_begin));
             offset += TextUtilities.GetLineAsString(currentDocument, p_begin).Length;
+            
             currentDocument.Insert(offset, copy_procbody);
             currentDocument.UndoStack.EndUndoGroup();
             
@@ -1059,11 +1060,26 @@ namespace ScriptEditor
             if (moveActive == -1) {
                 moveActive = ProcTree.SelectedNode.Index;
                 ProcTree.SelectedNode.ForeColor = Color.Red;
-                ProcTree.Cursor = Cursors.HSplit;
                 ProcTree.AfterSelect -= TreeView_AfterSelect;
                 ProcTree.SelectedNode = ProcTree.Nodes[0];
                 ProcTree.AfterSelect += ProcTree_AfterSelect;
+                //ProcTree.ShowNodeToolTips = false;
             }
+        }
+
+        private void ProcTree_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (moveActive < 0)
+                return;
+
+            TreeNode node = ProcTree.GetNodeAt(e.Location);
+            if (node != null && Functions.NodeHitCheck(e.Location, node.Bounds)) {
+                if (node.Index > moveActive)
+                    ProcTree.Cursor = Cursors.PanSouth;
+                else
+                    ProcTree.Cursor = Cursors.PanNorth;
+            } else
+                ProcTree.Cursor = Cursors.No;
         }
 
         private void ProcTree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -1078,6 +1094,9 @@ namespace ScriptEditor
             ProcTree.SelectedNode.ForeColor = ProcTree.ForeColor;
             ProcTree.Cursor = Cursors.Hand;
             moveActive = -1;
+            //ProcTree.ShowNodeToolTips = true;
+            // set changed document
+            textChanged(null, EventArgs.Empty);
         }
 
         private void ProcTree_MouseLeave(object sender, EventArgs e)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 using ICSharpCode.TextEditor.Document;
 
@@ -110,7 +111,7 @@ namespace ScriptEditor.TextEditorUI
         public static string ParserLog(string log, TabInfo tab)
         {
             if (tab.parserErrors.Count > 0) {
-                List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(0, tab.textEditor.Document.TextLength);
+                List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.TextMarker.ToList();
                 foreach (TextMarker m in marker) { 
                     if (m.TextMarkerType == TextMarkerType.WaveLine) 
                         tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
@@ -157,6 +158,10 @@ namespace ScriptEditor.TextEditorUI
             Error ePosition = new Error(m.Groups[3].Value, m.Groups[4].Value);
             string message = m.Groups[5].Value.TrimEnd();
             string fpath = m.Groups[2].Value;
+
+            int total = tab.textEditor.Document.TotalNumberOfLines;
+            if (ePosition.line >= total)
+                ePosition.line = total - 1;
 
             if (Path.GetFileName(fpath) == tab.filename) {
                 LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);

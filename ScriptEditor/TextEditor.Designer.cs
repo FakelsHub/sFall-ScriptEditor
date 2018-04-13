@@ -938,6 +938,7 @@ namespace ScriptEditor {
             this.ProcTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseClick);
             this.ProcTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseDown);
             this.ProcTree.MouseLeave += new System.EventHandler(this.ProcTree_MouseLeave);
+            this.ProcTree.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseMove);
             // 
             // ProcMnContext
             // 
