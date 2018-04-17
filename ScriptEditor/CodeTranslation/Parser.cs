@@ -493,10 +493,10 @@ namespace ScriptEditor.CodeTranslation
             return false;
         }
 
-        private static string RemoveDoubleWhiteSpaces(string sLine, int start, int end)
+        internal static string RemoveDoubleWhiteSpaces(string sLine, int start, int end)
         {
             char[] ch  = sLine.ToCharArray();
-            end = (end > 0) ? end : ch.Length;
+            end = (end > 0) ? end : ch.Length -1;
             for (int i = start; i < end; i++)
             {
                 if (char.IsWhiteSpace(ch[i]) && char.IsWhiteSpace(ch[i + 1]))

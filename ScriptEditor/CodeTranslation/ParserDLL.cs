@@ -225,27 +225,35 @@ namespace ScriptEditor.CodeTranslation
 
         private int ParseProcedureArguments(int start, int end, string vName, string[] code)
         {
-            int len = Parser.VARIABLE.Length + vName.Length + 1;
+            int len = Parser.VARIABLE.Length + vName.Length;
             for (int i = start - 1; i > end; i--)
             {
                 string line = code[i].TrimStart().ToLower();
                 if (len > line.Length)
                     continue;
+                
+                int y = line.IndexOf(Parser.VARIABLE);
+                if (y == -1)
+                    continue;
+                line = Parser.RemoveDoubleWhiteSpaces(line, y, 0);
+
          TryPass:
-                int x = line.IndexOf(Parser.VARIABLE + vName);
-                if (line[x + len] == '_' || Char.IsLetterOrDigit(line[x + len])) {
-                    line = line.Remove(x, len);
-                    goto TryPass;
-                }
+                int x = line.IndexOf(Parser.VARIABLE + vName, y);
                 if (x > -1) {
+                    char c = line[x + len];
+                    if (c == '_' || Char.IsLetterOrDigit(c)) {
+                        line = line.Remove(x, len);
+                        goto TryPass;
+                    }
+
                     int z = line.IndexOf(Parser.BEGIN);
                     if (z > -1 && x > z)
-                        break;
+                        break; // переменная находится за пределами begin
                     
                     return i + 1;
                 }
                 if (line.StartsWith(Parser.PROCEDURE))
-                     break;
+                     break; // найдена процедура, прерываем цикл 
             }
             return -1;
         }
