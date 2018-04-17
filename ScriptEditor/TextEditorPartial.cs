@@ -53,6 +53,7 @@ namespace ScriptEditor
             DEBUGINFO("External first parse status: " + ExtParser.LastStatus);
 
             CodeFolder.UpdateFolding(cTab.textEditor.Document, cTab.filename, cTab.parseInfo.procs);
+            CodeFolder.LoadFoldCollapse(cTab.textEditor.Document);
 
             GetParserErrorLog(cTab);
 

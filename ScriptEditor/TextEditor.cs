@@ -254,10 +254,11 @@ namespace ScriptEditor
         private void TextEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             for (int i = 0; i < tabs.Count; i++) {
+                bool skip = tabs[i].changed;
                 if (tabs[i].changed) {
                     switch (MessageBox.Show("Save changes to " + tabs[i].filename + "?", "Message", MessageBoxButtons.YesNoCancel)) {
                         case DialogResult.Yes:
-                            Save(tabs[i]);
+                            Save(tabs[i], true);
                             if (tabs[i].changed) {
                                 e.Cancel = true;
                                 return;
@@ -270,6 +271,7 @@ namespace ScriptEditor
                             return;
                     }
                 }
+                KeepScriptSetting(tabs[i], skip);
             }
 
             if (bwSyntaxParser.IsBusy) {
@@ -448,15 +450,16 @@ namespace ScriptEditor
                     tp.ToolTipText = ti.filepath;
                 string ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
-                    if (!createNew && Settings.storeLastPosition)
-                        te.ActiveTextAreaControl.JumpTo(Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant()));
                     if (formatCodeToolStripMenuItem.Checked)
                         te.Text = Utilities.FormattingCode(te.Text);
                     ti.shouldParse = true;
                     //ti.needsParse = true; // set 'true' only edit text
                     
                     FirstParseScript(ti); // First Parse
-                    
+
+                    if (!createNew && Settings.storeLastPosition)
+                        te.ActiveTextAreaControl.JumpTo(Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant()));
+
                     if (Settings.autoOpenMsgs && ti.filepath != null) 
                         AssossciateMsg(ti, false);
                 }
@@ -478,11 +481,11 @@ namespace ScriptEditor
             return ti;
         }
 
-        private void Save(TabInfo tab)
+        private void Save(TabInfo tab, bool close = false)
         {
             if (tab != null) {
                 if (tab.filepath == null) {
-                    SaveAs(tab);
+                    SaveAs(tab, close);
                     return;
                 }
                 while (parserRunning) {
@@ -495,6 +498,9 @@ namespace ScriptEditor
 
                 if (Settings.autoTrailingSpaces && !msg)
                     new ICSharpCode.TextEditor.Actions.RemoveTrailingWS().Execute(currentActiveTextAreaCtrl.TextArea);
+
+                if (close && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0)
+                    CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document);
 
                 string saveText = tab.textEditor.Text;
                 if (msg && Settings.EncCodePage.CodePage == 866) 
@@ -512,7 +518,7 @@ namespace ScriptEditor
            
         }
 
-        private void SaveAs(TabInfo tab)
+        private void SaveAs(TabInfo tab, bool close = false)
         {
             if (tab == null)
                 return;
@@ -538,7 +544,7 @@ namespace ScriptEditor
                 tab.filename = Path.GetFileName(tab.filepath);
                 tabControl1.TabPages[tab.index].Text = tabs[tab.index].filename;
                 tabControl1.TabPages[tab.index].ToolTipText = tabs[tab.index].filepath;
-                Save(tab);
+                Save(tab, close);
                 Settings.AddRecentFile(tab.filepath);
                 string ext = Path.GetExtension(tab.filepath).ToLower();
                 if (Settings.enableParser && (ext == ".ssl" || ext == ".h")) {
@@ -563,10 +569,11 @@ namespace ScriptEditor
             while (tab.nodeFlowchartTE.Count > 0)
                 tab.nodeFlowchartTE[0].CloseEditor(true);
 
+            bool skip = tab.changed;
             if (tab.changed) {
                 switch (MessageBox.Show("Save changes to " + tab.filename + "?", "Message", MessageBoxButtons.YesNoCancel)) {
                     case DialogResult.Yes:
-                        Save(tab);
+                        Save(tab, true);
                         if (tab.changed)
                             return;
                         break;
@@ -577,10 +584,8 @@ namespace ScriptEditor
                 }
             }
 
-            // store last script position
-            if (Path.GetExtension(tab.filepath).ToLowerInvariant() == ".ssl" && tab.filename != unsaved)
-                Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
-            
+            KeepScriptSetting(tab, skip);
+
             if (tabControl1.TabPages.Count > 2 && i == tabControl1.SelectedIndex) {
                 if (previousTabIndex != -1) {
                     tabControl1.SelectedIndex = previousTabIndex;
@@ -602,6 +607,18 @@ namespace ScriptEditor
             if (tabControl1.TabPages.Count == 1) {
                 tabControl1_Selected(null, null);
             }
+        }
+
+        private static void KeepScriptSetting(TabInfo tab, bool skip)
+        {
+            if (!skip && tab.filepath != null && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
+                CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document);
+                File.WriteAllText(tab.filepath, tab.textEditor.Text, (Settings.saveScriptUTF8) ? new UTF8Encoding(false) : Encoding.Default);
+            }
+
+            // store last script position
+            if (Path.GetExtension(tab.filepath).ToLowerInvariant() == ".ssl" && tab.filename != unsaved)
+                Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
         }
 
         private void AssossciateMsg(TabInfo tab, bool create)

@@ -63,5 +63,38 @@ namespace ScriptEditor.CodeTranslation
             Procedure[] parseInformation = Parser.GetProcsData(document.TextContent, filepath);
             UpdateFolding(document, Path.GetFileName(filepath), parseInformation);
         }
+
+        const string FLDC = " //_FLDC_";
+
+        internal static void SaveMarkFoldCollapsed(IDocument document)
+        {
+            foreach (FoldMarker fm in document.FoldingManager.FoldMarker)
+            {
+                if (fm.FoldType > FoldType.Region || !fm.IsFolded)
+                    continue;
+
+                LineSegment ls = document.GetLineSegment(fm.StartLine);
+                string line = document.GetText(ls);
+                if (!line.EndsWith(FLDC)) 
+                    document.Insert(ls.Offset + ls.Length, FLDC);
+            }
+        }
+
+        internal static void LoadFoldCollapse(IDocument document)
+        {
+            foreach (FoldMarker fm in document.FoldingManager.FoldMarker)
+            {
+                if (fm.FoldType > FoldType.Region)
+                    continue;
+                
+                LineSegment ls = document.GetLineSegment(fm.StartLine);
+                if (document.GetText(ls).EndsWith(FLDC)) {
+                    fm.IsFolded = true;
+                    int len = FLDC.Length;
+                    document.Remove(ls.Offset + ls.Length - len, len);
+                }
+            }
+            if (document.UndoStack.CanUndo) document.UndoStack.ClearAll();
+        }
     }
 }
