@@ -73,8 +73,8 @@ namespace ICSharpCode.TextEditor.Document
 				for (int i = 0; i < foldMarker.Count; ++i) {
 					FoldMarker fm = foldMarker[i];
 					if ((fm.StartLine == line && column > fm.StartColumn && !(fm.EndLine == line && column >= fm.EndColumn)) ||
-					    (fm.EndLine == line && column < fm.EndColumn && !(fm.StartLine == line && column <= fm.StartColumn)) ||
-					    (line > fm.StartLine && line < fm.EndLine)) {
+						(fm.EndLine == line && column < fm.EndColumn && !(fm.StartLine == line && column <= fm.StartColumn)) ||
+						(line > fm.StartLine && line < fm.EndLine)) {
 						foldings.Add(fm);
 					}
 				}
@@ -327,7 +327,25 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		public void NotifyFoldingsChanged(FoldingArgs e)
+		{
+			if (FoldingsChanged != null) {
+				FoldingsChanged(this, e);
+			}
+		}
 		
 		public event EventHandler FoldingsChanged;
+
+		public class FoldingArgs : EventArgs
+		{
+			FoldMarker fm;
+			
+			public FoldingArgs(FoldMarker fm)
+			{
+				this.fm = fm;
+			}
+			
+			public FoldMarker FoldEvent { get { return fm; } }
+		}
 	}
 }

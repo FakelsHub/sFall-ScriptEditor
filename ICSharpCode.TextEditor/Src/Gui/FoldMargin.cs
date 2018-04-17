@@ -227,8 +227,10 @@ namespace ICSharpCode.TextEditor
 			List<FoldMarker> foldMarkers = textArea.Document.FoldingManager.GetFoldingsWithStart(realline);
 			foreach (FoldMarker fm in foldMarkers) {
 				fm.IsFolded = !fm.IsFolded;
+				textArea.Document.FoldingManager.NotifyFoldingsChanged(
+					new ICSharpCode.TextEditor.Document.FoldingManager.FoldingArgs(fm));
 			}
-			textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
+			//textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 		}
 		
 		public override void HandleMouseLeave(EventArgs e)
