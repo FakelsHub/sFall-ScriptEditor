@@ -103,7 +103,7 @@ namespace ScriptEditor.TextEditorUI
                 error.column = int.Parse(m.Groups[4].Value);
 
             error.message = m.Groups[5].Value.TrimEnd();
-            if (error.type == ErrorType.Warning)
+            if (error.type == ErrorType.Warning && (log.Length - 1) > s)
                 error.message += ": " + log[s + 1].Trim();
         }
 
