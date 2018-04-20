@@ -172,10 +172,10 @@
             this.cbWarnFailedCompile.AutoSize = true;
             this.cbWarnFailedCompile.Location = new System.Drawing.Point(6, 90);
             this.cbWarnFailedCompile.Name = "cbWarnFailedCompile";
-            this.cbWarnFailedCompile.Size = new System.Drawing.Size(134, 17);
+            this.cbWarnFailedCompile.Size = new System.Drawing.Size(140, 17);
             this.cbWarnFailedCompile.TabIndex = 7;
-            this.cbWarnFailedCompile.Text = "Warn on failed compile";
-            this.toolTip.SetToolTip(this.cbWarnFailedCompile, "Show a pop-up message that the script compilation failed.");
+            this.cbWarnFailedCompile.Text = "Show error log on failure";
+            this.toolTip.SetToolTip(this.cbWarnFailedCompile, "Show the errors log if the script compilation failed.");
             this.cbWarnFailedCompile.UseVisualStyleBackColor = true;
             // 
             // cbMultiThread

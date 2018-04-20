@@ -122,6 +122,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TextEditorUI\ColorTheme.cs" />
+    <Compile Include="TextEditorUI\CompiledStatus.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="TextEditorUI\CompleteList\AutoCompleteItem.cs" />
     <Compile Include="BatchCompiler.cs">
       <SubType>Form</SubType>
@@ -323,6 +326,8 @@
     <None Include="Resources\type_icon\opcode.bmp" />
     <None Include="Resources\type_icon\procedure.bmp" />
     <None Include="Resources\type_icon\variable.bmp" />
+    <None Include="Resources\compiled_dark.png" />
+    <None Include="Resources\compiled.png" />
     <Content Include="SyntaxRules\User_SyntaxRules.xml" />
   </ItemGroup>
   <ItemGroup>

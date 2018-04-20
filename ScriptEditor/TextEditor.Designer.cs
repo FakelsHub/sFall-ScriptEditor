@@ -1926,7 +1926,7 @@ namespace ScriptEditor {
             // 
             this.roundtripToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.roundtripToolStripMenuItem.Name = "roundtripToolStripMenuItem";
-            this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.roundtripToolStripMenuItem.Text = "Roundtrip";
             this.roundtripToolStripMenuItem.ToolTipText = "Compile script into output folder and open decompiled script file.";

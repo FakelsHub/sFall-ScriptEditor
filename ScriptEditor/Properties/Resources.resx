@@ -1367,4 +1367,10 @@
   <data name="variable" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\type_icon\variable.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="compiled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\compiled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="compiled_dark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\compiled_dark.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

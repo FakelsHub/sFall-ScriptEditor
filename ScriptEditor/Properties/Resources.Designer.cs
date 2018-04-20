@@ -67,6 +67,20 @@ namespace ScriptEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap compiled {
+            get {
+                object obj = ResourceManager.GetObject("compiled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap compiled_dark {
+            get {
+                object obj = ResourceManager.GetObject("compiled_dark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.IO.UnmanagedMemoryStream CompileError {
             get {
                 return ResourceManager.GetStream("CompileError", resourceCulture);
@@ -102,25 +116,26 @@ namespace ScriptEditor.Properties {
         
         /// <summary>
         ///   Ищет локализованную строку, похожую на /*******************************************************************************
-        ///        Name:
-        ///        Location:
-        ///        Description:
+        ///        Name: 
+        ///        Location: 
+        ///        Description: 
         ///
-        ///            Created:
-        ///            Updated:
-        ///
+        ///            Created: sFall Script Editor
+        ///            Updated: 
         ///*******************************************************************************/
         ///
-        ////* Sfall script compiler options */
-        ///#define SFALL_SC_EVALUATION   (true)  // short-circuit evaluation
-        ///
         ////* Include Files */
-        ///#include &quot;define.h&quot;
-        ///#include &quot;command.h&quot;
-        ///#include &quot;sfall_headers\sfall.h&quot;
+        /////#include &quot;define.h&quot;
+        /////#include &quot;command.h&quot;
         ///
-        ////* Standard Script Procedures */
-        ///pr [остаток строки не уместился]&quot;;.
+        ////* Defines */
+        ///
+        ///
+        ////* Script Procedures */
+        ///procedure start;
+        ///
+        ///
+        ////* Local Variables which are saved. All Local Variables need to be prepended by LVAR [остаток строки не уместился]&quot;;.
         /// </summary>
         internal static string newScript {
             get {

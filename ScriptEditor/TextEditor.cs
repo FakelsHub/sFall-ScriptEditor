@@ -671,19 +671,26 @@ namespace ScriptEditor
             if (dgvErrors.RowCount > 0)
                 dgvErrors.Rows[0].Cells[0].Selected = false;
             
+            if (preprocess)
+                return success;
+
             if (!success) {
-                tabControl2.SelectedIndex = 2 - Convert.ToInt32(Settings.userCmdCompile);
-                if (showMessages && Settings.warnOnFailedCompile) {
-                    MessageBox.Show("Script " + tab.filename + " failed to compile.\nSee the output build and errors window log for details.", "Compile Script Error");
-                } else {
-                    parserLabel.Text = "Failed to compiled: " + tab.filename;
-                    parserLabel.ForeColor = Color.Firebrick;
-                    msg += "\r\n Compilation Failed!";
-                    CompileFail.Play();
-                    maximize_log();
+                parserLabel.Text = "Failed to compiled: " + tab.filename;
+                parserLabel.ForeColor = Color.Firebrick;
+                msg += "\r\n Compilation Failed! (See the output build and errors window log for details).";
+                CompileFail.Play();
+
+                if (showMessages) {
+                    if (Settings.warnOnFailedCompile) {
+                        tabControl2.SelectedIndex = 2 - Convert.ToInt32(Settings.userCmdCompile);
+                        maximize_log();
+                    } else 
+                        new CompiledStatus(false, this).ShowCompileStatus();
                 }
             } else {
-                parserLabel.Text = "Successfully compiled: " + tab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
+                if (showMessages)
+                    new CompiledStatus(true, this).ShowCompileStatus();
+                parserLabel.Text = "Compiled: " + tab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
                 parserLabel.ForeColor = Color.DarkGreen;
                 msg += (!preprocess)? "\r\n Compilation Successfully!": string.Empty;
             }
