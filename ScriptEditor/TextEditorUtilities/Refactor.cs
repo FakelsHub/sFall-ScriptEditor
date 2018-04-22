@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 using ScriptEditor.CodeTranslation;
+using ScriptEditor.TextEditorUI;
 
 namespace ScriptEditor.TextEditorUtilities
 {
     internal sealed class Refactor
     {
-        internal static void Rename(IParserInfo item, IDocument document, ProgramInfo pi)
+        internal static void Rename(IParserInfo item, IDocument document, TabInfo cTab, List<TabInfo> tabs)
         {
             string newName;
             switch ((NameType)item.Type()) {
@@ -20,7 +22,7 @@ namespace ScriptEditor.TextEditorUtilities
                     newName = lvar.name;
                     if (!ProcForm.CreateRenameForm(ref newName, "Local Variable") || newName == lvar.name)
                         return;
-                    if (pi.CheckExistsName(newName, NameType.LVar, lvar.fdeclared, lvar.d.declared)) {
+                    if (cTab.parseInfo.CheckExistsName(newName, NameType.LVar, lvar.fdeclared, lvar.d.declared)) {
                         MessageBox.Show("The local variable this name already exists.", "Unable to rename");
                         return;
                     }
@@ -32,7 +34,7 @@ namespace ScriptEditor.TextEditorUtilities
                     newName = gvar.name;
                     if (!ProcForm.CreateRenameForm(ref newName, "Script Variable") || newName == gvar.name)
                         return;
-                    if (pi.CheckExistsName(newName, NameType.GVar)) {
+                    if (cTab.parseInfo.CheckExistsName(newName, NameType.GVar)) {
                         MessageBox.Show("The variable/procedure or declared macro this name already exists.", "Unable to rename");
                         return;
                     }
@@ -43,8 +45,7 @@ namespace ScriptEditor.TextEditorUtilities
                     //RenameMacros(gvar.name, newName, RegexOptions.IgnoreCase, document); 
                     break;
                 case NameType.Proc:
-                    Procedure proc = (Procedure)item;
-                    RenameProcedure(proc.name, document, pi);
+                    RenameProcedure((Procedure)item, document, cTab, tabs);
                     return;
                 case NameType.Macro:
                     Macro macros = (Macro)item;
@@ -56,7 +57,7 @@ namespace ScriptEditor.TextEditorUtilities
                     string name = newName;
                     if (!ProcForm.CreateRenameForm(ref newName, "Local Macros") || newName == macros.name)
                         return;
-                    if (pi.CheckExistsName(newName, NameType.Macro)) {
+                    if (cTab.parseInfo.CheckExistsName(newName, NameType.Macro)) {
                         MessageBox.Show("The variable/procedure or declared macro this name already exists.", "Unable to rename");
                         return;
                     }
@@ -135,34 +136,53 @@ namespace ScriptEditor.TextEditorUtilities
             }
         }
 
-        // Search and replace procedure name in script text
-        internal static string RenameProcedure(string oldName, IDocument document, ProgramInfo pi)
+        internal static string RenameProcedure(string oldName, IDocument document, TabInfo cTab)
         {
-            string newName = oldName;
+            Procedure proc = new Procedure();
+            proc.name = oldName;
+            return RenameProcedure(proc, document, cTab);
+        }
+
+        // Search and replace procedure name in script text
+        internal static string RenameProcedure(Procedure proc, IDocument document, TabInfo cTab, List<TabInfo> tabs = null)
+        {
+            string newName = proc.name;
             // form ini
-            if (!ProcForm.CreateRenameForm(ref newName, "Procedure") || newName == oldName)
+            if (!ProcForm.CreateRenameForm(ref newName, "Procedure") || newName == proc.name)
                 return null;
             
-            if (pi.CheckExistsName(newName, NameType.Proc)) {
+            if (cTab.parseInfo.CheckExistsName(newName, NameType.Proc)) {
                 MessageBox.Show("The procedure/variable or declared macro with this name already exists.", "Unable to rename");
                 return null;  
             }
-            int differ = newName.Length - oldName.Length; 
+
+            bool extFile = false;
+            if (tabs != null && proc.filename != cTab.filename) {
+                switch (MessageBox.Show("Also renaming the procedure in a file: " + proc.filename.ToUpper() + " ?", "Procedure rename", MessageBoxButtons.YesNoCancel)) {
+                    case DialogResult.Cancel :
+                        return null;
+                    case DialogResult.Yes :
+                        extFile = true;
+                        break;
+                }
+            }
+
+            int differ = newName.Length - proc.name.Length;
             
-            string search = "[=,@ ]" + oldName + "[ ,;()\\s]";
+            string search = "[=,@ ]" + proc.name + "[ ,;()\\s]";
             RegexOptions option = RegexOptions.Multiline | RegexOptions.IgnoreCase;
             Regex s_regex = new Regex(search, option);
-            MatchCollection matches = s_regex.Matches(document.TextContent);
-            int replace_count = 0;
-            document.UndoStack.StartUndoGroup();
-            foreach (Match m in matches)
-            {
-                int offset = (differ * replace_count) + (m.Index + 1);
-                document.Replace(offset, (m.Length - 2), newName);
-                replace_count++;
+            Utilities.ReplaceDocumentText(s_regex, document, newName, differ);
+            
+            // replace to other file/tabs
+            if (extFile) {
+                TabInfo tab = TextEditor.CheckTabs(tabs, proc.fstart);
+                if (tab != null)
+                    Utilities.ReplaceDocumentText(s_regex, tab.textEditor.Document, newName, differ);
+                string text = System.IO.File.ReadAllText(proc.fstart);
+                Utilities.ReplaceCommonText(s_regex, ref text, newName, differ);
+                System.IO.File.WriteAllText(proc.fstart, text);
             }
-            document.UndoStack.EndUndoGroup();
-
             return newName;
         }
     }

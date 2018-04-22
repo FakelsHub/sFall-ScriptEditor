@@ -729,6 +729,34 @@ namespace ScriptEditor.TextEditorUtilities
     #endregion
 
     #region Script code text functions
+        public static int ReplaceCommonText(Regex s_regex, ref string document, string newText, int differ)
+        {
+            int replace_count = 0;
+            MatchCollection matches = s_regex.Matches(document);
+            
+            foreach (Match m in matches) {
+                int offset = (differ * replace_count) + (m.Index + 1);
+                document = document.Remove(offset, (m.Length - 2));
+                document = document.Insert(offset, newText);
+                replace_count++;
+            }
+            return replace_count;
+        }
+
+        public static void ReplaceDocumentText(Regex s_regex, IDocument document, string newText, int differ)
+        {
+            int replace_count = 0;
+            MatchCollection matches = s_regex.Matches(document.TextContent);
+            document.UndoStack.StartUndoGroup();
+            
+            foreach (Match m in matches) {
+                int offset = (differ * replace_count) + (m.Index + 1);
+                document.Replace(offset, (m.Length - 2), newText);
+                replace_count++;
+            }
+            document.UndoStack.EndUndoGroup();
+        }
+        
         internal static string GetProcedureCode(IDocument document, Procedure curProc)
         {
             if (curProc.d.start == -1 || curProc.d.end == -1) // for imported or w/o body procedure

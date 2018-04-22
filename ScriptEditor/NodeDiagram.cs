@@ -772,7 +772,7 @@ namespace ScriptEditor
         private void renameNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string nName = ((NodeCanvasItem)(renameNodeToolStripMenuItem.Tag)).GetNodeData.Name;
-            nName = Refactor.RenameProcedure(nName, scriptText, sourceTab.parseInfo);
+            nName = Refactor.RenameProcedure(nName, scriptText, sourceTab);
             if (nName != null) {
                 if (nName.IndexOf("node", StringComparison.OrdinalIgnoreCase) < 0) {
                     MessageBox.Show("The name of the procedure must contain the word 'Node'");

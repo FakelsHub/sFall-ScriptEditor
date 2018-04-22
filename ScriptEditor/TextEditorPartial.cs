@@ -630,7 +630,7 @@ namespace ScriptEditor
 
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Refactor.Rename((IParserInfo)renameToolStripMenuItem.Tag, currentDocument, currentTab.parseInfo);
+            Refactor.Rename((IParserInfo)renameToolStripMenuItem.Tag, currentDocument, currentTab, tabs);
         }
         #endregion
         
@@ -951,10 +951,8 @@ namespace ScriptEditor
             if (proc == null)
                 return;
             
-            string oldName = proc.name; //original name
-            
             ProcTree.HideSelection = false;
-            string newName = Refactor.RenameProcedure(oldName, currentDocument, currentTab.parseInfo);
+            string newName = Refactor.RenameProcedure(proc, currentDocument, currentTab, tabs);
             ProcTree.HideSelection = true;
             
             if (newName != null) {

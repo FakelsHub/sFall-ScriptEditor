@@ -351,18 +351,14 @@ namespace ScriptEditor
                     }
                 } else {
                     //Check if the file is already open
-                    for (int i = 0; i < tabs.Count; i++)
-                    {
-                        if (string.Compare(tabs[i].filepath, file, true) == 0) {
-                            if (seltab)
-                                tabControl1.SelectTab(i);
-                            ShowMe();
-                            if (!alreadyOpen || MessageBox.Show("This file is already open!\nDo you want to open another one same file?", "Question",
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                                return tabs[i];
-                            else
-                                break;
-                        }
+                    var tab = CheckTabs(tabs, file);
+                    if (tab != null) {
+                        if (seltab)
+                            tabControl1.SelectTab(tab.index);
+                        ShowMe();
+                        if (!alreadyOpen || MessageBox.Show("This file is already open!\nDo you want to open another one same file?", "Question",
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                            return tab;
                     }
                 }
             }
@@ -2550,6 +2546,17 @@ namespace ScriptEditor
                 e.Change = false;
                 ForceParseScript();
             }
+        }
+        #endregion
+
+        #region Static Functions
+        internal static TabInfo CheckTabs(List<TabInfo> tabs, string checkFile)
+        {
+            foreach (TabInfo tab in tabs) {
+                if (string.Compare(tab.filepath, checkFile, true) == 0)
+                    return tab;
+            }
+            return null;
         }
         #endregion
     }
