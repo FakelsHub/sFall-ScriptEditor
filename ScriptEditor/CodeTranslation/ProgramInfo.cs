@@ -63,6 +63,8 @@ namespace ScriptEditor.CodeTranslation
 
     public class ProgramInfo
     {
+        public static readonly SortedDictionary<string, Macro> macrosGlobal = new SortedDictionary<string, Macro>();
+
         public /*readonly*/ Procedure[] procs;
         public readonly Variable[] vars;
         public static Dictionary<string, string> opcodes;
@@ -70,6 +72,7 @@ namespace ScriptEditor.CodeTranslation
         private readonly Dictionary<string, Procedure> procLookup;
         private readonly Dictionary<string, Variable> varLookup;
         public readonly SortedDictionary<string, Macro> macros;
+
         public bool parsed = false;
         public bool parseData = false;   // Data Variables and Procedures received.
         public bool parseError = false;
@@ -93,10 +96,17 @@ namespace ScriptEditor.CodeTranslation
                 return procLookup[token];
             else if (varLookup.ContainsKey(token))
                 return varLookup[token];
-            else if (macros.ContainsKey(_token)) // все макросы регистро зависимы, поэтому их поиск должен быть с учетом регистра
-                return macros[_token];
 
-            return null;
+            return Macros(_token); // все макросы регистро зависимы, поэтому их поиск должен быть с учетом регистра
+        }
+
+        public Macro Macros(string _token) {
+            Macro macro;
+
+            if (!macros.TryGetValue(_token, out macro)) {
+                macrosGlobal.TryGetValue(_token, out macro);
+            }
+            return macro;
         }
 
         public static string LookupOpcodesToken(string token)
@@ -317,8 +327,14 @@ namespace ScriptEditor.CodeTranslation
             SortedList<string, string> _macros = new SortedList<string, string>(StringComparer.Ordinal);
             foreach (var entry in new SortedDictionary<string, Macro>(macros)) {
                 if (entry.Key.IndexOf(part, StringComparison.OrdinalIgnoreCase) == 0) {
-                    string def = (entry.Value.def.Length > 300) ? "No preview macros." : entry.Value.def;
-                    _macros.Add(entry.Value.name, "|Define:\n" + def + "|M");
+                    AddMacrosList(_macros, entry);
+                }
+            }
+            foreach (var entry in macrosGlobal) {
+                if (entry.Key.IndexOf(part, StringComparison.OrdinalIgnoreCase) == 0) {
+                    if (_macros.ContainsKey(entry.Value.name))
+                        continue;
+                    AddMacrosList(_macros, entry);
                 }
             }
             foreach (var entry in _macros) 
@@ -335,6 +351,12 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
             return matches;
+        }
+
+        private static void AddMacrosList(SortedList<string, string> _macros, KeyValuePair<string, Macro> entry)
+        {
+            string def = (entry.Value.def.Length > 300) ? "No preview macros." : entry.Value.def;
+            _macros.Add(entry.Value.name, "|Define:\n" + def + "|M");
         }
 
         public static List<string> LookupOpcode(string part)

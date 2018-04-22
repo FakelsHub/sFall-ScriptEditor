@@ -42,6 +42,8 @@ namespace ScriptEditor
 
             firstParse = true;
             
+            GetMacros.GetGlobalMacros(Settings.pathHeadersFiles);
+            
             DEBUGINFO("First Parse...");
             new Parser(cTab, this);
             

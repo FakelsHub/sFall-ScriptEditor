@@ -8,6 +8,30 @@ namespace ScriptEditor.CodeTranslation
 {
     internal class GetMacros
     {
+        public static string[] GetHeadersFiles(string dirHeaders)
+        {
+            if (dirHeaders == null || !Directory.Exists(dirHeaders)) {
+                Program.printLog("   <GetHeaders> Directory of headers not found: '" + (dirHeaders ?? "<unset>") + "'");
+                return null;
+            }
+            return Directory.GetFiles(dirHeaders, "*.h", SearchOption.AllDirectories);
+        }
+
+        public static void GetGlobalMacros(string dirHeaders)
+        {
+            string[] headerFiles = GetHeadersFiles(dirHeaders);
+            if (headerFiles == null) return;
+
+            ProgramInfo.macrosGlobal.Clear();
+            foreach (string file in headerFiles)
+            {
+                new GetMacros(File.ReadAllLines(file, (Settings.saveScriptUTF8)
+                                                       ? Encoding.UTF8 
+                                                       : Encoding.Default),
+                                                       file, "", ProgramInfo.macrosGlobal, false);
+            }
+        }
+
         public GetMacros(string file, string dir, SortedDictionary<string, Macro> macros)
         { 
             if (!File.Exists(file)) {
@@ -20,13 +44,13 @@ namespace ScriptEditor.CodeTranslation
                                                    file, dir, macros);
         }
 
-        public GetMacros(string[] lines, string file, string dir, SortedDictionary<string, Macro> macros)
+        public GetMacros(string[] lines, string file, string dir, SortedDictionary<string, Macro> macros, bool include = true)
         {
             if (dir == null)
                 dir = Path.GetDirectoryName(file);
             for (int i = 0; i < lines.Length; i++) {
                 lines[i] = lines[i].Replace('\t', ' ').TrimStart();
-                if (lines[i].StartsWith(Parser.INCLUDE)) {
+                if (include && lines[i].StartsWith(Parser.INCLUDE)) {
                     string[] text = lines[i].Split('"');
                     if (text.Length < 2)
                         continue;

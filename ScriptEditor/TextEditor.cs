@@ -1193,7 +1193,8 @@ namespace ScriptEditor
                         findReferencesToolStripMenuItem.Enabled = false;
                         findDeclerationToolStripMenuItem.Enabled = true;
                         findDefinitionToolStripMenuItem.Enabled = false;
-                        if (((Macro)item).fdeclared == currentTab.filepath)
+                        Macro mcr = (Macro)item;
+                        if (!ProgramInfo.macrosGlobal.ContainsKey(mcr.name) && mcr.fdeclared == currentTab.filepath)
                             renameToolStripMenuItem.Text += ": Local Macros";
                         else {
                             renameToolStripMenuItem.Text += ": Global Macros";
