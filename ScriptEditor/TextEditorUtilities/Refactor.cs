@@ -176,12 +176,14 @@ namespace ScriptEditor.TextEditorUtilities
             
             // replace to other file/tabs
             if (extFile) {
-                TabInfo tab = TextEditor.CheckTabs(tabs, proc.fstart);
-                if (tab != null)
-                    Utilities.ReplaceDocumentText(s_regex, tab.textEditor.Document, newName, differ);
                 string text = System.IO.File.ReadAllText(proc.fstart);
                 Utilities.ReplaceCommonText(s_regex, ref text, newName, differ);
                 System.IO.File.WriteAllText(proc.fstart, text);
+                TabInfo tab = TextEditor.CheckTabs(tabs, proc.fstart);
+                if (tab != null) {
+                    Utilities.ReplaceDocumentText(s_regex, tab.textEditor.Document, newName, differ);
+                    tab.FileTime = System.IO.File.GetLastWriteTime(proc.fstart);
+                }
             }
             return newName;
         }

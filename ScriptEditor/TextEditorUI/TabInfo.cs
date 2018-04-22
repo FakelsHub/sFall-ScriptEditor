@@ -37,6 +37,18 @@ namespace ScriptEditor.TextEditorUI
                 
         public bool changed;
 
+        private DateTime fileTime;
+        public DateTime FileTime
+        { 
+            set { fileTime = value; }
+        }
+
+        public bool CheckFileTime()
+        { 
+            DateTime time = System.IO.File.GetLastWriteTime(filepath);
+            return (time == fileTime);
+        }
+
         /// <summary>
         /// The path to associated message file.
         /// </summary>

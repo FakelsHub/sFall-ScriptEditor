@@ -262,7 +262,7 @@ namespace ScriptEditor
             if (sender != null && currentTab.shouldParse) {
                 if (currentTab.shouldParse && !currentTab.needsParse) {
                     currentTab.needsParse = true;
-                    parserLabel.Text = "Parser: Update change";
+                    parserLabel.Text = "Parser: Update changes";
                 }
                 // Update parse info
                 ParseScript(4);

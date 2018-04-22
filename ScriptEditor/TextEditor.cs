@@ -251,6 +251,22 @@ namespace ScriptEditor
                 autoComplete.Close();
         }
 
+        private void TextEditor_Deactivate(object sender, EventArgs e)
+        {
+            if (currentTab == null)
+                return;
+            currentActiveTextAreaCtrl.TextArea.MouseEnter -= TextArea_SetFocus;
+        }
+
+        private void TextEditor_Activated(object sender, EventArgs e)
+        {
+            if (currentTab == null)
+                return;
+            currentActiveTextAreaCtrl.TextArea.MouseEnter += TextArea_SetFocus;
+            
+            CheckChandedFile();
+        }
+
         private void TextEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             for (int i = 0; i < tabs.Count; i++) {
@@ -453,12 +469,15 @@ namespace ScriptEditor
                     
                     FirstParseScript(ti); // First Parse
 
-                    if (!createNew && Settings.storeLastPosition)
-                        te.ActiveTextAreaControl.JumpTo(Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant()));
-
+                    if (!createNew && Settings.storeLastPosition) {
+                        int pos = Settings.GetLastScriptPosition(ti.filename.ToLowerInvariant());
+                        te.ActiveTextAreaControl.Caret.Line = pos;
+                        te.ActiveTextAreaControl.CenterViewOn(pos, -1);
+                    }
                     if (Settings.autoOpenMsgs && ti.filepath != null) 
                         AssossciateMsg(ti, false);
                 }
+                ti.FileTime = File.GetLastWriteTime(ti.filepath);
             }
             // TE events
             te.TextChanged += textChanged;
@@ -475,6 +494,32 @@ namespace ScriptEditor
                 dialogNodesDiagramToolStripMenuItem_Click(null, null);
 
             return ti;
+        }
+ 
+        private void CheckChandedFile()
+        {
+            if (!currentTab.CheckFileTime()) {
+                this.Activated -= TextEditor_Activated;
+                DialogResult result = MessageBox.Show(currentTab.filepath +
+                                                      "\nThe document file was changed in an external editor." +
+                                                      "\nReload the data from the file of this document?",
+                                                      "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes) {
+                    currentTab.FileTime = File.GetLastWriteTime(currentTab.filepath);
+                    int caretLine = currentActiveTextAreaCtrl.Caret.Line;
+                    int scrollValue = currentActiveTextAreaCtrl.VScrollBar.Value;
+                    currentTab.textEditor.BeginUpdate();
+                    currentTab.textEditor.LoadFile(currentTab.filepath, false, true);
+                    currentActiveTextAreaCtrl.VScrollBar.Value = scrollValue;
+                    currentActiveTextAreaCtrl.Caret.Line = caretLine;
+                    currentTab.textEditor.EndUpdate();
+
+                    currentTab.changed = false;
+                    SetTabTextChange(currentTab.index);
+                } else
+                    currentTab.FileTime = File.GetLastWriteTime(currentTab.filepath);
+                this.Activated += TextEditor_Activated;
+            }
         }
 
         private void Save(TabInfo tab, bool close = false)
@@ -507,6 +552,8 @@ namespace ScriptEditor
                 File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage 
                                                               : (Settings.saveScriptUTF8) ? new UTF8Encoding(false) 
                                                               : Encoding.Default);
+                if (!close)
+                    tab.FileTime = File.GetLastWriteTime(tab.filepath);
                 tab.changed = false;
                 SetTabTextChange(tab.index);
                 this.Text = SSE + tab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
@@ -565,7 +612,7 @@ namespace ScriptEditor
             while (tab.nodeFlowchartTE.Count > 0)
                 tab.nodeFlowchartTE[0].CloseEditor(true);
 
-            bool skip = tab.changed;
+            bool skip = tab.changed; // если изменен, то пропустить сохранение состояний Folds в методе KeepScriptSetting
             if (tab.changed) {
                 switch (MessageBox.Show("Save changes to " + tab.filename + "?", "Message", MessageBoxButtons.YesNoCancel)) {
                     case DialogResult.Yes:
@@ -605,11 +652,14 @@ namespace ScriptEditor
             }
         }
 
-        private static void KeepScriptSetting(TabInfo tab, bool skip)
+        private void KeepScriptSetting(TabInfo tab, bool skip)
         {
             if (!skip && tab.filepath != null && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
-                CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document);
-                File.WriteAllText(tab.filepath, tab.textEditor.Text, (Settings.saveScriptUTF8) ? new UTF8Encoding(false) : Encoding.Default);
+                if (tab.CheckFileTime()) {
+                    CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document);
+                    var encoder = (Settings.saveScriptUTF8) ? new UTF8Encoding(false) : Encoding.Default;
+                    File.WriteAllText(tab.filepath, tab.textEditor.Text, encoder);
+                }
             }
 
             // store last script position
@@ -743,7 +793,9 @@ namespace ScriptEditor
                 // text editor set focus 
                 currentActiveTextAreaCtrl.Select();
                 ControlFormStateOn_Off();
-                this.Text = SSE + currentTab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : ""); 
+                this.Text = SSE + currentTab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
+
+                if (sender != null) CheckChandedFile();
             }
         }
 
@@ -2317,20 +2369,6 @@ namespace ScriptEditor
             }
             currentActiveTextAreaCtrl.TextArea.Focus();
             currentActiveTextAreaCtrl.TextArea.Select();
-        }
-
-        private void TextEditor_Deactivate(object sender, EventArgs e)
-        {
-            if (currentTab == null)
-                return;
-            currentActiveTextAreaCtrl.TextArea.MouseEnter -= TextArea_SetFocus;
-        }
-
-        private void TextEditor_Activated(object sender, EventArgs e)
-        {
-            if (currentTab == null)
-                return;
-            currentActiveTextAreaCtrl.TextArea.MouseEnter += TextArea_SetFocus;
         }
 
         private void ViewArgsStripButton_CheckedChanged(object sender, EventArgs e)
