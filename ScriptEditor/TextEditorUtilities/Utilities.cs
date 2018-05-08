@@ -486,7 +486,8 @@ namespace ScriptEditor.TextEditorUtilities
                 if (segmentS.Offset + len + 4 <= document.TextLength) {
                     if (document.GetLineSegment(block.end + 1).Length == 0) {
                         if (block.begin > 0 && document.GetLineSegment(block.begin - 1).Length == 0) {
-                            len += inc_s = 2;
+                            len += 2;
+                            inc_s = -2;
                         }
                     }
                 }

@@ -830,7 +830,7 @@ namespace ScriptEditor {
             this.dgvErrors.AllowUserToDeleteRows = false;
             this.dgvErrors.AllowUserToResizeRows = false;
             this.dgvErrors.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dgvErrors.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dgvErrors.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvErrors.ColumnHeadersHeight = 20;
             this.dgvErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvErrors.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -847,7 +847,7 @@ namespace ScriptEditor {
             this.dgvErrors.RowHeadersVisible = false;
             this.dgvErrors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvErrors.Size = new System.Drawing.Size(997, 28);
+            this.dgvErrors.Size = new System.Drawing.Size(998, 28);
             this.dgvErrors.TabIndex = 0;
             this.dgvErrors.TabStop = false;
             this.dgvErrors.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
@@ -1208,13 +1208,13 @@ namespace ScriptEditor {
             this.DecIndentStripButton,
             this.CommentStripButton,
             this.toolStripSeparator10,
-            this.Edit_toolStripButton,
+            this.Search_toolStripButton,
             this.toolStripSeparator12,
             this.Back_toolStripButton,
             this.Forward_toolStripButton,
             this.GotoProc_StripButton,
             this.toolStripSeparator21,
-            this.Search_toolStripButton,
+            this.Edit_toolStripButton,
             this.toolStripSeparator42,
             this.Script_toolStripSplitButton,
             this.Headers_toolStripSplitButton,
@@ -2024,9 +2024,9 @@ namespace ScriptEditor {
             this.splitDocumentToolStripMenuItem,
             this.toolStripSeparator1,
             this.Settings_ToolStripMenuItem,
+            this.encodingMessagesToolStripMenuItem,
             this.toolStripSeparator5,
             this.win32RenderTextToolStripMenuItem,
-            this.encodingMessagesToolStripMenuItem,
             this.toolStripSeparator30,
             this.ParsingErrorsToolStripMenuItem,
             this.showIndentLineToolStripMenuItem,
@@ -2124,9 +2124,10 @@ namespace ScriptEditor {
             this.ParsingErrorsToolStripMenuItem.CheckOnClick = true;
             this.ParsingErrorsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ParsingErrorsToolStripMenuItem.Name = "ParsingErrorsToolStripMenuItem";
+            this.ParsingErrorsToolStripMenuItem.ShowShortcutKeys = false;
             this.ParsingErrorsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.ParsingErrorsToolStripMenuItem.Text = "Show parsing errors";
-            this.ParsingErrorsToolStripMenuItem.ToolTipText = "Output the parser errors in the log and underline them in the script code.";
+            this.ParsingErrorsToolStripMenuItem.Text = "Highlight parsing errors";
+            this.ParsingErrorsToolStripMenuItem.ToolTipText = "Highlight (underscore) parser errors in the script code.";
             this.ParsingErrorsToolStripMenuItem.Click += new System.EventHandler(this.ParsingErrorsToolStripMenuItem_Click);
             // 
             // showIndentLineToolStripMenuItem

@@ -110,14 +110,13 @@ namespace ScriptEditor.TextEditorUI
         // for parser
         public static string ParserLog(string log, TabInfo tab)
         {
-            if (tab.parserErrors.Count > 0) {
-                List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.TextMarker.ToList();
-                foreach (TextMarker m in marker) { 
-                    if (m.TextMarkerType == TextMarkerType.WaveLine) 
-                        tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
-                }
-                tab.parserErrors.Clear();
+            List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.TextMarker.ToList();
+            foreach (TextMarker m in marker) { 
+                if (m.TextMarkerType == TextMarkerType.WaveLine) 
+                    tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
             }
+            if (tab.parserErrors.Count > 0) 
+                tab.parserErrors.Clear();
             
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("------ Script: {0} < Parse Time: {1} > ------\r\n", 
@@ -129,8 +128,7 @@ namespace ScriptEditor.TextEditorUI
                 if (sLog[i].StartsWith("[Error]")) {
                     sb.AppendLine();
                     warn = false;
-                    if (TextEditor.ParsingErrors)
-                        HighlightError(sLog[i], tab);
+                    HighlightError(sLog[i], tab);
                 }
                 if (sLog[i].StartsWith("[Warning]")) {
                     if (!Settings.parserWarn) {
@@ -163,7 +161,7 @@ namespace ScriptEditor.TextEditorUI
             if (ePosition.line >= total)
                 ePosition.line = total - 1;
 
-            if (Path.GetFileName(fpath) == tab.filename) {
+            if (TextEditor.ParsingErrors && Path.GetFileName(fpath) == tab.filename) {
                 LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
                 TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightError);
                 tm.ToolTip = message;

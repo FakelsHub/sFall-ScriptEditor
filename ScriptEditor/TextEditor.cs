@@ -82,7 +82,7 @@ namespace ScriptEditor
            //this.UpdateStyles();
 
            Program.SetDoubleBuffered(panel1);
-           //Program.SetDoubleBuffered(ProcTree);
+           Program.SetDoubleBuffered(dgvErrors);
         }
 
         #region Main form control
@@ -555,8 +555,8 @@ namespace ScriptEditor
                 if (!close)
                     tab.FileTime = File.GetLastWriteTime(tab.filepath);
                 tab.changed = false;
-                SetTabTextChange(tab.index);
-                this.Text = SSE + tab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
+                if (!close && tab.index == tabControl1.SelectedIndex)
+                    SetTabTextChange(tab.index);
             }
            
         }
@@ -596,6 +596,7 @@ namespace ScriptEditor
                     parserLabel.Text = "Parser: Wait for update";
                     ParseScript();
                 }
+                this.Text = SSE + tab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
             }
         }
 
@@ -655,8 +656,7 @@ namespace ScriptEditor
         private void KeepScriptSetting(TabInfo tab, bool skip)
         {
             if (!skip && tab.filepath != null && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
-                if (tab.CheckFileTime()) {
-                    CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document);
+                if (tab.CheckFileTime() && CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document)) {
                     var encoder = (Settings.saveScriptUTF8) ? new UTF8Encoding(false) : Encoding.Default;
                     File.WriteAllText(tab.filepath, tab.textEditor.Text, encoder);
                 }
@@ -684,7 +684,7 @@ namespace ScriptEditor
             }
         }
 
-        private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false)
+        private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false, bool showIcon = true)
         {
             msg = String.Empty;
             if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
@@ -734,11 +734,11 @@ namespace ScriptEditor
                         new CompiledStatus(false, this).ShowCompileStatus();
                 }
             } else {
-                if (showMessages)
+                if (showMessages && showIcon)
                     new CompiledStatus(true, this).ShowCompileStatus();
                 parserLabel.Text = "Compiled: " + tab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
                 parserLabel.ForeColor = Color.DarkGreen;
-                msg += (!preprocess)? "\r\n Compilation Successfully!": string.Empty;
+                msg += "\r\n Compilation Successfully!";
             }
             return success;
         }
@@ -746,6 +746,10 @@ namespace ScriptEditor
         // Called when creating a new document and when switching tabs
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
+            // останавливаем таймеры парсеров
+            intParserTimer.Stop();
+            extParserTimer.Stop();
+
             if (tabControl1.SelectedIndex == -1) {
                 currentTab = null;
                 parserLabel.Text = (Settings.enableParser) ? "Parser: No file" : parseoff;
@@ -1813,7 +1817,7 @@ namespace ScriptEditor
             }
             dgvErrors.Rows.Clear();
             string msg;
-            bool result = Compile(currentTab, out msg);
+            bool result = Compile(currentTab, out msg, showIcon: false);
             tbOutput.Text = currentTab.buildLog = msg;
             if (result) {
                 Open(new Compiler().GetOutputPath(currentTab.filepath), OpenType.File, false);

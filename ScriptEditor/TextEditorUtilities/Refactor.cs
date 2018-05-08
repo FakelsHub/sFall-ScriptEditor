@@ -157,7 +157,7 @@ namespace ScriptEditor.TextEditorUtilities
             }
 
             bool extFile = false;
-            if (tabs != null && proc.filename != cTab.filename) {
+            if (tabs != null && proc.filename != cTab.filename.ToLowerInvariant()) {
                 switch (MessageBox.Show("Also renaming the procedure in a file: " + proc.filename.ToUpper() + " ?", "Procedure rename", MessageBoxButtons.YesNoCancel)) {
                     case DialogResult.Cancel :
                         return null;

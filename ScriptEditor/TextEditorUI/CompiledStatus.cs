@@ -20,6 +20,7 @@ namespace ScriptEditor.TextEditorUI
             Cursor          = Cursors.IBeam;
             StartPosition   = FormStartPosition.Manual;
             FormBorderStyle = FormBorderStyle.None;
+            Owner           = frm;
             ShowInTaskbar   = false;
             MinimumSize     = new Size(96, 96);
             Size            = MinimumSize;
@@ -51,7 +52,7 @@ namespace ScriptEditor.TextEditorUI
 
             lbl0.Font = lbl1.Font = new Font(lbl0.Font.FontFamily, 9.5f, FontStyle.Bold);
             lbl0.BackColor = lbl1.BackColor = Color.Transparent;
-            lbl0.ForeColor = lbl1.ForeColor = status ? Color.GhostWhite : Color.Black;
+            lbl0.ForeColor = lbl1.ForeColor = status ? Color.GhostWhite : Color.LemonChiffon;
 
             Controls.Add(lbl0);
             Controls.Add(lbl1);

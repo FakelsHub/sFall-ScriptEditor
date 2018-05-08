@@ -20,7 +20,8 @@ namespace ScriptEditor.CodeTranslation
             int minStart = -1;
             fileName = fileName.ToLowerInvariant();
             for (int i = 0; i < procs.Length; i++) {
-                if (procs[i].filename != fileName || procs[i].d.start >= procs[i].d.end)
+                string fstart = Path.GetFileName(procs[i].fstart ?? string.Empty).ToLowerInvariant();
+                if (fstart != fileName || procs[i].d.start >= procs[i].d.end)
                     continue;
                 int dstart = procs[i].d.start - 1;
                 if (minStart > dstart || minStart == -1)
@@ -66,8 +67,9 @@ namespace ScriptEditor.CodeTranslation
 
         const string FLDC = " //_FLDC_";
 
-        internal static void SaveMarkFoldCollapsed(IDocument document)
+        internal static bool SaveMarkFoldCollapsed(IDocument document)
         {
+            bool result = false;
             foreach (FoldMarker fm in document.FoldingManager.FoldMarker)
             {
                 if (fm.FoldType > FoldType.Region || !fm.IsFolded)
@@ -77,7 +79,9 @@ namespace ScriptEditor.CodeTranslation
                 string line = document.GetText(ls);
                 if (!line.EndsWith(FLDC)) 
                     document.Insert(ls.Offset + ls.Length, FLDC);
+                result = true;
             }
+            return result;
         }
 
         internal static void LoadFoldCollapse(IDocument document)

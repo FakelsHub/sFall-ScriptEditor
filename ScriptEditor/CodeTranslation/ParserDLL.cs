@@ -225,6 +225,8 @@ namespace ScriptEditor.CodeTranslation
 
         private int ParseProcedureArguments(int start, int end, string vName, string[] code)
         {
+            if (start > code.Length) return -1;
+
             int len = Parser.VARIABLE.Length + vName.Length;
             for (int i = start - 1; i > end; i--)
             {

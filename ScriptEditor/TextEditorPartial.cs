@@ -61,7 +61,8 @@ namespace ScriptEditor
 
             if (cTab.parseInfo.parseError) {
                 tabControl2.SelectedIndex = 2;
-                maximize_log();
+                if (WindowState != FormWindowState.Minimized)
+                    maximize_log();
             }
 
             firstParse = false;
@@ -105,7 +106,7 @@ namespace ScriptEditor
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
             } else {
                 new Parser(currentTab, this);
-                CodeFolder.UpdateFolding(currentTab.textEditor.Document, currentTab.filename, currentTab.parseInfo.procs);
+                CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
                 ParserCompleted(currentTab);
             }
         }
@@ -113,7 +114,7 @@ namespace ScriptEditor
         // Delay timer for internal parsing
         void InternalParser_Tick(object sender, EventArgs e)
         {
-            if (currentTab == null /*|| !currentTab.shouldParse*/) {
+            if (currentTab == null || !currentTab.shouldParse) {
                 intParserTimer.Stop();
                 DEBUGINFO("Stop: Internal Parser");
                 return;
@@ -128,7 +129,7 @@ namespace ScriptEditor
                     parserLabel.ForeColor = Color.Crimson;
 
                     new Parser(currentTab, this);
-                    CodeFolder.UpdateFolding(currentTab.textEditor.Document, currentTab.filename, currentTab.parseInfo.procs);
+                    CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
                     ParserCompleted(currentTab);
                 } else {
                     CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
@@ -239,17 +240,21 @@ namespace ScriptEditor
         private void OutputErrorLog(TabInfo tab)
         {
             dgvErrors.Rows.Clear();
-            if (Settings.enableParser && tsmShowParserLog.Checked) {
+            if (Settings.enableParser) {
                 tbOutputParse.Text = tab.parserLog;
-                foreach (Error err in tab.parserErrors)
-                    dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
+                if (tsmShowParserLog.Checked) {
+                    foreach (Error err in tab.parserErrors)
+                        dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
+                }
             }
-            if (tab.buildLog != null && tsmShowBuildLog.Checked) {
+            if (tab.buildLog != null) {
                 tbOutput.Text = tab.buildLog;
-                dgvErrors.Rows.Add("Build Log");
-                dgvErrors.Rows[dgvErrors.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Gainsboro;
-                foreach (Error err in tab.buildErrors)
-                    dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
+                if (tsmShowBuildLog.Checked) {
+                    dgvErrors.Rows.Add("Build Log");
+                    dgvErrors.Rows[dgvErrors.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Gainsboro;
+                    foreach (Error err in tab.buildErrors)
+                        dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
+                }
             }
         }
 

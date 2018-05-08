@@ -239,12 +239,8 @@ namespace ScriptEditor.CodeTranslation
                     z = pName.IndexOf(BEGIN);
                     if (z > 0)
                         pName = pName.Remove(z);
-                    
-                    z = pName.IndexOf(COMMENT);
-                    if (z < 0)
-                        z = pName.IndexOf("/*");
-                    if (z > 0)
-                        pName = pName.Remove(z);
+
+                    RemoveCommentLine(ref pName, 0);
                     
                     pName = pName.Trim();
                     //
@@ -284,7 +280,7 @@ namespace ScriptEditor.CodeTranslation
                     if (bufferSSL[i].Length <= (PROC_LEN + pLen))
                         continue; // broken declare
 
-                   RemoveDebrisLine(ref bufferSSL[i], pLen);
+                    RemoveCommentLine(ref bufferSSL[i], PROC_LEN + pLen);
                     
                     if (bufferSSL[i].LastIndexOf(';') >= (PROC_LEN + pLen))
                         return i; //found
@@ -308,7 +304,7 @@ namespace ScriptEditor.CodeTranslation
                     continue;
                 
                 // убираем лишнее
-                RemoveDebrisLine(ref bufferSSL[i], 0-PROC_LEN);
+                RemoveCommentLine(ref bufferSSL[i], 0);
                 
                 if (bufferSSL[i].EndsWith(BEGIN)) {
                     if (!bufferSSL[i].StartsWith(PROCEDURE) && !bufferSSL[i - 1].StartsWith(PROCEDURE)) 
@@ -357,7 +353,7 @@ namespace ScriptEditor.CodeTranslation
                         continue; //не совпадает, ищем дальше
                     _proc++; // совпадает, проверяем это процедура или ее объявление
                     // убираем лишнее
-                    RemoveDebrisLine(ref bufferSSL[i], pLen);
+                    RemoveCommentLine(ref bufferSSL[i], PROC_LEN + pLen);
                     if (bufferSSL[i].EndsWith(BEGIN)) {
                         block.begin = i; //да это процедура, присваеваем значение строки в begin
                         _begin++;
@@ -421,13 +417,23 @@ namespace ScriptEditor.CodeTranslation
         /// Удаляет все комментарии из текстовой строки
         /// </summary>
         /// <param name="pLen">Позиция в строке откуда будет начат поиск</param>
-        private static void RemoveDebrisLine(ref string buff, int pLen)
+        private static void RemoveCommentLine(ref string buff, int pLen)
         {
-            int z = buff.IndexOf(COMMENT, PROC_LEN + pLen);
-            if (z < 0)
-                z = buff.IndexOf("/*", PROC_LEN + pLen);
+            int z = CheckAtComment(buff, pLen);
             if (z > 0)
                 buff = buff.Remove(z).TrimEnd();
+        }
+
+        private static int CheckAtComment(string buff, int pLen)
+        {
+            int z = buff.IndexOf(COMMENT, pLen);
+            int y = buff.IndexOf("/*", pLen);
+            if (z > 0 && y > 0)
+                z = Math.Min(z, y);
+            else
+                z = Math.Max(z, y);
+
+            return z;
         }
 
         // Comment block parse
@@ -437,23 +443,23 @@ namespace ScriptEditor.CodeTranslation
                 return true;
 
             int cStart = sLine.IndexOf("/*");
-            if (cStart != -1 && _comm == 0) { // sLine.StartsWith("/*")
+            if (cStart != -1 && _comm == 0) {
                 // удаление из строки закомментированного блока '/* ... */'
                 int cEnd = sLine.IndexOf("*/");
                 if (cEnd < 0) {
                     _comm++;
-                    sLine = string.Empty; // clear comment line
+                    sLine = sLine.Remove(cStart); // clear comment line
                     return true;
                 } else 
                     sLine = sLine.Remove(cStart, (cEnd + 2) - cStart).Insert(cStart, " ").TrimStart();
             }
             else if (_comm > 0) {
-                if (sLine.IndexOf("*/") > 0 || sLine.StartsWith("*/")) {
+                int cEnd = sLine.IndexOf("*/");
+                if (cEnd != -1) {
                     _comm--;
                     if (sLine.Length > 2) {
                         // удаление комментария из строки с закрывающим тэгом '*/'
-                        cStart = sLine.IndexOf("*/");
-                        sLine = sLine.Remove(0, cStart + 2).TrimStart();
+                        sLine = sLine.Remove(0, cEnd + 2).TrimStart();
                     }
                 } else {
                     sLine = string.Empty; // clear comment line
@@ -470,9 +476,7 @@ namespace ScriptEditor.CodeTranslation
                 // удаление двойных пробелов между словом процедура и ее именем
                 int z = sLine.IndexOf("  ", 9);
                 if (z > 0) {
-                    int x = sLine.IndexOf("//", 9);
-                    if (x == -1)
-                        x = sLine.IndexOf("/*", 9);
+                    int x = CheckAtComment(sLine, 9);
                     
                     int y = sLine.IndexOfAny(new char[] {';', ')'}, 9);
                     if (y > 0) { // определяем наименьшее значение x и y
@@ -590,7 +594,7 @@ namespace ScriptEditor.CodeTranslation
                 string buffer = bufferSSL[i].TrimStart().ToLower();
                 if (CommentBlockParse(ref buffer, ref _comm))
                     continue;
-                RemoveDebrisLine(ref buffer, -10);
+                RemoveCommentLine(ref buffer, 0);
 
                 if (ifblock.begin == -1 && buffer.StartsWith("#if ")) {
                     ifblock.begin = i;
