@@ -281,10 +281,10 @@ namespace ScriptEditor.CodeTranslation
                     string wrapped = "";
                     int lineLen = 0, wrap = 0;
                     foreach (String word in words) {
-                        if ((lineLen + word.Length) > 150 || word == "|") {
-                            wrapped += "\n";
+                        if ((lineLen + word.Length) > 150 || word == "|" || word == "||") {
+                            wrapped += (word == "||") ? "\n\n" : "\n";
                             lineLen = 0;
-                            if (word == "|") {
+                            if (word == "|" || word == "||") {
                                 if (Settings.shortDesc && ++wrap > 1) {
                                     wrap = 0;
                                     break;
