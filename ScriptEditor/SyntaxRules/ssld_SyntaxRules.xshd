@@ -24,7 +24,6 @@
     <Property name = "BlockCommentBegin" value = "/*" />
     <Property name = "BlockCommentEnd" value = "*/" />
     <Property name = "ProceduresColor" value = "Wheat" />
-    <Property name = "TipsTextColor" value = "Wheat" />
   </Properties>
 
   <Digits name = "Digits" bold = "false" italic = "false" color = "LightSalmon"/>
@@ -1033,6 +1032,17 @@
         <Key word = "get_cursor_mode" />
         <Key word = "set_cursor_mode" />
         <Key word = "item_weight" />
+        <Key word = "display_stats" />
+        <Key word = "set_ini_setting" />
+        <Key word = "attack_is_aimed" />
+        <Key word = "floor2" />
+        <Key word = "set_map_enter_position" />
+        <Key word = "get_map_enter_position" />
+        <Key word = "lock_is_jammed" />
+        <Key word = "unjam_lock" />
+        <Key word = "set_unjam_locks_time" />
+        <Key word = "set_rest_heal_time" />
+        <Key word = "set_rest_mode" />
       </KeyWords>
 
       <KeyWords name = "OpKeywords" bold="true" italic="false" color="#328CFF">
@@ -1335,7 +1345,9 @@
         <Key word = "HOOK_ADJUSTFID" />
         <Key word = "HOOK_COMBATTURN" />
         <Key word = "HOOK_CARTRAVEL" />
-
+        <Key word = "HOOK_SETGLOBALVAR" />
+        <Key word = "HOOK_RESTTIMER" />
+        
         <Key word = "LIST_CRITTERS" />
         <Key word = "LIST_GROUNDITEMS" />
         <Key word = "LIST_SCENERY" />
