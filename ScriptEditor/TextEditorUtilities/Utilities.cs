@@ -128,7 +128,7 @@ namespace ScriptEditor.TextEditorUtilities
                             }
                         }
                         // insert left space
-                        if (p != "," && !Char.IsWhiteSpace(linecode[i], n - 1)) {
+                        if (n > 0 && p != "," && !Char.IsWhiteSpace(linecode[i], n - 1)) {
                             if (p.Length == 2)
                                 linecode[i] = linecode[i].Insert(n, space);
                             else {
@@ -144,6 +144,7 @@ namespace ScriptEditor.TextEditorUtilities
                         n += p.Length;
                     } while (n < linecode[i].Length);
                 }
+                Quotes.Clear();
             }
             return string.Join("\n", linecode);
         }
