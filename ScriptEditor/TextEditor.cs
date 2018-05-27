@@ -2040,7 +2040,10 @@ namespace ScriptEditor
                 MessageBox.Show("The headers directory does not exist. Check the correctness of the path setting.");
                 return;
             }
+
             Headers Headfrm = new Headers(Headers_toolStripSplitButton.Bounds.Location);
+            if (currentTab != null)
+                Headfrm.Tag = currentActiveTextAreaCtrl;
             Headfrm.SelectHeaderFile += delegate(string sHeaderfile) { 
                 if (sHeaderfile != null) 
                     Open(sHeaderfile, OpenType.File, false);
@@ -2483,7 +2486,13 @@ namespace ScriptEditor
                 MessageBox.Show("The headers directory does not exist. Check the correctness of the path setting.");
                 return;
             }
-            Utilities.PasteIncludeFile(currentActiveTextAreaCtrl, Headers_toolStripSplitButton.Bounds.Location);
+
+            Headers Headfrm = new Headers(Headers_toolStripSplitButton.Bounds.Location);
+            Headfrm.SelectHeaderFile += delegate(string sHeaderfile)
+            {
+                Utilities.PasteIncludeFile(sHeaderfile, currentActiveTextAreaCtrl);
+            };
+            Headfrm.Show();
         }
 
         private void oldDecompileToolStripMenuItem_Click(object sender, EventArgs e)

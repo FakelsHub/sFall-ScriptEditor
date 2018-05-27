@@ -55,6 +55,7 @@
             this.headersFilelistView.View = System.Windows.Forms.View.List;
             this.headersFilelistView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listView1_ItemSelectionChanged);
             this.headersFilelistView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
+            this.headersFilelistView.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.headersFilelistView_PreviewKeyDown);
             // 
             // imageList1
             // 
@@ -73,6 +74,7 @@
             this.ControlBox = false;
             this.Controls.Add(this.headersFilelistView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(100, 100);
@@ -83,6 +85,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Deactivate += new System.EventHandler(this.Headers_Deactivate);
             this.Load += new System.EventHandler(this.Headers_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Headers_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Headers_KeyUp);
             this.ResumeLayout(false);
 
         }

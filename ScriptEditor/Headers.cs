@@ -6,6 +6,9 @@ using SearchOption = System.IO.SearchOption;
 using System.Drawing;
 
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.TextEditor;
+
+using ScriptEditor.TextEditorUtilities;
 
 namespace ScriptEditor
 {
@@ -16,6 +19,8 @@ namespace ScriptEditor
         
         private Point xy_pos;
         private string hFile;
+
+        bool shiftDown, ctrlDown;
 
         protected override CreateParams CreateParams {
 			get {
@@ -58,16 +63,45 @@ namespace ScriptEditor
         private void listView1_MouseClick(object sender, MouseEventArgs e)
         {
             if (headersFilelistView.FocusedItem.Selected) {
-                Headers_Deactivate(null, EventArgs.Empty);
-                SelectHeaderFile(hFile);
+                if (shiftDown && this.Tag != null) {
+                    Utilities.PasteIncludeFile(hFile, (TextAreaControl)this.Tag);
+                } else {
+                    SelectHeaderFile(hFile);
+                }
+                if (!ctrlDown) Headers_Deactivate(null, EventArgs.Empty);
             }
         }
 
         private void Headers_Deactivate(object sender, EventArgs e)
         {
             Settings.HeadersFormSize = this.Size;
+            this.Tag = null;
             Close();
             Dispose();
+        }
+
+        private void headersFilelistView_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) {
+                if (e.Shift && this.Tag != null) {
+                    Utilities.PasteIncludeFile(hFile, (TextAreaControl)this.Tag);
+                } else {
+                    SelectHeaderFile(hFile);
+                }
+                Headers_Deactivate(null, EventArgs.Empty);
+            }
+        }
+
+        private void Headers_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Shift) shiftDown = true;
+            if (e.Control) ctrlDown = true;
+        }
+
+        private void Headers_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Shift) shiftDown = false;
+            if (e.Control) ctrlDown = false;
         }
     }
 }
