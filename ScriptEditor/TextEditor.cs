@@ -410,6 +410,8 @@ namespace ScriptEditor
                 //te.TextEditorProperties.CaretLine = true;
                 Settings.SetTextAreaFont(te);
             }
+            te.OptionsChanged();
+
             if (type == OpenType.File)
                 te.LoadFile(file, false, true);
             else if (type == OpenType.Text)
@@ -549,9 +551,9 @@ namespace ScriptEditor
 
                 Utilities.NormalizeDelimiter(ref saveText);
 
-                File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage 
-                                                              : (Settings.saveScriptUTF8) ? new UTF8Encoding(false) 
-                                                              : Encoding.Default);
+                File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage
+                                                              : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
+                                                                                          : Encoding.Default);
                 if (!close)
                     tab.FileTime = File.GetLastWriteTime(tab.filepath);
                 tab.changed = false;
@@ -730,8 +732,8 @@ namespace ScriptEditor
                     if (Settings.warnOnFailedCompile) {
                         tabControl2.SelectedIndex = 2 - Convert.ToInt32(Settings.userCmdCompile);
                         maximize_log();
-                    } else 
-                        new CompiledStatus(false, this).ShowCompileStatus();
+                    }// else 
+                     //   new CompiledStatus(false, this).ShowCompileStatus();
                 }
             } else {
                 if (showMessages && showIcon)
@@ -1796,8 +1798,10 @@ namespace ScriptEditor
             string msg;
             bool result = Compile(currentTab, out msg, true, true);
             tbOutput.Text = currentTab.buildLog = msg;
-            if (!result)
+            if (!result) {
+                MessageBox.Show("Pre-processed failed! See build tab log.");
                 return;
+            }
             
             string file = Compiler.GetPreprocessedFile(currentTab.filename);
             if (file != null)

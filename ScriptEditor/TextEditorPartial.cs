@@ -234,10 +234,10 @@ namespace ScriptEditor
                 }
             }
             tab.parserLog = Error.ParserLog(log, tab);
-            OutputErrorLog(tab);
+            OutputErrorLog(tab, true);
         }
 
-        private void OutputErrorLog(TabInfo tab)
+        private void OutputErrorLog(TabInfo tab, bool parser = false)
         {
             dgvErrors.Rows.Clear();
             if (Settings.enableParser) {
@@ -247,7 +247,7 @@ namespace ScriptEditor
                         dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
                 }
             }
-            if (tab.buildLog != null) {
+            if (!parser && tab.buildLog != null) {
                 tbOutput.Text = tab.buildLog;
                 if (tsmShowBuildLog.Checked) {
                     dgvErrors.Rows.Add("Build Log");

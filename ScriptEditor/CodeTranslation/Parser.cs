@@ -523,7 +523,7 @@ namespace ScriptEditor.CodeTranslation
 
         public static void FixProcedureBegin(string file)
         {
-            List<string> script = File.ReadAllLines(file).ToList();
+            List<string> script = File.ReadAllLines(file, Encoding.Default).ToList();
             for (int i = 0; i < script.Count; i++)
             {
                 if (script[i].StartsWith(Parser.PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
@@ -533,7 +533,7 @@ namespace ScriptEditor.CodeTranslation
                     }
                 }
             }
-            File.WriteAllLines(file, script);
+            File.WriteAllLines(file, script, Encoding.Default);
         }
 
         #region Get declaration region

@@ -219,8 +219,10 @@ namespace ScriptEditor.CodeTranslation
 
                 if (success)
                     File.Delete(bakupPath);
-                else if (File.Exists(bakupPath))
+                else if (File.Exists(bakupPath)) {
+                    File.Delete(outputSSL);
                     File.Move(bakupPath, outputSSL);
+                }
 #endif
             }
             if (errors != null && !Settings.userCmdCompile) 
