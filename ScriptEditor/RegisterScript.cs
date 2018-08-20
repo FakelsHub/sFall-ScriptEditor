@@ -23,9 +23,12 @@ namespace ScriptEditor
             public Entry(int row, string line)
             {
                 this.row = row;
-                script = line.Remove(16).Trim();
-                desc = line.Substring(18, 64 - 18).Trim();
-                int.TryParse(line.Substring(77), out vars);
+                int descPos = line.IndexOf(';');
+                int varPos  = line.IndexOf("# local_vars=", descPos);
+                script = line.Remove(descPos).Trim();
+                descPos++;
+                desc = line.Substring(descPos, varPos - descPos).Trim();
+                int.TryParse(line.Substring(varPos + 13), out vars);
             }
 
             public string GetAsString()
