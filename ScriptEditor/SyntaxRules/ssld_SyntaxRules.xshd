@@ -2,18 +2,18 @@
 <SyntaxDefinition name = "Dark" extensions = ".ssl">
 
   <Environment>
-    <CaretMarker  color = "#35353A" />
+    <CaretMarker  color = "#303035" />
     <VRuler       color = "#40A0A0A0" />
     
     <SpaceMarkers color = "DimGray" />
     <TabMarkers   color = "SlateGray" />
 
-	  <Default      color = "#E6E6F0" bgcolor = "#29292B" />
+	  <Default      color = "#E6E6F0" bgcolor = "#26262A" />
 	  <Selection                      bgcolor = "#4F4F5F" />
-	  <LineNumbers  color = "Gray"    bgcolor = "#29292B" />
+	  <LineNumbers  color = "Gray"    bgcolor = "#26262A" />
 
-	  <FoldLine     color =  "DimGray" bgcolor = "#29292B" />
-	  <FoldMarker   color =  "DimGray" bgcolor = "#29292B" />
+	  <FoldLine     color =  "DimGray" bgcolor = "#26262A" />
+	  <FoldMarker   color =  "DimGray" bgcolor = "#26262A" />
 	  <SelectedFoldLine color = "Gold" bgcolor = "#36363A" />
 	 
 	  <TipsGradient color = "#E5E5FF"  bgcolor= "#9A9AB0" />
@@ -23,43 +23,43 @@
     <Property name = "LineComment" value = "//" />
     <Property name = "BlockCommentBegin" value = "/*" />
     <Property name = "BlockCommentEnd" value = "*/" />
-    <Property name = "ProceduresColor" value = "Wheat" />
+    <Property name = "ProceduresColor" value = "AntiqueWhite" />
   </Properties>
 
-  <Digits name = "Digits" bold = "false" italic = "false" color = "LightSalmon"/>
+  <Digits name = "Digits" bold = "false" italic = "false" color = "#FF7030"/>
 
   <RuleSets>
     <RuleSet ignorecase="true">
       <Delimiters>&amp;&lt;&gt;~!%^*()-+=|\/{}[]:;"' ,	.?</Delimiters>
 
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold = "false" italic = "false" color = "PaleGreen" stopateol = "true">
-        <Begin color = "LightCoral" startofline = "true">#line</Begin>
+        <Begin color = "DarkSalmon" startofline = "true">#line</Begin>
       </Span>
       <Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold = "false" italic = "false" color = "PaleGreen" stopateol = "true">
         <Begin color = "LightCoral" startofline = "true">#include</Begin>
       </Span>
 
-      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "Gray" stopateol = "true">
+      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "#7A8A9A" stopateol = "true">
         <Begin>//</Begin>
       </Span>
-      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "Gray" stopateol = "false">
+      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "#80B080" stopateol = "false">
         <Begin>/*</Begin>
         <End>*/</End>
       </Span>
 
-      <Span name = "String" rule = "StringSet" bold = "false" italic = "false" color = "LightGreen" stopateol = "true">
-        <Begin bold = "false" italic = "false" color = "LightGreen">"</Begin>
-        <End bold = "false" italic = "false" color = "LightGreen">"</End>
+      <Span name = "String" rule = "StringSet" bold = "false" italic = "false" color = "PaleGreen" stopateol = "true">
+        <Begin bold = "false" italic = "false" color = "PaleGreen">"</Begin>
+        <End bold = "false" italic = "false" color = "PaleGreen">"</End>
       </Span>
 
-      <Span name = "CodeFunctions" bold = "false" italic = "false" bgcolor="#4F4F5F" color = "Silver" stopateol = "true">
-        <Begin bgcolor="#4F4F5F" color="Silver">{</Begin>
-        <End bgcolor="#4F4F5F" color="Silver">}</End>
+      <Span name = "CodeFunctions" bold = "false" italic = "false" bgcolor="#40405A" color = "Silver" stopateol = "true">
+        <Begin bgcolor="#40405A" color="Silver">{</Begin>
+        <End bgcolor="#40405A" color="Silver">}</End>
       </Span>
 
       <MarkFollowing bold = "true" italic = "false" color = "WhiteSmoke">#define</MarkFollowing>
 
-      <KeyWords name = "PreprocessorDirectives" bold = "false" italic = "false" color = "DarkSalmon">
+      <KeyWords name = "PreprocessorDirectives" bold = "false" italic = "false" color = "LightCoral">
         <Key word = "#define" />
         <Key word = "#ifdef" />
         <Key word = "#ifndef" />
@@ -93,7 +93,7 @@
         <Key word = "timed_event_p_proc" />
       </KeyWords>
 
-      <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "#8090A0">
+      <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkGray">
         <Key word = "," />
         <Key word = "." />
         <Key word = ";" />
@@ -106,7 +106,7 @@
         <Key word = "|" />
       </KeyWords>
 
-      <KeyWords name = "SpecSymbol" bold = "false" italic = "false" color = "YellowGreen">
+      <KeyWords name = "SpecSymbol" bold = "false" italic = "false" color = "Tan">
         <Key word = "+" />
         <Key word = "-" />
         <Key word = "/" />
@@ -121,7 +121,7 @@
         <Key word = "&lt;" />
       </KeyWords>
 
-      <KeyWords name = "CoreKeywords" bold="true" italic="false" color="#6A96DA">
+      <KeyWords name = "CoreKeywords" bold="true" italic="false" color="#6A9ADA">
         <Key word = "procedure" />
         <Key word = "variable" />
         <Key word = "import" />
@@ -163,7 +163,7 @@
         <Key word = "continue" />
       </KeyWords>
 
-      <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="#F3CB00">
+      <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="Gold">
         <Key word = "give_exp_points" />
         <Key word = "scr_return" />
         <Key word = "play_sfx" />
@@ -449,7 +449,7 @@
         <Key word = "debug_msg" />
       </KeyWords>
 
-      <KeyWords name = "FalloutBaseMacros" bold="true" italic="false" color="#FBFB58">
+      <KeyWords name = "FalloutBaseMacros" bold="true" italic="false" color="#FAE05A">
         <Key word = "rm_fixed_timer_event" />
         <Key word = "create_object" />
         <Key word = "drug_influence" />
@@ -552,7 +552,7 @@
         <Key word = "set_lvar_bit_off" />
       </KeyWords>
 
-      <KeyWords name = "FalloutExtendMacros" bold="true" italic="false" color="#AB80FF">
+      <KeyWords name = "FalloutExtendMacros" bold="true" italic="false" color="#AF80FF">
         <Key word = "flush_add_timer_event" />
         <Key word = "flush_add_timer_event_sec" />
         <Key word = "self_pid" />
@@ -666,7 +666,7 @@
         <Key word = "Check_Create_Car" />
       </KeyWords>
 
-      <KeyWords name = "SfallUnsafeFunctions" bold="true" italic="false" color="#E66D45">
+      <KeyWords name = "SfallUnsafeFunctions" bold="true" italic="false" color="Tomato">
         <Key word = "read_byte" />
         <Key word = "read_short" />
         <Key word = "read_int" />
@@ -687,7 +687,7 @@
         <Key word = "call_offset_r4" />
       </KeyWords>
 
-      <KeyWords name = "SfallFunctions" bold="true" italic="false" color="#E69645">
+      <KeyWords name = "SfallFunctions" bold="true" italic="false" color="LightSalmon">
         <Key word = "set_pc_base_stat" />
         <Key word = "set_pc_extra_stat" />
         <Key word = "get_pc_base_stat" />
@@ -962,7 +962,7 @@
         <Key word = "sfall_func6" />
       </KeyWords>
 
-      <KeyWords name = "SfallMacros" bold="true" italic="true" color="#E69645">
+      <KeyWords name = "SfallMacros" bold="true" italic="true" color="LightSalmon">
         <Key word = "create_array_list" />
         <Key word = "temp_array_list" />
         <Key word = "create_array_map" />
@@ -1045,7 +1045,7 @@
         <Key word = "set_rest_mode" />
       </KeyWords>
 
-      <KeyWords name = "OpKeywords" bold="true" italic="false" color="#328CFF">
+      <KeyWords name = "OpKeywords" bold="true" italic="false" color="#5090F0">
         <Key word = "floor" />
         <Key word = "and" />
         <Key word = "or" />
@@ -1095,7 +1095,7 @@
         <Key word = "regiontab" />
       </KeyWords>
 
-      <KeyWords name = "DefineConstants" bold="true" italic="false" color="#5CE6DB">
+      <KeyWords name = "DefineConstants" bold="true" italic="false" color="#8AE0E0">
         <Key word = "FLOAT_MSG_WARNING" />
         <Key word = "FLOAT_MSG_SEQUENTIAL" />
         <Key word = "FLOAT_MSG_NORMAL" />

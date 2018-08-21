@@ -752,7 +752,9 @@ namespace ScriptEditor
             int curLine = _position.Line + 1;
             LineStripStatusLabel.Text = "Line: " + curLine;
             ColStripStatusLabel.Text = "Col: " + (_position.Column + 1);
-            
+
+            Utilities.SelectedTextColorRegion(_position, currentActiveTextAreaCtrl);
+
             if (PosChangeType == PositionType.Disabled)
                 return;
         PosChange:

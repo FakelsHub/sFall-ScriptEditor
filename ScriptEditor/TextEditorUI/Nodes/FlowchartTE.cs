@@ -112,13 +112,17 @@ namespace ScriptEditor.TextEditorUI.Nodes
                 }
             };
 
-            te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object sender, MouseEventArgs e) {
-                if (e.Button == MouseButtons.Left)
-                    Utilities.SelectedTextColorRegion(textEditor.ActiveTextAreaControl);
+            te.ActiveTextAreaControl.Caret.PositionChanged += delegate(object sender, EventArgs e) {
+                Utilities.SelectedTextColorRegion(new TextLocation(), textEditor.ActiveTextAreaControl);
             };
 
+            //te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object sender, MouseEventArgs e) {
+            //    if (e.Button == MouseButtons.Left)
+            //        Utilities.SelectedTextColorRegion(textEditor.ActiveTextAreaControl);
+            //};
+
             splitContainer.Panel1.Controls.Add(te);
-  
+
             cForm = new Form();
             cForm.ClientSize = this.Size;
             cForm.Controls.Add(this);
@@ -137,7 +141,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
             if (allNodes == null)
                 allNodes = DialogueParser.GetAllNodesName(PI.procs);
-  
+
             cmbNodesName.Items.AddRange(allNodes.ToArray());
             cmbNodesName.SelectedIndex = 0;
             

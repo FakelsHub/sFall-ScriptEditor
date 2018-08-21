@@ -1344,8 +1344,8 @@ namespace ScriptEditor
         private void SetActiveAreaEvents(TextEditorControl te)
         {
             te.ActiveTextAreaControl.TextArea.MouseDown += delegate(object a1, MouseEventArgs a2) {
-                if (a2.Button == MouseButtons.Left)
-                    Utilities.SelectedTextColorRegion(currentActiveTextAreaCtrl);
+                //if (a2.Button == MouseButtons.Left)
+                //    Utilities.SelectedTextColorRegion(currentActiveTextAreaCtrl);
                 autoComplete.Close();
             };
             te.ActiveTextAreaControl.TextArea.KeyUp += TextArea_KeyUp;

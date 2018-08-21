@@ -76,7 +76,7 @@ namespace ScriptEditor.TextEditorUI
             TipGradient = scheme.GetColorFor("TipsGradient");
 
             SelectedHighlight = new HighlightColor(Color.White, Color.MediumVioletRed);
-            CodeFunctions  = Color.FromArgb(79, 79, 95);
+            CodeFunctions  = Color.FromArgb(64, 64, 90);
             HighlightError = Color.Red;
             IncludeHighlight = Color.DarkSlateGray;
             TreeNameFunction = Color.FromArgb(243, 233, 122); //LightKhaki

@@ -564,17 +564,17 @@ namespace ScriptEditor.TextEditorUtilities
         }
 
         // Auto selected text color region  
-        internal static void SelectedTextColorRegion(TextAreaControl TAC)
+        internal static void SelectedTextColorRegion(TextLocation position, TextAreaControl TAC)
         {
-            TextLocation tl = TAC.Caret.Position;
-            HighlightColor hc = TAC.Document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
+            if (position.IsEmpty) position = TAC.Caret.Position;
+            HighlightColor hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(position.Column);
             if (hc == null)
                 return; 
             if (hc.BackgroundColor == ColorTheme.CodeFunctions) {
-                int sStart= tl.Column, sEnd = tl.Column + 1;
+                int sStart= position.Column, sEnd = position.Column + 1;
                 for (int i = sEnd; i < (sEnd + 32); i++)
                 {
-                    hc = TAC.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
+                    hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(i);
                     if (hc == null || hc.BackgroundColor != ColorTheme.CodeFunctions) {
                         sEnd = i;
                         break;
@@ -582,14 +582,14 @@ namespace ScriptEditor.TextEditorUtilities
                 }
                 for (int i = sStart; i > 0; i--)
                 {
-                    hc = TAC.Document.GetLineSegment(tl.Line).GetColorForPosition(i);
+                    hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(i);
                     if (hc == null || hc.BackgroundColor != ColorTheme.CodeFunctions) {
                         sStart = i + 1;
                         break;
                     }
                 }
-                TextLocation sSel = new TextLocation(sStart, tl.Line);
-                TextLocation eSel = new TextLocation(sEnd, tl.Line);
+                TextLocation sSel = new TextLocation(sStart, position.Line);
+                TextLocation eSel = new TextLocation(sEnd, position.Line);
                 TAC.SelectionManager.SetSelection(sSel, eSel);
             }
         }
@@ -686,7 +686,7 @@ namespace ScriptEditor.TextEditorUtilities
                     code += spacesIndent + "end";
                 TAC.TextArea.InsertString(code);
                 TAC.Caret.Position = new TextLocation(caret.Column + keyword.Length - columnShift, caret.Line - lineShift);
-                Utilities.SelectedTextColorRegion(TAC);  
+                Utilities.SelectedTextColorRegion(caret.Position, TAC);  
             }
             TAC.Document.UndoStack.EndUndoGroup();
             
