@@ -93,7 +93,7 @@ namespace ICSharpCode.TextEditor.Util
 			if (text != null && text.Length > short.MaxValue)
 				throw new ArgumentException("TipText: text too long (max. is " + short.MaxValue + " characters)", "text");
 			
-			Color               = TipPainter.tipTextColor; //SystemColors.InfoText;
+			Color               = TipPainter.TipTextColor; //SystemColors.InfoText;
 			HorizontalAlignment = StringAlignment.Near;
 			VerticalAlignment   = StringAlignment.Near;
 		}

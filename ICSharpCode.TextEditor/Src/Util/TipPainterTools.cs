@@ -223,12 +223,12 @@ namespace ICSharpCode.TextEditor.Util
 				
 				Font boldfont = font;
 				if (boldTile && documentation != null)
-					boldfont = new Font(font, FontStyle.Bold);
+					boldfont = new Font(font.FontFamily, 9.75f, FontStyle.Bold);
 				
 				TipText descriptionTip = new TipText(graphics, boldfont, basicDescription);
 				
 				if (boldTile && documentation != null)
-					descriptionTip.Color = Color.FromArgb(60, 60, 60);
+					descriptionTip.Color = (TipPainter.darkScheme) ? Color.WhiteSmoke : Color.FromArgb(50, 50, 50);
 				
 				TipSpacer docSpacer = new TipSpacer(graphics, new SizeF(0, IsVisibleText(documentation) ? 4 : 0));
 				
