@@ -197,8 +197,13 @@ namespace ScriptEditor
                 nodeItem.Y = 25 + shiftY;
                 nodesCanvas.AddCanvasItem(nodeItem);
 
-                shiftY += 25 + (int)nodeItem.Height;
-                shiftX += 25 + ((int)nodeItem.Width / 2);
+                int height = (int)nodeItem.Height;
+                if (height > 500) {
+                    shiftX += 50 + (int)nodeItem.Width;
+                } else {
+                    shiftY += 25 + height;
+                    shiftX += 25 + ((int)nodeItem.Width / 2);
+                }
             }
         }
         
@@ -233,7 +238,7 @@ namespace ScriptEditor
             linkToList = new List<LinkTo>();
             for (int n = 0; n < value.Count; n++) 
             {
-                if (value[n].opcode == OpcodeType.Option || value[n].opcode == OpcodeType.call)
+                if (value[n].opcode == OpcodeType.Option || value[n].opcode == OpcodeType.giq_option || value[n].opcode == OpcodeType.gsay_option || value[n].opcode == OpcodeType.call)
                     linkToList.Add(new LinkTo(value[n].toNode, n + 1));
                 string msgText = GetMessageText(value[n].numberMsgFile, value[n].numberMsgLine);
 
@@ -265,8 +270,10 @@ namespace ScriptEditor
             if (node.Key.Equals("talk_p_proc", StringComparison.OrdinalIgnoreCase))
                 type = NodesType.DialogStart;
             else if (linkToList.Count == 0 && linklist.Count > 0)
-                    type = NodesType.DialogEnd;
-            else if (linkToList.Count == 0 || linklist.Count == 0)
+                type = NodesType.DialogEnd;
+            else if (linkToList.Count > 0 && linklist.Count == 0)
+                type = NodesType.NoFromLink;
+            else if (linkToList.Count == 0 && linklist.Count == 0)
                 type = NodesType.Unused;
 
             return new DataNode(node.Key, linkToList, linkfrom, NodeBody, type);

@@ -126,7 +126,7 @@ namespace ScriptEditor
 skip:
                 dgvMessages.Rows.Add(line.toNode.Trim('"', ' '), msg, line.iq, (line.numberMsgLine > 0) ? n + line.numberMsgLine : line.numberMsgLine);
                 dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[0].Tag = line.opcode;
-                if (line.opcode == OpcodeType.Option) {
+                if (line.opcode == OpcodeType.Option || line.opcode == OpcodeType.giq_option || line.opcode == OpcodeType.gsay_option) {
                     dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Value = (char)0x25CF + " " + msg;
                     if (!error)
                         dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Style.ForeColor = Color.Blue;
@@ -144,7 +144,7 @@ skip:
             OpcodeType opcode = (OpcodeType)dgvMessages.CurrentRow.Cells[0].Tag;
             
             if (e.ColumnIndex == 1) {
-                if (opcode == OpcodeType.Option || opcode == OpcodeType.call) {
+                if (opcode == OpcodeType.Option || opcode == OpcodeType.giq_option || opcode == OpcodeType.gsay_option || opcode == OpcodeType.call) {
                     OptionsTextLabel.Text = dgvMessages.CurrentRow.Cells[1].Value.ToString();
                     user = false;
                     NodesComboBox.Text = node;

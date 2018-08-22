@@ -25,20 +25,22 @@ namespace ICSharpCode.ClassDiagram
 				 Color.White, gradColor); //Color.LightSteelBlue
 			}
 		}
-        
+
 		public NodeCircleShape(NodesType type)
 		{
 			if (type == NodesType.DialogEnd)
 				gradColor = Color.MistyRose;
 			else if (type == NodesType.DialogStart)
 				gradColor = Color.LightGreen;
+			else if (type == NodesType.NoFromLink)
+				gradColor = Color.LemonChiffon;
 			else if (type == NodesType.Unused)
 				gradColor = Color.LightGray;
 			else
 				gradColor = Color.LightSteelBlue;
 		}
 
-        static GraphicsPath path = InitializePath();
+		static GraphicsPath path = InitializePath();
 		
 		static GraphicsPath InitializePath ()
 		{
@@ -57,8 +59,8 @@ namespace ICSharpCode.ClassDiagram
 		{
 			if (graphics == null) return;
 			graphics.FillEllipse(shade, 2.0f, 2.0f, 9.5f, 9.5f);
-            graphics.DrawEllipse(pen, 1.5f, 1.5f, 10.5f, 10.5f);
-            graphics.FillPath(Brushes.DarkBlue, path);
+			graphics.DrawEllipse(pen, 1.5f, 1.5f, 10.5f, 10.5f);
+			graphics.FillPath(Brushes.DarkBlue, path);
 		}
 		
 		public override float ShapeWidth

@@ -97,6 +97,11 @@ namespace ICSharpCode.ClassDiagram
 			get { return Color.LightGreen; }
 		}
 
+		protected Color TitleBackgroundYellow
+		{
+			get { return Color.Moccasin; }
+		}
+
 		protected Color TitleBackgroundGray
 		{
 			get { return Color.LightGray; }
@@ -202,6 +207,9 @@ namespace ICSharpCode.ClassDiagram
 				case NodesType.DialogStart:
 					titleBackground = TitleBackgroundGreen;
 					break;
+				case NodesType.NoFromLink:
+					titleBackground = TitleBackgroundYellow;
+					break;
 				case NodesType.Unused:
 					titleBackground = TitleBackgroundGray;
 					break;
@@ -257,6 +265,9 @@ namespace ICSharpCode.ClassDiagram
 					break;
 				case NodesType.DialogEnd:
 					pen.Color = Color.DarkRed;
+					break;
+				case NodesType.NoFromLink:
+					pen.Color = Color.Peru;
 					break;
 				case NodesType.Unused:
 					pen.Color = Color.Gray;
@@ -377,6 +388,9 @@ namespace ICSharpCode.ClassDiagram
 			if (dataNode.NodeType == NodesType.DialogStart) {
 				linkedFrom.Add(new TextSegment(base.Graphics, "Start Dialogue Procedure", LinkedFont, true));
 				linkedFrom.Border = 8;
+			} else if (dataNode.NodeType == NodesType.NoFromLink) {
+				linkedFrom.Add(new TextSegment(base.Graphics, "No Link Nodes", LinkedFont, true));
+				linkedFrom.Border = 8;
 			} else if (dataNode.NodeType == NodesType.Unused) {
 				linkedFrom.Add(new TextSegment(base.Graphics, "Unused Node", LinkedFont, true));
 				linkedFrom.Border = 8;
@@ -447,7 +461,7 @@ namespace ICSharpCode.ClassDiagram
 
 			headerCollapsed.Add (new DrawableRectangle((reply) ? ReplyTitlesBackground : OptionTitlesBackground,null, 5, 5, 5, 5));
 			headerCollapsed.Add (headerPlus);
- 			
+			
 			headerExpanded.Add (new DrawableRectangle((reply) ? ReplyTitlesBackground : OptionTitlesBackground, null, 5, 5, 0, 0));
 			headerExpanded.Add (headerMinus);
 			
@@ -513,6 +527,8 @@ namespace ICSharpCode.ClassDiagram
 						items.Add(tileHeader);
 						break;
 					case OpcodeType.Option:
+					case OpcodeType.giq_option:
+					case OpcodeType.gsay_option:
 						itemOptions = new InteractiveItemsStack();
 						itemOptions = PrepareMessageContent(content.msgText, content.index, false);
 

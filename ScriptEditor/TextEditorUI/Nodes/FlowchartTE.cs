@@ -288,7 +288,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
                 if (error) {
                     dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].ReadOnly = true;
                     dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Style.ForeColor = Color.Red;
-                } else if (data.opcode == OpcodeType.Option)
+                } else if (data.opcode == OpcodeType.Option || data.opcode == OpcodeType.giq_option || data.opcode == OpcodeType.gsay_option)
                     dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[1].Style.ForeColor = Color.Blue;
             }
         }

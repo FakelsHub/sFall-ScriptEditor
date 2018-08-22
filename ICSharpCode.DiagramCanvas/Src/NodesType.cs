@@ -4,6 +4,7 @@
 		Default,
 		DialogStart,
 		DialogEnd,
+		NoFromLink,
 		Unused
 	}
 }
