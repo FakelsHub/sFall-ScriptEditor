@@ -7,12 +7,17 @@ namespace ScriptEditor
     partial class AboutBox : Form
     {
         public const string appName = "Sfall Script Editor";
-        public static readonly string appVersion = Application.ProductVersion + " RC";
+        public static readonly string appVersion = Application.ProductVersion;
+        public static readonly string appDescription = " - extended version by Mr.Stalin";
         
         public AboutBox()
         {
             InitializeComponent();
-            this.Text += appName + " - extended version by Mr.Stalin";
+
+            if (logoPictureBox.Size.Height - 10 > logoPictureBox.Image.Height)
+                logoPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+            this.Text += appName + appDescription;
             this.labelProductName.Text = appName;
             this.labelVersion.Text = String.Format("Version {0}", appVersion);
             this.labelCopyright.Text = AssemblyCopyright;

@@ -317,7 +317,7 @@ namespace ScriptEditor {
             this.FunctionTreeLeft.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FunctionTreeLeft.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FunctionTreeLeft.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.FunctionTreeLeft.Indent = 16;
+            this.FunctionTreeLeft.Indent = 18;
             this.FunctionTreeLeft.LineColor = System.Drawing.Color.Silver;
             this.FunctionTreeLeft.Location = new System.Drawing.Point(3, 2);
             this.FunctionTreeLeft.Name = "FunctionTreeLeft";
@@ -447,9 +447,8 @@ namespace ScriptEditor {
             // 
             this.TabClose_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.TabClose_button.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.TabClose_button.CausesValidation = false;
             this.TabClose_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.TabClose_button.ForeColor = System.Drawing.Color.DarkRed;
+            this.TabClose_button.ForeColor = System.Drawing.Color.Black;
             this.TabClose_button.Image = ((System.Drawing.Image)(resources.GetObject("TabClose_button.Image")));
             this.TabClose_button.Location = new System.Drawing.Point(985, 22);
             this.TabClose_button.Name = "TabClose_button";
@@ -465,9 +464,8 @@ namespace ScriptEditor {
             // Split_button
             // 
             this.Split_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Split_button.CausesValidation = false;
             this.Split_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Split_button.ForeColor = System.Drawing.Color.DarkRed;
+            this.Split_button.ForeColor = System.Drawing.Color.Black;
             this.Split_button.Image = ((System.Drawing.Image)(resources.GetObject("Split_button.Image")));
             this.Split_button.Location = new System.Drawing.Point(986, 606);
             this.Split_button.Name = "Split_button";
@@ -646,7 +644,6 @@ namespace ScriptEditor {
             // minimizelog_button
             // 
             this.minimizelog_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.minimizelog_button.CausesValidation = false;
             this.minimizelog_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.minimizelog_button.Image = ((System.Drawing.Image)(resources.GetObject("minimizelog_button.Image")));
             this.minimizelog_button.Location = new System.Drawing.Point(982, -1);
@@ -831,8 +828,7 @@ namespace ScriptEditor {
             this.dgvErrors.AllowUserToResizeRows = false;
             this.dgvErrors.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvErrors.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dgvErrors.ColumnHeadersHeight = 20;
-            this.dgvErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.dgvErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvErrors.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.cType,
             this.cFile,
@@ -890,7 +886,7 @@ namespace ScriptEditor {
             this.tabControl3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tabControl3.ImageList = this.imageList1;
-            this.tabControl3.ItemSize = new System.Drawing.Size(60, 17);
+            this.tabControl3.ItemSize = new System.Drawing.Size(60, 18);
             this.tabControl3.Location = new System.Drawing.Point(0, 0);
             this.tabControl3.Name = "tabControl3";
             this.tabControl3.Padding = new System.Drawing.Point(0, 0);
@@ -922,8 +918,8 @@ namespace ScriptEditor {
             this.ProcTree.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ProcTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProcTree.HotTracking = true;
-            this.ProcTree.Indent = 16;
-            this.ProcTree.ItemHeight = 14;
+            this.ProcTree.Indent = 18;
+            this.ProcTree.ItemHeight = 16;
             this.ProcTree.Location = new System.Drawing.Point(0, 25);
             this.ProcTree.Name = "ProcTree";
             this.ProcTree.ShowNodeToolTips = true;
@@ -1113,7 +1109,7 @@ namespace ScriptEditor {
             this.FunctionsTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FunctionsTree.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FunctionsTree.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.FunctionsTree.Indent = 16;
+            this.FunctionsTree.Indent = 18;
             this.FunctionsTree.ItemHeight = 16;
             this.FunctionsTree.LineColor = System.Drawing.Color.Gainsboro;
             this.FunctionsTree.Location = new System.Drawing.Point(0, 2);
@@ -1134,7 +1130,7 @@ namespace ScriptEditor {
             this.FontSizeStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 660);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(89, 22);
+            this.statusStrip.Size = new System.Drawing.Size(79, 28);
             this.statusStrip.SizingGrip = false;
             this.statusStrip.TabIndex = 2;
             // 
@@ -1142,7 +1138,7 @@ namespace ScriptEditor {
             // 
             this.EmptyStripStatusLabel.AutoSize = false;
             this.EmptyStripStatusLabel.Name = "EmptyStripStatusLabel";
-            this.EmptyStripStatusLabel.Size = new System.Drawing.Size(5, 17);
+            this.EmptyStripStatusLabel.Size = new System.Drawing.Size(5, 23);
             // 
             // LineStripStatusLabel
             // 
@@ -1152,7 +1148,7 @@ namespace ScriptEditor {
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.LineStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.LineStripStatusLabel.Name = "LineStripStatusLabel";
-            this.LineStripStatusLabel.Size = new System.Drawing.Size(22, 17);
+            this.LineStripStatusLabel.Size = new System.Drawing.Size(17, 23);
             this.LineStripStatusLabel.Spring = true;
             this.LineStripStatusLabel.Text = "Line:1";
             this.LineStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -1165,7 +1161,7 @@ namespace ScriptEditor {
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.ColStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.ColStripStatusLabel.Name = "ColStripStatusLabel";
-            this.ColStripStatusLabel.Size = new System.Drawing.Size(22, 17);
+            this.ColStripStatusLabel.Size = new System.Drawing.Size(17, 23);
             this.ColStripStatusLabel.Spring = true;
             this.ColStripStatusLabel.Text = "Col:1";
             this.ColStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -1181,7 +1177,7 @@ namespace ScriptEditor {
             this.FontSizeStripStatusLabel.IsLink = true;
             this.FontSizeStripStatusLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.FontSizeStripStatusLabel.Name = "FontSizeStripStatusLabel";
-            this.FontSizeStripStatusLabel.Size = new System.Drawing.Size(25, 17);
+            this.FontSizeStripStatusLabel.Size = new System.Drawing.Size(25, 23);
             this.FontSizeStripStatusLabel.Text = "+0";
             this.FontSizeStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.FontSizeStripStatusLabel.ToolTipText = "The default text size.";

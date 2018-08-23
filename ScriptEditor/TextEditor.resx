@@ -141,20 +141,18 @@
   </metadata>
   <data name="Split_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAAASCwAAEgsAAAAAAAAAAAAA/wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD/8/HvY0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k1Y0k18/Hv/wD/
-        /wD//wD//wD//wD/uKSU9OPa5M/C3cW32b6s2Lyp17qn17ml1rej1raiY0k1/wD//wD//wD//wD//wD/
-        uKSU9ujg9OPa89/U8dvP8NfJ7tPE7dC/7M271rejY0k1/wD//wD//wD//wD//wD/uKSU+Ozl9ujg9OPa
-        89/U8dvP8NfJ7tPE7dC/17mlY0k1/wD//wD//wD//wD//wD/uaWV+fDr+OzlY0k19OPa89/U8dvPY0k1
-        7tPE17qnY0k1/wD//wD//wD//wD//wD/vKaX+/Tw+fDrY0k1Y0k19OPaY0k1Y0k18NfJ2LypY0k1/wD/
-        /wD//wD//wD//wD/vqia/Pf1+/Tw+fDrY0k1Y0k1Y0k189/U8dvP2b6sY0k1/wD//wD//wD//wD//wD/
-        wKuc/fr5/Pf1+/Tw+fDrY0k19ujg9OPa89/U2cCvY0k1/wD//wD//wD//wD//wD/w6yd/v38/fr5/Pf1
-        +/Tw+fDr+Ozl9ujg9OPa4c3AY0k1/wD//wD//wD//wD//wD/xK6e/////v38/fr5/Pf1+/Tw+fDr+Ozl
-        9ujg9OPaY0k1/wD//wD//wD//wD//wD/+/n3w62ewqydwKucvqiZu6eYuqSWuKOUuKOUuKOU8/Hv/wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAA
+        CxMBAJqcGAAAAghJREFUOE+lk0tPE2EUhvVvGP6BiVE31Z1lKXajYaMsjApd4drEpNHEhTFsuBURFOTW
+        CiHWtI22iEWTtmkaAbVS6SXYewSmTi8Dtkgfv5kmLCy4sF9ykpOZOc/7nnPmOw4ca+qogGbioHgjkcFi
+        92KecjFiXeDxtIvBydcMTDjpG3PQO2anZ+QVo1Y32bAkNOvCB4B5d5DcVgG5uIMkl9mUSmS2SiRzBeIp
+        mW+JPLFMGU8gRnunqREwNLVASamoL6jVYLee8ltETqqSlfbISPvYl0Kca+1qBDwRtiVZ0YqL5T2teHzO
+        zfCMS8sjKYXQd4VnL/3oL3Y3AoZFz6rt3WpdedG7TMsZAy1nDTiXltkVzz5GCgzP+Q4HmCffaD3vCc+O
+        tz5OnL7E5Vsm2o0mkRuYcfoJJSsMzR7hoP+5k4QYmHrOG4ycvHCNeLbIerLIqdYOdG1GIj9g8IX3cAe9
+        43biaRmlss+DfgsubxhpBzIy2Ba/cufRFMHYLwas/wCoq0ptV8mLwsR2jZVokUC4wOpGhVBazGUlT5/l
+        CEDPUxvRtNh9vkY4obAaLxNcL+Bdk/nw5SeezzKeT0XMswF0+s7GLUzYPLwLRHG8X2PaHmRk3i8+9mEW
+        Pau2VWW1+OGomys37zYCcuFtOm7c136S1rbb2qD+Dp2+i6vX75EKbTYC/vdCNXUTVdE/hh3k8p5nROAA
+        AAAASUVORK5CYII=
 </value>
   </data>
   <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -324,6 +322,9 @@
         oIQdEPPiCSwWoBwXUTFCF0UApjJ49evmep0AAAAASUVORK5CYII=
 </value>
   </data>
+  <metadata name="minimizelog_button.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="minimizelog_button.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -617,33 +618,37 @@ Note: Macro descriptions can unreadable letters of comments if their script file
         AAAASUVORK5CYII=
 </value>
   </data>
-  <data name="ToggleBlockCommentToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="searchToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAHFJREFUOE+lUosK
-        ACEI89Pvz+9IMtTGTTEIezhdWyJhPG/ct3ejAgdsLHJkdHz3tbbJcHofqG+wuOiLWG7A5Le3GFzCdTUY
-        KV8S6CeJNyfP4QW2Q8hS6AISVM+ApaXu9kcygzJ4ddaRYr0AcGAEvr69fIUwR8tnagChAAAAAElFTkSu
-        QmCC
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAA
+        CxMBAJqcGAAAAjlJREFUOE/Nk11IU2EYx2dgH6AQUthFUIFYBoW7SBkz7CIsFznCbLIuRg28cRdT2rR2
+        2rqYO5xtacelQdEcs6LS0gbLJskQR4UxkEFRgS1X2XChk8qatv6975HNZXYR3XTg4eV9Pn7P/3k4bxYA
+        0T99FJAya9dwuIHzTJXUtI4v8/tX8gvNMxOlSkfP7OcEcsS6yEYJs4rG6Jnpz8z/BUC6+8/wA5DXX0Wx
+        3IadMkuMJvDXA1jJnwKlFZg6B/EtsYB7I6+h40ewbX8L1u7WZ6X8nkAYrHsMBRUWUrs0tgBobvPmmTp8
+        UBt7UVl3BbvkdkiVF1FS2/lKbbgJLeeBorEbO2QsAZuhPns7L62ASM9m2n2Yin9FfC6JwLM4VCYvCg+y
+        WL/HMKo/76Ed8WluAcOhaRzT30HBATatQkQAhkauX0h6HPoAm/spDmtuIL/MCFLcTAGhl5MIvvgIzjWK
+        Gn0vNkkZnLJ7jcISbc6hGU1LP6rquyCu5lFUyaKwwox8CUMVhLXs3cXYURI7ZMXmvQw2lDahVHEhIQAs
+        l4eQTP7ARPQLHjx5B7MziK37KHxpUSeNPXgfnUU4EkOffxwa7iGKZIvLFBn4+5if/06K38LeHYTqnO8/
+        AxD56+gIkckZDD56A8etMVTr+rCd7EoY4cRp13Nl0zWUqzogqW2DRNGKLeXGKNlDDk0gxauJxWR1lyaq
+        NE6UHW+H+IgVucUN07+9heX/eebd4R4Q3gY5sxVa1xpiuX8F+BP8Jz2Bipm/4ch1AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="formatCodeToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>Automatically formatting (inserting the missing spaces between arithmetic and logical operations) code of script when document is opened.
-Note: This will only work for script files and include files (.ssl .h).</value>
-  </data>
-  <data name="Edit_toolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="Search_toolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAh1JREFUOE+tk99L
-        U3EYxv0j+ju6CS26COoiakVRrAsv6qL9kBIiCgu8yCBygtaFpRn2S4+eonSJO7Y0hq5wutKYRM61tpPV
-        sZhuy9Nqza2e3u97tjNGUBf2hZdzvhye5/O878upqlrvkYan0a88hzzygp99niCk4Sn0DAVw2/0MNwf8
-        6L4/juv3fLgmP0FH3yiuSo9xpdcLZguDf5184ReyuTz0zBqSX7L4mPiKGovdMOhXgqbeITlRqkFlwny3
-        9zqhf1vDComXljN48z5VNvhbgkLhJ7I/CiTOmWJVW600uPNwkhM4zitcLZc7IQ09hYuezVR6hsRpg6xq
-        OhbUNOaiCdTsthkt3Hjg/2MEBtnomWMnhHgVYTWFUGQZgbklVFuKBl13fWwgyOF4isnzsSSaL3XiYltH
-        BTkUWUHw1WeMTb0rG4i1lA6Tc9Qzk79DM2Mb5GkS+2c0DPqiNMRiArFPnkGTAjvVa6LbznmKZBGbeiax
-        IPtnNYwGFtHjmS8nEAZ5JlPPtKqkGBj3rCP8NoaXYRUTs3E8moxjYDwOeSwKaWQB1aUhCgNjYJWrstY1
-        Yf/RRlgOn8HO2tPYcegEth2sx9Z9ddiyx1E22LzLtrGly43YhzQWPxFVTaK2/gJau73cq+yNkMEpnG11
-        o10OwXVrhg2Ejte4aa9zg7gca2yHraENR066+KPVWUrQwPftVkpw4DgnMMXr/RH/i/43noNj7TJzOKgA
-        AAAASUVORK5CYII=
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAlJJREFUOE+lk91P
+        kmEYxvE/qPUvtHXUQTO22jppHWijj7kMdGlabdHakM1C1xEHFR01cDQwNpmEDgF9Qb7h5WO8kMDCxDYn
+        WC4TERiZ9rGBil7xvhs0ZFpb93ad3M99/e5r9/Y0sQ6pGCk58T59XLL1vdRSKu2xmvZ/uJeTn19qtdql
+        OouFSqIqT+wTqLkVzC2uQGMg4KXCyBa+YjVXwBhhQZ/oSbxHKD7WAMCBCoRDcAcoprtbBn4W97D+rQy5
+        2oCOXv6LOoApsMAMykY9GNKQGDEGoVBrkMkXaubc1i5SmR1YQ0lwu7qW6wBGcv5gAEiVKqzlN5jNuc1y
+        xbyNaKqI11NR3OBy6wE6R5wBDFUSKMa9mHREYbJaYXEHkN2sbF7fQWSpCPvsLwgGxeB1diplz0XPaim0
+        lmhDgvVMGlL5K4xM2GAOLWKYiEIwQJtvYkLWDbFYuF+DqIlQA4BuvI0loFQp8VAgwO3eu7jFa4P80SVk
+        R1uwN3OnAunfl0pE11gqvZ8BzMQ/gAzGYPOEMO0KgrD7YZz2QKs3Q2dyoU/YjwdXzyIhZmNt+CI2rDwM
+        8K+DpRj3MADaTJv+yAejhYSOcEBnpdAjfAo+p7mdf6UZvsFzuN96Gh0cdhtL/sbJAOzeMKZsPkxayYrR
+        A8O0GxOEE3qTE2qjH5zux6APR0MunDmF1vMn25lDVgHv5hZgsvtA2LzQm12M0VxJ5PJHoBhzg335HgNo
+        qCqATrG9U0Y2v4WPXwqYT2URSaRBza6CnvkrgB46SkcC6Md/0WE/97/6vwFCMkeoemAI1AAAAABJRU5E
+        rkJggg==
 </value>
   </data>
   <data name="Back_toolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -709,37 +714,33 @@ Note: This will only work for script files and include files (.ssl .h).</value>
         LZH+4L86doLDsfcXzl1yuqF7O1sAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="searchToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="ToggleBlockCommentToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAA
-        CxMBAJqcGAAAAjlJREFUOE/Nk11IU2EYx2dgH6AQUthFUIFYBoW7SBkz7CIsFznCbLIuRg28cRdT2rR2
-        2rqYO5xtacelQdEcs6LS0gbLJskQR4UxkEFRgS1X2XChk8qatv6975HNZXYR3XTg4eV9Pn7P/3k4bxYA
-        0T99FJAya9dwuIHzTJXUtI4v8/tX8gvNMxOlSkfP7OcEcsS6yEYJs4rG6Jnpz8z/BUC6+8/wA5DXX0Wx
-        3IadMkuMJvDXA1jJnwKlFZg6B/EtsYB7I6+h40ewbX8L1u7WZ6X8nkAYrHsMBRUWUrs0tgBobvPmmTp8
-        UBt7UVl3BbvkdkiVF1FS2/lKbbgJLeeBorEbO2QsAZuhPns7L62ASM9m2n2Yin9FfC6JwLM4VCYvCg+y
-        WL/HMKo/76Ed8WluAcOhaRzT30HBATatQkQAhkauX0h6HPoAm/spDmtuIL/MCFLcTAGhl5MIvvgIzjWK
-        Gn0vNkkZnLJ7jcISbc6hGU1LP6rquyCu5lFUyaKwwox8CUMVhLXs3cXYURI7ZMXmvQw2lDahVHEhIQAs
-        l4eQTP7ARPQLHjx5B7MziK37KHxpUSeNPXgfnUU4EkOffxwa7iGKZIvLFBn4+5if/06K38LeHYTqnO8/
-        AxD56+gIkckZDD56A8etMVTr+rCd7EoY4cRp13Nl0zWUqzogqW2DRNGKLeXGKNlDDk0gxauJxWR1lyaq
-        NE6UHW+H+IgVucUN07+9heX/eebd4R4Q3gY5sxVa1xpiuX8F+BP8Jz2Bipm/4ch1AAAAAElFTkSuQmCC
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAHFJREFUOE+lUosK
+        ACEI89Pvz+9IMtTGTTEIezhdWyJhPG/ct3ejAgdsLHJkdHz3tbbJcHofqG+wuOiLWG7A5Le3GFzCdTUY
+        KV8S6CeJNyfP4QW2Q8hS6AISVM+ApaXu9kcygzJ4ddaRYr0AcGAEvr69fIUwR8tnagChAAAAAElFTkSu
+        QmCC
 </value>
   </data>
-  <data name="Search_toolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="formatCodeToolStripMenuItem.ToolTipText" xml:space="preserve">
+    <value>Automatically formatting (inserting the missing spaces between arithmetic and logical operations) code of script when document is opened.
+Note: This will only work for script files and include files (.ssl .h).</value>
+  </data>
+  <data name="Edit_toolStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAlJJREFUOE+lk91P
-        kmEYxvE/qPUvtHXUQTO22jppHWijj7kMdGlabdHakM1C1xEHFR01cDQwNpmEDgF9Qb7h5WO8kMDCxDYn
-        WC4TERiZ9rGBil7xvhs0ZFpb93ad3M99/e5r9/Y0sQ6pGCk58T59XLL1vdRSKu2xmvZ/uJeTn19qtdql
-        OouFSqIqT+wTqLkVzC2uQGMg4KXCyBa+YjVXwBhhQZ/oSbxHKD7WAMCBCoRDcAcoprtbBn4W97D+rQy5
-        2oCOXv6LOoApsMAMykY9GNKQGDEGoVBrkMkXaubc1i5SmR1YQ0lwu7qW6wBGcv5gAEiVKqzlN5jNuc1y
-        xbyNaKqI11NR3OBy6wE6R5wBDFUSKMa9mHREYbJaYXEHkN2sbF7fQWSpCPvsLwgGxeB1diplz0XPaim0
-        lmhDgvVMGlL5K4xM2GAOLWKYiEIwQJtvYkLWDbFYuF+DqIlQA4BuvI0loFQp8VAgwO3eu7jFa4P80SVk
-        R1uwN3OnAunfl0pE11gqvZ8BzMQ/gAzGYPOEMO0KgrD7YZz2QKs3Q2dyoU/YjwdXzyIhZmNt+CI2rDwM
-        8K+DpRj3MADaTJv+yAejhYSOcEBnpdAjfAo+p7mdf6UZvsFzuN96Gh0cdhtL/sbJAOzeMKZsPkxayYrR
-        A8O0GxOEE3qTE2qjH5zux6APR0MunDmF1vMn25lDVgHv5hZgsvtA2LzQm12M0VxJ5PJHoBhzg335HgNo
-        qCqATrG9U0Y2v4WPXwqYT2URSaRBza6CnvkrgB46SkcC6Md/0WE/97/6vwFCMkeoemAI1AAAAABJRU5E
-        rkJggg==
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAh1JREFUOE+tk99L
+        U3EYxv0j+ju6CS26COoiakVRrAsv6qL9kBIiCgu8yCBygtaFpRn2S4+eonSJO7Y0hq5wutKYRM61tpPV
+        sZhuy9Nqza2e3u97tjNGUBf2hZdzvhye5/O878upqlrvkYan0a88hzzygp99niCk4Sn0DAVw2/0MNwf8
+        6L4/juv3fLgmP0FH3yiuSo9xpdcLZguDf5184ReyuTz0zBqSX7L4mPiKGovdMOhXgqbeITlRqkFlwny3
+        9zqhf1vDComXljN48z5VNvhbgkLhJ7I/CiTOmWJVW600uPNwkhM4zitcLZc7IQ09hYuezVR6hsRpg6xq
+        OhbUNOaiCdTsthkt3Hjg/2MEBtnomWMnhHgVYTWFUGQZgbklVFuKBl13fWwgyOF4isnzsSSaL3XiYltH
+        BTkUWUHw1WeMTb0rG4i1lA6Tc9Qzk79DM2Mb5GkS+2c0DPqiNMRiArFPnkGTAjvVa6LbznmKZBGbeiax
+        IPtnNYwGFtHjmS8nEAZ5JlPPtKqkGBj3rCP8NoaXYRUTs3E8moxjYDwOeSwKaWQB1aUhCgNjYJWrstY1
+        Yf/RRlgOn8HO2tPYcegEth2sx9Z9ddiyx1E22LzLtrGly43YhzQWPxFVTaK2/gJau73cq+yNkMEpnG11
+        o10OwXVrhg2Ejte4aa9zg7gca2yHraENR066+KPVWUrQwPftVkpw4DgnMMXr/RH/i/43noNj7TJzOKgA
+        AAAASUVORK5CYII=
 </value>
   </data>
   <data name="editRegisteredScriptsToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

@@ -97,7 +97,7 @@ namespace ScriptEditor
             
             if (!Settings.firstRun)
                 WindowState = FormWindowState.Maximized;
-            
+
             pDefineStripComboBox.Items.AddRange(File.ReadAllLines(Settings.PreprocDefPath));
             if (Settings.preprocDef != null)
                 pDefineStripComboBox.Text = Settings.preprocDef;
@@ -153,7 +153,7 @@ namespace ScriptEditor
             DontFind.LoadAsync();
             CompileFail.LoadAsync();
 
-            tbOutput.Text = "***** " +  AboutBox.appName + " v." + AboutBox.appVersion + " *****";
+            tbOutput.Text = "***** " +  AboutBox.appName + " v." + AboutBox.appVersion + AboutBox.appDescription + " *****";
         }
 
 #if !DEBUG
@@ -1369,6 +1369,7 @@ namespace ScriptEditor
             te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
         }
 
+        bool setOnlyOnce = false;
         private void EnableFormControls()
         {
             TabClose_button.Visible = true;
@@ -1381,6 +1382,20 @@ namespace ScriptEditor
             if (Settings.showLog)
                 splitContainer1.Panel2Collapsed = false;
             includeFileToCodeToolStripMenuItem.Enabled = true;
+
+            // set buttons position
+            if (setOnlyOnce) return;
+            setOnlyOnce = true;
+
+            int xLocation = tabControl1.DisplayRectangle.Right;
+            TabClose_button.Left = xLocation - TabClose_button.Width + 1;
+            TabClose_button.Top = tabControl1.DisplayRectangle.Top - 1;
+
+            Split_button.Left = xLocation - Split_button.Width;
+            Split_button.Top = tabControl1.DisplayRectangle.Bottom - Split_button.Height;
+
+            minimizelog_button.Left = tabControl2.DisplayRectangle.Right - minimizelog_button.Width + 2;
+            minimizelog_button.Top = tabControl2.Top - 1;
         }
 
         private void ControlFormStateOn_Off()
