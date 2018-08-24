@@ -663,7 +663,7 @@ int  key_pressed(int dxScancode)
 void tap_key(int dxScancode)
 int  get_mouse_x()
 int  get_mouse_y()
-int  get_mouse_buttons() | - Returns the number of the mouse button that is currently pressed (1 - left, 2 - right, 3 - middle) and 0 otherwise.
+int  get_mouse_buttons() | - Returns the number of the mouse button that is currently pressed (1 - left, 2 - right, 3 - left+right, 4 - middle, 0 otherwise).
 
 void block_combat(bool value) | - Deny the player to enter combat mode.
 int game_loaded() | - Returns 1 the first time it is called after a new game or game load, and 0 any time after.
@@ -751,6 +751,41 @@ any sfall_func4(string funcName, arg1, arg2, arg3, arg4) | - Calls scripting fun
 any sfall_func5(string funcName, arg1, arg2, arg3, arg4, arg5) | - Calls scripting function with given name and 5 arguments.
 any sfall_func6(string funcName, arg1, arg2, arg3, arg4, arg5, arg6) | - Calls scripting function with given name and 6 arguments.
 
+// FuncX macros
+bool attack_is_aimed() | - Returns True if the aimed attack mode is selected, False otherwise.
+ObjectPtr critter_inven_obj2(ObjectPtr obj, int type) | - Allows get the item in the inactive hand slot. || For more details, see the description for the standard function critter_inven_obj.
+int item_weight(ObjectPtr obj) | - Gets the current weight of an object.
+ObjectPtr outlined_object() | - Returns an object that is currently highlighted by hovering the mouse above it.
+int get_outline(ObjectPtr obj) | - Gets the current outline color for an object.
+void set_outline(ObjectPtr obj, int color) | - Sets the outline color of an object. | Note: 0 means or any value above 0x00FFFFFF disables the outline.
+int get_flags(ObjectPtr obj) | - Gets the current value of object flags (see define_extra.h for available flags).
+void set_flags(ObjectPtr obj, int flags) | - Sets the current flags of an object.
+ObjectPtr real_dude_obj() | - Returns the initial dude_obj after set_dude_obj was used.
+void set_dude_obj(ObjectPtr critter) | - Take control of a given critter. | Passing value 0 will reset control back to "real" dude.
+bool lock_is_jammed(ObjectPtr obj) | - Returns True if the lock (container or scenery) is currently jammed, False otherwise.
+void unjam_lock(ObjectPtr obj) | - Unjams a lock immediately without having to wait until the next day, or leave the map and then return after 24 hours.
+void set_unjam_locks_time(int time) | - Sets after how many hours (up to 127 hours) jammed locks will be unjammed if the player leaves the map. | Also disables the auto unjam that occurs at midnight when the player is on the map. | Passing 0 will disable the auto unjam mechanism completely. || Note: The auto unjam mechanism will be reset each time the player reloads the game.
+void exec_map_update_scripts() | - Executes map_update_p_proc for all objects on map and global/hook scripts as well.
+int spatial_radius(ObjectPtr obj) | - Return radius of spatial script, associated with given dummy-object.
+void set_map_enter_position(int tile, int elev, int rot) | - Overrides the player's entry position when entering the map through exit grids. | Setting the tile to 0 will put the player on the start hex (default tile and elevation) of the map. || Note: Works only in map_enter_p_proc procedure.
+array get_map_enter_position() | - Returns an array of the player's position data (index: 0 - tile, 1 - elevation, 2 - rotation) when entering the map through exit grids. | If entering from the world map, the tile value will be -1. || Note: Should be called in map_enter_p_proc procedure to get the correct position data.
+void set_rest_heal_time(int time) | - Sets the time interval in minutes for healing during resting. The default is 180. || Note: The time interval will be reset each time the player reloads the game.
+void set_rest_mode(int flags) | - Sets the bit flags for the rest mode (see RESTMODE_* constants in sfall.h). | Passing 0 will reset the rest mode. || Note: It will also be reset each time the player reloads the game.
+int car_gas_amount() | - Returns current amount of fuel in player's car between 0 and 80000. || Note: To change fuel amount, use vanilla function: metarule(METARULE_GIVE_CAR_GAS, amount).
+void set_car_intface_art(int artIndex) | - Changes the interface art (index in LST file) for the car image on worldmap screen. || Note: Should be called before going to worldmap.
+void tile_refresh_display() | - Redraws the game scene (tiles, walls, objects, etc.).
+void display_stats() | - Updates player stats in the inventory screen display window. || Note: Works only in opened player inventory.
+bool intface_is_hidden() | - Returns True if interface is currently hidden, False otherwise.
+void intface_redraw() | - Redraws main game interface.
+void inventory_redraw(invSide) | - Redraws inventory items list in the inventory/loot/barter screens. | Argument invSide specifies which side needs to be redrawn: 0 - the player, 1 - target (container/NPC in loot/barter screens).
+int get_cursor_mode() | - Returns the current cursor mode. | Values: 0 - movement cursor, 1 - command cursor, 2 - targeting cursor, 4 to 10 are Skilldex skills (yellow targeting cursor).
+void set_cursor_mode(int mode) | - Sets the current cursor mode.
+void set_iface_tag_text(int tag, string text, int color) | - Sets the text messages and colors for custom notification boxes to the interface. | Tag value is the same as used in show_iface_tag, hide_iface_tag, and is_iface_tag_active. | Available colors: 0 - green, 1 - red, 2 - white, 3 - yellow, 4 - dark yellow, 5 - blue, 6 - purple.
+
+array get_ini_section({string file}, {string sect}) | - Returns an associative array of keys and values for a given INI file and section.
+array get_ini_sections({string file}) | - Returns an array of names of all sections in a given INI file.
+void set_ini_setting(string setting, int/string value) | - Writes an integer or a string value to an ini file in the Fallout directory. | The setting argument works in the same way as in get_ini_setting, seperate the file name, section and key with a '|' character. || Note: The section name is limited to 32 characters.
+
 // SFALL HOOK
 Define HOOK_TOHIT  (value 0) | - Runs when fallout is calculating the chances of an attack striking a target, after the hit chance is fully calculated normally, including applying the 95% cap. || int       arg1 - The unmodified hit chance. | critter arg2 - The attacker. | critter arg3 - The target of the attack. | int       arg4 - The targeted bodypart. | int        arg5 - Source tile (may differ from attacker's tile, when AI is considering potential fire position). | int       arg6 - Attack Type (one of ATKTYPE_*). | int       arg7 - Ranged flag (0 or 1, actually passed 1 even for unarmed attacks, may be a vanilla bug). || int     ret1 - The new hit chance.
 
@@ -772,13 +807,13 @@ Define HOOK_USEOBJON  (value 8) | - Runs when: A critter uses an object on anoth
 
 Define HOOK_REMOVEINVENOBJ  (value 9) | - Runs when an object is removed from a critters inventory for any reason. || critter arg1 - The critter the object is being removed from. | item    arg2 - The item that is being removed. | int       arg3 - A flag, or possibly the number of items to remove. | int        arg4 - The reason the object is being removed. (Actually, the site from which _item_remove_mult was called).
 
-Define HOOK_BARTERPRICE  (value 10) | - Runs whenever the value of goods being purchased is calculated. || critter arg1 - The critter doing the bartering (either dude_obj or inven_dude). | critter arg2 - The critter being bartered with. | int       arg3 - The default value of the goods. | critter arg4 - Table of requested goods (being bought from NPC). | int       arg5 - The amount of actual caps in the barter stack (as opposed to goods). | int        arg6 - The value of all goods being traded before skill modifications. | critter arg7 - Table of offered goods (being sold to NPC). | int       arg8 - The total cost of the goods offered by the player. | int       arg9 - Set 1 if the "offers" button was pressed (not for a party member), otherwise 0. || int     ret1 - The modified value of all of the goods.
+Define HOOK_BARTERPRICE  (value 10) | - Runs whenever the value of goods being purchased is calculated. || critter arg1 - The critter doing the bartering (either dude_obj or inven_dude). | critter arg2 - The critter being bartered with. | int       arg3 - The default value of the goods. | critter arg4 - Table of requested goods (being bought from NPC). | int       arg5 - The amount of actual caps in the barter stack (as opposed to goods). | int        arg6 - The value of all goods being traded before skill modifications. | critter arg7 - Table of offered goods (being sold to NPC). | int       arg8 - The total cost of the goods offered by the player. | int       arg9 - Set 1 if the "offers" button was pressed (not for a party member), otherwise 0. || int     ret1 - The modified value of all of the goods, pass -1 if you just want to modify offered goods. | int     ret2 - The modified value of all offered goods.
 
 Define HOOK_MOVECOST  (value 11) | - Runs when calculating the AP cost of movement. || Critter arg1 - The critter doing the moving. | int     arg2 - The number of hexes being moved. | int     arg3 - The original AP cost. || int     ret1 - The new AP cost. 
 
 Define HOOK_ITEMDAMAGE  (value 16) | - Runs when retrieving the damage rating of the players used weapon. (Which may be their fists.) || int     arg1 - The default min damage. | int     arg2 - The default max damage. | Item  arg3 - The weapon used. (0 if unarmed). | Critter arg4 - The critter doing the attacking. | int     arg5 - The type of attack. | int     arg6 - Non zero if this is an attack using a melee weapon. || int     ret1 - Either the damage to be used, if ret2 isn't given, or the new minimum damage if it is. | int     ret2 - The new maximum damage.
 
-Define HOOK_AMMOCOST  (value 17) | - Runs when calculating ammo cost for a weapon. Doesn't affect damage, only how much ammo is spent. || Item  arg1 - Weapon. | int      arg2 - Number of bullets in burst (1 for single shots). | int      arg3 - Ammo cost calculated by original function (this is basically 2 for Super Cattle Prod and Mega Power Fist). | int     arg4 - Type of hook (0 - when subtracting ammo after attack, 1 - when checking for "out of ammo" before attack). || int     ret1 - new ammo cost value (set to 0 for unlimited ammo).
+Define HOOK_AMMOCOST  (value 17) | - Runs when calculating ammo cost for a weapon. Doesn't affect damage, only how much ammo is spent. || Item  arg1 - Weapon. | int      arg2 - Number of bullets in burst (1 for single shots). | int      arg3 - Ammo cost calculated by original function (this is basically 2 for Super Cattle Prod and Mega Power Fist). | int     arg4 - Type of hook: 0 - when subtracting ammo after single shot attack, 1 - when checking for "out of ammo" before attack, 2 - when calculating number of burst rounds, 3 - when subtracting ammo after burst attack. || int     ret1 - new ammo cost value (set to 0 for unlimited ammo).
 
 Define HOOK_USEOBJ  (value 18) | - Runs when: A critter uses an object from inventory which have "Use" action flag set or it's an active flare or dynamite. | Player uses an object from main interface. | This is fired before the object is used, and the relevant use_obj script procedures are run. You can disable default item behavior. || Critter arg1 - The user. | int       arg2 - The object used. || int     ret1 - Overrides hard-coded handler and selects what should happen with the item (0 - place it back, 1 - remove it, -1 - use engine handler).
 
@@ -790,11 +825,11 @@ Define HOOK_USESKILL  (value 21) | - Runs when using any skill on any object. Th
 
 Define HOOK_STEAL  (value 22) | - Runs when checking an attempt to steal or plant an item in other inventory using Steal skill. This is fired before the default handlers are called, which you can override. || Critter arg1 - Thief. | Obj     arg2 - The target. | Item    arg3 - Item being stolen/planted | int       arg4 - 0 when stealing, 1 when planting. || int     ret1 - Overrides hard-coded handler (1 - force success, 0 - force fail, -1 - use engine handler).
 
-Define HOOK_WITHINPERCEPTION  (value 23) | - Runs when checking if one critter sees another critter. This is used in different situations like combat AI. You can override the result. This is fired after the default calculation is made. || Critter arg1 - Watcher object. | Obj     arg2 - Target object. | int       arg3 - Result of vanilla function: 1 - within perception range, 0 - otherwise. || int     ret1 - overrides the returned result of the function: 0 - not in range (can't see), 1 - in range (will see if not blocked), 2 - forced detection (will see regardless, only used in obj_can_see_obj scripting function which is called by every critter in the game).
+Define HOOK_WITHINPERCEPTION  (value 23) | - Runs when checking if one critter sees another critter. This is used in different situations like combat AI. You can override the result. This is fired after the default calculation is made. || Critter arg1 - Watcher object. | Obj     arg2 - Target object. | int       arg3 - Result of vanilla function: 1 - within perception range, 0 - otherwise. | int       arg4 - Type of hook: 1 - when being called from obj_can_see_obj script function, 2 when being called from obj_can_hear_obj script function, 0 for all other cases. || int     ret1 - overrides the returned result of the function: 0 - not in range (can't see), 1 - in range (will see if not blocked), 2 - forced detection (will see regardless, only used in obj_can_see_obj scripting function which is called by every critter in the game).
 
-Define HOOK_INVENTORYMOVE  (value 24) | - Runs before moving items between inventory slots in dude interface. You can override the action. || int     arg1 - Target slot (0 - main backpack, 1 - left hand, 2 - right hand, 3 - armor slot, 4 - weapon, when reloading it by dropping ammo). | Item  arg2 - Item being moved. | Item  arg3 - Item being replaced or weapon being reloaded (can be 0). || int     ret1 - Override setting (-1 - use engine handler, any other value - prevent relocation of item/reloading weapon).
+Define HOOK_INVENTORYMOVE  (value 24) | - Runs before moving items between inventory slots in dude interface. You can override the action. || int       arg1 - Target slot: 0 - main backpack, 1 - left hand, 2 - right hand, 3 - armor slot, 4 - weapon, when reloading it by dropping ammo, 5 - bag/backpack, 6 - dropping on the ground. | Item    arg2 - Item being moved. | Item    arg3 - Item being replaced, weapon being reloaded, or container being filled (can be 0). || int     ret1 - Override setting (-1 - use engine handler, any other value - prevent relocation of item/reloading weapon).
 
-Define HOOK_INVENWIELD  (value 25) | - Runs before wielding or unwielding an armor or a weapon by a critter (except when using inventory by PC). || Critter arg1 - Critter. | Obj     arg2 - Item being wielded or unwielded (weapon/armor), may be 0 when unwielding. | int       arg3 - Slot (INVEN_TYPE_*). | int       arg4 - 1 when wielding, 0 when unwielding. || int     ret1 - Overrides hard-coded handler (-1 - use engine handler, any other value - override).
+Define HOOK_INVENWIELD  (value 25) | - Runs before wielding or unwielding an armor or a weapon by a critter (except when using inventory by PC). || Critter arg1 - Critter. | Obj     arg2 - Item being wielded or unwielded (weapon/armor). | int       arg3 - Slot (INVEN_TYPE_*). | int       arg4 - 1 when wielding, 0 when unwielding. || int     ret1 - Overrides hard-coded handler (-1 - use engine handler, any other value - override).
 
 Define HOOK_ADJUSTFID  (value 26) | - Runs after calculating character figure FID on the inventory screen, whenever the game decides that character appearance might change. Also happens on other screens, like barter. || int     arg1 - The vanilla fid calculated by the engine according to critter base FID and armor/weapon being used. || int     ret1 - Overrides the calculated FID with provided value.
 
@@ -804,4 +839,6 @@ Define HOOK_CARTRAVEL  (value 28) | - Runs continuously during worldmap travel o
 
 Define HOOK_SETGLOBALVAR  (value 29) | - Runs when setting the value of a global variable. || int     arg1 - The index number of the global variable being set. | int     arg2 - The set value of the global variable. || int     ret1 - Overrides the value of the global variable.
 
-Define HOOK_RESTTIMER  (value 30) | - Runs continuously while the player is resting (using pipboy alarm clock). || int     arg1 - The game time in ticks. | int     arg2 - Event type: 1 - when the resting ends normally, -1 - when pressing ESC to cancel the timer, 0 - otherwise. | int     arg3 - The hour part of the length of resting time. | int     arg4 - The minute part of the length of resting time. || int     ret1 - Pass 1 to interrupt the resting.
+Define HOOK_RESTTIMER  (value 30) | - Runs continuously while the player is resting (using pipboy alarm clock). || int     arg1 - The game time in ticks. | int     arg2 - Event type: 1 - when the resting ends normally, -1 - when pressing ESC to cancel the timer, 0 - otherwise. | int     arg3 - The hour part of the length of resting time. | int     arg4 - The minute part of the length of resting time. || int     ret1 - pass 1 to interrupt the resting, pass 0 to continue the rest if it was interrupted by pressing ESC key.
+
+Define HOOK_GAMEMODECHANGE  (value 31) | - Runs once every time when the game mode was changed, like opening/closing the inventory, character screen, pipboy, etc. | int     arg1 - event type: 1 - when the player exits the game, 0 - otherwise.
