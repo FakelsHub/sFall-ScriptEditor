@@ -147,17 +147,19 @@ namespace ScriptEditor.TextEditorUI
         }
 
         // Check for specific color text
+        // TODO: переписать чтобы цвет можно было получать из файла подсветки
         internal static bool CheckColorPosition(IDocument document, TextLocation tl, bool result = false)
         { 
             HighlightColor hc = document.GetLineSegment(tl.Line).GetColorForPosition(tl.Column);
             if (hc != null) {
                 if (IsDarkTheme) {
-                    if (hc.Color == Color.PaleGreen || hc.Color == Color.LightGreen
+                    if (hc.Color == Color.PaleGreen || hc.Color == Color.FromArgb(0x7A, 0xAA, 0x7A)
                         || hc.BackgroundColor == CodeFunctions)
                         return true;
                 } else {
-                    if (hc.Color == Color.Green || hc.Color == Color.Brown || hc.Color == Color.DarkGreen
-                        || hc.BackgroundColor == CodeFunctions || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xD0))
+                    if (hc.Color == Color.DarkSlateGray || hc.Color == Color.Green || hc.Color == Color.Brown || hc.Color == Color.DarkGreen
+                        || hc.BackgroundColor == CodeFunctions || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xDA)
+                        || hc.BackgroundColor == Color.FromArgb(0xFF, 0xFF, 0xD0))
                         return true;
                 }
 

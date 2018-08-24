@@ -8,6 +8,8 @@
     
     <SpaceMarkers color = "LightGray"/>
     <TabMarkers   color = "DarkOrange"/>
+    
+    <TipsGradient color = "White"  bgcolor= "#FAE3B8" />
   </Environment>
 
   <Properties>
@@ -30,17 +32,17 @@
         <Begin color="DarkRed" startofline="true">#include</Begin>
       </Span>
 
-      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "Gray" stopateol = "true">
+      <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "DimGray" stopateol = "true">
         <Begin>//</Begin>
       </Span>
-      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "Gray" stopateol = "false">
+      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "DarkSlateGray" stopateol = "false">
         <Begin>/*</Begin>
         <End>*/</End>
       </Span>
 
-      <Span name = "String" rule = "StringSet" bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black" stopateol = "true">
-        <Begin bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black">"</Begin>
-        <End bold = "false" italic = "false" bgcolor="#FFFFD0" color = "Black">"</End>
+      <Span name = "String" rule = "StringSet" bold = "false" italic = "false" bgcolor="#FFFFDA" color = "#500000" stopateol = "true">
+        <Begin bold = "false" italic = "false" bgcolor="#FFFFDA" color = "#500000">"</Begin>
+        <End bold = "false" italic = "false" bgcolor="#FFFFDA" color = "#500000">"</End>
       </Span>
 
       <Span name = "CodeFunctions" bold = "false" italic = "false" bgcolor="LightGray" color = "Black" stopateol = "true">
@@ -1043,6 +1045,8 @@
         <Key word = "set_unjam_locks_time" />
         <Key word = "set_rest_heal_time" />
         <Key word = "set_rest_mode" />
+        <Key word = "inventory_redraw" />
+        <Key word = "set_iface_tag_text" />
       </KeyWords>
 
       <KeyWords name = "OpKeywords" bold="true" italic="false" color="Blue">
@@ -1338,7 +1342,8 @@
         <Key word = "HOOK_CARTRAVEL" />
         <Key word = "HOOK_SETGLOBALVAR" />
         <Key word = "HOOK_RESTTIMER" />
-        
+        <Key word = "HOOK_GAMEMODECHANGE" />
+
         <Key word = "LIST_CRITTERS" />
         <Key word = "LIST_GROUNDITEMS" />
         <Key word = "LIST_SCENERY" />

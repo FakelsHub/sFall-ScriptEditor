@@ -1009,6 +1009,8 @@
         <Key word = "set_unjam_locks_time" />
         <Key word = "set_rest_heal_time" />
         <Key word = "set_rest_mode" />
+        <Key word = "inventory_redraw" />
+        <Key word = "set_iface_tag_text" />
       </KeyWords>
 
       <KeyWords name = "OpKeywords" bold="false" italic="false" color="Indigo">
@@ -1313,7 +1315,8 @@
         <Key word = "HOOK_CARTRAVEL" />
         <Key word = "HOOK_SETGLOBALVAR" />
         <Key word = "HOOK_RESTTIMER" />
-        
+        <Key word = "HOOK_GAMEMODECHANGE" />
+
         <Key word = "LIST_CRITTERS" />
         <Key word = "LIST_GROUNDITEMS" />
         <Key word = "LIST_SCENERY" />

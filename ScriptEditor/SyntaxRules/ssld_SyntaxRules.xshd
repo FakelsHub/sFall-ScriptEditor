@@ -16,17 +16,17 @@
 	  <FoldMarker   color =  "DimGray" bgcolor = "#26262A" />
 	  <SelectedFoldLine color = "Gold" bgcolor = "#36363A" />
 	 
-	  <TipsGradient color = "#E5E5FF"  bgcolor= "#9A9AB0" />
+	  <TipsGradient color = "#606070"  bgcolor= "#404050" />
   </Environment>
 
   <Properties>
     <Property name = "LineComment" value = "//" />
     <Property name = "BlockCommentBegin" value = "/*" />
     <Property name = "BlockCommentEnd" value = "*/" />
-    <Property name = "ProceduresColor" value = "AntiqueWhite" />
+    <Property name = "ProceduresColor" value = "Bisque" />
   </Properties>
 
-  <Digits name = "Digits" bold = "false" italic = "false" color = "#FF7030"/>
+  <Digits name = "Digits" bold = "false" italic = "false" color = "#FF6A70"/>
 
   <RuleSets>
     <RuleSet ignorecase="true">
@@ -42,7 +42,7 @@
       <Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "#7A8A9A" stopateol = "true">
         <Begin>//</Begin>
       </Span>
-      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "#80B080" stopateol = "false">
+      <Span name = "BlockComment" rule = "CommentMarkerSet" bold = "false" italic = "true" color = "#7AAA7A" stopateol = "false">
         <Begin>/*</Begin>
         <End>*/</End>
       </Span>
@@ -70,7 +70,7 @@
         <Key word = "#undef" />
       </KeyWords>
 
-      <KeyWords name = "StandartProcedures" bold = "true" italic = "false" color = "Wheat">
+      <KeyWords name = "StandartProcedures" bold = "true" italic = "false" color = "Bisque">
         <Key word = "start" />
         <Key word = "description_p_proc" />
         <Key word = "look_at_p_proc" />
@@ -104,9 +104,10 @@
         <Key word = "{" />
         <Key word = "}" />
         <Key word = "|" />
+        <Key word = "\" />
       </KeyWords>
 
-      <KeyWords name = "SpecSymbol" bold = "false" italic = "false" color = "Tan">
+      <KeyWords name = "SpecSymbol" bold = "false" italic = "false" color = "Khaki">
         <Key word = "+" />
         <Key word = "-" />
         <Key word = "/" />
@@ -163,7 +164,7 @@
         <Key word = "continue" />
       </KeyWords>
 
-      <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="Gold">
+      <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="Orange">
         <Key word = "give_exp_points" />
         <Key word = "scr_return" />
         <Key word = "play_sfx" />
@@ -445,11 +446,11 @@
         <Key word = "selectfilelist" />
       </KeyWords>
 
-      <KeyWords name = "Special" bold="true" italic="false" color="SlateGray">
+      <KeyWords name = "Special" bold="true" italic="false" color="#7A8A9A">
         <Key word = "debug_msg" />
       </KeyWords>
 
-      <KeyWords name = "FalloutBaseMacros" bold="true" italic="false" color="#FAE05A">
+      <KeyWords name = "FalloutBaseMacros" bold="true" italic="false" color="Gold">
         <Key word = "rm_fixed_timer_event" />
         <Key word = "create_object" />
         <Key word = "drug_influence" />
@@ -1043,6 +1044,8 @@
         <Key word = "set_unjam_locks_time" />
         <Key word = "set_rest_heal_time" />
         <Key word = "set_rest_mode" />
+        <Key word = "inventory_redraw" />
+        <Key word = "set_iface_tag_text" />
       </KeyWords>
 
       <KeyWords name = "OpKeywords" bold="true" italic="false" color="#5090F0">
@@ -1347,7 +1350,8 @@
         <Key word = "HOOK_CARTRAVEL" />
         <Key word = "HOOK_SETGLOBALVAR" />
         <Key word = "HOOK_RESTTIMER" />
-        
+        <Key word = "HOOK_GAMEMODECHANGE" />
+
         <Key word = "LIST_CRITTERS" />
         <Key word = "LIST_GROUNDITEMS" />
         <Key word = "LIST_SCENERY" />
