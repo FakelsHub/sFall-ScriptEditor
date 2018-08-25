@@ -212,31 +212,20 @@
     <Compile Include="Src\Document\BookmarkManager\Bookmark.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkEventHandler.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <None Include="Resources\ASPX.xshd" />
-    <None Include="Resources\BAT-Mode.xshd" />
     <EmbeddedResource Include="Resources\CPP-Mode.xshd" />
-    <None Include="Resources\Coco-Mode.xshd" />
-    <EmbeddedResource Include="Resources\CSharp-Mode.xshd" />
     <EmbeddedResource Include="Resources\HTML-Mode.xshd" />
     <None Include="ClassDiagram.cd" />
     <None Include="Resources\ICSharpCode.TextEditor.snk" />
     <EmbeddedResource Include="Resources\TextEditorControl.bmp" />
-    <EmbeddedResource Include="Resources\Java-Mode.xshd" />
-    <EmbeddedResource Include="Resources\JavaScript-Mode.xshd" />
     <EmbeddedResource Include="Resources\Mode.xsd" />
-    <EmbeddedResource Include="Resources\PHP-Mode.xshd" />
     <EmbeddedResource Include="Resources\RightArrow.cur" />
     <EmbeddedResource Include="Resources\SyntaxModes.xml" />
-    <EmbeddedResource Include="Resources\Tex-Mode.xshd" />
-    <EmbeddedResource Include="Resources\VBNET-Mode.xshd" />
     <EmbeddedResource Include="Resources\XML-Mode.xshd" />
     <Compile Include="Src\Util\FileReader.cs" />
-    <None Include="Resources\Boo.xshd" />
     <Compile Include="Src\Gui\DrawableLine.cs" />
     <Compile Include="Src\Gui\ToolTipRequestEventArgs.cs" />
     <Compile Include="Src\Document\HighlightingStrategy\SpanStack.cs" />
     <Compile Include="Src\Util\WeakCollection.cs" />
-    <EmbeddedResource Include="Resources\Patch-Mode.xshd" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
