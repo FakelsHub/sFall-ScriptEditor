@@ -59,19 +59,32 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
         public Brush GetBrush(bool colored)
         {
-            if (!colored)
-                return Brushes.Black;
+            if (ColorTheme.IsDarkTheme) {
+                if (!colored) return Brushes.AliceBlue;
 
-            switch (type)
-            {
-                case "M": // Macros
-                    return Brushes.MediumVioletRed;
-                case "V": // Variable
-                    return Brushes.RoyalBlue;
-                case "P": // Procedure
-                    return Brushes.Indigo;
-                default:  // Opcodes
-                    return Brushes.DarkMagenta;
+                switch (type) {
+                    case "M": // Macros
+                        return Brushes.AliceBlue;
+                    case "V": // Variable
+                        return Brushes.LightSkyBlue;
+                    case "P": // Procedure
+                        return Brushes.Violet;
+                    default:  // Opcodes
+                        return Brushes.Gold;
+                }
+            } else {
+                if (!colored) return Brushes.Black;
+
+                switch (type) {
+                    case "M": // Macros
+                        return Brushes.Indigo;
+                    case "V": // Variable
+                        return Brushes.RoyalBlue;
+                    case "P": // Procedure
+                        return Brushes.MediumVioletRed;
+                    default:  // Opcodes
+                        return Brushes.DarkMagenta;
+                }
             }
         }
 

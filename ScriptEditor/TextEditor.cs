@@ -119,8 +119,6 @@ namespace ScriptEditor
             toolTips.Active = false;
             toolTips.Draw += delegate(object sender, DrawToolTipEventArgs e) { TipPainter.DrawInfo(e); }; 
             
-            autoComplete = new AutoComplete(panel1, Settings.autocompleteColor);
-
             if (Settings.encoding == (byte)EncodingType.OEM866) {
                 EncodingDOSmenuItem.Checked = true;
                 windowsDefaultMenuItem.Checked = false;
@@ -130,6 +128,8 @@ namespace ScriptEditor
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(SyntaxFile.SyntaxFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
             ColorTheme.InitTheme(Settings.highlight == 2, this);
+            
+            autoComplete = new AutoComplete(panel1, Settings.autocompleteColor);
 
             // Recent files
             UpdateRecentList();
@@ -477,7 +477,7 @@ namespace ScriptEditor
                         te.ActiveTextAreaControl.CenterViewOn(pos, -1);
                     }
                     if (Settings.autoOpenMsgs && ti.filepath != null) 
-                        AssossciateMsg(ti, false);
+                        AssociateMsg(ti, false);
                 }
                 ti.FileTime = File.GetLastWriteTime(ti.filepath);
             }
@@ -669,7 +669,7 @@ namespace ScriptEditor
                 Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
         }
 
-        private void AssossciateMsg(TabInfo tab, bool create)
+        private void AssociateMsg(TabInfo tab, bool create)
         {
             if (tab.filepath == null || tab.msgFileTab != null)
                 return;
@@ -1499,6 +1499,7 @@ namespace ScriptEditor
                 Headers_toolStripSplitButton.Enabled = true;
             
             autoComplete.Colored = Settings.autocompleteColor;
+            autoComplete.UpdateColor();
         }
 
         private void ApplySettingsTabs(bool alsoFont = false)
@@ -1858,7 +1859,7 @@ namespace ScriptEditor
                 if (msgForm != null)    
                     msgForm.SendMsgLine += AcceptMsgLine;
             } else
-                AssossciateMsg(currentTab, true);
+                AssociateMsg(currentTab, true);
         }
 
         private void editorMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)

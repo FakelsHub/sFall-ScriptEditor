@@ -19,10 +19,15 @@ namespace ScriptEditor.TextEditorUI
         public static Color          CodeFunctions;
         public static Color          HighlightError;
         public static Color          IncludeHighlight;
+        public static Brush          TipText = Brushes.AliceBlue;
 
         public static Color          TreeNameFunction;
 
         private static TextEditor mainForm;
+
+        public static Color TipBorderFrame {
+            get { return (IsDarkTheme) ? Color.FromArgb(0x70, 0x70, 0x80) : Color.Black; }
+        }
 
         public static string HighlightingScheme
         {
@@ -101,7 +106,13 @@ namespace ScriptEditor.TextEditorUI
 
         private static void SetDefaultTheme(bool isDefault)
         {
-            TipGradient = new HighlightColor(Color.White, Color.FromArgb(255, 245, 190));
+            if (Settings.highlight == 0) {
+                TipGradient = new HighlightColor(Color.White, Color.FromArgb(255, 245, 190));
+            } else {
+                IHighlightingStrategy scheme = HighlightingStrategyFactory.CreateHighlightingStrategy("F-Geck");
+                TipGradient = scheme.GetColorFor("TipsGradient");
+            }
+
             SelectedHighlight = new HighlightColor(Color.Black, Color.GreenYellow);
             CodeFunctions = Color.LightGray;
             HighlightError = Color.FromArgb(160, Color.Red);

@@ -53,7 +53,6 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             this.font = new FontContainer(new Font((family ?? FontFamily.GenericMonospace), 10, FontStyle.Regular, GraphicsUnit.Point));
 
             AutoComleteList = new ListBox();
-            AutoComleteList.BackColor = Color.GhostWhite;
             AutoComleteList.Cursor = Cursors.Help;
             AutoComleteList.ItemHeight = height;
             AutoComleteList.MaximumSize = new Size(350, (countItems * height) + 4);
@@ -86,7 +85,19 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             panel.Controls.Add(AutoComleteList);
             AutoComleteList.BringToFront();
 
+            UpdateColor();
             Program.SetDoubleBuffered(AutoComleteList);
+        }
+
+        public void UpdateColor()
+        {
+            if (ColorTheme.IsDarkTheme) {
+                AutoComleteList.BackColor = ColorTheme.TipGradient.BackgroundColor;
+                AutoComleteList.BorderStyle = BorderStyle.FixedSingle;
+            } else {
+                AutoComleteList.BackColor = Color.GhostWhite;
+                AutoComleteList.BorderStyle = BorderStyle.Fixed3D;
+            }
         }
 
         public void Hide()
@@ -360,18 +371,17 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             Image image = imageList.Images[acItem.GetType.ToString()];
 
             e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-            if (!colored)
-                e.Graphics.TextContrast = 0;
+            if (!colored) e.Graphics.TextContrast = 0;
 
             e.DrawBackground();
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)  { 
                 e.Graphics.FillRectangle(SelectItemBrush, e.Bounds);
-                e.Graphics.DrawImage(image, x, y, 16, 16);
+                e.Graphics.DrawImage(image, x + 2, y, 16, 16);
                 e.Graphics.DrawRectangle(new Pen(Color.Peru, 1), x, y, itemWidth - 1, itemHeight - 1);
                 e.Graphics.DrawString(acItem.Name, e.Font, Brushes.Black, new RectangleF(x + shift_x, y, itemWidth - shift_x + 5, itemHeight), sf);
             } else {
-                e.Graphics.DrawImage(image, x, y, 16, 16);
-                e.Graphics.DrawString(acItem.Name, e.Font, acItem.GetBrush(Colored), new RectangleF(x + shift_x, y, itemWidth - shift_x + 5, itemHeight), sf);
+                e.Graphics.DrawImage(image, x + 2, y, 16, 16);
+                e.Graphics.DrawString(acItem.Name, e.Font, acItem.GetBrush(colored), new RectangleF(x + shift_x, y, itemWidth - shift_x + 5, itemHeight), sf);
             }
         }
     }

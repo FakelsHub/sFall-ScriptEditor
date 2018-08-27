@@ -6,6 +6,8 @@
     <CaretMarker  color = "#F5F5FF"/>
 
     <TabMarkers   color = "DarkOrange"/>
+
+    <TipsGradient color = "White"  bgcolor= "#FAE3B8" />
   </Environment>
 
   <Properties>

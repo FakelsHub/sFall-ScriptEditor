@@ -7,7 +7,8 @@ namespace ScriptEditor.TextEditorUI.ToolTips
     static class TipPainter
     {
         // Specify custom text formatting flags
-        static TextFormatFlags sf = TextFormatFlags.VerticalCenter | TextFormatFlags.Left;
+        static TextFormatFlags sff = TextFormatFlags.VerticalCenter | TextFormatFlags.Left;
+        static StringFormat sf = StringFormat.GenericTypographic;
 
         public static void DrawMessage(DrawToolTipEventArgs e)
         {
@@ -31,7 +32,7 @@ namespace ScriptEditor.TextEditorUI.ToolTips
             });
 
             // Draw the standard text with customized formatting options
-            e.DrawText(sf);
+            e.DrawText(sff);
         }
 
         public static void DrawInfo(DrawToolTipEventArgs e)
@@ -42,10 +43,20 @@ namespace ScriptEditor.TextEditorUI.ToolTips
                                                     LinearGradientMode.Vertical);
             // Draw the custom background
             e.Graphics.FillRectangle(gradientInfo, e.Bounds);
-            e.DrawBorder();
 
-            // Draw the standard text with customized formatting options
-            e.DrawText(sf);
+            if (ColorTheme.IsDarkTheme) {
+                Rectangle border = new Rectangle(e.Bounds.Location, new Size(e.Bounds.Width - 1, e.Bounds.Height - 1));
+                e.Graphics.DrawRectangle(new Pen(ColorTheme.TipBorderFrame), border);
+
+                Point locationText = e.Bounds.Location;
+                locationText.Offset(3, 1);
+                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                e.Graphics.DrawString(e.ToolTipText, e.Font, ColorTheme.TipText, locationText, sf);
+            } else {
+               e.DrawBorder();
+               // Draw the standard text with customized formatting options
+               e.DrawText(sff);
+            }
         }
 
     }
