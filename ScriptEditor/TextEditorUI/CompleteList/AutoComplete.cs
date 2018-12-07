@@ -168,6 +168,8 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             
             TAC = cTab.textEditor.ActiveTextAreaControl;
             string word = TextUtilities.GetWordAt(TAC.Document, caretOffset) + keyChar;
+            if (keyChar == String.Empty && word == String.Empty)
+                word = TextUtilities.GetWordAt(TAC.Document, --caretOffset);
 
             if (back && word != null) {
                 if (word.Length > 2)                 
@@ -218,9 +220,9 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                         }
                         AutoComleteList.Show();
                     }
-                    WordPosition = new KeyValuePair<int, string>(TAC.Caret.Offset + shift, word);
+                    WordPosition = new KeyValuePair<int, string>(caretOffset + shift, word);
                 } else if (AutoComleteList.Visible)
-                    WordPosition = new KeyValuePair<int, string>(TAC.Caret.Offset + shift, word);
+                    WordPosition = new KeyValuePair<int, string>(caretOffset + shift, word);
             } else if (AutoComleteList.Visible) {
                         AutoComleteList.Hide();  
             }

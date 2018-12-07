@@ -709,10 +709,10 @@ namespace ScriptEditor
             if (e.KeyCode == Keys.ControlKey)
                 autoComplete.UnHide();
         }
-        
-        private void autocompleteCallToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void showAutocompleteWordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Settings.autocomplete) { 
+            if (Settings.autocomplete) {
                 Caret caret = currentActiveTextAreaCtrl.Caret;
                 if (!ColorTheme.CheckColorPosition(currentDocument, caret.Position))
                     autoComplete.GenerateList(String.Empty, currentTab, caret.Offset, null);
