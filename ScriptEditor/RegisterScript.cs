@@ -38,7 +38,7 @@ namespace ScriptEditor
 
             public string GetMsgAsString()
             {
-                if (Settings.EncCodePage.CodePage == 866) 
+                if (name != null && Settings.EncCodePage.CodePage == 866)
                     name = name.Replace('\u0425', '\u0058'); //Replacement of Russian letter "X", to English letter
                 return ("{" + (row + 101) + "}{" + msglip + "}{" + name + "}").PadRight(60) + "# " + script.PadRight(16) + "; " + desc;
             }
