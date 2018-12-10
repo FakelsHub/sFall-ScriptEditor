@@ -13,21 +13,23 @@ using ScriptEditor.CodeTranslation;
 using ScriptEditor.TextEditorUI;
 
 namespace ScriptEditor.TextEditorUtilities
-{    
+{
     /// <summary>
     /// Class for text editor functions.
     /// </summary>
     internal sealed class Utilities
     {
-    #region Formating code functions
-        private struct Quote
+        const string endKeyWord = "end";
+
+        internal struct Quote
         {
             public int Open;
             public int Close;
         }
 
+    #region Formating code functions
         // for selected code
-        public static void FormattingCode(TextAreaControl TAC) 
+        public static void FormattingCode(TextAreaControl TAC)
         {
             string textCode;
             int offset;
@@ -42,7 +44,7 @@ namespace ScriptEditor.TextEditorUtilities
             TAC.Document.Replace(offset, textCode.Length, FormattingCode(textCode));
         }
 
-        public static void FormattingCodeSmart(TextAreaControl TAC) 
+        public static void FormattingCodeSmart(TextAreaControl TAC)
         {
             string textCode = TextUtilities.GetLineAsString(TAC.Document, TAC.Caret.Line);
 
@@ -61,7 +63,7 @@ namespace ScriptEditor.TextEditorUtilities
             }
         }
 
-        public static string FormattingCode(string textCode) 
+        public static string FormattingCode(string textCode)
         {
             string[] pattern = { ":=", "!=", "==", ">=", "<=", "+=", "-=", "*=", "/=", "%=", ",", ">", "<", "+", "-", "*", "/", "%" };
             char[] excludeR = { ' ', '=', '+', '-', '*', '/' };
@@ -69,7 +71,7 @@ namespace ScriptEditor.TextEditorUtilities
             char[] excludeD = { ' ', ',', '(' };
             const string space = " ";
 
-            List<Quote> Quotes = new  List<Quote>(); 
+            List<Quote> Quotes = new  List<Quote>();
 
             string[] linecode = textCode.Split('\n');
             for (int i = 0; i < linecode.Length; i++)
@@ -78,17 +80,7 @@ namespace ScriptEditor.TextEditorUtilities
                 if (tmp.Length < 3 || tmp.StartsWith("//") || tmp.StartsWith("/*"))
                     continue;
                 // check Quotes
-                int openQuotes = linecode[i].IndexOf('"');
-                while (openQuotes > -1)
-                {
-                    Quote Position;
-                    Position.Open = openQuotes++;
-                    Position.Close = linecode[i].IndexOf('"', openQuotes);
-                    if (Position.Close == -1)
-                        break;
-                    Quotes.Add(Position);
-                    openQuotes = linecode[i].IndexOf('"', Position.Close + 1);
-                };
+                GetQuotesPosition(linecode[i], Quotes);
                 foreach (string p in pattern)
                 {
                     int n = 0;
@@ -98,7 +90,7 @@ namespace ScriptEditor.TextEditorUtilities
                             break;
                         
                         // skiping quotes "..."
-                        bool inQuotes = false; 
+                        bool inQuotes = false;
                         foreach (Quote q in Quotes)
                         {
                             if (n > q.Open && n < q.Close) {
@@ -197,7 +189,7 @@ namespace ScriptEditor.TextEditorUtilities
             if (indent == -1) {
                 // Adjust indent
                 int adjust = spacesLen % Settings.tabSize;
-                indent = (adjust > 0) ? adjust : Settings.tabSize; 
+                indent = (adjust > 0) ? adjust : Settings.tabSize;
             }
             if (spacesLen < indent)
                 indent = spacesLen;
@@ -218,7 +210,7 @@ namespace ScriptEditor.TextEditorUtilities
             if (TAC.SelectionManager.HasSomethingSelected) {
                 TAC.Document.UndoStack.StartUndoGroup();
                 ISelection position = TAC.SelectionManager.SelectionCollection[0];
-                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++) 
+                for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
                 {
                     string LineText = TextUtilities.GetLineAsString(TAC.Document, i);
                     string TrimText = LineText.TrimStart();
@@ -408,7 +400,7 @@ namespace ScriptEditor.TextEditorUtilities
             int z;
             if (wholeword) {
                 RegexOptions option = RegexOptions.Multiline;
-                if (!icase) 
+                if (!icase)
                     option |= RegexOptions.IgnoreCase;
                 if (back)
                     option |= RegexOptions.RightToLeft;
@@ -436,7 +428,7 @@ namespace ScriptEditor.TextEditorUtilities
         internal static bool IsAnyChar(char ch, char[] chars)
         {
             bool result = false;
-            foreach (char c in chars) 
+            foreach (char c in chars)
             {
                 if (c == ch)
                     result = true;
@@ -444,8 +436,8 @@ namespace ScriptEditor.TextEditorUtilities
             return result;
         }
     #endregion
-                
-    #region Create/Delete procedure function 
+
+    #region Create/Delete procedure function
         internal static void PrepareDeleteProcedure(Procedure proc, IDocument document)
         {
             string def_poc;
@@ -461,7 +453,7 @@ namespace ScriptEditor.TextEditorUtilities
 
         // Remove multi procedures
         internal static void DeleteProcedure(List<string> procName, IDocument document)
-        {   
+        {
             document.UndoStack.StartUndoGroup();
             foreach (var name in procName)
             {
@@ -538,7 +530,7 @@ namespace ScriptEditor.TextEditorUtilities
             foreach (TextMarker m in marker)
             {
                 if (m.TextMarkerType == TextMarkerType.SolidBlock)
-                    TAC.Document.MarkerStrategy.RemoveMarker(m); 
+                    TAC.Document.MarkerStrategy.RemoveMarker(m);
             }
             if (!TAC.SelectionManager.HasSomethingSelected)
                 return;
@@ -563,14 +555,17 @@ namespace ScriptEditor.TextEditorUtilities
             TAC.SelectionManager.ClearSelection();
         }
 
-        // Auto selected text color region  
+        // Auto selected text color region
         internal static void SelectedTextColorRegion(TextLocation position, TextAreaControl TAC)
         {
             if (position.IsEmpty) position = TAC.Caret.Position;
             HighlightColor hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(position.Column);
             if (hc == null)
-                return; 
+                return;
             if (hc.BackgroundColor == ColorTheme.CodeFunctions) {
+                int pos = TextUtilities.SearchBracketForward(TAC.Document, TAC.Caret.Offset + 1, '{', '}');
+                if (TAC.Caret.Offset > pos && TAC.Document.GetCharAt(TAC.Caret.Offset) != '}') return;
+                
                 int sStart= position.Column, sEnd = position.Column + 1;
                 for (int i = sEnd; i < (sEnd + 32); i++)
                 {
@@ -601,92 +596,128 @@ namespace ScriptEditor.TextEditorUtilities
             if (ColorTheme.CheckColorPosition(TAC.Document, caret.Position))
                 return false;
             
-            int lineShift = 2, columnShift = 1, offsetShift = 1;
-            bool keyWordMatch = false;
-            string code = null;
-
-            if (TAC.Document.TextLength == caret.Offset)
-                offsetShift++;
+            int offsetShift = 1;
+            if (TAC.Document.TextLength == caret.Offset) offsetShift++;
+            
             string keyword = TextUtilities.GetWordAt(TAC.Document, caret.Offset - offsetShift);
             if (keyword.Length < 2)
                 return false;
 
-            string spacesIndent = String.Empty;
-            if (caret.Column > keyword.Length)
-                spacesIndent = new String(' ', caret.Column - keyword.Length);
-            string indentationSize = spacesIndent + new String(' ', TAC.TextEditorProperties.IndentationSize);
+            string lineText = TextUtilities.GetLineAsString(TAC.Document, caret.Line);
+            int totalWS = 0, totalTab = 0;
+            for (int i = 0; i < lineText.Length; i++)
+            {
+                if (lineText[i] == ' ')
+                    totalWS++;
+                else if (lineText[i] == '\t')
+                    totalTab++;
+                else
+                     break;
+            }
 
+            int indentationSize = TAC.TextEditorProperties.IndentationSize;
+            bool convertTab = TAC.TextEditorProperties.ConvertTabsToSpaces;
+            if (convertTab) {
+                totalTab *= indentationSize;
+            } else {
+                totalWS /= indentationSize;
+            }
+            int columnStart = totalWS + totalTab;
+
+            int keyStart = TextUtilities.FindWordStart(TAC.Document, caret.Offset - offsetShift);
+            int keyLen = caret.Offset - keyStart;
+            bool cutKeyWord = keyword.Length > keyLen;
+            if (cutKeyWord) keyword = keyword.Remove(keyLen);
+
+            string beginIndent = String.Empty;
+            if (caret.Column > keyword.Length) beginIndent = new String((convertTab) ? ' ' : '\t', columnStart);
+
+            string indentation = beginIndent;
+            if (convertTab)
+                indentation += new String(' ', indentationSize);
+            else
+                indentation += '\t';
+
+            int lineShift = 2, columnShift = 0;
+            if (convertTab) {
+                if (totalTab > 0) {
+                    columnShift -= (totalTab / indentationSize);
+                    columnShift += columnShift;
+                }
+            } else if (totalWS > 0) columnShift = (totalWS * indentationSize) - totalWS;
+
+            bool keyWordMatch = true;
+            string code = null;
             TAC.Document.UndoStack.StartUndoGroup();
             switch (keyword)
             {
                 case "for":
-                    code = " ({iterator} := 0; {condition}; {iterator}++) begin\r\n" + indentationSize + "\r\n";
-                    keyWordMatch = true;
+                    code = " ({iterator} := 0; {condition}; {iterator}++) begin\r\n" + indentation + "\r\n";
+                    columnShift += 2;
                     break;
                 case "foreach":
-                    code = " ({iterator}: {item} in {array}) begin\r\n" + indentationSize + "\r\n";
-                    keyWordMatch = true;
+                    code = " ({iterator}: {item} in {array}) begin\r\n" + indentation + "\r\n";
+                    columnShift += 6;
                     break;
                 case "while":
-                    code = " ({condition}) do begin\r\n" + indentationSize + "\r\n";
-                    keyWordMatch = true;
+                    code = " ({condition}) do begin\r\n" + indentation + "\r\n";
+                    columnShift += 4;
                     break;
                 case "switch":
-                    code = " ({condition}) begin\r\n" + indentationSize
-                           + "case {constant} : {code}\r\n" + indentationSize
+                    code = " ({condition}) begin\r\n" + indentation
+                           + "case {constant} : {code}\r\n" + indentation
                            + "default         : {code}\r\n";
                     lineShift++;
-                    keyWordMatch = true;
+                    columnShift += 5;
                     break;
                 case "if":
-                    code = " ({condition}) then begin\r\n" + indentationSize + "\r\n";
-                    keyWordMatch = true;
+                    code = " ({condition}) then begin\r\n" + indentation + "\r\n";
+                    columnShift++;
                     break;
                 case "ifel":
                     code = "({condition}) then begin" + String.Format("{0}{2}{0}{1}else{0}{2}{0}",
-                                                        "\r\n", spacesIndent, indentationSize);
+                                                        "\r\n", beginIndent, indentation);
                     lineShift = 4;
-                    columnShift = 2;
-                    keyWordMatch = true;
+                    columnShift += 2;
                     TAC.Document.Remove(caret.Offset - 2, 2);
                     break;
                 case "elif":
-                    code = " if ({condition}) then begin\r\n" + indentationSize + "\r\n";
-                    columnShift -= 3;
-                    keyWordMatch = true;
+                    code = " if ({condition}) then begin\r\n" + indentation + "\r\n";
+                    columnShift += 6;
                     TAC.Document.Replace(caret.Offset - 2, 2, "se");
                     break;
                 case "else":
-                    code = " begin\r\n" + indentationSize + "\r\n";
+                    code = " begin\r\n" + indentation + "\r\n";
                     lineShift = 1;
-                    columnShift += 3;
-                    keyWordMatch = true;
+                    int isize = (convertTab) ? indentationSize : 1;
+                    columnShift = (columnStart + isize) - (columnStart + 3);
                     break;
                 case "then":
                     code = " begin";
                     lineShift = 0;
-                    columnShift += 3;
-                    keyWordMatch = true;
+                    columnShift = 0;
                     break;
                 case "var":
                     code = "iable ";
                     lineShift = 0;
-                    columnShift += 2;
-                    keyWordMatch = true;
+                    columnShift = 0;
                     break;
                 case "proc":
                     code = "edure ";
                     lineShift = 0;
-                    columnShift += 3;
-                    keyWordMatch = true;
+                    columnShift = 0;
+                    break;
+                default:
+                    keyWordMatch = false;
                     break;
             }
             if (keyWordMatch) {
-                if (lineShift != 0)
-                    code += spacesIndent + "end";
+                if (lineShift != 0) {
+                    code += beginIndent + endKeyWord + ((cutKeyWord) ? " " : String.Empty);
+                }
                 TAC.TextArea.InsertString(code);
-                TAC.Caret.Position = new TextLocation(caret.Column + keyword.Length - columnShift, caret.Line - lineShift);
-                Utilities.SelectedTextColorRegion(caret.Position, TAC);  
+                TAC.Caret.Position = new TextLocation(caret.Column + columnShift, caret.Line - lineShift); //+ keyword.Length - columnShift
+                Utilities.SelectedTextColorRegion(caret.Position, TAC);
             }
             TAC.Document.UndoStack.EndUndoGroup();
             
@@ -758,7 +789,7 @@ namespace ScriptEditor.TextEditorUtilities
             }
             document.UndoStack.EndUndoGroup();
         }
-        
+
         internal static string GetProcedureCode(IDocument document, Procedure curProc)
         {
             if (curProc.d.start == -1 || curProc.d.end == -1) // for imported or w/o body procedure
@@ -824,12 +855,12 @@ namespace ScriptEditor.TextEditorUtilities
         //Selected and return block text [NOT USED]
         internal static string GetSelectBlockText(TextAreaControl TAC, int _begin, int _end, int _ecol = -1, int _bcol = 0)
         {
-            if (_ecol < 0) 
+            if (_ecol < 0)
                 _ecol = TAC.Document.GetLineSegment(_end).Length;
             TAC.SelectionManager.SetSelection(new TextLocation(_bcol, _begin), new TextLocation(_ecol, _end));
             return TAC.SelectionManager.SelectedText;
         }
-     
+
         internal static void NormalizeDelimiter(ref string text)
         {
             char[] delimetr = new char[] {'\r', '\n'};
@@ -852,6 +883,21 @@ namespace ScriptEditor.TextEditorUtilities
                         break;
                 }
                 offset++;
+            };
+        }
+
+        internal static void GetQuotesPosition(string textCode, List<Quote> quotes)
+        {
+            int openQuotes = textCode.IndexOf('"');
+            while (openQuotes > -1)
+            {
+                Quote position;
+                position.Open = openQuotes++;
+                position.Close = textCode.IndexOf('"', openQuotes);
+                if (position.Close == -1)
+                    break;
+                quotes.Add(position);
+                openQuotes = textCode.IndexOf('"', position.Close + 1);
             };
         }
     #endregion

@@ -46,21 +46,32 @@ namespace ICSharpCode.TextEditor.Document
 
 			if (smart) {
 				bool append = false;
-				string endWord = lineText.TrimEnd(whitespaceChars).ToLowerInvariant();
-				if (endWord.EndsWith(" else") || endWord.EndsWith(" then"))
-					append = true; 
-				else if (endWord.EndsWith(" begin")) {
-					LineSegment line = textArea.Document.GetLineSegment(lineNumber + 2);
+				string word = lineText.TrimEnd(whitespaceChars).ToLowerInvariant();
+				if (word.EndsWith(" else") || word.EndsWith(" then"))
+					append = true;
+				else if (word.EndsWith(" begin")) {
+					lineNumber += 2;
+					LineSegment line = textArea.Document.GetLineSegment(lineNumber);
 					if (textArea.Document.GetText(line).TrimStart(whitespaceChars).Length == 0) {
-						if (lineText.TrimStart(whitespaceChars).ToLowerInvariant().StartsWith("if "))
-							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end else begin\r\n");
-						else
+						if (lineText.TrimStart(whitespaceChars).ToLowerInvariant().StartsWith("if ")) {
+							lineText = TextUtilities.GetLineAsString(textArea.Document, ++lineNumber);
+							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\r\n");
+							word = lineText.TrimEnd(whitespaceChars).ToLowerInvariant();
+							if (word.EndsWith(" end")) {
+								line = textArea.Document.GetLineSegment(lineNumber);
+								textArea.Document.Insert(line.Offset, whitespaces.ToString() + "else begin\r\n");
+							}
+						} else
 							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\r\n");
 					}
 					append = true;
 				}
-				if (append)
-					whitespaces.Append(new string(whitespaceChars[0], textArea.Document.TextEditorProperties.IndentationSize));
+				if (append) {
+					if (textArea.TextEditorProperties.ConvertTabsToSpaces)
+						whitespaces.Append(new string(whitespaceChars[0], textArea.Document.TextEditorProperties.IndentationSize));
+					else
+						whitespaces.Append(whitespaceChars[1]);
+				}
 			}
 
 			return whitespaces.ToString();

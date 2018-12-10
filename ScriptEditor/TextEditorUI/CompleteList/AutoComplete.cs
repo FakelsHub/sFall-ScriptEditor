@@ -23,14 +23,14 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         private bool hidden;
 
         private LinearGradientBrush SelectItemBrush = new LinearGradientBrush(
-				                        new PointF(0, 0), new PointF(0, height),
-				                        Color.White, Color.FromArgb(240, 190, 100));
+                                        new PointF(0, 0), new PointF(0, height),
+                                        Color.White, Color.FromArgb(240, 190, 100));
 
         public bool ShiftCaret { get; set; } // используется для возврата курсора каретки на ключевое слово.
         
         bool colored;
-        public bool Colored { 
-            private get { return colored; } 
+        public bool Colored {
+            private get { return colored; }
             set { colored = value;
                   AutoComleteList.Font = colored ? font.BoldFont : font.RegularFont; }
         }
@@ -101,7 +101,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         }
 
         public void Hide()
-        {   
+        {
             if (AutoComleteList.Visible) {
                 TAC.TextEditorProperties.MouseWheelTextZoom = false;
                 hidden = true;
@@ -161,18 +161,18 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             TAC.TextArea.Select();
         }
 
-        public void GenerateList(string keyChar, TabInfo cTab, int caretOffset, object showTip, bool back = false) 
+        public void GenerateList(string keyChar, TabInfo cTab, int caretOffset, object showTip, bool back = false)
         {
             if (!cTab.shouldParse)
                 return;
             
             TAC = cTab.textEditor.ActiveTextAreaControl;
             string word = TextUtilities.GetWordAt(TAC.Document, caretOffset) + keyChar;
-            if (keyChar == String.Empty && word == String.Empty)
+            if (word == String.Empty && keyChar == String.Empty)
                 word = TextUtilities.GetWordAt(TAC.Document, --caretOffset);
 
             if (back && word != null) {
-                if (word.Length > 2)                 
+                if (word.Length > 2)
                     word = word.Remove(word.Length - 1);
                 else
                     word = null;
@@ -183,7 +183,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                     ? cTab.parseInfo.LookupAutosuggest(word)
                     : ProgramInfo.LookupOpcode(word);
                 
-                int shift = (back) ? -1 : 1; 
+                int shift = (back) ? -1 : 1;
 
                 if (matches.Count > 0) {
                     AutoComleteList.BeginUpdate();
@@ -224,7 +224,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                 } else if (AutoComleteList.Visible)
                     WordPosition = new KeyValuePair<int, string>(caretOffset + shift, word);
             } else if (AutoComleteList.Visible) {
-                        AutoComleteList.Hide();  
+                        AutoComleteList.Hide();
             }
         }
 
@@ -237,7 +237,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
                 var tePos = ATAC.FindForm().PointToClient(ATAC.Parent.PointToScreen(ATAC.Location));
                 var caretPos = ATAC.Caret.ScreenPosition;
-               
+                
                 tePos.Offset(caretPos);
                 if (e.Button == MouseButtons.None) {
                     if (e.Delta < 0)
@@ -255,19 +255,19 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
                 tePos.X = AutoComleteList.Location.X;
                 AutoComleteList.Location = tePos;
-            } 
+            }
         }
 
         public void TA_PreviewKeyDown(PreviewKeyDownEventArgs e)
         {
-            if (e.KeyCode == Keys.Tab || e.KeyCode == Keys.Down 
+            if (e.KeyCode == Keys.Tab || e.KeyCode == Keys.Down
                 || (e.KeyCode == Keys.Up && AutoComleteList.SelectedIndex != -1)) {
                 ShiftCaret = true;
                 if (AutoComleteList.SelectedIndex < 0)
                     AutoComleteList.SelectedIndex = 0;
                 AutoComleteList.Focus();
                 ShowItemTip();
-                if (e.KeyCode == Keys.Down)   
+                if (e.KeyCode == Keys.Down)
                     TAC.Caret.Line -= 1;
                 else if (e.KeyCode == Keys.Up)
                     TAC.Caret.Line += 1;
@@ -289,7 +289,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         }
 
         private void ACListClose()
-        { 
+        {
             Close();
             ShiftCaret = false;
             TAC.Caret.Position = TAC.Document.OffsetToPosition(WordPosition.Key);
@@ -340,7 +340,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             if (selIndex < AutoComleteList.Items.Count)
                 AutoComleteList.SelectedIndex = selIndex;
         }
- 
+
         private void ACL_SelectedIndexChanged(object sender, EventArgs e)
         {
             ShowItemTip();
@@ -376,7 +376,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             if (!colored) e.Graphics.TextContrast = 0;
 
             e.DrawBackground();
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)  { 
+            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected) {
                 e.Graphics.FillRectangle(SelectItemBrush, e.Bounds);
                 e.Graphics.DrawImage(image, x + 2, y, 16, 16);
                 e.Graphics.DrawRectangle(new Pen(Color.Peru, 1), x, y, itemWidth - 1, itemHeight - 1);

@@ -264,7 +264,18 @@ namespace ScriptEditor
                 return;
             currentActiveTextAreaCtrl.TextArea.MouseEnter += TextArea_SetFocus;
             
-            CheckChandedFile();
+            if (WindowState != FormWindowState.Minimized)
+                CheckChandedFile();
+            else {
+                Timer timer = new Timer();
+                timer.Interval = 500; // interval time - 0.5 sec
+                timer.Tick += delegate(object obj, EventArgs eArg) {
+                    timer.Stop();
+                    timer.Dispose();
+                    CheckChandedFile();
+                };
+                timer.Start();
+            }
         }
 
         private void TextEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -503,8 +514,8 @@ namespace ScriptEditor
             if (!currentTab.CheckFileTime()) {
                 this.Activated -= TextEditor_Activated;
                 DialogResult result = MessageBox.Show(currentTab.filepath +
-                                                      "\nThe document file was changed in an external editor." +
-                                                      "\nReload the data from the file of this document?",
+                                                      "\nThe script file was changed in an external program." +
+                                                      "\nDo you want to update the data from the script file?",
                                                       "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes) {
                     currentTab.FileTime = File.GetLastWriteTime(currentTab.filepath);
@@ -1082,12 +1093,25 @@ namespace ScriptEditor
             var caret = currentActiveTextAreaCtrl.Caret;
             
             if (Settings.autoInputPaired && e.KeyChar == '"') {
-                char chR = currentDocument.GetCharAt(caret.Offset);
-                char chL = currentDocument.GetCharAt(caret.Offset - 1);
-                if ((chR == ' ' || chR == '\r') && !Char.IsLetterOrDigit(chL)) 
-                    currentDocument.Insert(caret.Offset, "\"");
-                else if (chL == '"' && chR == '"')
+                List<Utilities.Quote> quotes = new  List<Utilities.Quote>();
+                Utilities.GetQuotesPosition(TextUtilities.GetLineAsString(currentDocument, caret.Line), quotes);
+                // skiping quotes "..." region
+                bool inQuotes = false;
+                foreach (Utilities.Quote q in quotes)
+                {
+                    if (caret.Column > q.Open && caret.Column < q.Close) {
+                        inQuotes = true;
+                        break;
+                    }
+                }
+                if (!inQuotes) {
+                    char chR = currentDocument.GetCharAt(caret.Offset);
+                    char chL = currentDocument.GetCharAt(caret.Offset - 1);
+                    if ((chL == '(' && chR == ')') || (chL != '"' && (chR == ' ' || chR == '\r') && !Char.IsLetterOrDigit(chL)))
+                        currentDocument.Insert(caret.Offset, "\"");
+                    else if (chL == '"' && chR == '"')
                         currentDocument.Remove(caret.Offset, 1);
+                }
             } 
             else if (e.KeyChar == '(' || e.KeyChar == '[' || e.KeyChar == '{') {
                 if (autoComplete.IsVisible)

@@ -870,6 +870,8 @@ namespace ScriptEditor
 
             if (!IsSelectProcedure)
                 CreateProcFrm.groupBox1.Enabled = false;
+            else
+                CreateProcFrm.radioButton2.Checked = true;
             
             ProcTree.HideSelection = false;
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
