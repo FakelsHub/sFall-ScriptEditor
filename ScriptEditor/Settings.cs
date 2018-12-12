@@ -100,7 +100,7 @@ namespace ScriptEditor
         public static bool autoHideNodes = false;
 
         // no saved settings
-        public static bool msgLipColumn = true;
+        public static bool msgLipColumn = false;
         public static bool firstRun = false;
 
         public static void SetupWindowPosition(SavedWindows window, Form f)

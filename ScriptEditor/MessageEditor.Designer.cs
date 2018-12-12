@@ -65,10 +65,6 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.DeleteLineStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.SearchStripTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.NextStripButton = new System.Windows.Forms.ToolStripButton();
-            this.BackStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.StripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.OpenNotepadtoolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -83,10 +79,15 @@
             this.fontSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FontSizeComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.encodingTextDOSToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SearchStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.comentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.NextStripButton = new System.Windows.Forms.ToolStripButton();
+            this.BackStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).BeginInit();
@@ -301,21 +302,20 @@
             this.toolStripSeparator5,
             this.DeleteLineStripButton,
             this.toolStripSeparator2,
-            this.SearchStripTextBox,
-            this.NextStripButton,
-            this.BackStripButton,
-            this.toolStripSeparator3,
             this.StripComboBox,
             this.toolStripSeparator10,
             this.OpenNotepadtoolStripButton,
             this.toolStripSeparator15,
             this.toolStripDropDownButton1,
-            this.toolStripDropDownButton2});
+            this.SearchStripTextBox,
+            this.toolStripDropDownButton2,
+            this.NextStripButton,
+            this.BackStripButton,
+            this.toolStripSeparator3});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(941, 26);
             this.toolStrip.TabIndex = 7;
-            this.toolStrip.Text = "toolStrip1";
             // 
             // NewStripButton
             // 
@@ -473,43 +473,6 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(10, 25);
             // 
-            // SearchStripTextBox
-            // 
-            this.SearchStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.SearchStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(255)))));
-            this.SearchStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.SearchStripTextBox.Name = "SearchStripTextBox";
-            this.SearchStripTextBox.Size = new System.Drawing.Size(250, 26);
-            this.SearchStripTextBox.ToolTipText = "Search text";
-            // 
-            // NextStripButton
-            // 
-            this.NextStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.NextStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.NextStripButton.Image = ((System.Drawing.Image)(resources.GetObject("NextStripButton.Image")));
-            this.NextStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.NextStripButton.Name = "NextStripButton";
-            this.NextStripButton.Size = new System.Drawing.Size(23, 23);
-            this.NextStripButton.ToolTipText = "Next find";
-            this.NextStripButton.Click += new System.EventHandler(this.Downbutton_Click);
-            // 
-            // BackStripButton
-            // 
-            this.BackStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.BackStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.BackStripButton.Image = ((System.Drawing.Image)(resources.GetObject("BackStripButton.Image")));
-            this.BackStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.BackStripButton.Name = "BackStripButton";
-            this.BackStripButton.Size = new System.Drawing.Size(23, 23);
-            this.BackStripButton.ToolTipText = "Back find";
-            this.BackStripButton.Click += new System.EventHandler(this.Upbutton_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 26);
-            // 
             // StripComboBox
             // 
             this.StripComboBox.AutoSize = false;
@@ -605,9 +568,7 @@
             // 
             // showLIPColumnToolStripMenuItem
             // 
-            this.showLIPColumnToolStripMenuItem.Checked = true;
             this.showLIPColumnToolStripMenuItem.CheckOnClick = true;
-            this.showLIPColumnToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showLIPColumnToolStripMenuItem.Name = "showLIPColumnToolStripMenuItem";
             this.showLIPColumnToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.showLIPColumnToolStripMenuItem.Text = "Show LIP Column";
@@ -652,13 +613,24 @@
             this.encodingTextDOSToolStripMenuItem.ToolTipText = "Read and write Msg files in cyrillic encoding OEM 866.";
             this.encodingTextDOSToolStripMenuItem.Click += new System.EventHandler(this.encodingTextDOSToolStripMenuItem_Click);
             // 
+            // SearchStripTextBox
+            // 
+            this.SearchStripTextBox.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SearchStripTextBox.AutoSize = false;
+            this.SearchStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(255)))));
+            this.SearchStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.SearchStripTextBox.Name = "SearchStripTextBox";
+            this.SearchStripTextBox.Size = new System.Drawing.Size(300, 21);
+            this.SearchStripTextBox.ToolTipText = "Search text";
+            // 
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToolStripMenuItem,
             this.comentToolStripMenuItem,
-            this.saveToolStripMenuItem});
+            this.saveToolStripMenuItem,
+            this.findFToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -691,6 +663,42 @@
             this.saveToolStripMenuItem.Text = "save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.msgSaveButton_ButtonClick);
             // 
+            // findFToolStripMenuItem
+            // 
+            this.findFToolStripMenuItem.Name = "findFToolStripMenuItem";
+            this.findFToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.findFToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.findFToolStripMenuItem.Text = "findF";
+            this.findFToolStripMenuItem.Click += new System.EventHandler(this.Downbutton_Click);
+            // 
+            // NextStripButton
+            // 
+            this.NextStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.NextStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.NextStripButton.Image = ((System.Drawing.Image)(resources.GetObject("NextStripButton.Image")));
+            this.NextStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.NextStripButton.Name = "NextStripButton";
+            this.NextStripButton.Size = new System.Drawing.Size(23, 23);
+            this.NextStripButton.ToolTipText = "Next find [F3]";
+            this.NextStripButton.Click += new System.EventHandler(this.Downbutton_Click);
+            // 
+            // BackStripButton
+            // 
+            this.BackStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.BackStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.BackStripButton.Image = ((System.Drawing.Image)(resources.GetObject("BackStripButton.Image")));
+            this.BackStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.BackStripButton.Name = "BackStripButton";
+            this.BackStripButton.Size = new System.Drawing.Size(23, 23);
+            this.BackStripButton.ToolTipText = "Back find";
+            this.BackStripButton.Click += new System.EventHandler(this.Upbutton_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 26);
+            // 
             // openFileDialog
             // 
             this.openFileDialog.DefaultExt = "msg";
@@ -719,6 +727,7 @@
             this.Deactivate += new System.EventHandler(this.MessageEditor_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessageEditor_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MessageEditor_KeyDown);
+            this.Resize += new System.EventHandler(this.MessageEditor_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox.ResumeLayout(false);
@@ -790,5 +799,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
         private System.Windows.Forms.ToolStripButton OpenNotepadtoolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
+        private System.Windows.Forms.ToolStripMenuItem findFToolStripMenuItem;
     }
 }

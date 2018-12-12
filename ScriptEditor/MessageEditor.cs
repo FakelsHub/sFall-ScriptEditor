@@ -16,7 +16,7 @@ namespace ScriptEditor
     partial class MessageEditor : Form
     {
         public event SendLineHandler SendMsgLine;
-        
+
         private List<string> linesMsg;
         private string msgPath;
         private bool returnLine;
@@ -45,10 +45,10 @@ namespace ScriptEditor
             public int row;
             public int col;
         }
-            
+
         public enum CommentColor { LightYellow, PaleGreen, Lavender }
-        
-        #region Entry DGV 
+
+        #region Entry DGV
         private class Entry
         {
             public string msgLine = string.Empty;
@@ -84,7 +84,7 @@ namespace ScriptEditor
                             tabCount -= splitLine[0].Length;
                             mark = pcMarker + " ";
                             pcMark = true;
-                        }    
+                        }
                         int z = splitLine[0].IndexOf('{');
                         msgLine = splitLine[0].Substring(z + 1);     //номер строки
                         z = splitLine[1].IndexOf('{');
@@ -111,12 +111,11 @@ namespace ScriptEditor
                         pcMark = false;
                     }
                     return (tab + "{" + (msgLine) + "}{" + msglip + "}{" + text + "}" + description);
-                }
-                else if (msgLine == lineMarker) {
+                } else if (msgLine == lineMarker) {
                     prev = true;
                     return (msgText + "}" + description);
-                } else 
-                    return (msgText + description);  
+                } else
+                    return (msgText + description);
             }
         }
         #endregion
@@ -126,7 +125,7 @@ namespace ScriptEditor
             dgvMessage.Rows.Add(e, e.msgLine, e.msgText, e.msglip);
             int row = dgvMessage.Rows.Count - 1;
             dgvMessage.Rows[row].Cells[2].ToolTipText = e.description.Trim();
-            if (e.pcMark) 
+            if (e.pcMark)
                 dgvMessage.Rows[row].Cells[2].Style.ForeColor = pcColor;
             if (e.commentLine)
                 MarkCommentLine(row);
@@ -137,15 +136,14 @@ namespace ScriptEditor
             if (i >= dgvMessage.Rows.Count) {
                 SelectLine.row = dgvMessage.Rows.Count;
                 AddRow(e);
-            }
-            else dgvMessage.Rows.Insert(i, e, e.msgLine, e.msgText, e.msglip);
+            } else dgvMessage.Rows.Insert(i, e, e.msgLine, e.msgText, e.msglip);
             if (e.commentLine)
                 MarkCommentLine(i);
         }
 
         private void MarkCommentLine(int row)
         {
-            if (!Settings.msgHighlightComment) 
+            if (!Settings.msgHighlightComment)
                 return;
 
             foreach (DataGridViewCell cell in dgvMessage.Rows[row].Cells)
@@ -164,7 +162,7 @@ namespace ScriptEditor
                 }
             }
         }
-                
+
         private void SetCommentColor()
         {
             switch ((CommentColor)Settings.msgHighlightColor)
@@ -201,13 +199,13 @@ namespace ScriptEditor
             
             return msgEdit;
         }
-        
+
         // call from main script editor
         public static MessageEditor MessageEditorInit(TabInfo ti, Form frm)
         {
             string msgPath = null;
             if (ti != null) {
-                if (!MessageFile.GetAssociatePath(ti, true, out msgPath)) 
+                if (!MessageFile.GetAssociatePath(ti, true, out msgPath))
                     return null;
 
                 ti.msgFilePath = msgPath;
@@ -216,7 +214,7 @@ namespace ScriptEditor
             // Show form
             MessageEditor msgEdit = new MessageEditor(msgPath, ti);
             msgEdit.scriptForm = frm;
-            if (ti != null) 
+            if (ti != null)
                 msgEdit.alwaysOnTopToolStripMenuItem.Checked = true;
             msgEdit.Show();
             //if (Settings.autoOpenMsgs && msgEdit.scrptEditor.msgAutoOpenEditorStripMenuItem.Checked)
@@ -252,6 +250,9 @@ namespace ScriptEditor
         {
             InitializeComponent();
 
+            dgvMessage.Columns[3].Visible = Settings.msgLipColumn;
+            showLIPColumnToolStripMenuItem.Checked = Settings.msgLipColumn;
+
             FontSizeComboBox.SelectedIndex = Settings.msgFontSize;
             if (Settings.msgFontSize != 0)
                 FontSizeChanged(null, null);
@@ -281,7 +282,7 @@ namespace ScriptEditor
             }
 
             associateTab = ti;
-            if (associateTab != null) 
+            if (associateTab != null)
                 MessageFile.ParseMessages(associateTab, linesMsg.ToArray());
         }
         #endregion
@@ -309,7 +310,7 @@ namespace ScriptEditor
 
             dgvMessage.AutoResizeColumns();
             dgvMessage.Visible = true;
- 
+
             this.Text = Path.GetFileName(msgPath) + this.Tag;
             groupBox.Text = msgPath;
             msgSaveButton.Enabled = false;
@@ -326,12 +327,12 @@ namespace ScriptEditor
                 Entry entries = (Entry)dgvMessage.Rows[i].Cells[0].Value;
                 string line = entries.ToString(out prevLine);
                 
-                if (replaceX) 
+                if (replaceX)
                     line = line.Replace('\u0425', '\u0058'); //Replacement of Russian letter "X", to English letter
                 
                 linesMsg.Add(line);
                 
-                if (prevLine) 
+                if (prevLine)
                     linesMsg[i - 1] = linesMsg[i - 1].TrimEnd('}');
                 
                 foreach (DataGridViewCell cells in dgvMessage.Rows[i].Cells)
@@ -366,7 +367,7 @@ namespace ScriptEditor
             Entry entry = (Entry)dgvMessage.Rows[e.RowIndex].Cells[0].Value;
             
             string val = (string)cell.Value;
-            if (val == null) 
+            if (val == null)
                 val = string.Empty;
 
             switch (e.ColumnIndex) {
@@ -395,7 +396,7 @@ namespace ScriptEditor
                     break;
             }
             if (!returnLine) {
-                dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Red; 
+                dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Red;
                 msgSaveButton.Enabled = true;
             }
             returnLine = false;
@@ -414,15 +415,15 @@ namespace ScriptEditor
 
         private void SendStripButton_Click(object sender, EventArgs e)
         {
-           if (SendMsgLine == null)
-               return;
-           string line = (string)dgvMessage.Rows[SelectLine.row].Cells[1].Value;
-           int result;
-           if (int.TryParse(line, out result)) {
-               SendMsgLine(line);
-               if (closeOnSend)
-                   this.Close();
-           }
+            if (SendMsgLine == null)
+                return;
+            string line = (string)dgvMessage.Rows[SelectLine.row].Cells[1].Value;
+            int result;
+            if (int.TryParse(line, out result)) {
+                SendMsgLine(line);
+                if (closeOnSend)
+                    this.Close();
+            }
         }
 
         private void NewStripButton_Click(object sender, EventArgs e)
@@ -442,7 +443,7 @@ namespace ScriptEditor
         private void msgOpenButton_ButtonClick(object sender, EventArgs e)
         {
             string path = msgPath;
-            if (path == null && Settings.outputDir != null) 
+            if (path == null && Settings.outputDir != null)
                 path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
             openFileDialog.InitialDirectory = path;
             if (openFileDialog.ShowDialog() == DialogResult.OK) {
@@ -455,19 +456,19 @@ namespace ScriptEditor
                 }
             }
         }
-      
+
         private void msgSaveButton_ButtonClick(object sender, EventArgs e)
         {
-            if (msgPath == null) 
+            if (msgPath == null)
                 SaveAsStripButton_Click(null, null);
-            else 
+            else
                 saveFileMsg();
         }
 
         private void SaveAsStripButton_Click(object sender, EventArgs e)
         {
             string path = msgPath;
-            if (path == null && Settings.outputDir != null) 
+            if (path == null && Settings.outputDir != null)
                 path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
             saveFileDialog.InitialDirectory = path;
             saveFileDialog.FileName = Path.GetFileName(msgPath);
@@ -481,7 +482,7 @@ namespace ScriptEditor
             }
         }
 
-        private void IncAddStripButton_Click(object sender, EventArgs e)
+        private bool AddNewLine()
         {
             int Line = 0, nLine;
             bool _comm = false;
@@ -491,7 +492,7 @@ namespace ScriptEditor
             {
                 if (int.TryParse((string)dgvMessage.Rows[n].Cells[1].Value, out Line)) break;
                 string val =(string)dgvMessage.Rows[n].Cells[2].Value;
-                if (/*val != null &&*/ val.StartsWith("#")) _comm = true; 
+                if (/*val != null &&*/ val.StartsWith("#")) _comm = true;
             }
             if (_comm) {
                 Line = (int)Math.Round((decimal)Line / 10) * 10;
@@ -501,8 +502,7 @@ namespace ScriptEditor
             {
                 if (int.TryParse((string)dgvMessage.Rows[n].Cells[1].Value, out nLine)) {
                     if (Line == nLine) {
-                        System.Media.SystemSounds.Question.Play();
-                        return;
+                        return false;
                     }
                 }
             }
@@ -518,6 +518,13 @@ namespace ScriptEditor
             
             if (isEdit)
                 dgvMessage.BeginEdit(false);
+
+            return true;
+        }
+
+        private void IncAddStripButton_Click(object sender, EventArgs e)
+        {
+            if (!AddNewLine()) System.Media.SystemSounds.Question.Play();
         }
 
         private void InsertEmptyStripButton_Click(object sender, EventArgs e)
@@ -544,7 +551,7 @@ namespace ScriptEditor
             if (selRows.Count > 0) {
                 foreach (DataGridViewRow row in selRows)
                     dgvMessage.Rows.Remove(row);
-                if (dgvMessage.RowCount ==0) AddRow(new Entry());
+                if (dgvMessage.RowCount == 0) AddRow(new Entry());
             } else {
                 dgvMessage.Rows.RemoveAt(SelectLine.row);
                 if (SelectLine.row >= dgvMessage.Rows.Count) SelectLine.row--;
@@ -570,20 +577,24 @@ namespace ScriptEditor
             catch { };
             msgSaveButton.Enabled = true;
         }
-        
-        #region Search function 
-        private cell Finds(int rowStart, int colStart, int rev = 1)
+
+        #region Search function
+        private void Finds(int rowStart, int colStart, int rev = 1)
         {
-            cell cell = new cell();
             string find_str = SearchStripTextBox.Text.Trim();
-            if (find_str.Length == 0) return cell; 
+            if (find_str.Length == 0) {
+                MessageBox.Show("Nothing found.");
+                return;
+            }
+
+            cell cell = new cell();
             if (rev == -1 && rowStart == 0) rowStart = dgvMessage.RowCount - 1;
             for (int row = rowStart; row < dgvMessage.RowCount; row += rev)
             {
-                if (row < 0) break; 
+                if (row < 0) break;
                 for (int col = colStart; col < dgvMessage.ColumnCount; col++)
                 {
-                    if (dgvMessage.Rows[row].Cells[col].Value == null) 
+                    if (dgvMessage.Rows[row].Cells[col].Value == null)
                         continue;
                     string value = dgvMessage.Rows[row].Cells[col].Value.ToString();
                     if (value.IndexOf(find_str, 0, StringComparison.OrdinalIgnoreCase) != -1) {
@@ -599,25 +610,22 @@ namespace ScriptEditor
                 dgvMessage.FirstDisplayedScrollingRowIndex = (cell.row <= 5) ? cell.row : cell.row - 5;
                 dgvMessage.Rows[cell.row].Cells[cell.col].Selected = true;
             }
-            return cell;
+
+            if (cell.col == 0)
+                System.Media.SystemSounds.Exclamation.Play();
+            else {
+                SelectLine = cell;
+            }
         }
- 
+
         private void Downbutton_Click(object sender, EventArgs e)
         {
-            cell curfind = Finds(SelectLine.row, SelectLine.col + 1);
-            if (curfind.col == 0) {
-                 if (SearchStripTextBox.Text.Trim().Length > 0) MessageBox.Show("Nothing found.");
-            }
-            else SelectLine = curfind;
+            Finds(SelectLine.row, SelectLine.col + 1);
         }
 
         private void Upbutton_Click(object sender, EventArgs e)
         {
-            cell curfind = Finds(SelectLine.row, SelectLine.col + 1, -1);
-            if (curfind.col == 0) {
-                if (SearchStripTextBox.Text.Trim().Length > 0) MessageBox.Show("Nothing found.");
-            }
-            else SelectLine = curfind;
+            Finds(SelectLine.row, SelectLine.col + 1, -1);
         }
         #endregion
 
@@ -635,7 +643,7 @@ namespace ScriptEditor
                 msgOpenButton.DropDownItems.Add(items[i], null, MsgRecentClick);
             }
         }
-        
+
         private void MsgRecentClick(object sender, EventArgs e)
         {
             string rFile = ((ToolStripMenuItem)sender).Text;
@@ -644,9 +652,9 @@ namespace ScriptEditor
             if (File.Exists(rFile)) {
                 msgPath = rFile;
                 dgvMessage.Rows.Clear();
-                readMsgFile();   
-            } else if (MessageBox.Show("Message file not found.\n Delete this recent link?","Warning", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                        delete = true; // delete from recent list 
+                readMsgFile();
+            } else if (MessageBox.Show("Message file not found.\n Delete this recent link?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                delete = true; // delete from recent list
             Settings.AddMsgRecentFile(rFile, delete);
             UpdateRecentList();
         }
@@ -685,8 +693,7 @@ namespace ScriptEditor
                 if (FontSizeComboBox.SelectedIndex == 0)
                     return;
                 FontSizeComboBox.SelectedIndex--;
-            }
-            else if (e.Control && e.KeyCode == Keys.Add) {
+            } else if (e.Control && e.KeyCode == Keys.Add) {
                 if (FontSizeComboBox.SelectedIndex == FontSizeComboBox.Items.Count - 1)
                     return;
                 FontSizeComboBox.SelectedIndex++;
@@ -699,10 +706,22 @@ namespace ScriptEditor
                 var result = MessageBox.Show("Do you want to save changes to message file?", "Warning", MessageBoxButtons.YesNoCancel);
                 if (result == DialogResult.Yes) {
                     msgSaveButton_ButtonClick(null, null);
-                }
-                else if (result == DialogResult.Cancel)
+                } else if (result == DialogResult.Cancel)
                     e.Cancel = true;
             }
+        }
+
+        string restoreText;
+        bool textNeedRestore = false;
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (textNeedRestore && keyData == Keys.Escape) {
+                returnLine = true;
+                dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Value = restoreText;
+                returnLine = false;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void dgvMessage_KeyPress(object sender, KeyPressEventArgs e)
@@ -710,26 +729,15 @@ namespace ScriptEditor
             if (!Char.IsControl(e.KeyChar)) {
                 if (SelectLine.col == 1)
                     dgvMessage.BeginEdit(true);
-                else
-                    dgvMessage.BeginEdit(false);
-            } else if (e.KeyChar == 8 && !dgvMessage.MultiSelect) { //Backspace
-                if (SelectLine.col == 1)
-                    dgvMessage.BeginEdit(false);
                 else {
-                    BackspaceEdit();
+                    textNeedRestore = true;
+                    restoreText = (string)dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Value;
+                    returnLine = true;
+                    dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Value = restoreText + e.KeyChar;
+                    returnLine = false;
+                    dgvMessage.BeginEdit(false);
                 }
             }
-        }
-
-        private void BackspaceEdit()
-        {
-            var _cell = dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col];
-            var data = _cell.Value;
-            returnLine = true;
-            _cell.Value = "";
-            dgvMessage.BeginEdit(false);
-            _cell.Value = data;
-            returnLine = false;
         }
 
         private void dgvMessage_KeyDown(object sender, KeyEventArgs e)
@@ -741,20 +749,34 @@ namespace ScriptEditor
                 InsertEmptyStripButton_Click(null, EventArgs.Empty);
                 e.SuppressKeyPress = true;
             } else if (e.KeyCode == Keys.Enter && !dgvMessage.MultiSelect) {
-                IncAddStripButton_Click(null, EventArgs.Empty);
-                e.SuppressKeyPress = true;
-            } else if (e.KeyCode == Keys.Delete && !e.Control && !dgvMessage.MultiSelect) {
+                string _cell = (string)dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Value;
+                if (_cell != null && _cell.Length > 0 || !AddNewLine()) {
+                    dgvMessage.BeginEdit(false);
+                }
+                 e.SuppressKeyPress = true;
+            } else if ((e.KeyCode == Keys.Delete && !e.Control) || e.KeyCode== Keys.Back && !dgvMessage.MultiSelect) {
                 BackspaceEdit();
             }
         }
- 
+
+        private void BackspaceEdit()
+        {
+            var _cell = dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col];
+            var data = _cell.Value;
+            returnLine = true;
+            _cell.Value = String.Empty;
+            dgvMessage.BeginEdit(false);
+            _cell.Value = data;
+            returnLine = false;
+        }
+
         private void playerMarkerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Entry entry = (Entry)dgvMessage.Rows[SelectLine.row].Cells[0].Value;
             if (entry.msgLine == "-")
                 return;
 
-            dgvMessage.CellValueChanged -= dgvMessage_CellValueChanged;
+            returnLine = true;
 
             bool changed = (dgvMessage.Rows[SelectLine.row].Cells[2].Style.ForeColor == Color.Red);
 
@@ -771,8 +793,7 @@ namespace ScriptEditor
             }
 
             dgvMessage.Rows[SelectLine.row].Cells[2].Value = entry.msgText;
-            dgvMessage.CellValueChanged += dgvMessage_CellValueChanged;
-
+            returnLine = false;
             msgSaveButton.Enabled = true;
         }
 
@@ -813,7 +834,7 @@ namespace ScriptEditor
                 int index_min = Math.Min(rows[0].Index, rows[rows.Count - 1].Index) - 1;
                 int index_max = Math.Max(rows[0].Index, rows[rows.Count - 1].Index);
 
-                if (index_min < 0) return; 
+                if (index_min < 0) return;
 
                 DataGridViewRow row = dgvMessage.Rows[index_min];
                 dgvMessage.Rows.RemoveAt(index_min);
@@ -837,7 +858,7 @@ namespace ScriptEditor
                 int index_min = Math.Min(rows[0].Index, rows[rows.Count - 1].Index);
                 int index_max = Math.Max(rows[0].Index, rows[rows.Count - 1].Index) + 1;
 
-                if (index_max > dgvMessage.Rows.Count - 1) return; 
+                if (index_max > dgvMessage.Rows.Count - 1) return;
 
                 DataGridViewRow row = dgvMessage.Rows[index_max];
                 dgvMessage.Rows.RemoveAt(index_max);
@@ -864,6 +885,7 @@ namespace ScriptEditor
         private void dgvMessage_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = editColor;
+            textNeedRestore = false;
         }
 
         private void alwaysOnTopToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -952,6 +974,14 @@ namespace ScriptEditor
         {
             if (msgPath != null)
                 Settings.OpenInExternalEditor(msgPath);
+        }
+
+        private void MessageEditor_Resize(object sender, EventArgs e)
+        {
+            int width = this.Width - toolStripDropDownButton1.Bounds.Right - 120;
+            if (SearchStripTextBox.IsOnOverflow || width < 100) width = 100;
+            SearchStripTextBox.Width = width;
+            toolStrip.PerformLayout();
         }
     }
 }
