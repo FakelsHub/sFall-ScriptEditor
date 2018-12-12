@@ -700,14 +700,18 @@ namespace ScriptEditor
         
         private void TextEditor_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.ControlKey)
+            if (e.KeyCode == Keys.ControlKey) {
                 autoComplete.Hide();
+                ctrlKeyPress = true;
+            }
         }
 
         private void TextEditor_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.ControlKey)
+            if (e.KeyCode == Keys.ControlKey) {
                 autoComplete.UnHide();
+                ctrlKeyPress = false;
+            }
         }
 
         private void showAutocompleteWordToolStripMenuItem_Click(object sender, EventArgs e)

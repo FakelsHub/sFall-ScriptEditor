@@ -52,6 +52,7 @@ namespace ScriptEditor
         private readonly string[] commandsArgs;
         private bool SplitEvent;
         internal static bool ParsingErrors = true;
+        private bool ctrlKeyPress;
 
         private int showTipsColumn;
 
@@ -392,7 +393,6 @@ namespace ScriptEditor
             //Create the text editor and set up the tab
             ICSharpCode.TextEditor.TextEditorControl te = new ICSharpCode.TextEditor.TextEditorControl();
             
-            te.TextEditorProperties.AllowCaretBeyondEOL = true;
             te.TextEditorProperties.LineViewerStyle = LineViewerStyle.FullRow;
             te.TextEditorProperties.TabIndent = Settings.tabSize;
             te.TextEditorProperties.IndentationSize = Settings.tabSize;
@@ -409,7 +409,7 @@ namespace ScriptEditor
                 te.TextEditorProperties.ShowVerticalRuler = false;
                 te.TextEditorProperties.IndentStyle = IndentStyle.None;
                 te.TextEditorProperties.ShowLineNumbers = false;
-                te.TextEditorProperties.Font = new Font("Verdana", 10, FontStyle.Regular, GraphicsUnit.Point);
+                te.TextEditorProperties.Font = new Font("Verdana", 10 + Settings.sizeFont, FontStyle.Regular, GraphicsUnit.Point);
             } else {
                 te.SetHighlighting(ColorTheme.HighlightingScheme); // Activate the highlighting, use the name from the SyntaxDefinition node.
                 te.Document.FoldingManager.FoldingStrategy = new CodeFolder();
@@ -418,6 +418,7 @@ namespace ScriptEditor
                 te.TextEditorProperties.IndentStyle = IndentStyle.Smart;
                 te.TextEditorProperties.ShowVerticalRuler = Settings.showVRuler;
                 te.TextEditorProperties.VerticalRulerRow = Settings.tabSize;
+                te.TextEditorProperties.AllowCaretBeyondEOL = true;
                 //te.TextEditorProperties.CaretLine = true;
                 Settings.SetTextAreaFont(te);
             }
@@ -2496,17 +2497,27 @@ namespace ScriptEditor
 
         private void FontSizeStripStatusLabel_Click(object sender, EventArgs e)
         {
-            if (++Settings.sizeFont > 3)
-                Settings.sizeFont = -3;
-
+            if (ctrlKeyPress) {
+                if (--Settings.sizeFont < -5) Settings.sizeFont = 20;
+            } else {
+                if (++Settings.sizeFont > 20) Settings.sizeFont = -5;
+            }
             SizeFontToString();
         }
 
         private void SizeFontToString()
         {
-            string str = Settings.sizeFont.ToString();
-            str = (str[0] == '-') ? str : '+' + str;
-            FontSizeStripStatusLabel.Text = str;
+            // base 10 (min 5,  max 30)
+            float percent = (float)((10 + Settings.sizeFont) / 10.0f) * 100.0f;
+            FontSizeStripStatusLabel.Text = percent.ToString() + '%';
+
+            if (currentTab != null) {
+                var fontName = currentTab.textEditor.TextEditorProperties.Font.Name;
+                var font = new Font(fontName, 10.0f + Settings.sizeFont, FontStyle.Regular);
+                currentTab.textEditor.TextEditorProperties.Font = font;
+                currentTab.textEditor.Refresh();
+                currentActiveTextAreaCtrl.Caret.RecreateCaret();
+            }
         }
 
         private void decompileF1ToolStripMenuItem_Click(object sender, EventArgs e)

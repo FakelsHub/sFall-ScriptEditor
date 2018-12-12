@@ -1169,6 +1169,7 @@ namespace ScriptEditor {
             // FontSizeStripStatusLabel
             // 
             this.FontSizeStripStatusLabel.AutoSize = false;
+            this.FontSizeStripStatusLabel.AutoToolTip = true;
             this.FontSizeStripStatusLabel.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top)
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)
                         | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
@@ -1177,10 +1178,10 @@ namespace ScriptEditor {
             this.FontSizeStripStatusLabel.IsLink = true;
             this.FontSizeStripStatusLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.FontSizeStripStatusLabel.Name = "FontSizeStripStatusLabel";
-            this.FontSizeStripStatusLabel.Size = new System.Drawing.Size(25, 23);
-            this.FontSizeStripStatusLabel.Text = "+0";
+            this.FontSizeStripStatusLabel.Size = new System.Drawing.Size(50, 23);
+            this.FontSizeStripStatusLabel.Text = "100%";
             this.FontSizeStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.FontSizeStripStatusLabel.ToolTipText = "The default text size.";
+            this.FontSizeStripStatusLabel.ToolTipText = "The text font size. Hold key Ctrl + Mouse click decrease size.";
             this.FontSizeStripStatusLabel.VisitedLinkColor = System.Drawing.Color.Blue;
             this.FontSizeStripStatusLabel.Click += new System.EventHandler(this.FontSizeStripStatusLabel_Click);
             // 
