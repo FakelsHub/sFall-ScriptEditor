@@ -24,6 +24,7 @@ namespace ScriptEditor
 
         private Color editColor;
         private bool editAllowed = true;
+        private bool isEditMode = false;
 
         private const string COMMENT = "#";
         private const string lineMarker = "\u25B2";
@@ -716,11 +717,47 @@ namespace ScriptEditor
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            bool cancelPress = false;
             if (textNeedRestore && keyData == Keys.Escape) {
                 returnLine = true;
                 dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Value = restoreText;
                 returnLine = false;
+            } else if (isEditMode) {
+                int keyPress = (int)msg.WParam;
+                int caterPossiton = ((TextBox)dgvMessage.EditingControl).SelectionStart;
+                if ((keyPress == 40 || keyPress == 38)) { // Up/Down
+                    var lines = ((TextBox)dgvMessage.EditingControl).Lines;
+                    if (lines.Length == 1) {
+                        if (keyPress == 40) // down
+                            msg.WParam = (IntPtr)35;
+                        else
+                            msg.WParam = (IntPtr)36;
+                    } else {
+                        int len = lines[0].Length;
+                        if (keyPress == 40) { // down
+                            for (int i = 1; i < lines.Length - 1; i++) len += lines[i].Length + 2;
+                            if (caterPossiton > len)
+                                cancelPress = true;
+                        } else {
+                            if (caterPossiton <= len)
+                                cancelPress = true;
+                        }
+                    }
+                } else if (keyPress == 37) { // Left
+                    if (caterPossiton == 0)
+                        cancelPress = true;
+                } else if (keyPress == 39) { // Right
+                    if (caterPossiton == ((TextBox)dgvMessage.EditingControl).TextLength)
+                        cancelPress = true;
+                } else if ((keyPress == 35 || keyPress == 36)) { // Home/End
+                    if (keyPress == 36)
+                        ((TextBox)dgvMessage.EditingControl).SelectionStart = 0;
+                    else
+                        ((TextBox)dgvMessage.EditingControl).SelectionStart = ((TextBox)dgvMessage.EditingControl).TextLength;
+                    cancelPress = true;
+                }
             }
+            if (cancelPress) msg.WParam = (IntPtr)0;
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -880,12 +917,16 @@ namespace ScriptEditor
             var _cell = dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex];
             editColor = _cell.Style.BackColor;
             _cell.Style.BackColor = Color.Beige;
+            dgvMessage.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            isEditMode = true;
         }
 
         private void dgvMessage_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.BackColor = editColor;
+            dgvMessage.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             textNeedRestore = false;
+            isEditMode = false;
         }
 
         private void alwaysOnTopToolStripMenuItem_CheckedChanged(object sender, EventArgs e)

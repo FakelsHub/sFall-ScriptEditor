@@ -455,8 +455,12 @@ namespace ScriptEditor
         {
             TextEditor frm = mainfrm as TextEditor;
             StreamWriter sw = new StreamWriter(Settings.SearchHistoryPath);
+            int capHSearchHistory = 150;
             foreach (var item in frm.SearchTextComboBox.Items)
+            {
                 sw.WriteLine(item.ToString());
+                if (--capHSearchHistory < 0) break;
+            }
             sw.Close();
             openMsgEditor = frm.msgAutoOpenEditorStripMenuItem.Checked;
             if (frm.WindowState != FormWindowState.Minimized) SaveWindowPosition(SavedWindows.Main, mainfrm);
