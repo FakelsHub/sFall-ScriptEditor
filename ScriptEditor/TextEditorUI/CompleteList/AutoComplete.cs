@@ -165,11 +165,14 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         {
             if (!cTab.shouldParse)
                 return;
-            
+
+            bool pressKeyAutoComplite = (keyChar == String.Empty);
+
             TAC = cTab.textEditor.ActiveTextAreaControl;
             string word = TextUtilities.GetWordAt(TAC.Document, caretOffset) + keyChar;
-            if (word == String.Empty && keyChar == String.Empty)
+            if (pressKeyAutoComplite && word == String.Empty) {
                 word = TextUtilities.GetWordAt(TAC.Document, --caretOffset);
+            }
 
             if (back && word != null) {
                 if (word.Length > 2)
@@ -183,7 +186,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                     ? cTab.parseInfo.LookupAutosuggest(word)
                     : ProgramInfo.LookupOpcode(word);
                 
-                int shift = (back) ? -1 : 1;
+                int shift = (back) ? -1 : pressKeyAutoComplite ? 0 : 1;
 
                 if (matches.Count > 0) {
                     AutoComleteList.BeginUpdate();
@@ -210,7 +213,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                         if (back)
                             tePos.Offset(-6, 18);
                         else
-                            tePos.Offset(10, 18);
+                            tePos.Offset(pressKeyAutoComplite ? 0 : 10, 18);
 
                         if (showTip != null && (bool)showTip)
                             tePos.Offset(0, 22);
@@ -220,9 +223,9 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                         }
                         AutoComleteList.Show();
                     }
-                    WordPosition = new KeyValuePair<int, string>(caretOffset + shift, word);
+                    WordPosition = new KeyValuePair<int, string>(TAC.Caret.Offset + shift, word);
                 } else if (AutoComleteList.Visible)
-                    WordPosition = new KeyValuePair<int, string>(caretOffset + shift, word);
+                    WordPosition = new KeyValuePair<int, string>(TAC.Caret.Offset + shift, word);
             } else if (AutoComleteList.Visible) {
                         AutoComleteList.Hide();
             }
