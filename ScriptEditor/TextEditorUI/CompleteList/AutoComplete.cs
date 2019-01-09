@@ -43,6 +43,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         private Panel panel;
         private ImageList imageList;
         private FontContainer font;
+        private Point mousePosition = new Point();
 
         public AutoComplete(Panel panel, bool colored)
         {
@@ -124,6 +125,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             hidden = false;
             AutoComleteList.Hide();
             AutoComleteList.Items.Clear();
+            mousePosition = new Point();
         }
 
         public void Show()
@@ -329,13 +331,20 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
         private void ACL_MouseEnter(object sender, EventArgs e)
         {
-            if (AutoComleteList.SelectedIndex < 0)
-                return;
+            if (AutoComleteList.SelectedIndex < 0) return;
             AutoComleteList.Focus();
         }
 
         private void ACL_MouseMove(object sender, MouseEventArgs e)
         {
+            if (mousePosition.IsEmpty) mousePosition = e.Location;
+            if (mousePosition == e.Location) return;
+
+            // устранение дребезга мышки
+            int jitter = Math.Abs(e.Location.X - mousePosition.X) + Math.Abs(e.Location.Y - mousePosition.Y);
+            if (jitter < 5) return;
+            mousePosition = e.Location;
+
             int item = 0;
             if (e.Y != 0)
                 item = e.Y / AutoComleteList.ItemHeight;
