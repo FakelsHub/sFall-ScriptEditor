@@ -14,7 +14,8 @@ namespace ScriptEditor.TextEditorUI
     public class Error
     {                                //@"\[\w+\]\s*\<([^\>]+)\>\s*\:(\-?\d+):?(\-?\d+)?\:\s*(.*)"
         private const string pattern = @"(\[\w+\])?\s*\<?([^\>?]+)\>?\s*\:(\-?\d+):?(\-?\d+|\s\w+)?\:\s*(.*)";
-        
+        private const string pattern2 = @"\w+\s*([^\>?]+):\s*(\d+):";
+
         public ErrorType type = ErrorType.None;
         public string message;
         public string fileName;
@@ -26,7 +27,7 @@ namespace ScriptEditor.TextEditorUI
         {
             this.type = type;
         }
-        
+
         public Error(int line, int len)
         {
             this.line = line;
@@ -111,26 +112,31 @@ namespace ScriptEditor.TextEditorUI
         public static string ParserLog(string log, TabInfo tab)
         {
             List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.TextMarker.ToList();
-            foreach (TextMarker m in marker) { 
-                if (m.TextMarkerType == TextMarkerType.WaveLine) 
-                    tab.textEditor.Document.MarkerStrategy.RemoveMarker(m); 
+            foreach (TextMarker m in marker) {
+                if (m.TextMarkerType == TextMarkerType.WaveLine)
+                    tab.textEditor.Document.MarkerStrategy.RemoveMarker(m);
             }
-            if (tab.parserErrors.Count > 0) 
+            if (tab.parserErrors.Count > 0)
                 tab.parserErrors.Clear();
-            
+
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("------ Script: {0} < Parse Time: {1} > ------\r\n", 
+            sb.AppendFormat("------ Script: {0} < Parse Time: {1} > ------\r\n",
                             tab.filename, DateTime.Now.ToString("HH:mm:ss"));
-            bool warn = false;
+            bool warn = false, errSection = false;
             string[] sLog = log.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < sLog.Length; i++)
             {
-                if (sLog[i].StartsWith("[Error]")) {
+                if (TextEditor.ParsingErrors && errSection && sLog[i].TrimStart().StartsWith("from")) {
+                    HighlightErrorFrom(sLog[i], tab);
+                }
+                else if (sLog[i].StartsWith("[Error]")) {
                     sb.AppendLine();
                     warn = false;
+                    errSection = true;
                     HighlightError(sLog[i], tab);
                 }
-                if (sLog[i].StartsWith("[Warning]")) {
+                else if (sLog[i].StartsWith("[Warning]")) {
+                    errSection = false;
                     if (!Settings.parserWarn) {
                         warn = true;
                         continue;
@@ -141,10 +147,9 @@ namespace ScriptEditor.TextEditorUI
                     tab.parserErrors.Add(error);
                     sb.AppendLine();
                 }
-                if (!warn) 
+                if (!warn)
                     sb.AppendLine(sLog[i]);
             }
-
             tab.textEditor.Refresh();
 
             return sb.ToString();
@@ -170,6 +175,26 @@ namespace ScriptEditor.TextEditorUI
             }
             // add to error tab
             tab.parserErrors.Add(new Error(ErrorType.Error, message, fpath, ePosition.line + 1, ePosition.column));
+        }
+
+        private static void HighlightErrorFrom(string error, TabInfo tab)
+        {
+            Match m = Regex.Match(error, pattern2);
+            Error ePosition = new Error(m.Groups[2].Value, "");
+            string fpath = m.Groups[1].Value;
+
+            int total = tab.textEditor.Document.TotalNumberOfLines;
+            if (ePosition.line >= total)
+                ePosition.line = total - 1;
+
+            if (Path.GetFileName(fpath) == tab.filename) {
+                LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
+                List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(ls.Offset);
+                if (marker.Count > 0) return;
+                TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightIncludeError);
+                tm.ToolTip = "Error parsing the contents of the header file.";
+                tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
+            }
         }
     }
 }

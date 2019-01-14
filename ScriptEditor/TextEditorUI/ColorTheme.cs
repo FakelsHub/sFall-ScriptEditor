@@ -18,6 +18,7 @@ namespace ScriptEditor.TextEditorUI
         public static HighlightColor SelectedHighlight;
         public static Color          CodeFunctions;
         public static Color          HighlightError;
+        public static Color          HighlightIncludeError;
         public static Color          IncludeHighlight;
         public static Brush          TipText = Brushes.AliceBlue;
 
@@ -83,6 +84,7 @@ namespace ScriptEditor.TextEditorUI
             SelectedHighlight = new HighlightColor(Color.White, Color.MediumVioletRed);
             CodeFunctions  = Color.FromArgb(64, 64, 90);
             HighlightError = Color.Red;
+            HighlightIncludeError = Color.Lime;
             IncludeHighlight = Color.DarkSlateGray;
             TreeNameFunction = Color.FromArgb(243, 233, 122); //LightKhaki
 
@@ -116,6 +118,7 @@ namespace ScriptEditor.TextEditorUI
             SelectedHighlight = new HighlightColor(Color.Black, Color.GreenYellow);
             CodeFunctions = Color.LightGray;
             HighlightError = Color.FromArgb(160, Color.Red);
+            HighlightIncludeError = Color.Blue;
             IncludeHighlight = Color.Beige;
             TreeNameFunction = Color.FromArgb(100, 0, 100); //DarkPurple
 
