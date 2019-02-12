@@ -388,7 +388,7 @@ namespace ScriptEditor.CodeTranslation
                             block.end = j;
                             return block ; // return
                         } else if (j <= block.begin) {
-                            block.end = i - 1;
+                            block.end = -1; //i - 
                             scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}'" + 
                                                                      " of the keyword 'end' was not found.\r\n", block.end + 1, pName));
                             return block; // procedure block end is broken
