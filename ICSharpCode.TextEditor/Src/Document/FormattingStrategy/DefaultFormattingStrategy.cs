@@ -22,7 +22,7 @@ namespace ICSharpCode.TextEditor.Document
 		public DefaultFormattingStrategy()
 		{
 		}
-		
+
 		/// <summary>
 		/// returns the whitespaces which are before a non white space character in the line line
 		/// as a string.
@@ -50,6 +50,9 @@ namespace ICSharpCode.TextEditor.Document
 				if (word.EndsWith(" else") || word.EndsWith(" then"))
 					append = true;
 				else if (word.EndsWith(" begin")) {
+					if (word.TrimStart().StartsWith("procedure ") && textArea.Document.FoldingManager.IsFoldStart(lineNumber)) {
+						goto exiting;
+					}
 					lineNumber += 2;
 					LineSegment line = textArea.Document.GetLineSegment(lineNumber);
 					if (textArea.Document.GetText(line).TrimStart(whitespaceChars).Length == 0) {
@@ -73,10 +76,10 @@ namespace ICSharpCode.TextEditor.Document
 						whitespaces.Append(whitespaceChars[1]);
 				}
 			}
-
+exiting:
 			return whitespaces.ToString();
 		}
-		
+
 		/// <summary>
 		/// Could be overwritten to define more complex indenting.
 		/// </summary>
@@ -90,9 +93,9 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			return indentation.Length;
 		}
-		
+
 		static readonly char[] whitespaceChars = {' ', '\t'};
-		
+
 		/// <summary>
 		/// Replaces the text in a line.
 		/// If only whitespace at the beginning and end of the line was changed, this method
@@ -124,7 +127,7 @@ namespace ICSharpCode.TextEditor.Document
 					}
 					// find whitespace at end
 					int endWhitespaceLength = newLineText.Length - newLineTextTrim.Length - startWhitespaceLength;
-					
+
 					// replace whitespace sections
 					int lineOffset = line.Offset;
 					document.Replace(lineOffset + pos + newLineTextTrim.Length, line.Length - pos - newLineTextTrim.Length, newLineText.Substring(newLineText.Length - endWhitespaceLength));
@@ -136,7 +139,7 @@ namespace ICSharpCode.TextEditor.Document
 				document.Replace(line.Offset, line.Length, newLineText);
 			}
 		}
-		
+
 		/// <summary>
 		/// Could be overwritten to define more complex indenting.
 		/// </summary>
@@ -144,7 +147,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			return AutoIndentLine(textArea, line, true); // smart = autoindent in normal texts
 		}
-		
+
 		/// <summary>
 		/// This function formats a specific line after <code>ch</code> is pressed.
 		/// </summary>
@@ -159,7 +162,7 @@ namespace ICSharpCode.TextEditor.Document
 				textArea.Caret.Column = IndentLine(textArea, line);
 			}
 		}
-		
+
 		/// <summary>
 		/// This function sets the indentation level in a specific line
 		/// </summary>
@@ -186,7 +189,7 @@ namespace ICSharpCode.TextEditor.Document
 			textArea.Document.UndoStack.EndUndoGroup();
 			return result;
 		}
-		
+
 		/// <summary>
 		/// This function sets the indentlevel in a range of lines.
 		/// </summary>
@@ -198,7 +201,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			textArea.Document.UndoStack.EndUndoGroup();
 		}
-		
+
 		public virtual int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = -1;
@@ -221,7 +224,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			return -1;
 		}
-		
+
 		public virtual int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			int brackets = 1;
