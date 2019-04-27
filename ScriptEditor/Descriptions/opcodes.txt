@@ -504,9 +504,9 @@ void set_critter_current_ap(CritterPtr, int ap)
 int  active_hand()
 void toggle_active_hand()
 
-void set_weapon_knockback(WeaponPtr, int type, float value)
-void set_target_knockback(CritterPtr, int type, float value)
-void set_attacker_knockback(CritterPtr, int type, float value)
+void set_weapon_knockback(WeaponPtr, int type, int/float value)
+void set_target_knockback(CritterPtr, int type, int/float value)
+void set_attacker_knockback(CritterPtr, int type, int/float value)
 void remove_weapon_knockback(WeaponPtr)
 void remove_target_knockback(CritterPtr)
 void remove_attacker_knockback(CritterPtr)
@@ -729,8 +729,8 @@ void register_hook_proc(int hooktype, proc procedure) | - Works just like regist
 
 // arrays
 
-int create_array(int size, int nothing) | - Creates permanent array (but not "saved").
-int temp_array(int size, int nothing) | - Works exactly like "create_array", only created array becomes "temporary".
+int create_array(int size, int flags) | - Creates permanent array (but not "saved").
+int temp_array(int size, int flags) | - Works exactly like "create_array", only created array becomes "temporary".
 void fix_array(int arrayID) | - Changes "temporary" array into "permanent" ("permanent" arrays are not automatically saved into savegames).
 void set_array(int arrayID, mixed key, mixed value) | - Sets array value (shorthand: arrayID[key] := value).
 mixed get_array(int arrayID, mixed key) | - Returns array value by key or index (shorthand: arrayID[key]).
@@ -781,6 +781,26 @@ void inventory_redraw(invSide) | - Redraws inventory items list in the inventory
 int get_cursor_mode() | - Returns the current cursor mode. | Values: 0 - movement cursor, 1 - command cursor, 2 - targeting cursor, 4 to 10 are Skilldex skills (yellow targeting cursor).
 void set_cursor_mode(int mode) | - Sets the current cursor mode.
 void set_iface_tag_text(int tag, string text, int color) | - Sets the text messages and colors for custom notification boxes to the interface. | Tag value is the same as used in show_iface_tag, hide_iface_tag, and is_iface_tag_active. | Available colors: 0 - green, 1 - red, 2 - white, 3 - yellow, 4 - dark yellow, 5 - blue, 6 - purple.
+void item_make_explosive(int pid, int activePid, int min, int max) | - Makes the specified item(pid) an explosive item (as like dynamite or plastic explosives). | activePid: for an item with an active timer, can use the same object pid. | Min/Max: Minimum and maximum explosion damage. || Note: using the function for an item that is already explosive, will override previously made settings. this function does not work for pid's dynamite and plastic explosives.
+int get_string_pointer(string text) | - Returns a pointer to a string variable or to a text.
+void dialog_message(string text) | - Displays a message in the NPC response window in dialog or barter screen.
+int get_current_inven_size(ObjectPtr obj) | - Returns the current inventory size of the container or the critter.
+void create_win(string winName, int x, int y, int width, int height) | - The same as the vanilla CreateWin function, but it creates a window with the MoveOnTop flag. | MoveOnTop flag allows to place the created window over of the game interface.
+void create_win_flag(string winName, int x, int y, int width, int height, int flags) | - The same as the vanilla CreateWin function, allows to set additional flags for the created window.
+void set_can_rest_on_map(int mapNum, int elev, bool value) | - Enable/disable rest on the map for the specified level. | mapNum index of the map from the maps.txt file. || Note: passing the value -1 of the argument elev, to sets the value for all map elevations
+int get_can_rest_on_map(int mapNum, int elev) | - Returns the set value for the map after using the set_can_rest_on_map function. | if the value for the map was not previously set, returned the value -1.
+ObjectPtr dialog_obj() | - Returns a pointer to the object(critter) with which the dialogue/trading is conducted.
+ObjectPtr obj_under_cursor(bool onlyCritter, bool includeDude)  | - Returns the object under the cursor. | onlyCritter: passing True only checks critters and ignores their cover (roof tiles, walls, scenery, etc.) | includeDude - passing False to argument will ignore dude_obj.
+ObjectPtr loot_obj() | - Returns a pointer to the object (container, critter) with which the exchange occurs.
+int get_object_data(ObjectPtr obj, int offset) | - Returns the data of the object at the specified offset (see OBJ_DATA_* constants offsets in define_extra.h)
+void set_object_data(ObjectPtr obj, int offset, int data) | - Sets the data by offset for the specified object.
+int get_object_ai_data(ObjectPtr obj, int aiParam) | - Returns the setting value from the AI-packet the specified object (see AI_CAP_* constants in define_extra.h).
+void art_cache_clear | - Clears the cache of FRM image files loaded into memory.
+int add_iface_tag | - Adds one custom box to the current boxes, and returns the number of the added tag (-1 if the tags limit is exceeded).
+void npc_engine_level_up (bool toggle) | - Enables/disables the engine function that increases the level of party members in the player leveling process.
+void set_drugs_data (int type, int pid, int value) | - Overrides the set parameters of drugs from the configuration file (see DrugsFile option).  | type: 0 - changes the value of NumEffects for the drug |      1 - changes the duration of the addiction effect for the drug (value 1 equals one game minute).
+int set_unique_id (ObjectPtr obj) | - Assigns a unique ID number to the object and returns it. | If a unique ID number has already been assigned to an object, then ID number is returned without reassignment. | Items with unique IDs will not stack with other items of the same type in the inventory. | Unique ID numbers have a range from 0x10000000 to 0x7FFFFFFF | There is also a unique ID number range for the player and party members from 18000 to 83535.
+int unset_unique_id (ObjectPtr obj) | - To assign a new ID number generated by the engine to the object (i.e. unassign a unique ID).
 
 array get_ini_section({string file}, {string sect}) | - Returns an associative array of keys and values for a given INI file and section.
 array get_ini_sections({string file}) | - Returns an array of names of all sections in a given INI file.

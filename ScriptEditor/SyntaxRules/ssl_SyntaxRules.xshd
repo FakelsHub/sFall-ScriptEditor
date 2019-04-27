@@ -9,7 +9,7 @@
     <SpaceMarkers color = "LightGray"/>
     <TabMarkers   color = "DarkOrange"/>
   </Environment>
-  
+
   <Properties>
     <Property name="LineComment" value="//"/>
     <Property name="BlockCommentBegin" value="/*"/>
@@ -903,7 +903,7 @@
         <Key word = "reg_anim_light" />
         <Key word = "reg_anim_change_fid" />
         <Key word = "reg_anim_take_out" />
-        <Key word = "reg_anim_turn_towards" />        
+        <Key word = "reg_anim_turn_towards" />
         <Key word = "metarule2_explosions" />
         <Key word = "register_hook_proc" />
         <Key word = "message_str_game" />
@@ -1011,6 +1011,26 @@
         <Key word = "set_rest_mode" />
         <Key word = "inventory_redraw" />
         <Key word = "set_iface_tag_text" />
+        <Key word = "item_make_explosive" />
+        <Key word = "get_string_pointer" />
+        <Key word = "dialog_message" />
+        <Key word = "get_current_inven_size" />
+        <Key word = "create_win" />
+        <Key word = "create_win_flag" />
+        <Key word = "set_can_rest_on_map" />
+        <Key word = "get_can_rest_on_map" />
+        <Key word = "dialog_obj" />
+        <Key word = "obj_under_cursor" />
+        <Key word = "loot_obj" />
+        <Key word = "get_object_data" />
+        <Key word = "set_object_data" />
+        <Key word = "get_object_ai_data" />
+        <Key word = "art_cache_clear" />
+        <Key word = "add_iface_tag" />
+        <Key word = "npc_engine_level_up" />
+        <Key word = "set_drugs_data" />
+        <Key word = "set_unique_id" />
+        <Key word = "unset_unique_id" />
       </KeyWords>
 
       <KeyWords name = "OpKeywords" bold="false" italic="false" color="Indigo">
@@ -1046,7 +1066,7 @@
         <Key word = "soundstreamed" />
         <Key word = "soundmono" />
         <Key word = "soundstereo" />
-        
+
         <Key word = "moviescale" />
         <Key word = "moviedirect" />
         <Key word = "moviecenter" />
@@ -1283,6 +1303,7 @@
         <Key word = "INTFACELOOT" />
         <Key word = "BARTER" />
         <Key word = "HEROWIN" />
+        <Key word = "DIALOGVIEW" />
 
         <Key word = "HOOK_TOHIT" />
         <Key word = "HOOK_AFTERHITROLL" />
@@ -1316,6 +1337,14 @@
         <Key word = "HOOK_SETGLOBALVAR" />
         <Key word = "HOOK_RESTTIMER" />
         <Key word = "HOOK_GAMEMODECHANGE" />
+        <Key word = "HOOK_USEANIMOBJ" />
+        <Key word = "HOOK_EXPLOSIVETIMER" />
+        <Key word = "HOOK_DESCRIPTIONOBJ" />
+        <Key word = "HOOK_USESKILLON" />
+        <Key word = "HOOK_ONEXPLOSION" />
+        <Key word = "HOOK_SUBCOMBATDAMAGE" />
+        <Key word = "HOOK_SETLIGHTING" />
+        <Key word = "HOOK_SNEAK" />
 
         <Key word = "LIST_CRITTERS" />
         <Key word = "LIST_GROUNDITEMS" />
@@ -1424,7 +1453,7 @@
         <Key word = "RELEASE" />
         <Key word = "DEBUG" />
         <Key word = "SFALL_SC_EVALUATION" />
-      </KeyWords> 
+      </KeyWords>
     </RuleSet>
 
     <RuleSet name = "CommentMarkerSet" ignorecase = "false">
