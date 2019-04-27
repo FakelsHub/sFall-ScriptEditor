@@ -66,7 +66,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbSearch.Location = new System.Drawing.Point(13, 23);
             this.tbSearch.Name = "tbSearch";
-            this.tbSearch.Size = new System.Drawing.Size(402, 20);
+            this.tbSearch.Size = new System.Drawing.Size(418, 20);
             this.tbSearch.TabIndex = 0;
             // 
             // cbRegular
@@ -124,9 +124,10 @@
             // 
             // bChange
             // 
+            this.bChange.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bChange.Enabled = false;
             this.bChange.Image = ((System.Drawing.Image)(resources.GetObject("bChange.Image")));
-            this.bChange.Location = new System.Drawing.Point(310, 209);
+            this.bChange.Location = new System.Drawing.Point(326, 209);
             this.bChange.Name = "bChange";
             this.bChange.Size = new System.Drawing.Size(104, 23);
             this.bChange.TabIndex = 7;
@@ -148,8 +149,9 @@
             // 
             // bSearch
             // 
+            this.bSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bSearch.Image = ((System.Drawing.Image)(resources.GetObject("bSearch.Image")));
-            this.bSearch.Location = new System.Drawing.Point(311, 88);
+            this.bSearch.Location = new System.Drawing.Point(327, 88);
             this.bSearch.Name = "bSearch";
             this.bSearch.Size = new System.Drawing.Size(103, 23);
             this.bSearch.TabIndex = 10;
@@ -179,12 +181,13 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbReplace.Location = new System.Drawing.Point(13, 62);
             this.tbReplace.Name = "tbReplace";
-            this.tbReplace.Size = new System.Drawing.Size(402, 20);
+            this.tbReplace.Size = new System.Drawing.Size(418, 20);
             this.tbReplace.TabIndex = 12;
             // 
             // bReplace
             // 
-            this.bReplace.Location = new System.Drawing.Point(310, 117);
+            this.bReplace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bReplace.Location = new System.Drawing.Point(326, 117);
             this.bReplace.Name = "bReplace";
             this.bReplace.Size = new System.Drawing.Size(104, 23);
             this.bReplace.TabIndex = 13;
@@ -201,7 +204,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.ShortcutsEnabled = false;
-            this.textBox1.Size = new System.Drawing.Size(402, 20);
+            this.textBox1.Size = new System.Drawing.Size(418, 20);
             this.textBox1.TabIndex = 20;
             // 
             // label3
@@ -215,19 +218,23 @@
             // 
             // lbFindFiles
             // 
+            this.lbFindFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.lbFindFiles.FormattingEnabled = true;
             this.lbFindFiles.HorizontalScrollbar = true;
             this.lbFindFiles.Location = new System.Drawing.Point(13, 254);
             this.lbFindFiles.Name = "lbFindFiles";
-            this.lbFindFiles.Size = new System.Drawing.Size(402, 173);
+            this.lbFindFiles.Size = new System.Drawing.Size(418, 4);
             this.lbFindFiles.TabIndex = 21;
             // 
             // cbCase
             // 
+            this.cbCase.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbCase.AutoSize = true;
             this.cbCase.Checked = true;
             this.cbCase.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbCase.Location = new System.Drawing.Point(222, 3);
+            this.cbCase.Location = new System.Drawing.Point(238, 3);
             this.cbCase.Name = "cbCase";
             this.cbCase.Size = new System.Drawing.Size(82, 17);
             this.cbCase.TabIndex = 22;
@@ -239,14 +246,15 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(13, 238);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.Size = new System.Drawing.Size(126, 13);
             this.label4.TabIndex = 23;
-            this.label4.Text = "Found in files: ";
+            this.label4.Text = "Found files with matches:";
             // 
             // cbWord
             // 
+            this.cbWord.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbWord.AutoSize = true;
-            this.cbWord.Location = new System.Drawing.Point(310, 3);
+            this.cbWord.Location = new System.Drawing.Point(326, 3);
             this.cbWord.Name = "cbWord";
             this.cbWord.Size = new System.Drawing.Size(105, 17);
             this.cbWord.TabIndex = 24;
@@ -271,7 +279,7 @@
             // labelCount
             // 
             this.labelCount.AutoSize = true;
-            this.labelCount.Location = new System.Drawing.Point(86, 238);
+            this.labelCount.Location = new System.Drawing.Point(145, 238);
             this.labelCount.Name = "labelCount";
             this.labelCount.Size = new System.Drawing.Size(13, 13);
             this.labelCount.TabIndex = 26;
@@ -279,7 +287,8 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(310, 146);
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(326, 146);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(104, 23);
             this.button1.TabIndex = 7;
@@ -300,7 +309,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(427, 239);
+            this.ClientSize = new System.Drawing.Size(443, 268);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.labelCount);
             this.Controls.Add(this.cbFileMask);
@@ -324,10 +333,11 @@
             this.Controls.Add(this.cbRegular);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tbSearch);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(1280, 1024);
+            this.MinimumSize = new System.Drawing.Size(435, 303);
             this.Name = "SearchForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

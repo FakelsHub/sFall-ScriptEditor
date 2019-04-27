@@ -320,14 +320,17 @@ namespace ScriptEditor
                     sf.lbFindFiles.Items.Clear();
                     sf.lbFindFiles.Tag = regex;
                     List<string> files = sf.GetFolderFiles();
+                    ProgressBarForm progress = new ProgressBarForm(this, files.Count, "Search matches...");
                     for (int i = 0; i < files.Count; i++)
                     {
                         if (Utilities.Search(File.ReadAllText(files[i]), sf.tbSearch.Text, regex, sf.cbCase.Checked))
                             sf.lbFindFiles.Items.Add(files[i]);
+                        progress.SetProgress = i;
                     }
+                    progress.Dispose();
                     sf.labelCount.Text = sf.lbFindFiles.Items.Count.ToString();
                     if (sf.lbFindFiles.Items.Count > 0) {
-                        sf.Height = 468;
+                        if (sf.Height < 500) sf.Height = 500;
                         return true;
                     }
                 }
@@ -344,8 +347,12 @@ namespace ScriptEditor
                         Utilities.SearchForAll(tabs[i], sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
                 } else {
                     List<string> files = sf.GetFolderFiles();
-                    for (int i = 0; i < files.Count; i++)
+                    ProgressBarForm progress = new ProgressBarForm(this, files.Count, "Search matches...");
+                    for (int i = 0; i < files.Count; i++) {
                         Utilities.SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv);
+                        progress.SetProgress = i;
+                    }
+                    progress.Dispose();
                 }
                 if (dgv.RowCount > 0) {
                     TabPage tp = new TabPage("Search results");
