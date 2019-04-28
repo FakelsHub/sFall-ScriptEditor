@@ -932,6 +932,7 @@ namespace ScriptEditor {
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             this.ProcTree.Leave += new System.EventHandler(this.ProcTree_Leave);
             this.ProcTree.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseClick);
+            this.ProcTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreeView_DClickMouse);
             this.ProcTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseDown);
             this.ProcTree.MouseLeave += new System.EventHandler(this.ProcTree_MouseLeave);
             this.ProcTree.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ProcTree_MouseMove);

@@ -26,6 +26,8 @@ namespace ScriptEditor
         private const string SSE = AboutBox.appName + " - ";
         private const string parseoff = "Parser: Disabled";
         private const string unsaved = "unsaved.ssl";
+        private const string treeTipProcedure = "\n\n - Click and hold Ctrl key to paste the procedure name into the script.\n - Double click to goto the procedure.";
+        private const string treeTipVariable = "\n\n - Click and hold Ctrl key to paste the variable name into the script.\n - Double click to goto the variable.";
 
         private static readonly string[] TREEPROCEDURES = new string[] { "Global Procedures", "Local Procedures" };
         private static readonly string[] TREEVARIABLES = new string[] { "Global Variables", "Script Variables" };
@@ -855,9 +857,9 @@ namespace ScriptEditor
                 rootNode.ForeColor = Color.DodgerBlue;
                 rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
             }
-            ProcTree.Nodes[0].ToolTipText = "Procedures declared and located in headers files";
+            ProcTree.Nodes[0].ToolTipText = "Procedures declared and located in headers files." + treeTipProcedure;
             ProcTree.Nodes[0].Tag = 0; // global tag
-            ProcTree.Nodes[1].ToolTipText = "Procedures declared and located in this script";
+            ProcTree.Nodes[1].ToolTipText = "Procedures declared and located in this script." + treeTipProcedure;
             ProcTree.Nodes[1].Tag = 1; // local tag
 
             foreach (Procedure p in currentTab.parseInfo.procs) {
@@ -897,6 +899,9 @@ namespace ScriptEditor
                     rootNode.ForeColor = Color.DodgerBlue;
                     rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
                 }
+                VarTree.Nodes[0].ToolTipText = "Variables declared and located in headers files." + treeTipVariable;
+                VarTree.Nodes[1].ToolTipText = "Variables declared and located in this script." + treeTipVariable;
+
                 foreach (Variable var in currentTab.parseInfo.vars) {
                     TreeNode tn = new TreeNode(var.name);
                     tn.Tag = var;
@@ -967,31 +972,51 @@ namespace ScriptEditor
                 currentTab.treeExpand[tn.FullPath] = collapsed;
         }
 
+        private void TreeView_DClickMouse(object sender, MouseEventArgs e) {
+            TreeNode node = ((TreeView)sender).GetNodeAt(e.Location);
+            if (node == null) return;
+            TreeView_ClickBehavior(node);
+        }
+
         // Click on node tree Procedures/Variables
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (e.Action == TreeViewAction.Unknown)
-                return;
+            if (!ctrlKeyPress || e.Action == TreeViewAction.Unknown) return;
+            TreeView_ClickBehavior(e.Node);
+        }
 
-            string file = null;
+        private void TreeView_ClickBehavior(TreeNode node)
+        {
+            string file = null, name = null;
             int line = 0;
             bool pSelect = false;
-            if (e.Node.Tag is Variable) {
-                Variable var = (Variable)e.Node.Tag;
-                file = var.fdeclared;
-                line = var.d.declared;
-            } else if (e.Node.Tag is Procedure) {
-                Procedure proc = (Procedure)e.Node.Tag;
-                file = proc.fstart;
-                line = proc.d.start;
-                if (file == null) { // goto declared
-                    file = proc.fdeclared;
-                    line = proc.d.declared;
+            if (node.Tag is Variable) {
+                Variable var = (Variable)node.Tag;
+                if (!ctrlKeyPress) {
+                    file = var.fdeclared;
+                    line = var.d.declared;
+                } else {
+                    name = var.name;
                 }
-                pSelect = true;
+            } else if (node.Tag is Procedure) {
+                Procedure proc = (Procedure)node.Tag;
+                if (!ctrlKeyPress) {
+                    file = proc.fstart;
+                    line = proc.d.start;
+                    if (file == null) { // goto declared
+                        file = proc.fdeclared;
+                        line = proc.d.declared;
+                    }
+                    pSelect = true;
+                } else {
+                    name = proc.name;
+                }
             }
-            if (file != null)
+            if (file != null) {
                 SelectLine(file, line, pSelect);
+            } else if (name != null) {
+                Utilities.InsertText(name, currentActiveTextAreaCtrl);
+            }
         }
 
         void Tree_AfterExpandCollapse(object sender, TreeViewEventArgs e)
@@ -1353,6 +1378,7 @@ namespace ScriptEditor
             VarTree.ShowRootLines = false;
             VarTree.Indent = 16;
             VarTree.ItemHeight = 14;
+            VarTree.MouseDoubleClick += TreeView_DClickMouse;
             VarTree.AfterSelect += TreeView_AfterSelect;
             VarTree.AfterCollapse += Tree_AfterExpandCollapse;
             VarTree.AfterExpand += Tree_AfterExpandCollapse;
@@ -2665,5 +2691,6 @@ namespace ScriptEditor
             return null;
         }
         #endregion
+
     }
 }
