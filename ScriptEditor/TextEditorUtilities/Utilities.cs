@@ -583,7 +583,10 @@ namespace ScriptEditor.TextEditorUtilities
                         break;
                     }
                 }
+                
                 TextLocation sSel = new TextLocation(sStart, position.Line);
+                int offset = TAC.Document.PositionToOffset(sSel);
+                if (TAC.Document.GetText(offset, sEnd - sStart).IndexOf(':') != -1) return;
                 TextLocation eSel = new TextLocation(sEnd, position.Line);
                 TAC.SelectionManager.SetSelection(sSel, eSel);
             }
