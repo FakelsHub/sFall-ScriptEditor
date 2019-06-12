@@ -927,7 +927,9 @@ namespace ScriptEditor {
             this.ProcTree.Size = new System.Drawing.Size(76, 601);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.TabStop = false;
+            this.ProcTree.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.ProcTree_BeforeExpandCollapse);
             this.ProcTree.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.Tree_AfterExpandCollapse);
+            this.ProcTree.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.ProcTree_BeforeExpandCollapse);
             this.ProcTree.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.Tree_AfterExpandCollapse);
             this.ProcTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
             this.ProcTree.Leave += new System.EventHandler(this.ProcTree_Leave);

@@ -55,6 +55,7 @@ namespace ScriptEditor
         private bool SplitEvent;
         internal static bool ParsingErrors = true;
         private bool ctrlKeyPress;
+        private bool dbClick;
 
         private int showTipsColumn;
 
@@ -256,17 +257,16 @@ namespace ScriptEditor
 
         private void TextEditor_Deactivate(object sender, EventArgs e)
         {
-            if (currentTab == null)
-                return;
+            if (currentTab == null) return;
             currentActiveTextAreaCtrl.TextArea.MouseEnter -= TextArea_SetFocus;
+            ctrlKeyPress = false;
         }
 
         private void TextEditor_Activated(object sender, EventArgs e)
         {
-            if (currentTab == null)
-                return;
+            if (currentTab == null) return;
             currentActiveTextAreaCtrl.TextArea.MouseEnter += TextArea_SetFocus;
-            
+
             if (WindowState != FormWindowState.Minimized)
                 CheckChandedFile();
             else {
@@ -279,6 +279,7 @@ namespace ScriptEditor
                 };
                 timer.Start();
             }
+            if ((Control.ModifierKeys & Keys.Control) != 0) ctrlKeyPress = true;
         }
 
         private void TextEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -973,6 +974,7 @@ namespace ScriptEditor
         }
 
         private void TreeView_DClickMouse(object sender, MouseEventArgs e) {
+            if (e.X <= 20) return;
             TreeNode node = ((TreeView)sender).GetNodeAt(e.Location);
             if (node == null) return;
             TreeView_ClickBehavior(node);
@@ -1032,8 +1034,23 @@ namespace ScriptEditor
         
         private void ProcTree_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
-                ProcTree.SelectedNode = ProcTree.GetNodeAt(e.X, e.Y);
+            dbClick = false;
+            if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Left && e.Clicks == 2) {
+                TreeNode tn = ProcTree.GetNodeAt(e.X, e.Y);
+                if (tn != null) dbClick = true;
+                if (e.Button == MouseButtons.Right) {
+                    ProcTree.SelectedNode = tn;
+                }
+            } 
+        }
+
+        private void ProcTree_BeforeExpandCollapse(object sender, TreeViewCancelEventArgs e) {
+            if (e.Action == TreeViewAction.Expand || e.Action == TreeViewAction.Collapse) {
+                 if (dbClick || ctrlKeyPress) {
+                    e.Cancel = true;
+                    dbClick = false;
+                }
+            }
         }
         #endregion
 
