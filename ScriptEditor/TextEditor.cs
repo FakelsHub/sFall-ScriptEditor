@@ -810,6 +810,7 @@ namespace ScriptEditor
                     parserLabel.Text = (Settings.enableParser) ? "Parser: Not an SSL file" : parseoff;
 
                 UpdateLog();
+                currentHighlightProc = null;
                 UpdateNames();
                 // text editor set focus 
                 currentActiveTextAreaCtrl.Select();
@@ -837,12 +838,47 @@ namespace ScriptEditor
         private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
 
         private enum TreeStatus { idle, update, local }
+        Procedure currentHighlightProc = null;
+        TreeNode currentHighlightNode = null;
+        // подсветить процедуру в дереве
+        private void HighlightCurrentPocedure(int curLine)
+        {
+            Procedure proc;
+            if (curLine == -2) {
+                proc = currentHighlightProc;
+                currentHighlightProc = null;
+                currentHighlightNode = null;
+            } else {
+                proc = currentTab.parseInfo.GetProcedurePosition(curLine);
+            }
+            if (proc != null && proc != currentHighlightProc) {
+                TreeNodeCollection nodes;
+                if (ProcTree.Nodes.Count > 1) 
+                    nodes = ProcTree.Nodes[1].Nodes;
+                else
+                    nodes = ProcTree.Nodes[0].Nodes;
+                foreach (TreeNode node in nodes) 
+                {
+                    string name = ((Procedure)node.Tag).name;
+                    if (name == proc.name) {
+                        node.Text = node.Text.Insert(0, "--> ");
+                        node.ForeColor = ColorTheme.HighlightProcedureTree;
+                        if (currentHighlightNode != null) {
+                            currentHighlightNode.ForeColor = ProcTree.ForeColor;
+                            currentHighlightNode.Text = currentHighlightNode.Text.Substring(4);
+                        }
+                        currentHighlightProc = proc;
+                        currentHighlightNode = node;
+                        break;
+                    }
+                }
+            }
+        }
 
         // Create names for procedures and variables in treeview
         private void UpdateNames()
         {
-            if (currentTab == null || !currentTab.shouldParse || currentTab.parseInfo == null)
-                return;
+            if (currentTab == null || !currentTab.shouldParse || currentTab.parseInfo == null) return;
             
             object selectedNode = null;
             if (ProcTree.SelectedNode != null)
@@ -944,6 +980,7 @@ namespace ScriptEditor
                     ProcTree.SelectedNode = nodes[0];
             }
 
+            HighlightCurrentPocedure((currentHighlightProc == null) ? currentActiveTextAreaCtrl.Caret.Line : -2);
             ProcTree.EndUpdate();
             ProcTree.Tag = TreeStatus.idle;
         }
@@ -1523,8 +1560,9 @@ namespace ScriptEditor
             bool p = Settings.enableParser; //save prev.state
             int f = Settings.selectFont;
             (new SettingsDialog()).ShowDialog();
-            if (currentTab != null)
-                tabControl1_Selected(null, null);
+            
+            ApplySettingsTabs(f != Settings.selectFont);
+            if (currentTab != null) tabControl1_Selected(null, null);
 
             if (Settings.enableParser != p && !Settings.enableParser) {
                 parserLabel.Text = parseoff;
@@ -1562,7 +1600,6 @@ namespace ScriptEditor
                     }
                 }
             }
-            ApplySettingsTabs(f != Settings.selectFont);
             if (Settings.pathHeadersFiles != null)
                 Headers_toolStripSplitButton.Enabled = true;
             

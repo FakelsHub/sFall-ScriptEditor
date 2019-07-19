@@ -30,6 +30,10 @@ namespace ScriptEditor.TextEditorUI
             get { return (IsDarkTheme) ? Color.FromArgb(0x70, 0x70, 0x80) : Color.Black; }
         }
 
+        public static Color HighlightProcedureTree {
+            get { return (IsDarkTheme) ? Color.Yellow : Color.Blue; }
+        }
+
         public static string HighlightingScheme
         {
             get {

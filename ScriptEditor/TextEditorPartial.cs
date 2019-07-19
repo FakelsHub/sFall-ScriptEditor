@@ -766,8 +766,9 @@ namespace ScriptEditor
 
             Utilities.SelectedTextColorRegion(_position, currentActiveTextAreaCtrl);
 
-            if (PosChangeType == PositionType.Disabled)
-                return;
+            HighlightCurrentPocedure(_position.Line);
+
+            if (PosChangeType == PositionType.Disabled) return;
         PosChange:
             if (PosChangeType >= PositionType.NoStore) { // also OverridePos
                 if (PosChangeType == PositionType.OverridePos && currentTab.history.pointerCur != -1)
