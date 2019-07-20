@@ -54,10 +54,14 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Properties\ICSharpCode.TextEditor.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -114,7 +118,6 @@
     <Compile Include="Src\NodesType.cs" />
     <Compile Include="Src\INode.cs" />
     <None Include="ClassDiagram1.cd" />
-    <None Include="Properties\ICSharpCode.TextEditor.snk" />
     <Compile Include="Src\NoteCanvasItem.cs" />
     <Compile Include="Shapes\SmallButtonShape.cs" />
     <None Include="Shapes\Templates\Shapes.cs" />

@@ -13,8 +13,9 @@
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <OutputType>Library</OutputType>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Resources\ICSharpCode.TextEditor.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <RootNamespace>ICSharpCode.TextEditor</RootNamespace>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -212,15 +213,11 @@
     <Compile Include="Src\Document\BookmarkManager\Bookmark.cs" />
     <Compile Include="Src\Document\BookmarkManager\BookmarkEventHandler.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\CPP-Mode.xshd" />
-    <EmbeddedResource Include="Resources\HTML-Mode.xshd" />
     <None Include="ClassDiagram.cd" />
-    <None Include="Resources\ICSharpCode.TextEditor.snk" />
     <EmbeddedResource Include="Resources\TextEditorControl.bmp" />
     <EmbeddedResource Include="Resources\Mode.xsd" />
     <EmbeddedResource Include="Resources\RightArrow.cur" />
     <EmbeddedResource Include="Resources\SyntaxModes.xml" />
-    <EmbeddedResource Include="Resources\XML-Mode.xshd" />
     <Compile Include="Src\Util\FileReader.cs" />
     <Compile Include="Src\Gui\DrawableLine.cs" />
     <Compile Include="Src\Gui\ToolTipRequestEventArgs.cs" />
