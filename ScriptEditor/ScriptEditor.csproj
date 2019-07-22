@@ -117,7 +117,7 @@
     <Compile Include="ProcForm.Designer.cs">
       <DependentUpon>ProcForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SyntaxRules\HighlightWord.cs" />
+    <Compile Include="SyntaxRules\HighlightProcedures.cs" />
     <Compile Include="TextEditorPartial.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -379,7 +379,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if  not $(ConfigurationName) == Test call "$(ProjectDir)$(OutDir)IncAssemblyInfo.exe" $(ConfigurationName)
+    <PostBuildEvent>
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">

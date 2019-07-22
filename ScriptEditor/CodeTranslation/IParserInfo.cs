@@ -8,7 +8,8 @@ namespace ScriptEditor.CodeTranslation
     {
         bool IsImported { get; }
         bool IsExported { get; }
-        
+        bool IsStandart();
+
         NameType Type();
 
         Reference[] References();

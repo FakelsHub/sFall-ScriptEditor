@@ -47,5 +47,7 @@ namespace ScriptEditor.CodeTranslation
         public bool IsImported { get { return false; } }
 
         public bool IsExported { get { return false; } }
+
+        public bool IsStandart() { return false; }
     }
 }

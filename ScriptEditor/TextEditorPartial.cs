@@ -20,9 +20,10 @@ namespace ScriptEditor
 {
     partial class TextEditor
     {
-        HighlightWord customHighlight;
-        
         #region ParseFunction
+
+        Procedure[] internalProcsParse = null; 
+
         public event EventHandler ParserUpdatedInfo; // Event for update nodes diagram
 
         private bool firstParse;
@@ -36,7 +37,7 @@ namespace ScriptEditor
         // Parse first open script
         private void FirstParseScript(TabInfo cTab)
         {
-            customHighlight = new HighlightWord();
+            cTab.textEditor.Document.ExtraWordList = new HighlightExtraWord();
 
             tbOutputParse.Text = string.Empty;
 
@@ -53,7 +54,8 @@ namespace ScriptEditor
             var ExtParser = new ParserDLL(firstParse);
             cTab.parseInfo = ExtParser.Parse(cTab.textEditor.Text, cTab.filepath, cTab.parseInfo);
             DEBUGINFO("External first parse status: " + ExtParser.LastStatus);
-
+            
+            HighlightProcedures.AddAllToList(cTab.textEditor.Document, cTab.parseInfo.procs);
             CodeFolder.UpdateFolding(cTab.textEditor.Document, cTab.filename, cTab.parseInfo.procs);
             CodeFolder.LoadFoldCollapse(cTab.textEditor.Document);
 
@@ -64,10 +66,7 @@ namespace ScriptEditor
                 if (WindowState != FormWindowState.Minimized)
                     maximize_log();
             }
-
             firstParse = false;
-
-            customHighlight.ProceduresHighlight(cTab.textEditor.Document, cTab.parseInfo.procs);
         }
 
         // Parse script
@@ -107,7 +106,7 @@ namespace ScriptEditor
             } else {
                 new Parser(currentTab, this);
                 CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
-                ParserCompleted(currentTab);
+                ParserCompleted(currentTab, false);
             }
         }
 
@@ -129,8 +128,9 @@ namespace ScriptEditor
                     parserLabel.ForeColor = Color.Crimson;
 
                     new Parser(currentTab, this);
+
                     CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
-                    ParserCompleted(currentTab);
+                    ParserCompleted(currentTab, false);
                 } else {
                     CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
                     //Quick update procedure data
@@ -167,8 +167,10 @@ namespace ScriptEditor
         {
             WorkerArgs args = (WorkerArgs)eventArgs.Argument;
             var ExtParser = new ParserDLL(false);
+            bool prevStatus = args.tab.parseInfo.parseError;
             args.tab.parseInfo = ExtParser.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
             args.status = ExtParser.LastStatus;
+            args.parseIsFail = prevStatus & (args.status > 0);
             eventArgs.Result = args;
             parserRunning = false;
         }
@@ -176,34 +178,33 @@ namespace ScriptEditor
         // Parse Stop
         private void bwSyntaxParser_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (!Settings.enableParser)
-                return; // выход для предотвращения второго прохода когда внешний парсер выключен
+            if (!Settings.enableParser) return; // выход для предотвращения второго прохода когда внешний парсер выключен
 
             DEBUGINFO(">>> Ext parse status: " + e.Result.ToString());
 
-            if (!(((WorkerArgs)e.Result).tab is TabInfo))
-                throw new Exception("TabInfo is expected!");
+            if (!(((WorkerArgs)e.Result).tab is TabInfo)) throw new Exception("TabInfo is expected!");
 
-            ParserCompleted(((WorkerArgs)e.Result).tab as TabInfo);
+            ParserCompleted(((WorkerArgs)e.Result).tab as TabInfo, ((WorkerArgs)e.Result).parseIsFail);
         }
 
-        private void ParserCompleted(TabInfo tab)
+        private void ParserCompleted(TabInfo tab, bool parseIsFail)
         {
-            if (ParserUpdatedInfo != null)
-                    ParserUpdatedInfo(this, EventArgs.Empty); // Event for update
-
-            GetParserErrorLog(tab);
+            if (ParserUpdatedInfo != null) ParserUpdatedInfo(this, EventArgs.Empty); // Event for update
 
             if (currentTab == tab) {
+                Procedure[] procs = null;
+                if (parseIsFail) { // предыдущая попытка парсинга была неудачной
+                    procs = Parser.GetProcsData(tab.textEditor.Text, tab.filepath);// обновить данные об имеющихся процедур
+                }
+                HighlightProcedures.UpdateList(tab.textEditor.Document, (!parseIsFail) ? tab.parseInfo.procs : procs);        
+                
+                UpdateNames(); // Update Tree Variables/Procedures
+
                 if (tab.filepath != null) {
-                    if (tab.parseInfo.parsed) {
+                    if (tab.parseInfo.parseData) { //
                         if (tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) //tab.parseInfo.procs.Length
                             Outline_toolStripButton.Enabled = true;
-                        
-                        customHighlight.ProceduresHighlight(tab.textEditor.Document, tab.parseInfo.procs);
 
-                        UpdateNames(); // Update Tree Variables/Procedures
-                        
                         if (Settings.enableParser)
                             parserLabel.Text = (!tab.parseInfo.parseError) ? "Parser: Complete" : "Parser: Script syntax error (see parser errors log)";
                         else
@@ -217,6 +218,7 @@ namespace ScriptEditor
                     parserLabel.Text = (Settings.enableParser) ? "Parser: Get only local macros" : parseoff;
                 }
             }
+            GetParserErrorLog(tab);
         }
 
         private void GetParserErrorLog(TabInfo tab)
@@ -961,6 +963,7 @@ namespace ScriptEditor
             currentActiveTextAreaCtrl.Caret.Line = caretline;
             currentActiveTextAreaCtrl.CenterViewOn(caretline, 0);
             
+            HighlightProcedures.AddToList(currentDocument, name);
             ForceParseScript();
             SetFocusDocument();
         }
@@ -986,8 +989,7 @@ namespace ScriptEditor
         private void deleteProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
-            if (proc == null)
-                return;
+            if (proc == null) return;
 
             //if (proc.IsImported) {
             //    MessageBox.Show("You can't delete the imported procedure.");
@@ -1001,6 +1003,7 @@ namespace ScriptEditor
             Utilities.PrepareDeleteProcedure(proc, currentDocument);
             currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
 
+            HighlightProcedures.DeleteFromList(currentDocument, proc.name);
             ForceParseScript();
             SetFocusDocument();
         }

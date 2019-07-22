@@ -425,7 +425,6 @@ namespace ScriptEditor
                 //te.TextEditorProperties.CaretLine = true;
                 Settings.SetTextAreaFont(te);
             }
-            te.OptionsChanged();
 
             if (type == OpenType.File)
                 te.LoadFile(file, false, true);
@@ -496,6 +495,7 @@ namespace ScriptEditor
                 }
                 ti.FileTime = File.GetLastWriteTime(ti.filepath);
             }
+            te.OptionsChanged();
             // TE events
             te.TextChanged += textChanged;
             SetActiveAreaEvents(te);
@@ -1624,8 +1624,7 @@ namespace ScriptEditor
                     if (alsoFont)
                         Settings.SetTextAreaFont(ct.textEditor);
                     //ct.textEditor.Refresh();
-                    customHighlight.HighlightWordClear();
-                    customHighlight.ProceduresHighlight(ct.textEditor.Document, ct.parseInfo.procs);
+                    ct.textEditor.Document.ExtraWordList.UpdateColor(ct.textEditor.Document);
                 } else {
                     ct.textEditor.Encoding = Settings.EncCodePage;
                     ct.textEditor.SetHighlighting(ColorTheme.IsDarkTheme ? "MessageDark" : "Message");

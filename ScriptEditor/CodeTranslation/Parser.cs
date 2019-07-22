@@ -73,7 +73,7 @@ namespace ScriptEditor.CodeTranslation
         }
 
         /// <summary>
-        /// Update to data location of procedures
+        /// Обновляет данные о процедурах, удаляет устаревшие или добавляет новые
         /// </summary>
         /// <param name="_pi"></param>
         /// <param name="textscript"></param>
@@ -126,7 +126,7 @@ namespace ScriptEditor.CodeTranslation
         }
 
         /// <summary>
-        /// Получит новые данные о процедурах из кода скрипта
+        /// Получает новые данные о процедурах из кода скрипта
         /// </summary>
         /// <param name="_pi"></param>
         /// <param name="text">Текущий текст скрипта</param>
@@ -144,8 +144,7 @@ namespace ScriptEditor.CodeTranslation
              *  pi.procs[].filename       - имя файла скрипта */
             #endregion
             
-            if (bufferUpdate)
-                UpdateParseSSL(text);
+            if (bufferUpdate) UpdateParseSSL(text);
 
             ProcBlock be_block = new ProcBlock();
             for (int i = 0; i < _pi.procs.Length; i++)
@@ -170,7 +169,7 @@ namespace ScriptEditor.CodeTranslation
         }
 
         /// <summary>
-        /// Обновить данные для процедур позицию строк деклараций и блоков begin...end из кода скрипта
+        /// Обновляет данные для процедур позицию строк деклараций и блока begin/end из кода скрипта
         /// </summary>
         /// <param name="_pi">Данные которые требуется обновить</param>
         /// <param name="text">Текущий текст скрипта</param>

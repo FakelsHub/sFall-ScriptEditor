@@ -9,6 +9,7 @@ namespace ScriptEditor.TextEditorUI
         public readonly string text;
         public readonly TabInfo tab;
         public int status;
+        public bool parseIsFail = false;
 
         public WorkerArgs(string text, TabInfo tab)
         {

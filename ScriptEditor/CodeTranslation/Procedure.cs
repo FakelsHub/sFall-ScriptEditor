@@ -15,6 +15,8 @@ namespace ScriptEditor.CodeTranslation
         public Variable[] variables;
         public Reference[] references;
 
+        int isStandart = -1;
+
         public NameType Type() { return NameType.Proc; }
         public Reference[] References() { return references; }
         public void Deceleration(out string file, out int line)
@@ -72,6 +74,41 @@ namespace ScriptEditor.CodeTranslation
         public bool IsExported
         {
             get {return (d.type & ProcType.Export) > 0; }
+        }
+
+        public bool IsStandart()
+        {
+            if (isStandart != -1) return (isStandart == 1);
+            if (name != null) {
+                switch (name.ToLower()) {
+                case "start" :
+                case "description_p_proc" :
+                case "look_at_p_proc" :
+                case "damage_p_proc" :
+                case "use_p_proc" :
+                case "use_obj_on_p_proc" :
+                case "use_skill_on_p_proc" :
+                case "combat_p_proc" :
+                case "critter_p_proc" :
+                case "push_p_proc" :
+                case "talk_p_proc" :
+                case "pickup_p_proc" :
+                case "drop_p_proc" :
+                case "is_dropping_p_proc" :
+                case "map_enter_p_proc" :
+                case "map_exit_p_proc" :
+                case "map_update_p_proc" :
+                case "destroy_p_proc" :
+                case "spatial_p_proc" :
+                case "timed_event_p_proc" :
+                    isStandart = 1;
+                    return true;
+                default:
+                    isStandart = 0;
+                    break;
+                }
+            }
+            return false;
         }
 
         public override string ToString()

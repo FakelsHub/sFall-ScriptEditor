@@ -88,11 +88,10 @@ namespace ScriptEditor.CodeTranslation
                               ? prev_pi //new ProgramInfo(0, 0)
                               : new ProgramInfo(numProcs(), numVars());
             if (lastStatus >= 1 && prev_pi != null) { // preprocess error - store previous data Procs/Vars
-                if (prev_pi.parseData)
+                if (prev_pi.parsed) //parseData
                     pi = Parser.UpdateProcsPI(prev_pi, text, filepath);
                 else {
-                    if (firstParse)
-                        pi.RebuildProcedureDictionary();
+                    if (firstParse) pi.RebuildProcedureDictionary();
                     //pi = prev_pi;
                     //pi.parsed = false;
                 }
@@ -100,16 +99,17 @@ namespace ScriptEditor.CodeTranslation
             }
 
             pi.parseError = (lastStatus != 0 & Settings.enableParser);
+            
             // Macros
             string[] scriptCode = text.Split('\n');
             new GetMacros(scriptCode, filepath, Path.GetDirectoryName(filepath), pi.macros);
-            if (lastStatus >= 1)
-                return pi; // parse failed, return macros and previous parsed data Procs/Vars
+            
+            pi.parsed = true;
+            if (lastStatus >= 1) return pi; // parse failed, return macros and previous parsed data Procs/Vars
             //
             // Getting data of variables/procedures
             //
-            pi.parsed = true;
-            pi.parseData = true; // flag - received data from parser.dll
+            pi.parseData = true; // received data from parser.dll
             byte[] names = new byte[namespaceSize()];
             int stringsSize = stringspaceSize();
             getNamespace(names);

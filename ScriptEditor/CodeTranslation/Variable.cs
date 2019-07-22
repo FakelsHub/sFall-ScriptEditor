@@ -56,6 +56,8 @@ namespace ScriptEditor.CodeTranslation
             get { return d.type == VarType.Export; }
         }
 
+        public bool IsStandart() { return false; }
+
         public bool IsArgument
         {
             get { return adeclared > 0; }
