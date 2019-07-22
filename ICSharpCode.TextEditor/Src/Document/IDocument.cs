@@ -76,6 +76,11 @@ namespace ICSharpCode.TextEditor.Document
 			get;
 		}
 		
+		HighlightExtraWord ExtraWordList {
+			get;
+			set;
+		}
+		
 //		/// <summary>
 //		/// The <see cref="SelectionManager"/> attached to the <see cref="IDocument"/> instance
 //		/// </summary>

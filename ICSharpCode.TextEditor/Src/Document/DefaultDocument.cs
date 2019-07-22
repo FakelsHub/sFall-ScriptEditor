@@ -102,6 +102,7 @@ namespace ICSharpCode.TextEditor.Document
 		UndoStack             undoStack = new UndoStack();
 		ITextEditorProperties textEditorProperties = new DefaultTextEditorProperties();
 		MarkerStrategy        markerStrategy;
+		HighlightExtraWord    highlightExtraWord = null;
 		
 		public LineManager LineManager {
 			get { return lineTrackingStrategy; }
@@ -189,6 +190,15 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				lineTrackingStrategy.HighlightingStrategy = value;
+			}
+		}
+		
+		public HighlightExtraWord ExtraWordList {
+			get {
+				return highlightExtraWord;
+			}
+			set {
+				highlightExtraWord = value;
 			}
 		}
 		

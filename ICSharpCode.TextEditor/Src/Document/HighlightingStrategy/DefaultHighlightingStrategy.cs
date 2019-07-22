@@ -232,14 +232,23 @@ namespace ICSharpCode.TextEditor.Document
 
 		protected virtual HighlightColor GetColor(HighlightRuleSet ruleSet, IDocument document, LineSegment currentSegment, int currentOffset, int currentLength)
 		{
+			HighlightColor color = null;
 			if (ruleSet != null) {
 				if (ruleSet.Reference != null) {
-					return ruleSet.Highlighter.GetColor(document, currentSegment, currentOffset, currentLength);
+					color = ruleSet.Highlighter.GetColor(document, currentSegment, currentOffset, currentLength);
 				} else {
-					return (HighlightColor)ruleSet.KeyWords[document,  currentSegment, currentOffset, currentLength];
+					color = (HighlightColor)ruleSet.KeyWords[document,  currentSegment, currentOffset, currentLength];
 				}
 			}
-			return null;
+			// highlight procedures name
+			if (color == null && document.ExtraWordList != null) {
+				int wordOffset = currentSegment.Offset + currentOffset;
+				string word = document.GetText(wordOffset, currentLength).ToLower();
+				if (word.Length > 0 && document.ExtraWordList.WordExist(word)) {
+					color = document.ExtraWordList.WordColor;
+				}
+			}
+			return color;
 		}
 		
 		public HighlightRuleSet GetRuleSet(Span aSpan)
