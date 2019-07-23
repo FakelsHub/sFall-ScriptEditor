@@ -24,7 +24,7 @@ namespace ScriptEditor
     partial class TextEditor : Form
     {
         private const string SSE = AboutBox.appName + " - ";
-        private const string parseoff = "Parser: Disabled";
+
         private const string unsaved = "unsaved.ssl";
         private const string treeTipProcedure = "\n\n - Click and hold Ctrl key to paste the procedure name into the script.\n - Double click to goto the procedure.";
         private const string treeTipVariable = "\n\n - Click and hold Ctrl key to paste the variable name into the script.\n - Double click to goto the variable.";
@@ -34,13 +34,9 @@ namespace ScriptEditor
         private static readonly System.Media.SoundPlayer DontFind = new System.Media.SoundPlayer(Properties.Resources.DontFind);
         private static readonly System.Media.SoundPlayer CompileFail = new System.Media.SoundPlayer(Properties.Resources.CompileError);
 
-        private DateTime extParser_TimeNext, intParser_TimeNext;
-        private Timer extParserTimer, intParserTimer;
         private readonly List<TabInfo> tabs = new List<TabInfo>();
         private TabInfo currentTab;
         private ToolStripLabel parserLabel;
-
-        public static volatile bool parserRunning;
 
         private SearchForm sf;
         private GoToLine goToLine;
@@ -53,7 +49,7 @@ namespace ScriptEditor
         private FormWindowState wState;
         private readonly string[] commandsArgs;
         private bool SplitEvent;
-        internal static bool ParsingErrors = true;
+
         private bool ctrlKeyPress;
         private bool dbClick;
 
@@ -546,7 +542,7 @@ namespace ScriptEditor
                     SaveAs(tab, close);
                     return;
                 }
-                while (parserRunning) {
+                while (parserIsRunning) {
                     System.Threading.Thread.Sleep(10); //Avoid stomping on files while the parser is running
                 }
 
@@ -2517,7 +2513,7 @@ namespace ScriptEditor
 
         private void ParsingErrorsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ParsingErrors = ParsingErrorsToolStripMenuItem.Checked;
+            parsingErrors = ParsingErrorsToolStripMenuItem.Checked;
         }
 
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)

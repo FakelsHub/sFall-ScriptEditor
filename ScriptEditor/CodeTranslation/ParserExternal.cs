@@ -55,8 +55,8 @@ namespace ScriptEditor.CodeTranslation
 
         private bool firstParse;
         private int lastStatus = 1;
-        
-        public int LastStatus 
+
+        public int LastStatus
         {
             get { return lastStatus; }
         }
@@ -74,7 +74,7 @@ namespace ScriptEditor.CodeTranslation
                 ParseOverrideIncludes(text);
                 string includePath = (Settings.overrideIncludesPath) ? Settings.pathHeadersFiles : null;
                 try {
-                    lastStatus = parse_main(parserPath, filepath, (includePath ?? Path.GetDirectoryName(filepath)), 
+                    lastStatus = parse_main(parserPath, filepath, (includePath ?? Path.GetDirectoryName(filepath)),
                                             Settings.preprocDef ?? String.Empty);
                 } catch {
                     lastStatus = 3;
@@ -87,20 +87,19 @@ namespace ScriptEditor.CodeTranslation
             ProgramInfo pi = (lastStatus >= 1)
                               ? prev_pi //new ProgramInfo(0, 0)
                               : new ProgramInfo(numProcs(), numVars());
+
             if (lastStatus >= 1 && prev_pi != null) { // preprocess error - store previous data Procs/Vars
-                if (prev_pi.parsed) //parseData
+                if (prev_pi.parsed) //.parseData
                     pi = ParserInternal.UpdateProcsPI(prev_pi, text, filepath);
-                else {
-                    if (firstParse) pi.RebuildProcedureDictionary();
-                    //pi = prev_pi;
-                    //pi.parsed = false;
+                else if (firstParse) { 
+                    pi.RebuildProcedureDictionary();
                 }
                 pi.macros.Clear();
             }
-
             pi.parseError = (lastStatus != 0 & Settings.enableParser);
-            
+            //
             // Macros
+            //
             string[] scriptCode = text.Split('\n');
             new GetMacros(scriptCode, filepath, Path.GetDirectoryName(filepath), pi.macros);
             
@@ -118,7 +117,7 @@ namespace ScriptEditor.CodeTranslation
                 strings = new byte[stringsSize];
                 getStringspace(strings);
             }
-            //Variables
+            // Variables
             for (int i = 0; i < pi.vars.Length; i++) {
                 pi.vars[i] = new Variable();
                 getVar(i, out pi.vars[i].d);
@@ -150,7 +149,7 @@ namespace ScriptEditor.CodeTranslation
                         pi.vars[i].references[j] = Reference.FromPtr(tmp[j * 2], tmp[j * 2 + 1]);
                 }
             }
-            //Procedures
+            // Procedures
             for (int i = 0; i < pi.procs.Length; i++) {
                 pi.procs[i] = new Procedure();
                 getProc(i, out pi.procs[i].d);
@@ -174,7 +173,7 @@ namespace ScriptEditor.CodeTranslation
                     for (int j = 0; j < pi.procs[i].d.numRefs; j++)
                         pi.procs[i].references[j] = Reference.FromPtr(tmp[j * 2], tmp[j * 2 + 1]);
                 }
-                //Procedure variables
+                // Procedure variables
                 if (getProcNamespaceSize(i) == -1) {
                     pi.procs[i].variables = new Variable[0];
                 } else {
@@ -233,7 +232,7 @@ namespace ScriptEditor.CodeTranslation
                 string line = code[i].TrimStart().ToLower();
                 if (len > line.Length)
                     continue;
-                
+
                 int y = line.IndexOf(ParserInternal.VARIABLE);
                 if (y == -1)
                     continue;
@@ -251,19 +250,19 @@ namespace ScriptEditor.CodeTranslation
                     int z = line.IndexOf(ParserInternal.BEGIN);
                     if (z > -1 && x > z)
                         break; // переменная находится за пределами begin
-                    
+
                     return i + 1;
                 }
                 if (line.StartsWith(ParserInternal.PROCEDURE))
-                     break; // найдена процедура, прерываем цикл 
+                     break; // найдена процедура, прерываем цикл
             }
             return -1;
         }
 
         private void ParseOverrideIncludes(string text)
         {
-            /*  
-             *  Пререопределение include путей для парсера более не требутся, 
+            /*
+             *  Пререопределение include путей для парсера более не требутся,
              *  т.к. путь для поиска include файлов указывается непосредственно парсеру через аргумент строки.
              *  возможность оставленна только для переопределения неотносительных include путей.
              */

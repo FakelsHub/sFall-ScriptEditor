@@ -11,7 +11,7 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ScriptEditor.CodeTranslation
 {
-    public struct ProcBlock
+    public struct ProcedureBlock
     {
         public int declar;      // Строка декларации процедуры
         public int begin;       // Строка указывающая на begin процедуры
@@ -27,22 +27,22 @@ namespace ScriptEditor.CodeTranslation
         private static List<string> procNameList = new List<string>();
         private static TextEditor scrptEditor;
 
-        private static string[] bufferSSL; // text buffer for ssl script code
+        private static string[] bufferSSLCode; // text buffer for ssl script code
 
         public const int PROC_LEN = 10;
         public const string PROCEDURE = "procedure ";
         public const string BEGIN = "begin";
-        const string END = "end";
+        private const string END = "end";
         public const string INCLUDE = "#include ";
         public const string DEFINE = "#define ";
-        const string COMMENT = "//";
+        private const string COMMENT = "//";
         public const string VARIABLE = "variable ";
 
         public static List<string> ProceduresListName
         {
-            get { 
+            get {
                 GetNamesProcedures();
-                return procNameList; 
+                return procNameList;
             }
         }
 
@@ -62,14 +62,14 @@ namespace ScriptEditor.CodeTranslation
         public ParserInternal(TabInfo _ti, Form frm)
         {
             scrptEditor = frm as TextEditor;
-            TextEditor.parserRunning = true; // internal parse work
+            TextEditor.parserIsRunning = true; // internal parse work
             
-            UpdateParseSSL(_ti.textEditor.Text, false);
+            UpdateParseBuffer(_ti.textEditor.Text, false);
             
             ProgramInfo _pi = new ProgramInfo(CountProcedures, 0);
             _ti.parseInfo = InternalProcParse(_pi, _ti.textEditor.Text, _ti.filepath);
             
-            TextEditor.parserRunning = false;
+            TextEditor.parserIsRunning = false;
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace ScriptEditor.CodeTranslation
         {
             List<Procedure> _proc = _pi.procs.ToList();
 
-            UpdateParseSSL(textscript, false);
+            UpdateParseBuffer(textscript, false);
             ProgramInfo update_pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
             
             for (int i = 0; i < _proc.Count; i++)
@@ -100,8 +100,7 @@ namespace ScriptEditor.CodeTranslation
                         break;
                     }
                 }
-                if (!exist) // remove unused procedure
-                    _proc.RemoveAt(i--);
+                if (!exist) _proc.RemoveAt(i--); // remove unused procedure
             }
 
             for (int i = 0; i < update_pi.procs.Length; i++)
@@ -115,10 +114,8 @@ namespace ScriptEditor.CodeTranslation
                             break;
                     }
                 }
-                if (!exist) // Add new procedure
-                    _proc.Insert(i, update_pi.procs[i]);
+                if (!exist) _proc.Insert(i, update_pi.procs[i]); // Add new procedure
             }
-
             _pi.procs = _proc.ToArray();
             _pi.RebuildProcedureDictionary();
             
@@ -139,22 +136,22 @@ namespace ScriptEditor.CodeTranslation
              *  pi.procs[].d.end          - номер строки конца тела процедуры
              *  pi.procs[].d.declared     - номер строки с объявление процедуры
              *  pi.procs[].name           - имя процедуры
-             *  pi.procs[].fdeclared      - путь и имя к файлу где объявлена процедура 
-             *  pi.procs[].fstart         - путь и имя к файлу где расположана процедура    
+             *  pi.procs[].fdeclared      - путь и имя к файлу где объявлена процедура
+             *  pi.procs[].fstart         - путь и имя к файлу где расположана процедура
              *  pi.procs[].filename       - имя файла скрипта */
             #endregion
-            
-            if (bufferUpdate) UpdateParseSSL(text);
 
-            ProcBlock be_block = new ProcBlock();
+            if (bufferUpdate) UpdateParseBuffer(text);
+
+            ProcedureBlock procBlock = new ProcedureBlock();
             for (int i = 0; i < _pi.procs.Length; i++)
             {
                 _pi.procs[i] = new Procedure();
                 _pi.procs[i].name = procNameList[i];
                 _pi.procs[i].d.declared = GetDeclarationProcedureLine(_pi.procs[i].name) + 1;
-                be_block = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
-                _pi.procs[i].d.start = (be_block.begin >= 0) ? be_block.begin + 1 : -1;
-                _pi.procs[i].d.end = (be_block.end >= 0) ? be_block.end + 1 : -1;
+                procBlock = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
+                _pi.procs[i].d.start = (procBlock.begin >= 0) ? procBlock.begin + 1 : -1;
+                _pi.procs[i].d.end = (procBlock.end >= 0) ? procBlock.end + 1 : -1;
                 _pi.procs[i].fdeclared = Path.GetFullPath(scriptFile);
                 _pi.procs[i].fstart = _pi.procs[i].fdeclared;
                 _pi.procs[i].filename = Path.GetFileName(scriptFile).ToLowerInvariant();
@@ -163,7 +160,7 @@ namespace ScriptEditor.CodeTranslation
             }
             _pi.parsed = true;
             
-            bufferSSL = null;
+            bufferSSLCode = null;
             
             return _pi;
         }
@@ -176,27 +173,27 @@ namespace ScriptEditor.CodeTranslation
         /// <param name="scriptFile">Файл скрипта</param>
         public static void UpdateProcInfo(ref ProgramInfo _pi, string text, string scriptFile)
         {
-            UpdateParseSSL(text);
+            UpdateParseBuffer(text);
             
-            ProcBlock be_block = new ProcBlock();
+            ProcedureBlock procBlock = new ProcedureBlock();
             for (int i = 0; i < _pi.procs.Length; i++)
             {
-                if (_pi.procs[i].fdeclared != scriptFile) 
+                if (_pi.procs[i].fdeclared != scriptFile)
                     continue;
                 _pi.procs[i].d.declared = GetDeclarationProcedureLine(_pi.procs[i].name) + 1;
-                be_block = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
-                _pi.procs[i].d.start = (be_block.begin >= 0) ? be_block.begin + 1 : -1;
-                _pi.procs[i].d.end = (be_block.end >= 0) ? be_block.end + 1 : -1;
+                procBlock = GetProcBeginEndBlock(_pi.procs[i].name, _pi.procs[i].d.declared - 1);
+                _pi.procs[i].d.start = (procBlock.begin >= 0) ? procBlock.begin + 1 : -1;
+                _pi.procs[i].d.end = (procBlock.end >= 0) ? procBlock.end + 1 : -1;
             }
             _pi.RebuildProcedureDictionary();
 
-            bufferSSL = null;
+            bufferSSLCode = null;
         }
 
         // Get new procedure data of script
         public static Procedure[] GetProcsData(string textscript, string filepath)
         {
-            UpdateParseSSL(textscript, false); // Не переводить в нижний регист для правильных имен процедур
+            UpdateParseBuffer(textscript, false); // Не переводить в нижний регист для правильных имен процедур
             
             ProgramInfo _pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
             
@@ -209,22 +206,22 @@ namespace ScriptEditor.CodeTranslation
             int _comm = 0;
             procNameList.Clear();
             
-            for (int i = 0; i < bufferSSL.Length; i++)
+            for (int i = 0; i < bufferSSLCode.Length; i++)
             {
                 bool _add = true;
-                bufferSSL[i] = bufferSSL[i].TrimStart();
+                bufferSSLCode[i] = bufferSSLCode[i].TrimStart();
                 
-                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                if (CommentBlockParse(ref bufferSSLCode[i], ref _comm))
                     continue;
-                
-                if (bufferSSL[i].StartsWith("import", StringComparison.OrdinalIgnoreCase)
-                    || bufferSSL[i].StartsWith("export", StringComparison.OrdinalIgnoreCase)) {
-                    bufferSSL[i] = bufferSSL[i].Remove(0, 7).TrimStart();
+
+                if (bufferSSLCode[i].StartsWith("import", StringComparison.OrdinalIgnoreCase)
+                    || bufferSSLCode[i].StartsWith("export", StringComparison.OrdinalIgnoreCase)) {
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
                 }
 
-                if (bufferSSL[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
+                if (bufferSSLCode[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
-                    string pName = bufferSSL[i].Substring(PROC_LEN, bufferSSL[i].Length - PROC_LEN);
+                    string pName = bufferSSLCode[i].Substring(PROC_LEN, bufferSSLCode[i].Length - PROC_LEN);
                     
                     // delete Begin or other information from procedure name
                     int z = pName.IndexOf(';');
@@ -251,8 +248,8 @@ namespace ScriptEditor.CodeTranslation
                         }
                     }
                     if (_add)
-                        procNameList.Add(pName);  
-                }            
+                        procNameList.Add(pName);
+                }
             }
         }
 
@@ -266,22 +263,22 @@ namespace ScriptEditor.CodeTranslation
             pName = pName.ToLowerInvariant();
             int pLen = pName.Length;
             
-            for (int i = 0; i < bufferSSL.Length; i++)
+            for (int i = 0; i < bufferSSLCode.Length; i++)
             {
-                bufferSSL[i] = bufferSSL[i].Trim();
+                bufferSSLCode[i] = bufferSSLCode[i].Trim();
                 
                 // TODO: возможно тут нужна проверка на закоментированный блок /* */
                 
-                if (bufferSSL[i].StartsWith("import") || bufferSSL[i].StartsWith("export"))
-                    bufferSSL[i] = bufferSSL[i].Remove(0, 7).TrimStart();
+                if (bufferSSLCode[i].StartsWith("import") || bufferSSLCode[i].StartsWith("export"))
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
 
-                if (IsProcedure(ref bufferSSL[i], pName)) {
-                    if (bufferSSL[i].Length <= (PROC_LEN + pLen))
+                if (IsProcedure(ref bufferSSLCode[i], pName)) {
+                    if (bufferSSLCode[i].Length <= (PROC_LEN + pLen))
                         continue; // broken declare
 
-                    RemoveCommentLine(ref bufferSSL[i], PROC_LEN + pLen);
+                    RemoveCommentLine(ref bufferSSLCode[i], PROC_LEN + pLen);
                     
-                    if (bufferSSL[i].LastIndexOf(';') >= (PROC_LEN + pLen))
+                    if (bufferSSLCode[i].LastIndexOf(';') >= (PROC_LEN + pLen))
                         return i; //found
                 }
             }
@@ -296,23 +293,23 @@ namespace ScriptEditor.CodeTranslation
         {
             int _comm = 0;
             
-            for (int i = 0; i < bufferSSL.Length; i++) 
+            for (int i = 0; i < bufferSSLCode.Length; i++)
             {
-                bufferSSL[i] = bufferSSL[i].Trim();
-                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                bufferSSLCode[i] = bufferSSLCode[i].Trim();
+                if (CommentBlockParse(ref bufferSSLCode[i], ref _comm))
                     continue;
-                
+
                 // убираем лишнее
-                RemoveCommentLine(ref bufferSSL[i], 0);
+                RemoveCommentLine(ref bufferSSLCode[i], 0);
                 
-                if (bufferSSL[i].EndsWith(BEGIN)) {
-                    if (!bufferSSL[i].StartsWith(PROCEDURE) && !bufferSSL[i - 1].StartsWith(PROCEDURE)) 
-                        continue; 
+                if (bufferSSLCode[i].EndsWith(BEGIN)) {
+                    if (!bufferSSLCode[i].StartsWith(PROCEDURE) && !bufferSSLCode[i - 1].StartsWith(PROCEDURE))
+                        continue;
                     for (int j = i - 1; j > 0; j--) {
-                       if (bufferSSL[j].StartsWith(PROCEDURE)) 
+                       if (bufferSSLCode[j].StartsWith(PROCEDURE))
                            return j + 1;
                     }
-                    if (++i <= bufferSSL.Length)
+                    if (++i <= bufferSSLCode.Length)
                         continue;
                     return -1;  // procedure block is broken
                 }
@@ -321,40 +318,40 @@ namespace ScriptEditor.CodeTranslation
         }
 
         /// <summary>
-        /// Получить для указанной процедуры номера ее строк Begin...End блока 
+        /// Получить для указанной процедуры номера ее строк Begin...End блока
         /// </summary>
         /// <param name="pName">Имя процедуры</param>
         /// <param name="startline">Строка в коде с которой необходимо начать поиск</param>
         /// <param name="procBegin">procBegin=True - получить номер строки процедуры, а не строки Begin блока</param>
-        public static ProcBlock GetProcBeginEndBlock(string pName, int startline = 0, bool procBegin = false)
+        public static ProcedureBlock GetProcBeginEndBlock(string pName, int startline = 0, bool procBegin = false)
         {
             int _begin = 0, _proc = 0, _comm = 0, lineProc = 0;
-            ProcBlock block = new ProcBlock() { declar = -1 };
+            ProcedureBlock procBlock = new ProcedureBlock() { declar = -1 };
             
             pName = pName.ToLowerInvariant();
             int pLen = pName.Length;
             if (startline < 0)
                 startline = 0;
             
-            for (int i = startline; i < bufferSSL.Length; i++)
+            for (int i = startline; i < bufferSSLCode.Length; i++)
             {
-                bufferSSL[i] = bufferSSL[i].Trim();
-                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                bufferSSLCode[i] = bufferSSLCode[i].Trim();
+                if (CommentBlockParse(ref bufferSSLCode[i], ref _comm))
                     continue;
                 // ищем начало процедуры с искомым именем
-                if (_proc == 0 && IsProcedure(ref bufferSSL[i], pName))
+                if (_proc == 0 && IsProcedure(ref bufferSSLCode[i], pName))
                 {   // нашли procedure name, проверяем 100% совпадает c искомым?
-                    block.declar = i;
+                    procBlock.declar = i;
                     string s = " ";
-                    if (bufferSSL[i].Length > PROC_LEN + pLen)
-                        s = bufferSSL[i].Substring(PROC_LEN + pLen, 1);
+                    if (bufferSSLCode[i].Length > PROC_LEN + pLen)
+                        s = bufferSSLCode[i].Substring(PROC_LEN + pLen, 1);
                     if (s != " " && s != "(")
                         continue; //не совпадает, ищем дальше
                     _proc++; // совпадает, проверяем это процедура или ее объявление
                     // убираем лишнее
-                    RemoveCommentLine(ref bufferSSL[i], PROC_LEN + pLen);
-                    if (bufferSSL[i].EndsWith(BEGIN)) {
-                        block.begin = i; //да это процедура, присваеваем значение строки в begin
+                    RemoveCommentLine(ref bufferSSLCode[i], PROC_LEN + pLen);
+                    if (bufferSSLCode[i].EndsWith(BEGIN)) {
+                        procBlock.begin = i; //да это процедура, присваеваем значение строки в begin
                         _begin++;
                         continue;
                     } else { // нет, продолжаем искать begin
@@ -363,13 +360,13 @@ namespace ScriptEditor.CodeTranslation
                     }
                 } // ищем begin от процедуры.
                 else if (_proc > 0 && _begin == 0) {
-                    if (bufferSSL[i].StartsWith(BEGIN)) {
+                    if (bufferSSLCode[i].StartsWith(BEGIN)) {
                         _begin++; // нашли begin
-                        block.begin = (procBegin) ? lineProc : i; // возвращаем номер строки с процедурой
+                        procBlock.begin = (procBegin) ? lineProc : i; // возвращаем номер строки с процедурой
                         continue;
                     }
                     // в процессе проверяем и любое объявление процедур
-                    if (bufferSSL[i].StartsWith(PROCEDURE)) {
+                    if (bufferSSLCode[i].StartsWith(PROCEDURE)) {
                         // нашли - откат назад, будем продолжать искать нашу "procedure Name"
                         _proc--;
                         i--;
@@ -378,38 +375,38 @@ namespace ScriptEditor.CodeTranslation
                 }
                 // нашли begin, теперь ищем начало следующей процедуры
                 // и от ее позиции будем искать 'END' принадлежащий к искомой "procedure Name"
-                if (_proc > 0 && _begin > 0 && bufferSSL[i].StartsWith(PROCEDURE)) {
+                if (_proc > 0 && _begin > 0 && bufferSSLCode[i].StartsWith(PROCEDURE)) {
                     // нашли следующую процедуру
-                    for (int j = i - 1; j > 0; j--) // back find 
-                    {   
-                        if (bufferSSL[j].StartsWith(END)) {
+                    for (int j = i - 1; j > 0; j--) // back find
+                    {
+                        if (bufferSSLCode[j].StartsWith(END)) {
                             // found "end"
-                            block.end = j;
-                            return block ; // return
-                        } else if (j <= block.begin) {
-                            block.end = -1; //i - 
-                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}'" + 
-                                                                     " of the keyword 'end' was not found.\r\n", block.end + 1, pName));
-                            return block; // procedure block end is broken
-                        } 
-                    }
-                } 
-            }
-            // обработка вслучае последней процедуры в скрипте
-            if (block.end == 0 && _proc > 0 && _begin > 0) {
-                for (int i = bufferSSL.Length - 1; i > 0; i--) // back find 
-                {
-                    if (bufferSSL[i].StartsWith(END)) {
-                        block.end = i;
-                        return block;
+                            procBlock.end = j;
+                            return procBlock ; // return
+                        } else if (j <= procBlock.begin) {
+                            procBlock.end = -1; //i -
+                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}'" +
+                                                                     " of the keyword 'end' was not found.\r\n", procBlock.end + 1, pName));
+                            return procBlock; // procedure block end is broken
+                        }
                     }
                 }
             }
-            block.begin = -1;
-            block.end = -1;
+            // обработка вслучае последней процедуры в скрипте
+            if (procBlock.end == 0 && _proc > 0 && _begin > 0) {
+                for (int i = bufferSSLCode.Length - 1; i > 0; i--) // back find
+                {
+                    if (bufferSSLCode[i].StartsWith(END)) {
+                        procBlock.end = i;
+                        return procBlock;
+                    }
+                }
+            }
+            procBlock.begin = -1;
+            procBlock.end = -1;
             scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing the procedure '{1}' an unexpected error occurred," +
-                                                     " the construction of the code 'begin...end' was not determined.\r\n", block.declar + 1, pName));
-            return block;
+                                                     " the construction of the code 'begin...end' was not determined.\r\n", procBlock.declar + 1, pName));
+            return procBlock;
         }
 
         /// <summary>
@@ -449,7 +446,7 @@ namespace ScriptEditor.CodeTranslation
                     _comm++;
                     sLine = sLine.Remove(cStart); // clear comment line
                     return true;
-                } else 
+                } else
                     sLine = sLine.Remove(cStart, (cEnd + 2) - cStart).Insert(cStart, " ").TrimStart();
             }
             else if (_comm > 0) {
@@ -480,7 +477,7 @@ namespace ScriptEditor.CodeTranslation
                     int y = sLine.IndexOfAny(new char[] {';', ')'}, 9);
                     if (y > 0) { // определяем наименьшее значение x и y
                         if (x == -1 || y < x) // позиция скобки не находится в комментариях
-                            x = y;        
+                            x = y;
                     }
                     if (x == -1 || z < x) // двойные пробелы расположены не за пределами проверки
                         sLine = RemoveDoubleWhiteSpaces(sLine, z, x);
@@ -513,11 +510,12 @@ namespace ScriptEditor.CodeTranslation
         /// </summary>
         /// <param name="sText">Код скрипта</param>
         /// <param name="lower"></param>
-        public static void UpdateParseSSL(string sText, bool lower = true)
+        public static void UpdateParseBuffer(string sText, bool lower = true)
         {
             char delimeter = '\n';
-            bufferSSL = (lower) ? sText.ToLowerInvariant().Split(delimeter)
-                                : sText.Split(delimeter);
+            bufferSSLCode = (lower)
+                            ? sText.ToLowerInvariant().Split(delimeter)
+                            : sText.Split(delimeter);
         }
 
         public static void FixProcedureBegin(string file)
@@ -539,99 +537,99 @@ namespace ScriptEditor.CodeTranslation
         /// <summary>
         /// Получить номера строк для региона деклараций
         /// </summary>
-        public static ProcBlock GetRegionDeclaration(string text, int lineStart)
+        public static ProcedureBlock GetRegionDeclaration(string text, int lineStart)
         {
-            bufferSSL = text.Split(new char[]{'\n'}, lineStart + 1);
-            int lenBuff = bufferSSL.Length - 1;
-            
+            bufferSSLCode = text.Split(new char[]{'\n'}, lineStart + 1);
+            int lenBuff = bufferSSLCode.Length - 1;
+
             int _comm = 0;
             bool ret = false;
             bool check = false;
 
-            ProcBlock block = new ProcBlock() { begin = 0, end = -1 };
+            ProcedureBlock procBlock = new ProcedureBlock() { begin = 0, end = -1 };
 
             for (int i = 0; i < lenBuff; i++)
             {
-                bufferSSL[i] = bufferSSL[i].Trim();
+                bufferSSLCode[i] = bufferSSLCode[i].Trim();
                 if (ret) {
-                    if (bufferSSL[i].Length == 0) {
+                    if (bufferSSLCode[i].Length == 0) {
                         check = false;
                         continue;
                     } else {
-                        block.begin = (check) ? i - 1 : i; // found begin declaration
+                        procBlock.begin = (check) ? i - 1 : i; // found begin declaration
                         break;
                     }
                 }
-                check = (bufferSSL[i].Length > 0);
-                if (CommentBlockParse(ref bufferSSL[i], ref _comm))
+                check = (bufferSSLCode[i].Length > 0);
+                if (CommentBlockParse(ref bufferSSLCode[i], ref _comm))
                     continue;
                 ret = true;
             }
-                        
-            for (int i = lineStart - 1; i > block.begin; i--)
+
+            for (int i = lineStart - 1; i > procBlock.begin; i--)
             {
-                if (bufferSSL[i].Trim().Length > 0) {
-                    block.end = i;  // found end declaration
+                if (bufferSSLCode[i].Trim().Length > 0) {
+                    procBlock.end = i;  // found end declaration
                     break;
                 }
             }
-            return block;
+            return procBlock;
         }
 
-        public static List<ProcBlock> GetFoldingBlock(string text, int start = 0)
+        public static List<ProcedureBlock> GetFoldingBlock(string text, int start = 0)
         {
-            List<ProcBlock> list = new List<ProcBlock>();
-            ProcBlock block = new ProcBlock() { begin = -1, end = -1 };
-            ProcBlock ifblock = new ProcBlock() { begin = -1, end = -1, copy = true};
+            List<ProcedureBlock> list = new List<ProcedureBlock>();
+            ProcedureBlock procBlock = new ProcedureBlock() { begin = -1, end = -1 };
+            ProcedureBlock ifBlock = new ProcedureBlock() { begin = -1, end = -1, copy = true};
 
             int _comm = 0;
-            bufferSSL = text.Split(new char[]{'\n'});
-            int lenBuff = bufferSSL.Length;
-            
+            bufferSSLCode = text.Split(new char[]{'\n'});
+            int lenBuff = bufferSSLCode.Length;
+
             for (int i = start; i < lenBuff; i++)
             {
-                string buffer = bufferSSL[i].TrimStart().ToLower();
+                string buffer = bufferSSLCode[i].TrimStart().ToLower();
                 if (CommentBlockParse(ref buffer, ref _comm))
                     continue;
                 RemoveCommentLine(ref buffer, 0);
 
-                if (ifblock.begin == -1 && buffer.StartsWith("#if ")) {
-                    ifblock.begin = i;
+                if (ifBlock.begin == -1 && buffer.StartsWith("#if ")) {
+                    ifBlock.begin = i;
                     continue;
-                } else if (ifblock.begin > -1 && buffer.StartsWith("#endif")) { 
-                    ifblock.end = i;
-                    list.Add(ifblock);
-                    ifblock = new ProcBlock() { begin = -1, end = -1, copy = true};
+                } else if (ifBlock.begin > -1 && buffer.StartsWith("#endif")) {
+                    ifBlock.end = i;
+                    list.Add(ifBlock);
+                    ifBlock = new ProcedureBlock() { begin = -1, end = -1, copy = true};
                     continue;
                 }
 
-                if (block.begin == -1 && buffer.StartsWith(VARIABLE)) {
+                if (procBlock.begin == -1 && buffer.StartsWith(VARIABLE)) {
                     int boffset = buffer.IndexOf(" " + BEGIN) + 1;
                     if (boffset > 0) {
                         buffer = buffer.Remove(boffset + BEGIN.Length);
-                        
+
                         int z = buffer.IndexOf("  ", 8);
                         if (z > 0)
                             buffer = RemoveDoubleWhiteSpaces(buffer, z, boffset);
 
                         if (buffer.StartsWith(VARIABLE + BEGIN)) {
-                            block.begin = i;
+                            procBlock.begin = i;
                             continue;
                         }
-                    }   
+                    }
                 }
-                else if (block.begin > -1 && buffer.StartsWith(END) && (buffer.Length == 3 
+                else if (procBlock.begin > -1 && buffer.StartsWith(END) && (buffer.Length == 3
                          || (buffer.Length > 3 && !TextUtilities.IsLetterDigitOrUnderscore(buffer[3])))) {
-                    block.end = i;
-                    list.Add(block);
-                    block = new ProcBlock() { begin = -1, end = -1 };
-                } 
-                else if (block.begin > -1 && (buffer.StartsWith(VARIABLE) || buffer.StartsWith(PROCEDURE)))
-                    block.begin = -1;
+                    procBlock.end = i;
+                    list.Add(procBlock);
+                    procBlock = new ProcedureBlock() { begin = -1, end = -1 };
+                }
+                else if (procBlock.begin > -1 && (buffer.StartsWith(VARIABLE) || buffer.StartsWith(PROCEDURE)))
+                    procBlock.begin = -1;
             }
             return list;
         }
-        #endregion 
+        #endregion
 
         #region Include files
         public static List<string> GetAllIncludes(TabInfo tab)
@@ -639,7 +637,7 @@ namespace ScriptEditor.CodeTranslation
             List<string> include = new List<string>();
             string[] lines = tab.textEditor.Document.TextContent.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             string dir = Path.GetDirectoryName(tab.filepath);
-            
+
             for (int i = 0; i < lines.Length; i++)
             {
                 lines[i] = lines[i].Trim();
@@ -663,7 +661,7 @@ namespace ScriptEditor.CodeTranslation
                 if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
                     iPath = Path.GetFullPath(Path.Combine(Settings.pathHeadersFiles, iPath));
                     return true;
-                } else { //если не указана папка c .h файлами то переопределять путь 
+                } else { //если не указана папка c .h файлами то переопределять путь
                     //относительно папки скрипта или каталога программы
                     string temp = Path.GetFullPath(Path.Combine(dir, iPath));
                     if (!File.Exists(temp))

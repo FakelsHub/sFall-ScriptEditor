@@ -307,7 +307,7 @@ namespace ScriptEditor.CodeTranslation
         public List<string> LookupAutosuggest(string part)
         {
             //FIXED: возникает ошибка "коллекция была изменена после создания экземпляра перечислителя"
-            while (TextEditor.parserRunning)
+            while (TextEditor.parserIsRunning)
                 System.Threading.Thread.Sleep(50); //Avoid stomping on files while the parser is running
 
             List<string> matches = LookupOpcode(part);

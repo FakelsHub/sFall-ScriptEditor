@@ -126,7 +126,7 @@ namespace ScriptEditor.TextEditorUI
             string[] sLog = log.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < sLog.Length; i++)
             {
-                if (TextEditor.ParsingErrors && errSection && sLog[i].TrimStart().StartsWith("from")) {
+                if (TextEditor.parsingErrors && errSection && sLog[i].TrimStart().StartsWith("from")) {
                     HighlightErrorFrom(sLog[i], tab);
                 }
                 else if (sLog[i].StartsWith("[Error]")) {
@@ -166,7 +166,7 @@ namespace ScriptEditor.TextEditorUI
             if (ePosition.line >= total)
                 ePosition.line = total - 1;
 
-            if (TextEditor.ParsingErrors && Path.GetFileName(fpath) == tab.filename) {
+            if (TextEditor.parsingErrors && Path.GetFileName(fpath) == tab.filename) {
                 LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
                 TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightError);
                 tm.ToolTip = message;

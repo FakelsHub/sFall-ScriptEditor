@@ -16,7 +16,19 @@ namespace ScriptEditor
 {
     partial class TextEditor
     {
-        #region ParseFunction
+        private const string parseoff = "Parser: Disabled";
+
+        public event EventHandler ParserUpdatedInfo; // Event for update nodes diagram
+
+        private bool firstParse;
+
+        internal static volatile bool parserIsRunning;
+        internal static bool parsingErrors = true;
+
+        private DateTime extParser_TimeNext, intParser_TimeNext;
+        private Timer extParserTimer, intParserTimer;
+
+        #region Parser Control
         private void textChanged(object sender, EventArgs e)
         {
             if (!currentTab.changed) {
@@ -33,10 +45,6 @@ namespace ScriptEditor
             }
         }
 
-        public event EventHandler ParserUpdatedInfo; // Event for update nodes diagram
-
-        private bool firstParse;
-
         // Parse first open script
         private void FirstParseScript(TabInfo cTab)
         {
@@ -51,8 +59,7 @@ namespace ScriptEditor
             DEBUGINFO("First Parse...");
             new ParserInternal(cTab, this);
 
-            while (parserRunning)
-                System.Threading.Thread.Sleep(10); //Avoid stomping on files while the parser is running
+            while (parserIsRunning) System.Threading.Thread.Sleep(10); // Avoid stomping on files while the parser is running
 
             var ExtParser = new ParserExternal(firstParse);
             cTab.parseInfo = ExtParser.Parse(cTab.textEditor.Text, cTab.filepath, cTab.parseInfo);
@@ -66,8 +73,7 @@ namespace ScriptEditor
 
             if (cTab.parseInfo.parseError) {
                 tabControl2.SelectedIndex = 2;
-                if (WindowState != FormWindowState.Minimized)
-                    maximize_log();
+                if (WindowState != FormWindowState.Minimized) maximize_log();
             }
             firstParse = false;
         }
@@ -75,24 +81,18 @@ namespace ScriptEditor
         // Parse script
         private void ParseScript(int delay = 2)
         {
-            if (!Settings.enableParser) {
-                int iDelay;
-                if (delay > 1)
-                    iDelay = delay / 2;
-                else
-                    iDelay = 0;
+            if (!Settings.enableParser) { // Parse Off
+                int iDelay = 0;
+                if (delay > 1) iDelay = delay / 2;
                 intParser_TimeNext = DateTime.Now + TimeSpan.FromSeconds(iDelay);
-                if (!intParserTimer.Enabled)
-                    intParserTimer.Start();
+                if (!intParserTimer.Enabled) intParserTimer.Start();
             } else {
                 intParser_TimeNext = DateTime.Now + TimeSpan.FromMilliseconds(500);
-                if (!intParserTimer.Enabled)
-                    intParserTimer.Start();
+                if (!intParserTimer.Enabled) intParserTimer.Start();
             }
-
+            // Запустить так-же и внешний парсер (для полученния макросов)
             extParser_TimeNext = DateTime.Now + TimeSpan.FromSeconds(delay);
-            if (!extParserTimer.Enabled)
-                extParserTimer.Start(); // External Parser begin
+            if (!extParserTimer.Enabled) extParserTimer.Start(); // External Parser begin
         }
 
         //Force update parser data
@@ -103,7 +103,7 @@ namespace ScriptEditor
             extParserTimer.Stop();
 
             if (Settings.enableParser && currentTab.parseInfo.parseData) {
-                TextEditor.parserRunning = true; // parse work
+                parserIsRunning = true; // parse work
                 CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
             } else {
@@ -122,16 +122,17 @@ namespace ScriptEditor
                 return;
             }
 
-            if (DateTime.Now > intParser_TimeNext && !parserRunning) {
-                DEBUGINFO("Run: Internal Parser");
+            if (DateTime.Now > intParser_TimeNext && !parserIsRunning) {
                 intParserTimer.Stop();
+
+                DEBUGINFO("Run: Internal Parser");
+
                 if (!Settings.enableParser) { // Parser off
                     tbOutputParse.Text = string.Empty;
                     parserLabel.Text = "Parser: Get only macros";
                     parserLabel.ForeColor = Color.Crimson;
 
                     new ParserInternal(currentTab, this);
-
                     CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
                     ParserCompleted(currentTab, false);
                 } else {
@@ -142,7 +143,7 @@ namespace ScriptEditor
             }
         }
 
-        // Timer for parsing
+        // Timer for external parsing
         void ExternalParser_Tick(object sender, EventArgs e)
         {
             if (currentTab == null || !currentTab.shouldParse) {
@@ -150,22 +151,23 @@ namespace ScriptEditor
                 DEBUGINFO("Stop: External Parser");
                 return;
             }
-            if (DateTime.Now > extParser_TimeNext && !bwSyntaxParser.IsBusy && !parserRunning) {
-                if (autoComplete.IsVisible)
-                    return;
+
+            if (DateTime.Now > extParser_TimeNext && !bwSyntaxParser.IsBusy && !parserIsRunning) {
+                if (autoComplete.IsVisible) return;
+                parserIsRunning = true;
+                extParserTimer.Stop();
 
                 DEBUGINFO("Run: External Parser");
-                parserRunning = true;
+
                 if (Settings.enableParser) {
                     parserLabel.Text = "Parser: Working";
                     parserLabel.ForeColor = Color.Crimson;
                 }
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
-                extParserTimer.Stop();
             }
         }
 
-        // Parse Start
+        // External parse start
         private void bwSyntaxParser_DoWork(object sender, DoWorkEventArgs eventArgs)
         {
             WorkerArgs args = (WorkerArgs)eventArgs.Argument;
@@ -175,10 +177,10 @@ namespace ScriptEditor
             args.status = ExtParser.LastStatus;
             args.parseIsFail = prevStatus & (args.status > 0);
             eventArgs.Result = args;
-            parserRunning = false;
+            parserIsRunning = false;
         }
 
-        // Parse Stop
+        // External parse finish
         private void bwSyntaxParser_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!Settings.enableParser) return; // выход для предотвращения второго прохода когда внешний парсер выключен
@@ -192,19 +194,16 @@ namespace ScriptEditor
 
         private void ParserCompleted(TabInfo tab, bool parseIsFail)
         {
-            if (ParserUpdatedInfo != null) ParserUpdatedInfo(this, EventArgs.Empty); // Event for update
-
             if (currentTab == tab) {
                 Procedure[] procs = null;
                 if (parseIsFail) { // предыдущая попытка парсинга была неудачной
                     procs = ParserInternal.GetProcsData(tab.textEditor.Text, tab.filepath);// обновить данные об имеющихся процедур
                 }
                 HighlightProcedures.UpdateList(tab.textEditor.Document, (!parseIsFail) ? tab.parseInfo.procs : procs);
-
                 UpdateNames(); // Update Tree Variables/Procedures
 
                 if (tab.filepath != null) {
-                    if (tab.parseInfo.parseData) { //
+                    if (tab.parseInfo.parseData) { //.parsed
                         if (tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) //tab.parseInfo.procs.Length
                             Outline_toolStripButton.Enabled = true;
 
@@ -222,6 +221,8 @@ namespace ScriptEditor
                 }
             }
             GetParserErrorLog(tab);
+            // Event for update
+            if (ParserUpdatedInfo != null) ParserUpdatedInfo(this, EventArgs.Empty);
         }
         #endregion
 

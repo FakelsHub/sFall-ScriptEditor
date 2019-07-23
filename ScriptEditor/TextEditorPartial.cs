@@ -351,7 +351,7 @@ namespace ScriptEditor
                 if (!currentTab.shouldParse)
                     return;
 
-                ParserInternal.UpdateParseSSL(currentTab.textEditor.Text);
+                ParserInternal.UpdateParseBuffer(currentTab.textEditor.Text);
                 
                 word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 line = ParserInternal.GetProcBeginEndBlock(word, 0, true).begin;
@@ -599,7 +599,7 @@ namespace ScriptEditor
                 return;
             }
 
-            ProcBlock block = new ProcBlock();
+            ProcedureBlock block = new ProcedureBlock();
             if (CreateProcFrm.radioButton2.Checked) {
                 var proc = (Procedure)ProcTree.SelectedNode.Tag;
                 block.begin = proc.d.start;
@@ -641,7 +641,7 @@ namespace ScriptEditor
                 return;
             }
             
-            ProcBlock block = new ProcBlock();
+            ProcedureBlock block = new ProcedureBlock();
             if (CreateProcFrm.checkBox1.Checked || CreateProcFrm.radioButton2.Checked) {
                 var proc = (Procedure)ProcTree.SelectedNode.Tag;
                 block.begin = proc.d.start;
@@ -658,7 +658,7 @@ namespace ScriptEditor
         }
 
         // Create procedure block
-        private void PrepareInsertProcedure(string name, ProcBlock block, bool after = false, byte overrides = 0)
+        private void PrepareInsertProcedure(string name, ProcedureBlock block, bool after = false, byte overrides = 0)
         {
             int procLine, declrLine, caretline = 3;
             string procbody;
@@ -678,7 +678,7 @@ namespace ScriptEditor
             if (after)
                 declrLine = block.declar;
             else {
-                ParserInternal.UpdateParseSSL(currentTab.textEditor.Text);
+                ParserInternal.UpdateParseBuffer(currentTab.textEditor.Text);
                 declrLine = ParserInternal.GetEndLineProcDeclaration();
             }
             if (declrLine == -1) {
@@ -765,8 +765,8 @@ namespace ScriptEditor
 
             Procedure moveProc = (Procedure)ProcTree.Nodes[root].Nodes[moveActive].Tag;
             // copy body
-            ParserInternal.UpdateParseSSL(currentDocument.TextContent);
-            ProcBlock block = ParserInternal.GetProcBeginEndBlock(moveProc.name, 0, true);
+            ParserInternal.UpdateParseBuffer(currentDocument.TextContent);
+            ProcedureBlock block = ParserInternal.GetProcBeginEndBlock(moveProc.name, 0, true);
             block.declar = moveProc.d.declared;
             
             string copy_defproc;
@@ -779,7 +779,7 @@ namespace ScriptEditor
 
             string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
             
-            ParserInternal.UpdateParseSSL(currentDocument.TextContent);
+            ParserInternal.UpdateParseBuffer(currentDocument.TextContent);
             // insert declration
             int offset;
             if (copy_defproc != null) {

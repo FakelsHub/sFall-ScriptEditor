@@ -870,7 +870,7 @@ namespace ScriptEditor
             
             //Создать процедуру в скрипте
             int dummy = 0;
-            ParserInternal.UpdateParseSSL(scriptText.TextContent);
+            ParserInternal.UpdateParseBuffer(scriptText.TextContent);
             int declrLine = ParserInternal.GetEndLineProcDeclaration();
             int procLine = scriptText.TotalNumberOfLines - 1;
             string procblock = "\r\nprocedure " + nodeName + " begin\r\n" + nodeCode + "\r\nend\r\n";
