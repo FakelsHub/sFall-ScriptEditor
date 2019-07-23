@@ -96,6 +96,9 @@
     </Compile>
     <Compile Include="CodeTranslation\DialogueParser.cs" />
     <Compile Include="CodeTranslation\Macros.cs" />
+    <Compile Include="ManageParse.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="CodeTranslation\ParserInternal.cs" />
     <Compile Include="CodeTranslation\ParserExternal.cs" />
     <Compile Include="DialogPreview.cs">
@@ -380,7 +383,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <BaseAddress>4194304</BaseAddress>
