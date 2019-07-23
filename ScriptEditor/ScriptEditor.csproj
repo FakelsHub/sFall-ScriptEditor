@@ -96,8 +96,8 @@
     </Compile>
     <Compile Include="CodeTranslation\DialogueParser.cs" />
     <Compile Include="CodeTranslation\Macros.cs" />
-    <Compile Include="CodeTranslation\Parser.cs" />
-    <Compile Include="CodeTranslation\ParserDLL.cs" />
+    <Compile Include="CodeTranslation\ParserInternal.cs" />
+    <Compile Include="CodeTranslation\ParserExternal.cs" />
     <Compile Include="DialogPreview.cs">
       <SubType>Form</SubType>
     </Compile>

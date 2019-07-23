@@ -26,7 +26,7 @@ namespace ScriptEditor.CodeTranslation
             string[] text = File.ReadAllLines(file, (Settings.saveScriptUTF8) ? Encoding.UTF8 : Encoding.Default);
             for (int i = 0; i < text.Length; i++)
             {
-                if (text[i].TrimStart().ToLower().StartsWith(Parser.INCLUDE)) {
+                if (text[i].TrimStart().ToLower().StartsWith(ParserInternal.INCLUDE)) {
                     string[] str = text[i].Split('"');
                     if (str.Length < 2)
                         continue;
@@ -36,9 +36,9 @@ namespace ScriptEditor.CodeTranslation
                     bool overrides = false;
                     // для внешних препроцессоров переопределять только неотносительные пути
                     if (Settings.useMcpp || Settings.useWatcom || Settings.userCmdCompile)
-                        overrides = Parser.OverrideIncludePath(ref str[1]);
+                        overrides = ParserInternal.OverrideIncludePath(ref str[1]);
                     else
-                        overrides = Parser.OverrideIncludePath(ref str[1], file);
+                        overrides = ParserInternal.OverrideIncludePath(ref str[1], file);
                     
                     if (overrides)
                         text[i]= str[0] + '"' + str[1] + '"';

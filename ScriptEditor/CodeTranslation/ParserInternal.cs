@@ -22,7 +22,7 @@ namespace ScriptEditor.CodeTranslation
     /// <summary>
     /// Class for parsing procedures SSL code w/o external parser.dll
     /// </summary>
-    public class Parser
+    public class ParserInternal
     {
         private static List<string> procNameList = new List<string>();
         private static TextEditor scrptEditor;
@@ -59,7 +59,7 @@ namespace ScriptEditor.CodeTranslation
         /// </summary>
         /// <param name="_ti"></param>
         /// <param name="frm"></param>
-        public Parser(TabInfo _ti, Form frm)
+        public ParserInternal(TabInfo _ti, Form frm)
         {
             scrptEditor = frm as TextEditor;
             TextEditor.parserRunning = true; // internal parse work
@@ -525,8 +525,8 @@ namespace ScriptEditor.CodeTranslation
             List<string> script = File.ReadAllLines(file, Encoding.Default).ToList();
             for (int i = 0; i < script.Count; i++)
             {
-                if (script[i].StartsWith(Parser.PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
-                    if (script[i + 1].StartsWith(Parser.BEGIN, StringComparison.OrdinalIgnoreCase)) {
+                if (script[i].StartsWith(ParserInternal.PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
+                    if (script[i + 1].StartsWith(ParserInternal.BEGIN, StringComparison.OrdinalIgnoreCase)) {
                         script[i] += '\u0020' + script[i + 1];
                         script.RemoveAt(i + 1);
                     }

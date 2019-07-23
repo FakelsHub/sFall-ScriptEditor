@@ -31,14 +31,14 @@ namespace ScriptEditor.CodeTranslation
             }
 
             if (list.Count > 0 && Path.GetExtension(fileName) == ".ssl") {
-                ProcBlock dRegion = Parser.GetRegionDeclaration(document.TextContent, minStart);
+                ProcBlock dRegion = ParserInternal.GetRegionDeclaration(document.TextContent, minStart);
                 if (dRegion.end < 0)
                     dRegion.end = minStart - 2;
                 if (dRegion.end > dRegion.begin)
                     list.Add(new FoldMarker(document, dRegion.begin, 0, dRegion.end, 1000, FoldType.Region, " - Declaration Region - "));
             }
             // Get variable and #if foldings block
-            List<ProcBlock> blockList = Parser.GetFoldingBlock(document.TextContent);
+            List<ProcBlock> blockList = ParserInternal.GetFoldingBlock(document.TextContent);
             foreach (ProcBlock block in blockList) {
                 string str = block.copy ? TextUtilities.GetLineAsString(document, block.begin) + " " 
                                         : " - Variables - ";
@@ -61,7 +61,7 @@ namespace ScriptEditor.CodeTranslation
         /// </summary>
         internal static void UpdateFolding(IDocument document, string filepath)
         {
-            Procedure[] parseInformation = Parser.GetProcsData(document.TextContent, filepath);
+            Procedure[] parseInformation = ParserInternal.GetProcsData(document.TextContent, filepath);
             UpdateFolding(document, Path.GetFileName(filepath), parseInformation);
         }
 

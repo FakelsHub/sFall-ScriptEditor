@@ -378,7 +378,7 @@ namespace ScriptEditor
                     } else {
                         file = decomp;
                         // fix for procedure begin
-                        Parser.FixProcedureBegin(file);
+                        ParserInternal.FixProcedureBegin(file);
                     }
                 } else {
                     //Check if the file is already open
@@ -1302,7 +1302,7 @@ namespace ScriptEditor
             //editorMenuStrip.Tag = tl;
             // includes
             string line = TextUtilities.GetLineAsString(currentDocument, tl.Line).Trim();
-            if (!line.TrimStart().StartsWith(Parser.INCLUDE)) {
+            if (!line.TrimStart().StartsWith(ParserInternal.INCLUDE)) {
                 openIncludeToolStripMenuItem.Enabled = false;
             }
             
@@ -2195,7 +2195,7 @@ namespace ScriptEditor
         private void openIncludesScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (currentTab.filepath != null) {
-                foreach (string s in Parser.GetAllIncludes(currentTab))
+                foreach (string s in ParserInternal.GetAllIncludes(currentTab))
                 {
                     Open(s, OpenType.File, addToMRU: false, seltab: false);
                 }

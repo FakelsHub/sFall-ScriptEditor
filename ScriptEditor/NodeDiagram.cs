@@ -490,7 +490,7 @@ namespace ScriptEditor
         // Update data procedures
         private void UpdateProceduresInfo()
         {
-            scriptProc = Parser.GetProcsData(scriptText.TextContent, sourceTab.filepath);
+            scriptProc = ParserInternal.GetProcsData(scriptText.TextContent, sourceTab.filepath);
         }
         
         private void ReadMessageData(string msgfilePath)
@@ -870,8 +870,8 @@ namespace ScriptEditor
             
             //Создать процедуру в скрипте
             int dummy = 0;
-            Parser.UpdateParseSSL(scriptText.TextContent);
-            int declrLine = Parser.GetEndLineProcDeclaration();
+            ParserInternal.UpdateParseSSL(scriptText.TextContent);
+            int declrLine = ParserInternal.GetEndLineProcDeclaration();
             int procLine = scriptText.TotalNumberOfLines - 1;
             string procblock = "\r\nprocedure " + nodeName + " begin\r\n" + nodeCode + "\r\nend\r\n";
             Utilities.InsertProcedure(sourceTab.textEditor.ActiveTextAreaControl, 

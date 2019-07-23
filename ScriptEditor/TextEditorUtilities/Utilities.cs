@@ -442,8 +442,8 @@ namespace ScriptEditor.TextEditorUtilities
         {
             string def_poc;
 
-            Parser.UpdateParseSSL(document.TextContent);
-            ProcBlock block = Parser.GetProcBeginEndBlock(proc.name, 0, true);
+            ParserInternal.UpdateParseSSL(document.TextContent);
+            ProcBlock block = ParserInternal.GetProcBeginEndBlock(proc.name, 0, true);
             block.declar = proc.d.declared;
 
             document.UndoStack.StartUndoGroup();
@@ -459,9 +459,9 @@ namespace ScriptEditor.TextEditorUtilities
             {
                 string def_poc;
 
-                Parser.UpdateParseSSL(document.TextContent);
-                ProcBlock block = Parser.GetProcBeginEndBlock(name, 0, true);
-                block.declar = Parser.GetDeclarationProcedureLine(name) + 1;
+                ParserInternal.UpdateParseSSL(document.TextContent);
+                ProcBlock block = ParserInternal.GetProcBeginEndBlock(name, 0, true);
+                block.declar = ParserInternal.GetDeclarationProcedureLine(name) + 1;
                 DeleteProcedure(document, block, out def_poc);
             }
             document.UndoStack.EndUndoGroup();

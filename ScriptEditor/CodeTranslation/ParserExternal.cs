@@ -10,7 +10,7 @@ namespace ScriptEditor.CodeTranslation
     /// <summary>
     /// Class for parsing SSL code. Interacts with SSLC compiler via DLL imports.
     /// </summary>
-    internal class ParserDLL
+    internal class ParserExternal
     {
         #region Imports from SSLC DLL
 
@@ -61,7 +61,7 @@ namespace ScriptEditor.CodeTranslation
             get { return lastStatus; }
         }
 
-        public ParserDLL(bool firstPass)
+        public ParserExternal(bool firstPass)
         {
             this.firstParse = firstPass;
         }
@@ -89,7 +89,7 @@ namespace ScriptEditor.CodeTranslation
                               : new ProgramInfo(numProcs(), numVars());
             if (lastStatus >= 1 && prev_pi != null) { // preprocess error - store previous data Procs/Vars
                 if (prev_pi.parsed) //parseData
-                    pi = Parser.UpdateProcsPI(prev_pi, text, filepath);
+                    pi = ParserInternal.UpdateProcsPI(prev_pi, text, filepath);
                 else {
                     if (firstParse) pi.RebuildProcedureDictionary();
                     //pi = prev_pi;
@@ -227,20 +227,20 @@ namespace ScriptEditor.CodeTranslation
         {
             if (start > code.Length) return -1;
 
-            int len = Parser.VARIABLE.Length + vName.Length;
+            int len = ParserInternal.VARIABLE.Length + vName.Length;
             for (int i = start - 1; i > end; i--)
             {
                 string line = code[i].TrimStart().ToLower();
                 if (len > line.Length)
                     continue;
                 
-                int y = line.IndexOf(Parser.VARIABLE);
+                int y = line.IndexOf(ParserInternal.VARIABLE);
                 if (y == -1)
                     continue;
-                line = Parser.RemoveDoubleWhiteSpaces(line, y, 0);
+                line = ParserInternal.RemoveDoubleWhiteSpaces(line, y, 0);
 
          TryPass:
-                int x = line.IndexOf(Parser.VARIABLE + vName, y);
+                int x = line.IndexOf(ParserInternal.VARIABLE + vName, y);
                 if (x > -1) {
                     char c = line[x + len];
                     if (c == '_' || Char.IsLetterOrDigit(c)) {
@@ -248,13 +248,13 @@ namespace ScriptEditor.CodeTranslation
                         goto TryPass;
                     }
 
-                    int z = line.IndexOf(Parser.BEGIN);
+                    int z = line.IndexOf(ParserInternal.BEGIN);
                     if (z > -1 && x > z)
                         break; // переменная находится за пределами begin
                     
                     return i + 1;
                 }
-                if (line.StartsWith(Parser.PROCEDURE))
+                if (line.StartsWith(ParserInternal.PROCEDURE))
                      break; // найдена процедура, прерываем цикл 
             }
             return -1;
@@ -271,14 +271,14 @@ namespace ScriptEditor.CodeTranslation
                 string[] linetext = text.Split('\n');
                 for (int i = 0; i < linetext.Length; i++)
                 {
-                    if (linetext[i].ToLower().TrimStart().StartsWith(Parser.INCLUDE)) {
+                    if (linetext[i].ToLower().TrimStart().StartsWith(ParserInternal.INCLUDE)) {
                         string[] str = linetext[i].Split('"');
                         if (str.Length < 2)
                             continue;
                         if (str[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                             continue;
 
-                        if (Parser.OverrideIncludePath(ref str[1]))
+                        if (ParserInternal.OverrideIncludePath(ref str[1]))
                             linetext[i] = str[0] + '"' + str[1] + '"';
                     }
                 }

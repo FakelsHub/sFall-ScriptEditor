@@ -352,7 +352,7 @@ namespace ScriptEditor.CodeTranslation
                 
                 if (excludeComment || !diagram) {
                     string _str = str.TrimStart();
-                    if (Parser.CommentBlockParse(ref _str, ref _comm))
+                    if (ParserInternal.CommentBlockParse(ref _str, ref _comm))
                         continue;
                 }
                 if (excludeComment || diagram)

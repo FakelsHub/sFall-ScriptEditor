@@ -50,15 +50,15 @@ namespace ScriptEditor.CodeTranslation
                 dir = Path.GetDirectoryName(file);
             for (int i = 0; i < lines.Length; i++) {
                 lines[i] = lines[i].Replace('\t', ' ').TrimStart();
-                if (include && lines[i].StartsWith(Parser.INCLUDE)) {
+                if (include && lines[i].StartsWith(ParserInternal.INCLUDE)) {
                     string[] text = lines[i].Split('"');
                     if (text.Length < 2)
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    Parser.OverrideIncludePath(ref text[1], dir);
+                    ParserInternal.OverrideIncludePath(ref text[1], dir);
                     new GetMacros(text[1], null, macros);
-                } else if (lines[i].StartsWith(Parser.DEFINE)) {
+                } else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
                     if (lines[i].TrimEnd().EndsWith(@"\")) {
                         var sb = new StringBuilder();
                         int lineno = i;

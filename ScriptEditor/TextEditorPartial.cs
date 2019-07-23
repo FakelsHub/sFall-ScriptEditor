@@ -46,12 +46,12 @@ namespace ScriptEditor
             GetMacros.GetGlobalMacros(Settings.pathHeadersFiles);
             
             DEBUGINFO("First Parse...");
-            new Parser(cTab, this);
+            new ParserInternal(cTab, this);
             
             while (parserRunning) 
                 System.Threading.Thread.Sleep(10); //Avoid stomping on files while the parser is running
             
-            var ExtParser = new ParserDLL(firstParse);
+            var ExtParser = new ParserExternal(firstParse);
             cTab.parseInfo = ExtParser.Parse(cTab.textEditor.Text, cTab.filepath, cTab.parseInfo);
             DEBUGINFO("External first parse status: " + ExtParser.LastStatus);
             
@@ -104,7 +104,7 @@ namespace ScriptEditor
                 CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
                 bwSyntaxParser.RunWorkerAsync(new WorkerArgs(currentDocument.TextContent, currentTab));
             } else {
-                new Parser(currentTab, this);
+                new ParserInternal(currentTab, this);
                 CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
                 ParserCompleted(currentTab, false);
             }
@@ -127,14 +127,14 @@ namespace ScriptEditor
                     parserLabel.Text = "Parser: Get only macros";
                     parserLabel.ForeColor = Color.Crimson;
 
-                    new Parser(currentTab, this);
+                    new ParserInternal(currentTab, this);
 
                     CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
                     ParserCompleted(currentTab, false);
                 } else {
                     CodeFolder.UpdateFolding(currentDocument, currentTab.filepath);
                     //Quick update procedure data
-                    Parser.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
+                    ParserInternal.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace ScriptEditor
         private void bwSyntaxParser_DoWork(object sender, DoWorkEventArgs eventArgs)
         {
             WorkerArgs args = (WorkerArgs)eventArgs.Argument;
-            var ExtParser = new ParserDLL(false);
+            var ExtParser = new ParserExternal(false);
             bool prevStatus = args.tab.parseInfo.parseError;
             args.tab.parseInfo = ExtParser.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
             args.status = ExtParser.LastStatus;
@@ -194,7 +194,7 @@ namespace ScriptEditor
             if (currentTab == tab) {
                 Procedure[] procs = null;
                 if (parseIsFail) { // предыдущая попытка парсинга была неудачной
-                    procs = Parser.GetProcsData(tab.textEditor.Text, tab.filepath);// обновить данные об имеющихся процедур
+                    procs = ParserInternal.GetProcsData(tab.textEditor.Text, tab.filepath);// обновить данные об имеющихся процедур
                 }
                 HighlightProcedures.UpdateList(tab.textEditor.Document, (!parseIsFail) ? tab.parseInfo.procs : procs);        
                 
@@ -609,10 +609,10 @@ namespace ScriptEditor
                 if (!currentTab.shouldParse)
                     return;
 
-                Parser.UpdateParseSSL(currentTab.textEditor.Text);
+                ParserInternal.UpdateParseSSL(currentTab.textEditor.Text);
                 
                 word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
-                line = Parser.GetProcBeginEndBlock(word, 0, true).begin;
+                line = ParserInternal.GetProcBeginEndBlock(word, 0, true).begin;
                 if (line != -1)
                     line++; 
                 else 
@@ -637,7 +637,7 @@ namespace ScriptEditor
                 return;
             }
             
-            Parser.OverrideIncludePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
+            ParserInternal.OverrideIncludePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
             if (Open(line[1], OpenType.File, false) == null)
                 MessageBox.Show("Header file not found!", null, MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
@@ -936,8 +936,8 @@ namespace ScriptEditor
             if (after)
                 declrLine = block.declar;
             else {
-                Parser.UpdateParseSSL(currentTab.textEditor.Text);
-                declrLine = Parser.GetEndLineProcDeclaration();
+                ParserInternal.UpdateParseSSL(currentTab.textEditor.Text);
+                declrLine = ParserInternal.GetEndLineProcDeclaration();
             }
             if (declrLine == -1) {
                 declrLine = 0;
@@ -1023,8 +1023,8 @@ namespace ScriptEditor
 
             Procedure moveProc = (Procedure)ProcTree.Nodes[root].Nodes[moveActive].Tag;
             // copy body
-            Parser.UpdateParseSSL(currentDocument.TextContent);
-            ProcBlock block = Parser.GetProcBeginEndBlock(moveProc.name, 0, true);
+            ParserInternal.UpdateParseSSL(currentDocument.TextContent);
+            ProcBlock block = ParserInternal.GetProcBeginEndBlock(moveProc.name, 0, true);
             block.declar = moveProc.d.declared;
             
             string copy_defproc;
@@ -1037,18 +1037,18 @@ namespace ScriptEditor
 
             string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
             
-            Parser.UpdateParseSSL(currentDocument.TextContent);
+            ParserInternal.UpdateParseSSL(currentDocument.TextContent);
             // insert declration
             int offset;
             if (copy_defproc != null) {
-                int p_def = Parser.GetDeclarationProcedureLine(name);
+                int p_def = ParserInternal.GetDeclarationProcedureLine(name);
                 if (moveToEnd)
                     p_def++;
                 offset = currentDocument.PositionToOffset(new TextLocation(0, p_def));
                 currentDocument.Insert(offset, copy_defproc + Environment.NewLine);
             }
             //paste proc block
-            block = Parser.GetProcBeginEndBlock(name, 0, true);
+            block = ParserInternal.GetProcBeginEndBlock(name, 0, true);
             int p_begin;
             if (moveToEnd) {
                 p_begin = block.end + 1;
@@ -1074,7 +1074,7 @@ namespace ScriptEditor
             ProcTree.Focus();
             ProcTree.Select();
 
-            Parser.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
+            ParserInternal.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
             CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
         }
 
