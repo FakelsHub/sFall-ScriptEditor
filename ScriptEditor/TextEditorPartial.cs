@@ -705,6 +705,7 @@ namespace ScriptEditor
             currentActiveTextAreaCtrl.Caret.Line = caretline;
             currentActiveTextAreaCtrl.CenterViewOn(caretline, 0);
             
+            currentHighlightProc = null;
             HighlightProcedures.AddToList(currentDocument, name);
             ForceParseScript();
             SetFocusDocument();
@@ -745,6 +746,7 @@ namespace ScriptEditor
             Utilities.PrepareDeleteProcedure(proc, currentDocument);
             currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
 
+            currentHighlightProc = null;
             HighlightProcedures.DeleteFromList(currentDocument, proc.name);
             ForceParseScript();
             SetFocusDocument();
@@ -816,6 +818,7 @@ namespace ScriptEditor
             ProcTree.Focus();
             ProcTree.Select();
 
+            currentHighlightProc = null;
             ParserInternal.UpdateProcInfo(ref currentTab.parseInfo, currentDocument.TextContent, currentTab.filepath);
             CodeFolder.UpdateFolding(currentDocument, currentTab.filename, currentTab.parseInfo.procs);
         }

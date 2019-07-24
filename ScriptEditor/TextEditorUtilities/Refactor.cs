@@ -185,6 +185,7 @@ namespace ScriptEditor.TextEditorUtilities
                     tab.FileTime = System.IO.File.GetLastWriteTime(proc.fstart);
                 }
             }
+            TextEditor.currentHighlightProc = null;
             return newName;
         }
     }

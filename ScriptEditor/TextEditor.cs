@@ -834,8 +834,9 @@ namespace ScriptEditor
         private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
 
         private enum TreeStatus { idle, update, local }
-        Procedure currentHighlightProc = null;
-        TreeNode currentHighlightNode = null;
+        internal static Procedure currentHighlightProc = null;
+        private  static TreeNode currentHighlightNode = null;
+        
         // подсветить процедуру в дереве
         private void HighlightCurrentPocedure(int curLine)
         {
@@ -1400,7 +1401,7 @@ namespace ScriptEditor
         {   // Parser
             parserLabel = new ToolStripLabel((Settings.enableParser) ? "Parser: No file" : parseoff);
             parserLabel.Alignment = ToolStripItemAlignment.Right;
-            parserLabel.Click += delegate(object sender, EventArgs e) { ParseScript(); };
+            parserLabel.Click += delegate(object sender, EventArgs e) { ParseScript(0); };
             parserLabel.ToolTipText = "Click - Run update parser info.";
             parserLabel.TextChanged += delegate(object sender, EventArgs e) { parserLabel.ForeColor = Color.Black; };
             ToolStrip.Items.Add(parserLabel);
