@@ -443,7 +443,7 @@ namespace ScriptEditor.TextEditorUtilities
             string def_poc;
 
             ParserInternal.UpdateParseBuffer(document.TextContent);
-            ProcedureBlock block = ParserInternal.GetProcBeginEndBlock(proc.name, 0, true);
+            ProcedureBlock block = ParserInternal.GetProcedureBlock(proc.name, 0, true);
             block.declar = proc.d.declared;
 
             document.UndoStack.StartUndoGroup();
@@ -460,7 +460,7 @@ namespace ScriptEditor.TextEditorUtilities
                 string def_poc;
 
                 ParserInternal.UpdateParseBuffer(document.TextContent);
-                ProcedureBlock block = ParserInternal.GetProcBeginEndBlock(name, 0, true);
+                ProcedureBlock block = ParserInternal.GetProcedureBlock(name, 0, true);
                 block.declar = ParserInternal.GetDeclarationProcedureLine(name) + 1;
                 DeleteProcedure(document, block, out def_poc);
             }

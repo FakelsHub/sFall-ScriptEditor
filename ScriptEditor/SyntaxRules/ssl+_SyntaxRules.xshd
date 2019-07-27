@@ -84,6 +84,9 @@
         <Key word = "destroy_p_proc" />
         <Key word = "spatial_p_proc" />
         <Key word = "timed_event_p_proc" />
+        <Key word = "combat_is_starting_p_proc" />
+        <Key word = "combat_is_over_p_proc" />
+        <Key word = "desc_p_proc" />
       </KeyWords>
 
       <KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkBlue">

@@ -41,7 +41,7 @@ namespace ScriptEditor
                     parserLabel.Text = "Parser: Update changes";
                 }
                 // Update parse info
-                ParseScript(4);
+                ParseScript(3);
             }
         }
 
@@ -87,7 +87,7 @@ namespace ScriptEditor
                 intParser_TimeNext = DateTime.Now + TimeSpan.FromSeconds(iDelay);
                 if (!intParserTimer.Enabled) intParserTimer.Start();
             } else {
-                intParser_TimeNext = DateTime.Now + TimeSpan.FromMilliseconds(500);
+                intParser_TimeNext = DateTime.Now + TimeSpan.FromMilliseconds(100);
                 if (!intParserTimer.Enabled) intParserTimer.Start();
             }
             // Запустить так-же и внешний парсер (для полученния макросов)
@@ -122,7 +122,7 @@ namespace ScriptEditor
                 return;
             }
 
-            if (DateTime.Now > intParser_TimeNext && !parserIsRunning) {
+            if (DateTime.Now >= intParser_TimeNext && !parserIsRunning) {
                 intParserTimer.Stop();
 
                 DEBUGINFO("Run: Internal Parser");
@@ -152,7 +152,7 @@ namespace ScriptEditor
                 return;
             }
 
-            if (DateTime.Now > extParser_TimeNext && !bwSyntaxParser.IsBusy && !parserIsRunning) {
+            if (DateTime.Now >= extParser_TimeNext && !bwSyntaxParser.IsBusy && !parserIsRunning) {
                 if (autoComplete.IsVisible) return;
                 parserIsRunning = true;
                 extParserTimer.Stop();

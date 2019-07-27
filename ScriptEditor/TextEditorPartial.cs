@@ -354,7 +354,7 @@ namespace ScriptEditor
                 ParserInternal.UpdateParseBuffer(currentTab.textEditor.Text);
                 
                 word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
-                line = ParserInternal.GetProcBeginEndBlock(word, 0, true).begin;
+                line = ParserInternal.GetProcedureBlock(word, 0, true).begin;
                 if (line != -1)
                     line++; 
                 else 
@@ -395,6 +395,8 @@ namespace ScriptEditor
         {
             //PosChangeType = PositionType.OverridePos; // Save position change for navigation, if key was pressed
             
+            if (e.KeyCode == Keys.Enter) updateHighlightPocedure = false;
+
             if (autoComplete.IsVisible) {
                 autoComplete.TA_PreviewKeyDown(e);
                 if (Settings.autocomplete && e.KeyCode == Keys.Back) {
@@ -500,8 +502,7 @@ namespace ScriptEditor
         private void Caret_PositionChanged(object sender, EventArgs e)
         {
             string ext = Path.GetExtension(currentTab.filename).ToLower();
-            if (ext != ".ssl" && ext != ".h")
-                return;
+            if (ext != ".ssl" && ext != ".h") return;
 
             TextLocation _position = currentActiveTextAreaCtrl.Caret.Position;
             int curLine = _position.Line + 1;
@@ -510,7 +511,7 @@ namespace ScriptEditor
 
             Utilities.SelectedTextColorRegion(_position, currentActiveTextAreaCtrl);
 
-            HighlightCurrentPocedure(_position.Line);
+            if (updateHighlightPocedure) HighlightCurrentPocedure(_position.Line);
 
             if (PosChangeType == PositionType.Disabled) return;
         PosChange:
@@ -768,7 +769,7 @@ namespace ScriptEditor
             Procedure moveProc = (Procedure)ProcTree.Nodes[root].Nodes[moveActive].Tag;
             // copy body
             ParserInternal.UpdateParseBuffer(currentDocument.TextContent);
-            ProcedureBlock block = ParserInternal.GetProcBeginEndBlock(moveProc.name, 0, true);
+            ProcedureBlock block = ParserInternal.GetProcedureBlock(moveProc.name, 0, true);
             block.declar = moveProc.d.declared;
             
             string copy_defproc;
@@ -792,7 +793,7 @@ namespace ScriptEditor
                 currentDocument.Insert(offset, copy_defproc + Environment.NewLine);
             }
             //paste proc block
-            block = ParserInternal.GetProcBeginEndBlock(name, 0, true);
+            block = ParserInternal.GetProcedureBlock(name, 0, true);
             int p_begin;
             if (moveToEnd) {
                 p_begin = block.end + 1;

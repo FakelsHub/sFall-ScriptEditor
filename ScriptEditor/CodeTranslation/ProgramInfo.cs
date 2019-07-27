@@ -20,9 +20,9 @@ namespace ScriptEditor.CodeTranslation
         public ProcType type;
         public int time;
         private readonly int unused0; // larger union
-        private readonly int unused1; //namelist
+        private readonly int unused1; // namelist
         public int args;
-        public int defined;
+        public int defined;           // line num of the procedure definition
         private readonly int unused2;
         public int numVariables;
         private readonly int unused3;
@@ -218,7 +218,8 @@ namespace ScriptEditor.CodeTranslation
             lineNumber++;
             foreach (Procedure p in procs)
             {
-                if (lineNumber >= p.d.start & lineNumber <= p.d.end)
+                int pLine = (p.d.defined != -1) ? p.d.defined: p.d.declared;
+                if (lineNumber >= pLine & lineNumber <= p.d.end)
                     return p;
             }
             return null;

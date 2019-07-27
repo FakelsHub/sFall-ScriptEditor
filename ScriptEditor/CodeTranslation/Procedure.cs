@@ -46,7 +46,7 @@ namespace ScriptEditor.CodeTranslation
                 s += "procedure ";
             }
             s += name;
-            string args = "(";
+            string args = " (";
             for (int i = 0; i < d.args; i++) {
                 if (i > 0)
                     args += ", ";
@@ -81,26 +81,29 @@ namespace ScriptEditor.CodeTranslation
             if (isStandart != -1) return (isStandart == 1);
             if (name != null) {
                 switch (name.ToLower()) {
-                case "start" :
-                case "description_p_proc" :
-                case "look_at_p_proc" :
-                case "damage_p_proc" :
-                case "use_p_proc" :
-                case "use_obj_on_p_proc" :
-                case "use_skill_on_p_proc" :
+                case "combat_is_over_p_proc" :
+                case "combat_is_starting_p_proc" :
                 case "combat_p_proc" :
                 case "critter_p_proc" :
-                case "push_p_proc" :
-                case "talk_p_proc" :
-                case "pickup_p_proc" :
+                case "damage_p_proc" :
+                case "desc_p_proc" : // Fallout 1
+                case "description_p_proc" :
+                case "destroy_p_proc" :
                 case "drop_p_proc" :
                 case "is_dropping_p_proc" :
+                case "look_at_p_proc" :
                 case "map_enter_p_proc" :
                 case "map_exit_p_proc" :
                 case "map_update_p_proc" :
-                case "destroy_p_proc" :
+                case "pickup_p_proc" :
+                case "push_p_proc" :
                 case "spatial_p_proc" :
+                case "start" :
+                case "talk_p_proc" :
                 case "timed_event_p_proc" :
+                case "use_obj_on_p_proc" :
+                case "use_p_proc" :
+                case "use_skill_on_p_proc" :
                     isStandart = 1;
                     return true;
                 default:

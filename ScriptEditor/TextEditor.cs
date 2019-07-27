@@ -836,6 +836,7 @@ namespace ScriptEditor
         private enum TreeStatus { idle, update, local }
         internal static Procedure currentHighlightProc = null;
         private  static TreeNode currentHighlightNode = null;
+        private bool updateHighlightPocedure = true;
         
         // подсветить процедуру в дереве
         private void HighlightCurrentPocedure(int curLine)
@@ -849,26 +850,32 @@ namespace ScriptEditor
                 proc = currentTab.parseInfo.GetProcedurePosition(curLine);
             }
             if (proc != null && proc != currentHighlightProc) {
+                if (currentHighlightProc != null && currentHighlightProc.name.Equals(proc.name, StringComparison.OrdinalIgnoreCase)) return;
                 TreeNodeCollection nodes;
-                if (ProcTree.Nodes.Count > 1) 
+                if (ProcTree.Nodes.Count > 1)
                     nodes = ProcTree.Nodes[1].Nodes;
                 else
-                    nodes = ProcTree.Nodes[0].Nodes;
-                foreach (TreeNode node in nodes) 
+                    nodes = ProcTree.Nodes[0].Nodes; // for parser off
+                foreach (TreeNode node in nodes)
                 {
                     string name = ((Procedure)node.Tag).name;
                     if (name == proc.name) {
-                        node.Text = node.Text.Insert(0, "--> ");
+                        node.Text = node.Text.Insert(0, "► ");
                         node.ForeColor = ColorTheme.HighlightProcedureTree;
                         if (currentHighlightNode != null) {
                             currentHighlightNode.ForeColor = ProcTree.ForeColor;
-                            currentHighlightNode.Text = currentHighlightNode.Text.Substring(4);
+                            currentHighlightNode.Text = currentHighlightNode.Text.Substring(2);
                         }
                         currentHighlightProc = proc;
                         currentHighlightNode = node;
                         break;
                     }
                 }
+            } else if (currentHighlightProc != null && currentHighlightProc != proc) {
+                currentHighlightNode.Text = currentHighlightNode.Text.Substring(2);
+                currentHighlightNode.ForeColor = ProcTree.ForeColor;
+                currentHighlightProc = null;
+                currentHighlightNode = null;
             }
         }
 
@@ -889,7 +896,7 @@ namespace ScriptEditor
             foreach (var s in TREEPROCEDURES) {
                 rootNode = ProcTree.Nodes.Add(s);
                 rootNode.ForeColor = Color.DodgerBlue;
-                rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
+                rootNode.NodeFont = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point);
             }
             ProcTree.Nodes[0].ToolTipText = "Procedures declared and located in headers files." + treeTipProcedure;
             ProcTree.Nodes[0].Tag = 0; // global tag
@@ -931,7 +938,7 @@ namespace ScriptEditor
                 foreach (var s in TREEVARIABLES) {
                     rootNode = VarTree.Nodes.Add(s);
                     rootNode.ForeColor = Color.DodgerBlue;
-                    rootNode.NodeFont = new Font("Arial", 9, FontStyle.Bold);
+                    rootNode.NodeFont = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point);
                 }
                 VarTree.Nodes[0].ToolTipText = "Variables declared and located in headers files." + treeTipVariable;
                 VarTree.Nodes[1].ToolTipText = "Variables declared and located in this script." + treeTipVariable;
@@ -1244,11 +1251,10 @@ namespace ScriptEditor
 
         void TextArea_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.OemSemicolon)
-                Utilities.FormattingCodeSmart(currentActiveTextAreaCtrl);
+            updateHighlightPocedure = true;
+            if (e.KeyCode == Keys.OemSemicolon) Utilities.FormattingCodeSmart(currentActiveTextAreaCtrl);
 
-            if (!Settings.showTips || toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue)))
-               return;
+            if (!Settings.showTips || toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue))) return;
 
             var caret = currentActiveTextAreaCtrl.Caret;
             string word = TextUtilities.GetWordAt(currentDocument, caret.Offset - 1);
@@ -1411,7 +1417,7 @@ namespace ScriptEditor
             extParserTimer.Interval = 100;
             extParserTimer.Tick += new EventHandler(ExternalParser_Tick);
             intParserTimer = new Timer();
-            intParserTimer.Interval = 50;
+            intParserTimer.Interval = 10;
             intParserTimer.Tick += new EventHandler(InternalParser_Tick);
 
             // Tabs Swapped
@@ -1438,6 +1444,7 @@ namespace ScriptEditor
             VarTree.Cursor = Cursors.Hand;
             VarTab.Padding = new Padding(0, 2, 2, 2);
             VarTab.BackColor = SystemColors.ControlLightLight;
+            VarTab.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             VarTab.Controls.Add(VarTree);            
         }
 

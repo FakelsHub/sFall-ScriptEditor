@@ -917,6 +917,7 @@ namespace ScriptEditor {
             this.ProcTree.ContextMenuStrip = this.ProcMnContext;
             this.ProcTree.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ProcTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcTree.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ProcTree.HotTracking = true;
             this.ProcTree.Indent = 18;
             this.ProcTree.ItemHeight = 16;
