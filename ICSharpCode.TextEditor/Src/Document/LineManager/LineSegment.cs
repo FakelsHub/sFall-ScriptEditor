@@ -25,10 +25,10 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			int curColumn = 0;
 			foreach (TextWord word in words) {
-				if (column < curColumn + word.Length) {
+				curColumn += word.Length;
+				if (column < curColumn) {
 					return word;
 				}
-				curColumn += word.Length;
 			}
 			return null;
 		}

@@ -242,6 +242,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			// highlight procedures name
 			if (color == null && document.ExtraWordList != null) {
+				if (activeSpan != null && activeSpan.Rule != null) return color;
 				int wordOffset = currentSegment.Offset + currentOffset;
 				string word = document.GetText(wordOffset, currentLength).ToLower();
 				if (word.Length > 0 && document.ExtraWordList.WordExist(word)) {
@@ -531,7 +532,7 @@ namespace ICSharpCode.TextEditor.Document
 							if (escapeCharacter != '\0' && escapeCharacter == ch) {
 								// we found the escape character
 								if (activeSpan != null && activeSpan.End != null && activeSpan.End.Length == 1
-								    && escapeCharacter == activeSpan.End[0])
+									&& escapeCharacter == activeSpan.End[0])
 								{
 									// the escape character is a end-doubling escape character
 									// it may count as escape only when the next character is the escape, too
@@ -655,8 +656,8 @@ namespace ICSharpCode.TextEditor.Document
 							if (activeRuleSet != null) {
 								foreach (Span span in activeRuleSet.Spans) {
 									if ((!span.IsBeginSingleWord || currentLength == 0)
-									    && (!span.IsBeginStartOfLine.HasValue || span.IsBeginStartOfLine.Value == (currentLength == 0 && words.TrueForAll(delegate(TextWord textWord) { return textWord.Type != TextWordType.Word; })))
-									    && MatchExpr(currentLine, span.Begin, i, document, activeRuleSet.IgnoreCase)) {
+										&& (!span.IsBeginStartOfLine.HasValue || span.IsBeginStartOfLine.Value == (currentLength == 0 && words.TrueForAll(delegate(TextWord textWord) { return textWord.Type != TextWordType.Word; })))
+										&& MatchExpr(currentLine, span.Begin, i, document, activeRuleSet.IgnoreCase)) {
 										PushCurWord(document, ref markNext, words);
 										string regex = GetRegString(currentLine, span.Begin, i, document);
 										
