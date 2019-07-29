@@ -1046,7 +1046,7 @@ namespace ScriptEditor
                 if (!ctrlKeyPress) {
                     file = proc.fstart;
                     line = proc.d.start;
-                    if (file == null) { // goto declared
+                    if (line == -1 || file == null) { // goto declared
                         file = proc.fdeclared;
                         line = proc.d.declared;
                     }
@@ -1088,7 +1088,7 @@ namespace ScriptEditor
         private void ProcTree_BeforeExpandCollapse(object sender, TreeViewCancelEventArgs e) {
             if (e.Action == TreeViewAction.Expand || e.Action == TreeViewAction.Collapse) {
                  if (dbClick || ctrlKeyPress) {
-                    e.Cancel = true;
+                    if (e.Node.Tag is Procedure) e.Cancel = true;
                     dbClick = false;
                 }
             }
@@ -1098,8 +1098,8 @@ namespace ScriptEditor
         // Goto script text of selected Variable or Procedure in treeview
         public void SelectLine(string file, int line, bool pselect = false, int column = -1, int sLen = -1)
         {
-            if (line <= 0)
-                return;
+            if (line <= 0) return;
+
             bool not_this = false;
             if (currentTab == null || file != currentTab.filepath) {
                 if (Open(file, OpenType.File, false, alreadyOpen: false) == null) {

@@ -90,8 +90,8 @@ namespace ScriptEditor.CodeTranslation
 
             if (lastStatus >= 1 && prev_pi != null) { // preprocess error - store previous data Procs/Vars
                 if (prev_pi.parsed) //.parseData
-                    pi = ParserInternal.UpdateProcsPI(prev_pi, text, filepath);
-                else if (firstParse) { 
+                    if (Settings.enableParser) pi = ParserInternal.UpdateProcsPI(prev_pi, text, filepath);
+                else if (firstParse) {
                     pi.RebuildProcedureDictionary();
                 }
                 pi.macros.Clear();

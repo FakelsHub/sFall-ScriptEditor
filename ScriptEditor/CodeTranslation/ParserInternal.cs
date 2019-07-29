@@ -344,7 +344,7 @@ namespace ScriptEditor.CodeTranslation
                     pName = pName.TrimEnd();
 
                     if (declarLine != -1) {
-                        declarLst.Add(pName, declarLine);
+                        if (!declarLst.ContainsKey(pName)) declarLst.Add(pName, declarLine);
                         continue;
                     }
                     int lstIndex = -1;
@@ -392,7 +392,7 @@ namespace ScriptEditor.CodeTranslation
                             }
                         }
                         if (procBlockLst[i].end == -1) {  // procedure block end is broken
-                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: -1 : When parsing of procedure '{0}' of the keyword 'end' was not found.\r\n", procNameLst[i]));                        
+                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}' of the keyword 'end' was not found.\r\n", beginLine + 1, GetCaseCorrectProcedureName(procNameLst[i])));                        
                         }
                     }
                 }
@@ -404,8 +404,8 @@ namespace ScriptEditor.CodeTranslation
                     procNameLst.Add(el.Key);
                     procBlockLst.Add(new ProcedureBlock() { begin =-1, end = -1, declar = el.Value });
 
-                    scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing the procedure '{1}' an unexpected error occurred," +
-                                                             " the construction of the code 'begin...end' was not determined.\r\n", el.Value + 1, el.Key));
+                    scrptEditor.intParserPrint(String.Format("[Warning] <Internal Parser> Line: {0} : When parsing the procedure '{1}' an unexpected error occurred," +
+                                                             " the construction of the code was not determined.\r\n", el.Value + 1, GetCaseCorrectProcedureName(el.Key)));
                 }
             }
             return procBlockLst;
@@ -543,7 +543,7 @@ namespace ScriptEditor.CodeTranslation
                         } else if (j <= procBlock.begin) {
                             procBlock.end = -1; //i -
                             scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}'" +
-                                                                     " of the keyword 'end' was not found.\r\n", procBlock.end + 1, pName));
+                                                                     " of the keyword 'end' was not found.\r\n", procBlock.begin + 1, GetCaseCorrectProcedureName(pName)));
                             return procBlock; // procedure block end is broken
                         }
                     }
@@ -561,8 +561,8 @@ namespace ScriptEditor.CodeTranslation
             }
             procBlock.begin = -1;
             procBlock.end = -1;
-            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing the procedure '{1}' an unexpected error occurred," +
-                                                     " the construction of the code 'begin...end' was not determined.\r\n", procBlock.declar + 1, pName));
+            scrptEditor.intParserPrint(String.Format("[Warning] <Internal Parser> Line: {0} : When parsing the procedure '{1}' an unexpected error occurred," +
+                                                     " the construction of the code was not determined.\r\n", procBlock.declar + 1, GetCaseCorrectProcedureName(pName)));
             return procBlock;
         }
 

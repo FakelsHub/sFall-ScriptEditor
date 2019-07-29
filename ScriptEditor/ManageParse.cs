@@ -268,8 +268,9 @@ namespace ScriptEditor
 
         public void intParserPrint(string info)
         {
-            if (!Settings.enableParser)
-                tbOutputParse.Text = info + tbOutputParse.Text;
+            if (!Settings.enableParser) {
+                tbOutputParse.BeginInvoke((MethodInvoker)(() => tbOutputParse.Text = info + tbOutputParse.Text));
+            }
         }
         #endregion
     }
