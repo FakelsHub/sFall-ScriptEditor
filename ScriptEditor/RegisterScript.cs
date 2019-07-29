@@ -83,6 +83,7 @@ namespace ScriptEditor
         private void AddRow(Entry e)
         {
             dgvScripts.Rows.Add(e, e.row + 1, e.script, e.desc, e.vars, e.name);
+            dgvScripts.Rows[dgvScripts.Rows.Count - 1].Cells[1].ToolTipText = "Unpack script from .dat";
         }
 
         private RegisterScript(string script, string lst, string msg, string header)
@@ -183,6 +184,7 @@ namespace ScriptEditor
                     Save_button_Click(null, null);
                 }
             }
+            UndatFile.selectDatFile = null;
         }
 
         private void Save_button_Click(object sender, EventArgs e)
@@ -358,7 +360,7 @@ namespace ScriptEditor
                     return;
                 }
             }
-            TE.Open(pathScript, TextEditor.OpenType.File, false);
+            TE.Open(pathScript, TextEditor.OpenType.File, false, outputFolder : true);
         }
     }
 }

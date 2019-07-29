@@ -268,7 +268,7 @@ namespace ScriptEditor.CodeTranslation
             return err;
         }
 
-        public string Decompile(string infile)
+        public string Decompile(string infile, bool outputFolder)
         {
             List<string> program = new List<string>{ "int2ssl.exe", "int2ssl_v35.exe" };
             if (Settings.oldDecompile)
@@ -297,7 +297,7 @@ namespace ScriptEditor.CodeTranslation
             sfDecomp.Title = "Enter name to save decompile file";
             sfDecomp.Filter = "Script files|*.ssl";
             sfDecomp.RestoreDirectory = true;
-            sfDecomp.InitialDirectory = Path.GetDirectoryName(infile);
+            sfDecomp.InitialDirectory = (!outputFolder || Settings.outputDir == null) ? Path.GetDirectoryName(infile) : Settings.outputDir;
             sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
             string result;
             if (sfDecomp.ShowDialog() == DialogResult.OK)

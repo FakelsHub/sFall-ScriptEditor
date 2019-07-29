@@ -25,10 +25,16 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterScript));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterScript));
             this.dgvScripts = new System.Windows.Forms.DataGridView();
+            this.EntryCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cLine = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.cScript = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cVars = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox = new System.Windows.Forms.GroupBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
@@ -47,12 +53,6 @@
             this.Downbutton = new System.Windows.Forms.ToolStripButton();
             this.FindtextBox = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.EntryCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cLine = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.cScript = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cVars = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvScripts)).BeginInit();
             this.groupBox.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -90,10 +90,66 @@
             this.dgvScripts.RowHeadersVisible = false;
             this.dgvScripts.RowHeadersWidth = 30;
             this.dgvScripts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvScripts.Size = new System.Drawing.Size(527, 454);
+            this.dgvScripts.Size = new System.Drawing.Size(724, 453);
             this.dgvScripts.TabIndex = 0;
             this.dgvScripts.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvScripts_CellClick);
             this.dgvScripts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvScripts_CellContentClick);
+            // 
+            // EntryCol
+            // 
+            this.EntryCol.HeaderText = "Entry";
+            this.EntryCol.Name = "EntryCol";
+            this.EntryCol.ReadOnly = true;
+            this.EntryCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.EntryCol.Visible = false;
+            this.EntryCol.Width = 10;
+            // 
+            // cLine
+            // 
+            this.cLine.HeaderText = "Script #";
+            this.cLine.Name = "cLine";
+            this.cLine.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.cLine.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.cLine.ToolTipText = "Script ID";
+            this.cLine.Width = 50;
+            // 
+            // cScript
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.cScript.DefaultCellStyle = dataGridViewCellStyle2;
+            this.cScript.HeaderText = "Script File";
+            this.cScript.Name = "cScript";
+            this.cScript.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.cScript.Width = 90;
+            // 
+            // cDescription
+            // 
+            this.cDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.cDescription.FillWeight = 70F;
+            this.cDescription.HeaderText = "Descriptions";
+            this.cDescription.Name = "cDescription";
+            this.cDescription.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // cVars
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cVars.DefaultCellStyle = dataGridViewCellStyle3;
+            this.cVars.HeaderText = "LVars:";
+            this.cVars.Name = "cVars";
+            this.cVars.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.cVars.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cVars.ToolTipText = "Local Variables";
+            this.cVars.Width = 40;
+            // 
+            // cName
+            // 
+            this.cName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.cName.FillWeight = 30F;
+            this.cName.HeaderText = "Script Name";
+            this.cName.Name = "cName";
+            this.cName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.cName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.cName.ToolTipText = "Script game name in scrname.msg";
             // 
             // groupBox
             // 
@@ -104,7 +160,7 @@
             this.groupBox.Location = new System.Drawing.Point(3, 54);
             this.groupBox.Name = "groupBox";
             this.groupBox.Padding = new System.Windows.Forms.Padding(6);
-            this.groupBox.Size = new System.Drawing.Size(539, 479);
+            this.groupBox.Size = new System.Drawing.Size(736, 478);
             this.groupBox.TabIndex = 1;
             this.groupBox.TabStop = false;
             this.groupBox.Text = "Scripts List";
@@ -123,7 +179,7 @@
             this.DefinetextBox.Enabled = false;
             this.DefinetextBox.Location = new System.Drawing.Point(185, 29);
             this.DefinetextBox.Name = "DefinetextBox";
-            this.DefinetextBox.Size = new System.Drawing.Size(300, 20);
+            this.DefinetextBox.Size = new System.Drawing.Size(497, 20);
             this.DefinetextBox.TabIndex = 7;
             // 
             // AllowCheckBox
@@ -132,7 +188,7 @@
             this.AllowCheckBox.AutoSize = true;
             this.AllowCheckBox.Enabled = false;
             this.AllowCheckBox.ForeColor = System.Drawing.Color.Firebrick;
-            this.AllowCheckBox.Location = new System.Drawing.Point(491, 30);
+            this.AllowCheckBox.Location = new System.Drawing.Point(688, 30);
             this.AllowCheckBox.Name = "AllowCheckBox";
             this.AllowCheckBox.Size = new System.Drawing.Size(51, 17);
             this.AllowCheckBox.TabIndex = 8;
@@ -165,7 +221,7 @@
             this.toolStripLabel1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(545, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(742, 25);
             this.toolStrip1.TabIndex = 10;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -265,67 +321,11 @@
             this.toolStripLabel1.Name = "toolStripLabel1";
             this.toolStripLabel1.Size = new System.Drawing.Size(20, 16);
             // 
-            // EntryCol
-            // 
-            this.EntryCol.HeaderText = "Entry";
-            this.EntryCol.Name = "EntryCol";
-            this.EntryCol.ReadOnly = true;
-            this.EntryCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.EntryCol.Visible = false;
-            this.EntryCol.Width = 10;
-            // 
-            // cLine
-            // 
-            this.cLine.HeaderText = "Script #";
-            this.cLine.Name = "cLine";
-            this.cLine.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.cLine.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.cLine.ToolTipText = "Script ID";
-            this.cLine.Width = 50;
-            // 
-            // cScript
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.cScript.DefaultCellStyle = dataGridViewCellStyle2;
-            this.cScript.HeaderText = "Script File";
-            this.cScript.Name = "cScript";
-            this.cScript.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.cScript.Width = 90;
-            // 
-            // cDescription
-            // 
-            this.cDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.cDescription.FillWeight = 70F;
-            this.cDescription.HeaderText = "Descriptions";
-            this.cDescription.Name = "cDescription";
-            this.cDescription.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            // 
-            // cVars
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.cVars.DefaultCellStyle = dataGridViewCellStyle3;
-            this.cVars.HeaderText = "LVars:";
-            this.cVars.Name = "cVars";
-            this.cVars.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.cVars.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cVars.ToolTipText = "Local Variables";
-            this.cVars.Width = 40;
-            // 
-            // cName
-            // 
-            this.cName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.cName.FillWeight = 30F;
-            this.cName.HeaderText = "Script Name";
-            this.cName.Name = "cName";
-            this.cName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.cName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.cName.ToolTipText = "Script game name in scrname.msg";
-            // 
             // RegisterScript
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(545, 536);
+            this.ClientSize = new System.Drawing.Size(742, 535);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.AllowCheckBox);
             this.Controls.Add(this.DefinetextBox);

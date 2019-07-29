@@ -336,7 +336,7 @@ namespace ScriptEditor
         public enum OpenType { None, File, Text }
 
         public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false,
-                            bool seltab = true, bool commandline = false, bool fcdOpen = false, bool alreadyOpen = true)
+                            bool seltab = true, bool commandline = false, bool fcdOpen = false, bool alreadyOpen = true, bool outputFolder = false)
         {
             if (type == OpenType.File) {
                 if (!Path.IsPathRooted(file))
@@ -367,7 +367,7 @@ namespace ScriptEditor
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     if (!this.Focused)
                         ShowMe();
-                    string decomp = new Compiler().Decompile(file);
+                    string decomp = new Compiler().Decompile(file, outputFolder);
                     if (decomp == null) {
                         MessageBox.Show("Decompilation of '" + file + "' was not successful", "Error");
                         return null;
@@ -1984,7 +1984,7 @@ namespace ScriptEditor
                 renameToolStripMenuItem.Visible = true;
                 renameToolStripMenuItem.Text = "Rename";
                 renameToolStripMenuItem.Enabled = false;
-                renameToolStripMenuItem.ToolTipText = (currentTab.needsParse)? "Waiting get parsing data..." : ""; 
+                renameToolStripMenuItem.ToolTipText = (currentTab.needsParse) ? "Waiting get parsing data..." : ""; 
             }
             //openIncludeToolStripMenuItem.Enabled = false;
             findReferencesToolStripMenuItem.Enabled = false;
