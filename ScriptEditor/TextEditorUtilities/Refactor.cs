@@ -166,14 +166,17 @@ namespace ScriptEditor.TextEditorUtilities
                         break;
                 }
             }
-
             int differ = newName.Length - proc.name.Length;
-            
+
             string search = "[=,@ ]" + proc.name + "[ ,;()\\s]";
             RegexOptions option = RegexOptions.Multiline | RegexOptions.IgnoreCase;
             Regex s_regex = new Regex(search, option);
-            Utilities.ReplaceDocumentText(s_regex, document, newName, differ);
-            
+
+            if (proc.References().Length == 0)
+                Utilities.ReplaceDocumentText(s_regex, document, newName, differ);
+            else //replace by reference
+                Utilities.ReplaceDocumentRefText(s_regex, document, proc, newName, differ);
+
             // replace to other file/tabs
             if (extFile) {
                 string text = System.IO.File.ReadAllText(proc.fstart);

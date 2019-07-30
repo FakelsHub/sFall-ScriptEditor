@@ -211,11 +211,11 @@ namespace ScriptEditor
                             parserLabel.Text = (!tab.parseInfo.parseError) ? "Parser: Complete" : "Parser: Script syntax error (see parser errors log)";
                         else
                             parserLabel.Text = parseoff + " [Get only macros]";
-                        tab.needsParse = false;
                     } else {
                         parserLabel.Text = (Settings.enableParser) ? "Parser: Failed script parsing (see parser errors log)" : parseoff + " [Get only macros]";
                         //currentTab.needsParse = true; // требуется обновление
                     }
+                    tab.needsParse = false;
                 } else {
                     parserLabel.Text = (Settings.enableParser) ? "Parser: Get only local macros" : parseoff;
                 }

@@ -793,6 +793,37 @@ namespace ScriptEditor.TextEditorUtilities
             document.UndoStack.EndUndoGroup();
         }
 
+        public static void ReplaceDocumentRefText(Regex s_regex, IDocument document, IParserInfo pi, string newText, int differ)
+        {
+            int replace_count = 0;
+            MatchCollection matches = s_regex.Matches(document.TextContent);
+
+            List<Match> match = new List<Match>();
+            bool decl =false, define = false;
+            
+            foreach (var refer in pi.References()) {
+                foreach (Match m in matches) {
+                    int line = document.OffsetToPosition(m.Index).Line + 1;
+                    if (refer.line == line) {
+                        match.Add(m);
+                    } else if (!decl && ((Procedure)pi).d.declared == line) {
+                        match.Add(m);
+                        decl = true;
+                    } else if (!define && ((Procedure)pi).d.defined == line) {
+                        match.Add(m);
+                        define = true;
+                    }
+                }
+            }
+            document.UndoStack.StartUndoGroup();
+            foreach (Match m in match) {
+                 int offset = (differ * replace_count) + (m.Index + 1);
+                 document.Replace(offset, (m.Length - 2), newText);
+                 replace_count++;
+            }
+            document.UndoStack.EndUndoGroup();
+        }
+
         internal static string GetProcedureCode(IDocument document, Procedure curProc)
         {
             if (curProc.d.start == -1 || curProc.d.end == -1) // for imported or w/o body procedure
