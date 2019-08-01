@@ -104,6 +104,7 @@ namespace ScriptEditor.CodeTranslation
             
             return (usePreprocess)
                 + ("-O" + Settings.optimize + " ")
+                + ((Settings.compileBackwardMode > 0) ? "-b " : "")
                 + (Settings.showWarnings ? "" : "-n ")
                 + (Settings.showDebug ? "-d " : "")
                 + ("-l ") /* always no logo */
@@ -132,10 +133,19 @@ namespace ScriptEditor.CodeTranslation
                      + ((preprocess) ? " -P" : string.Empty));
         }
 
-        private string GetCommandLine(string infile, bool shortCircuit) { 
+        private string GetCommandLine(string infile, string sourceDir, bool shortCircuit) {
+            sourceDir = " \"" + sourceDir + "\"";
+            string headers = (Settings.pathHeadersFiles != null) 
+                            ? "\"" + Settings.pathHeadersFiles + "\"" : "..\\";
+            string output = (!Settings.ignoreCompPath && Settings.outputDir != null)
+                            ? " \"" + Settings.outputDir + "\"" : sourceDir;
+
             return ("\"" + infile + "\" "
-                    + ((Settings.pathHeadersFiles != null) ? Settings.pathHeadersFiles : "..\\")
-                    + " -d" + (Settings.preprocDef ?? string.Empty) 
+                    + headers
+                    + output
+                    + " " + (Settings.preprocDef ?? "0")
+                    + " " + (Settings.optimize)
+                    + sourceDir
                     + ((Settings.shortCircuit || shortCircuit) ? " -s" : string.Empty));
         }
 #endif
@@ -169,7 +179,8 @@ namespace ScriptEditor.CodeTranslation
             output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n" + new String('-', 22);
             if (Settings.userCmdCompile && !preprocessOnly) {
                 batPath = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
-                ProcessStartInfo upsi = new ProcessStartInfo(batPath, GetCommandLine(infile, shortCircuit));
+                ProcessStartInfo upsi = new ProcessStartInfo(batPath, GetCommandLine(infile, sourceDir, shortCircuit));
+                if (Encoding.Default.WindowsCodePage == 1251) upsi.StandardOutputEncoding = Encoding.GetEncoding("cp866");
                 success = RunProcess(upsi, Settings.ResourcesFolder, ref output);
             } else {
                 // use external preprocessor

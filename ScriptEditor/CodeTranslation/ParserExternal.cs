@@ -15,7 +15,7 @@ namespace ScriptEditor.CodeTranslation
         #region Imports from SSLC DLL
 
         [DllImport("resources\\parser.dll")]
-        private static extern int parse_main(string file, string orig, string dir, string def);
+        private static extern int parse_main(string file, string orig, string dir, string def, Int32 backMode);
         [DllImport("resources\\parser.dll")]
         private static extern int numProcs();
         [DllImport("resources\\parser.dll")]
@@ -75,7 +75,7 @@ namespace ScriptEditor.CodeTranslation
                 string includePath = (Settings.overrideIncludesPath) ? Settings.pathHeadersFiles : null;
                 try {
                     lastStatus = parse_main(parserPath, filepath, (includePath ?? Path.GetDirectoryName(filepath)),
-                                            Settings.preprocDef ?? String.Empty);
+                                            Settings.preprocDef ?? String.Empty, Settings.compileBackwardMode);
                 } catch {
                     lastStatus = 3;
                     MessageBox.Show("An unexpected error occurred while parsing text of the script.\n" +

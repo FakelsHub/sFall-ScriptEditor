@@ -28,7 +28,7 @@
             System.Windows.Forms.Label label4;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
             this.cbWarnings = new System.Windows.Forms.CheckBox();
-            this.cbUseMcpp = new System.Windows.Forms.CheckBox();
+            this.cbUseBackward = new System.Windows.Forms.CheckBox();
             this.cbIncludePath = new System.Windows.Forms.CheckBox();
             this.bChange = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -48,7 +48,6 @@
             this.cbAutocomplete = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.cbParserWarn = new System.Windows.Forms.CheckBox();
-            this.cbWatcom = new System.Windows.Forms.CheckBox();
             this.cbCompilePath = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.msgPathlistView = new System.Windows.Forms.ListView();
@@ -73,6 +72,7 @@
             this.cbShortDesc = new System.Windows.Forms.CheckBox();
             this.cbFonts = new System.Windows.Forms.ComboBox();
             this.cbStorePosition = new System.Windows.Forms.CheckBox();
+            this.cmbPreprocessor = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -118,7 +118,7 @@
             // cbWarnings
             // 
             this.cbWarnings.AutoSize = true;
-            this.cbWarnings.Location = new System.Drawing.Point(6, 44);
+            this.cbWarnings.Location = new System.Drawing.Point(6, 67);
             this.cbWarnings.Name = "cbWarnings";
             this.cbWarnings.Size = new System.Drawing.Size(71, 17);
             this.cbWarnings.TabIndex = 0;
@@ -126,18 +126,17 @@
             this.toolTip.SetToolTip(this.cbWarnings, "Show compiler and preprocessor warning messages.");
             this.cbWarnings.UseVisualStyleBackColor = true;
             // 
-            // cbUseMcpp
+            // cbUseBackward
             // 
-            this.cbUseMcpp.AutoSize = true;
-            this.cbUseMcpp.Location = new System.Drawing.Point(6, 67);
-            this.cbUseMcpp.Name = "cbUseMcpp";
-            this.cbUseMcpp.Size = new System.Drawing.Size(97, 17);
-            this.cbUseMcpp.TabIndex = 1;
-            this.cbUseMcpp.Text = "External MCPP";
-            this.toolTip.SetToolTip(this.cbUseMcpp, "Use the external preprocessor \'mcpp\' instead of the built-in sfall compiler.\r\nNot" +
-                    "e. If you have problems with preprocessing the script during compilation, unchec" +
-                    "k this option.");
-            this.cbUseMcpp.UseVisualStyleBackColor = true;
+            this.cbUseBackward.AutoSize = true;
+            this.cbUseBackward.Location = new System.Drawing.Point(6, 44);
+            this.cbUseBackward.Name = "cbUseBackward";
+            this.cbUseBackward.Size = new System.Drawing.Size(124, 17);
+            this.cbUseBackward.TabIndex = 1;
+            this.cbUseBackward.Text = "Use backward mode";
+            this.toolTip.SetToolTip(this.cbUseBackward, "Switches the sfall compiler to backward compatibility with the BIS compiler.\r\nThi" +
+                    "s will allow compile old scripts (w/o sfall functions) without the need to editing the script.");
+            this.cbUseBackward.UseVisualStyleBackColor = true;
             // 
             // cbIncludePath
             // 
@@ -249,7 +248,7 @@
             "Basic",
             "Full",
             "Experimental"});
-            this.cbOptimize.Location = new System.Drawing.Point(148, 17);
+            this.cbOptimize.Location = new System.Drawing.Point(148, 42);
             this.cbOptimize.Name = "cbOptimize";
             this.cbOptimize.Size = new System.Drawing.Size(95, 21);
             this.cbOptimize.TabIndex = 15;
@@ -258,7 +257,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(249, 21);
+            this.label6.Location = new System.Drawing.Point(249, 46);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(64, 13);
             this.label6.TabIndex = 16;
@@ -294,7 +293,7 @@
             // cbShortCircuit
             // 
             this.cbShortCircuit.AutoSize = true;
-            this.cbShortCircuit.Location = new System.Drawing.Point(148, 44);
+            this.cbShortCircuit.Location = new System.Drawing.Point(148, 67);
             this.cbShortCircuit.Name = "cbShortCircuit";
             this.cbShortCircuit.Size = new System.Drawing.Size(134, 17);
             this.cbShortCircuit.TabIndex = 20;
@@ -343,18 +342,6 @@
             this.cbParserWarn.Text = "Warnings";
             this.toolTip.SetToolTip(this.cbParserWarn, "Show parser warnings messages.");
             this.cbParserWarn.UseVisualStyleBackColor = false;
-            // 
-            // cbWatcom
-            // 
-            this.cbWatcom.AutoSize = true;
-            this.cbWatcom.Location = new System.Drawing.Point(148, 67);
-            this.cbWatcom.Name = "cbWatcom";
-            this.cbWatcom.Size = new System.Drawing.Size(130, 17);
-            this.cbWatcom.TabIndex = 21;
-            this.cbWatcom.Text = "Watcom preprocessor";
-            this.toolTip.SetToolTip(this.cbWatcom, "Use the OpenWatcom C32 preprocessor instead of MCPP before compiling the script.");
-            this.cbWatcom.UseVisualStyleBackColor = true;
-            this.cbWatcom.CheckedChanged += new System.EventHandler(this.cbWatcom_CheckedChanged);
             // 
             // cbCompilePath
             // 
@@ -471,10 +458,10 @@
             this.cbUserCompile.AutoSize = true;
             this.cbUserCompile.Location = new System.Drawing.Point(6, 20);
             this.cbUserCompile.Name = "cbUserCompile";
-            this.cbUserCompile.Size = new System.Drawing.Size(116, 17);
+            this.cbUserCompile.Size = new System.Drawing.Size(145, 17);
             this.cbUserCompile.TabIndex = 22;
-            this.cbUserCompile.Text = "Compile from batch";
-            this.toolTip.SetToolTip(this.cbUserCompile, "Use batch file (UserComp.bat from resources folder) to compile scripts files.");
+            this.cbUserCompile.Text = "Use batch file to compile ";
+            this.toolTip.SetToolTip(this.cbUserCompile, "Compiling the script through the custom UserComp.bat batch file.");
             this.cbUserCompile.UseVisualStyleBackColor = true;
             this.cbUserCompile.CheckedChanged += new System.EventHandler(this.cbUserCompile_CheckedChanged);
             // 
@@ -495,8 +482,7 @@
             this.HintLang_comboBox.FormattingEnabled = true;
             this.HintLang_comboBox.Items.AddRange(new object[] {
             "English",
-            "Russian",
-            "Chinese"});
+            "Russian"});
             this.HintLang_comboBox.Location = new System.Drawing.Point(153, 122);
             this.HintLang_comboBox.Name = "HintLang_comboBox";
             this.HintLang_comboBox.Size = new System.Drawing.Size(95, 21);
@@ -585,7 +571,7 @@
             // 
             this.cbDebug.AutoSize = true;
             this.cbDebug.BackColor = System.Drawing.SystemColors.Control;
-            this.cbDebug.Location = new System.Drawing.Point(82, 44);
+            this.cbDebug.Location = new System.Drawing.Point(82, 67);
             this.cbDebug.Name = "cbDebug";
             this.cbDebug.Size = new System.Drawing.Size(58, 17);
             this.cbDebug.TabIndex = 23;
@@ -645,14 +631,30 @@
                     " that the next time you open the script document, goto that position.");
             this.cbStorePosition.UseVisualStyleBackColor = true;
             // 
+            // cmbPreprocessor
+            // 
+            this.cmbPreprocessor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreprocessor.DropDownWidth = 180;
+            this.cmbPreprocessor.FormattingEnabled = true;
+            this.cmbPreprocessor.Items.AddRange(new object[] {
+            "Internal MCPP (built-in sfall compiler)",
+            "External MCPP",
+            "OpenWatcom C32 preprocessor"});
+            this.cmbPreprocessor.Location = new System.Drawing.Point(148, 13);
+            this.cmbPreprocessor.Name = "cmbPreprocessor";
+            this.cmbPreprocessor.Size = new System.Drawing.Size(165, 21);
+            this.cmbPreprocessor.TabIndex = 24;
+            this.toolTip.SetToolTip(this.cmbPreprocessor, "Uses another preprocessor instead of the built-in sfall compiler.\r\nNote: Try diff" +
+                    "erent preprocessors if you have problems with pre-processing the script during compilation.");
+            // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cmbPreprocessor);
             this.groupBox1.Controls.Add(this.cbDebug);
             this.groupBox1.Controls.Add(this.cbUserCompile);
-            this.groupBox1.Controls.Add(this.cbWatcom);
             this.groupBox1.Controls.Add(this.cbShortCircuit);
             this.groupBox1.Controls.Add(this.cbWarnings);
-            this.groupBox1.Controls.Add(this.cbUseMcpp);
+            this.groupBox1.Controls.Add(this.cbUseBackward);
             this.groupBox1.Controls.Add(this.cbMultiThread);
             this.groupBox1.Controls.Add(this.cbWarnFailedCompile);
             this.groupBox1.Controls.Add(this.label6);
@@ -847,7 +849,7 @@
         #endregion
 
         private System.Windows.Forms.CheckBox cbWarnings;
-        private System.Windows.Forms.CheckBox cbUseMcpp;
+        private System.Windows.Forms.CheckBox cbUseBackward;
         private System.Windows.Forms.CheckBox cbIncludePath;
         private System.Windows.Forms.Button bChange;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
@@ -873,7 +875,6 @@
         private System.Windows.Forms.ComboBox Highlight_comboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox cbParserWarn;
-        private System.Windows.Forms.CheckBox cbWatcom;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox cbCompilePath;
         private System.Windows.Forms.ContextMenuStrip MsgcontextMenu;
@@ -899,5 +900,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.CheckBox cbStorePosition;
+        private System.Windows.Forms.ComboBox cmbPreprocessor;
     }
 }

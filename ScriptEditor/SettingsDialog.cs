@@ -15,7 +15,15 @@ namespace ScriptEditor
             scriptsHPath = Settings.pathScriptsHFile;
             headersFilesPath = Settings.pathHeadersFiles;
             InitializeComponent();
-            cbUseMcpp.Checked = Settings.useMcpp;
+
+            if (Settings.useMcpp) 
+                cmbPreprocessor.SelectedIndex = 1;
+            else if (Settings.useWatcom)
+                cmbPreprocessor.SelectedIndex = 2;
+            else
+                cmbPreprocessor.SelectedIndex = 0;
+
+            cbUseBackward.Checked = (Settings.compileBackwardMode > 0);
             cbIncludePath.Checked = Settings.overrideIncludesPath;
             cbOptimize.SelectedIndex = (Settings.optimize == 255 ? 1 : Settings.optimize);
             cbWarnings.Checked = Settings.showWarnings;
@@ -35,7 +43,6 @@ namespace ScriptEditor
             HintLang_comboBox.SelectedIndex = Settings.hintsLang;
             if (!Settings.enableParser) cbParserWarn.Enabled = false;
             cbParserWarn.Checked = Settings.parserWarn;
-            cbWatcom.Checked = Settings.useWatcom;
             cbCompilePath.Checked = Settings.ignoreCompPath;
             cbUserCompile.Checked = Settings.userCmdCompile;
             cbAssociateID.Checked = Settings.associateID;
@@ -68,8 +75,17 @@ namespace ScriptEditor
         }
 
         private void SettingsDialog_FormClosing(object sender, FormClosingEventArgs e)
-        {            
-            Settings.useMcpp = cbUseMcpp.Checked;
+        {
+            Settings.useMcpp = false;
+            Settings.useWatcom = false;
+            switch (cmbPreprocessor.SelectedIndex) {
+            case 1 :
+                Settings.useMcpp = true;
+                break;
+            case 2 :
+                Settings.useWatcom = true;
+                break;
+            }
             Settings.overrideIncludesPath = cbIncludePath.Checked;
             Settings.optimize = (byte)cbOptimize.SelectedIndex;
             Settings.showDebug = cbDebug.Checked;
@@ -83,8 +99,7 @@ namespace ScriptEditor
             Settings.language = tbLanguage.Text.Length == 0 ? "english" : tbLanguage.Text;
             Settings.tabsToSpaces = cbTabsToSpaces.Checked;
             Settings.tabSize = (int)tbTabSize.Value;
-            if (Settings.tabSize < 1 || Settings.tabSize > 30)
-                Settings.tabSize = 3;
+            if (Settings.tabSize < 1 || Settings.tabSize > 30) Settings.tabSize = 3;
 
             Settings.enableParser = cbEnableParser.Checked;
             Settings.shortCircuit = cbShortCircuit.Checked;
@@ -94,7 +109,6 @@ namespace ScriptEditor
             Settings.highlight = (byte)Highlight_comboBox.SelectedIndex;
             Settings.hintsLang = (byte)HintLang_comboBox.SelectedIndex;
             Settings.parserWarn = cbParserWarn.Checked;
-            Settings.useWatcom = cbWatcom.Checked;
             Settings.ignoreCompPath = cbCompilePath.Checked;
             Settings.userCmdCompile = cbUserCompile.Checked;
             Settings.associateID = cbAssociateID.Checked;
@@ -103,6 +117,7 @@ namespace ScriptEditor
             Settings.msgListPath.Clear();
             Settings.selectFont= (byte)cbFonts.SelectedIndex;
             Settings.storeLastPosition = cbStorePosition.Checked;
+            Settings.compileBackwardMode = cbUseBackward.Checked ? 1 : 0;
 
             foreach (ListViewItem item in msgPathlistView.Items)
                 Settings.msgListPath.Add(item.Text);
@@ -193,11 +208,9 @@ namespace ScriptEditor
 
         private void cbUserCompile_CheckedChanged(object sender, EventArgs e)
         {
-            cbCompilePath.Enabled = !cbUserCompile.Checked;
-            textBox2.Enabled = !cbUserCompile.Checked & !cbCompilePath.Checked;;
-            cbWatcom.Enabled = !cbUserCompile.Checked;
-            //cbOptimize.Enabled = !cbUserCompile.Checked;
-            cbUseMcpp.Enabled = !cbUserCompile.Checked & !cbWatcom.Checked;
+            //cbCompilePath.Enabled = !cbUserCompile.Checked;
+            //textBox2.Enabled = !cbUserCompile.Checked & !cbCompilePath.Checked;
+            cmbPreprocessor.Enabled = !cbUserCompile.Checked;
         }
 
         private void bHeaders_Click(object sender, EventArgs e)
@@ -210,11 +223,6 @@ namespace ScriptEditor
                     scriptsHPath = headersFilesPath + @"\SCRIPTS.H";
                 SetLabelText();
             }
-        }
-
-        private void cbWatcom_CheckedChanged(object sender, EventArgs e)
-        {
-            cbUseMcpp.Enabled = !cbWatcom.Checked;
         }
     }
 }

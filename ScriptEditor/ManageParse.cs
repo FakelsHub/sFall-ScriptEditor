@@ -232,12 +232,12 @@ namespace ScriptEditor
             string log = String.Empty;
             if (File.Exists("errors.txt")) {
                 try {
-                    log = File.ReadAllText("errors.txt");
+                    log = File.ReadAllText("errors.txt", System.Text.Encoding.Default);
                     File.Delete("errors.txt");
                 } catch (IOException) {
                     //в случаях ошибки в parser.dll, не освобождается созданный им файл, что приводит к ошибке доступа
                     File.Copy("errors.txt", "parser.log");
-                    log = File.ReadAllText("parser.log");
+                    log = File.ReadAllText("parser.log", System.Text.Encoding.Default);
                     File.Delete("parser.log");
                 }
             }

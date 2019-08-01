@@ -90,6 +90,7 @@ namespace ScriptEditor
         public static bool decompileF1 = false;
         public static bool oldDecompile = false;
         public static bool winAPITextRender = true;
+        public static int compileBackwardMode = 0;
         private static string ExternalEditorExePath;
 
         // for Flowchart
@@ -267,9 +268,9 @@ namespace ScriptEditor
                     if (ExternalEditorExePath.Length == 0)
                         ExternalEditorExePath = null;
                     oldDecompile = br.ReadBoolean();
-                }
-                catch { MessageBox.Show("An error occurred while reading configuration file.\n"
-                                        + "File setting.dat may be in wrong format.", "Setting read error"); 
+                } catch {
+                    MessageBox.Show("An error occurred while reading configuration file.\n"
+                                    + "File setting.dat may be in wrong format.", "Setting read error");
                 }
                 br.Close();
             }
