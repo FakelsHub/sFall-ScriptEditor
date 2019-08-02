@@ -39,7 +39,7 @@
             this.headersFilelistView.BackColor = System.Drawing.SystemColors.Control;
             this.headersFilelistView.Cursor = System.Windows.Forms.Cursors.Hand;
             this.headersFilelistView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.headersFilelistView.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.headersFilelistView.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.headersFilelistView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.headersFilelistView.LabelWrap = false;
             this.headersFilelistView.Location = new System.Drawing.Point(0, 0);
@@ -47,7 +47,7 @@
             this.headersFilelistView.Name = "headersFilelistView";
             this.headersFilelistView.ShowGroups = false;
             this.headersFilelistView.ShowItemToolTips = true;
-            this.headersFilelistView.Size = new System.Drawing.Size(392, 242);
+            this.headersFilelistView.Size = new System.Drawing.Size(452, 269);
             this.headersFilelistView.SmallImageList = this.imageList1;
             this.headersFilelistView.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.headersFilelistView.TabIndex = 0;
@@ -70,7 +70,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(392, 242);
+            this.ClientSize = new System.Drawing.Size(452, 269);
             this.ControlBox = false;
             this.Controls.Add(this.headersFilelistView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;

@@ -2330,6 +2330,8 @@ namespace ScriptEditor {
             this.findDeclerationToolStripMenuItem,
             this.findDefinitionToolStripMenuItem,
             this.findReferencesToolStripMenuItem,
+            this.toolStripSeparator36,
+            this.openIncludeToolStripMenuItem,
             this.toolStripSeparator6,
             this.UpperCaseToolStripMenuItem1,
             this.LowerCaseToolStripMenuItem,
@@ -2341,9 +2343,7 @@ namespace ScriptEditor {
             this.commentTextToolStripMenuItem,
             this.uncommentTextToolStripMenuItem,
             this.AlignToLeftToolStripMenuItem,
-            this.formatingCodeToolStripMenuItem,
-            this.toolStripSeparator36,
-            this.openIncludeToolStripMenuItem});
+            this.formatingCodeToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip1";
             this.editorMenuStrip.Size = new System.Drawing.Size(215, 364);
             this.editorMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.editorMenuStrip_Closed);

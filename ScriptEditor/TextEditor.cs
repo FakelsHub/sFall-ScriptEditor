@@ -301,15 +301,13 @@ namespace ScriptEditor
                 KeepScriptSetting(tabs[i], skip);
             }
 
-            if (bwSyntaxParser.IsBusy) {
-                e.Cancel = true;
-                return;
-            }
+            if (sf != null) sf.Close();
 
-            if (sf != null)
-                sf.Close();
+            while (bwSyntaxParser.IsBusy) System.Threading.Thread.Sleep(50); // Avoid stomping on files while the parser is running
 
             splitContainer3.Panel1Collapsed = true;
+            int dist = this.Height - (this.Height / 4) + 100;
+            Settings.editorSplitterPosition = (splitContainer1.SplitterDistance < dist) ? splitContainer1.SplitterDistance : -1;
             Settings.editorSplitterPosition2 = splitContainer2.SplitterDistance;
             Settings.SaveSettingData(this);
             SyntaxFile.DeleteSyntaxFile();
@@ -807,7 +805,7 @@ namespace ScriptEditor
 
                 UpdateLog();
                 currentHighlightProc = null;
-                UpdateNames();
+                UpdateNames(true);
                 // text editor set focus 
                 currentActiveTextAreaCtrl.Select();
                 ControlFormStateOn_Off();
@@ -880,7 +878,7 @@ namespace ScriptEditor
         }
 
         // Create names for procedures and variables in treeview
-        private void UpdateNames()
+        private void UpdateNames(bool newCreate = false)
         {
             if (currentTab == null || !currentTab.shouldParse || currentTab.parseInfo == null) return;
             
@@ -890,11 +888,27 @@ namespace ScriptEditor
 
             ProcTree.Tag = TreeStatus.update;
             ProcTree.BeginUpdate();
+
+            string scrollNode = null;
+            if (!newCreate && ProcTree.Nodes.Count != 0) {
+                for (int i = ProcTree.Nodes.Count -1; i >= 0; i--)
+                {
+                    if (!ProcTree.Nodes[i].IsExpanded) continue;
+                    for (int j = ProcTree.Nodes[i].Nodes.Count - 1; j >= 0; j--)
+                    {
+                        if (ProcTree.Nodes[i].Nodes[j].IsVisible) {
+                            scrollNode = ProcTree.Nodes[i].Nodes[j].Name;
+                            break;
+                        }
+                    }
+                    if (scrollNode != null) break;
+                }
+            }
             ProcTree.Nodes.Clear();
 
             TreeNode rootNode;
             foreach (var s in TREEPROCEDURES) {
-                rootNode = ProcTree.Nodes.Add(s);
+                rootNode = ProcTree.Nodes.Add(s, s);
                 rootNode.ForeColor = Color.DodgerBlue;
                 rootNode.NodeFont = new Font("Arial", 9F, FontStyle.Bold, GraphicsUnit.Point);
             }
@@ -986,39 +1000,63 @@ namespace ScriptEditor
 
             HighlightCurrentPocedure((currentHighlightProc == null) ? currentActiveTextAreaCtrl.Caret.Line : -2);
             ProcTree.EndUpdate();
+            // scroll to node
+            if (scrollNode != null) {
+                foreach (TreeNode nodes in ProcTree.Nodes) {
+                    foreach (TreeNode node in nodes.Nodes) {
+                        if (node.Name == scrollNode) {
+                            if (node.PrevNode != null) node.PrevNode.EnsureVisible();
+                            scrollNode = null;
+                            break;
+                        }
+                    }
+                    if (scrollNode == null) break;
+                }
+                if (scrollNode != null && currentHighlightNode != null) currentHighlightNode.EnsureVisible();
+            }
             ProcTree.Tag = TreeStatus.idle;
+        }
+
+        private string GetCorrectNodeKeyName(TreeNode node)
+        {
+            string nodeKey = node.FullPath;
+            int n = nodeKey.IndexOf('\\');
+            if (n != -1) nodeKey = nodeKey.Remove(n + 1) + node.Name;
+            return nodeKey;
         }
 
         private void SetNodeCollapseStatus(TreeNode node)
         {
-            if (currentTab.treeExpand.ContainsKey(node.FullPath)) {
-                    if (currentTab.treeExpand[node.FullPath])
+            string nodeKey = GetCorrectNodeKeyName(node);
+            if (currentTab.treeExpand.ContainsKey(nodeKey)) {
+                    if (currentTab.treeExpand[nodeKey])
                         node.Collapse();
                     else
                         node.Expand();
             }
-            foreach (TreeNode nd in node.Nodes)
-                SetNodeCollapseStatus(nd);
+            foreach (TreeNode nd in node.Nodes) SetNodeCollapseStatus(nd);
         }
 
+        bool treeExpandCollapse = false;
         private void TreeExpandCollapse(TreeViewEventArgs e)
         {
             TreeNode tn = e.Node;
-            if (tn == null)
-                return;
+            if (tn == null) return;
 
             bool collapsed = (e.Action == TreeViewAction.Collapse);
-            if (!currentTab.treeExpand.ContainsKey(tn.FullPath))
-                currentTab.treeExpand.Add(tn.FullPath, collapsed);
+            string nodeKey = GetCorrectNodeKeyName(tn);
+            if (!currentTab.treeExpand.ContainsKey(nodeKey))
+                currentTab.treeExpand.Add(nodeKey, collapsed);
             else
-                currentTab.treeExpand[tn.FullPath] = collapsed;
+                currentTab.treeExpand[nodeKey] = collapsed;
+            if (tn.Parent == null) treeExpandCollapse = true;
         }
 
         private void TreeView_DClickMouse(object sender, MouseEventArgs e) {
             if (e.X <= 20) return;
-            TreeNode node = ((TreeView)sender).GetNodeAt(e.Location);
-            if (node == null) return;
-            TreeView_ClickBehavior(node);
+            TreeNode node = (!treeExpandCollapse) ? ((TreeView)sender).GetNodeAt(e.Location) : null;
+            treeExpandCollapse = false;
+            if (node != null) TreeView_ClickBehavior(node);
         }
 
         // Click on node tree Procedures/Variables
@@ -1582,8 +1620,8 @@ namespace ScriptEditor
                     }
                 }
             } else if (Settings.enableParser != p) {
-                parserLabel.Text = "Parser: Enabled (click here for get updated parsing data)";
-                parserLabel.ForeColor = Color.Green;
+                //parserLabel.Text = "Parser: Get updated parsing data...";
+                //parserLabel.ForeColor = Color.Green;
                 foreach (TabInfo t in tabs)
                 {
                     t.treeExpand.Clear();
@@ -1604,11 +1642,12 @@ namespace ScriptEditor
                     }
                 }
             }
-            if (Settings.pathHeadersFiles != null)
-                Headers_toolStripSplitButton.Enabled = true;
+            if (Settings.pathHeadersFiles != null) Headers_toolStripSplitButton.Enabled = true;
             
             autoComplete.Colored = Settings.autocompleteColor;
             autoComplete.UpdateColor();
+
+            if (Settings.enableParser) ParseScript(1);
         }
 
         private void ApplySettingsTabs(bool alsoFont = false)
@@ -2149,10 +2188,11 @@ namespace ScriptEditor
                 showLogWindowToolStripMenuItem.Checked = true;
                 splitContainer1.Panel2Collapsed = false;
             }
-            if (minimizelogsize == 0)
-                return;
-            if (Settings.editorSplitterPosition == -1)
+            if (minimizelogsize == 0) return;
+
+            if (Settings.editorSplitterPosition == -1) {
                 Settings.editorSplitterPosition = Size.Height - (Size.Height / 4);
+            }
             splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
             minimizelogsize = 0;
         }

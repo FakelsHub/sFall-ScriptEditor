@@ -16,7 +16,7 @@ namespace ScriptEditor
     {
         public delegate void ListClickHandler(string hfile);
         public event ListClickHandler SelectHeaderFile;
-        
+
         private Point xy_pos;
         private string hFile;
 
@@ -38,16 +38,18 @@ namespace ScriptEditor
                 this.Size = Settings.HeadersFormSize;
 
             this.xy_pos = xy_pos;
-            
+
             foreach (string file in Directory.GetFiles(Settings.pathHeadersFiles, "*.h", SearchOption.AllDirectories)) {
                 ListViewItem lw = new ListViewItem();
-                lw.ImageIndex=0;
-                lw.Text = Path.GetFileName(file).ToLower();
+                lw.ImageIndex = 0;
+                string fileName = Path.GetFileName(file).ToLowerInvariant();
+                string c = fileName[0].ToString().ToUpperInvariant();
+                lw.Text = fileName.Remove(0, 1).Insert(0, c);
                 lw.Tag = lw.ToolTipText = file;
                 headersFilelistView.Items.Add(lw);
             }
         }
-        
+
         private void Headers_Load(object sender, EventArgs e)
         {
             xy_pos.X += TextEditor.ActiveForm.Bounds.X - (int)(this.Size.Width / 2.5f);
