@@ -59,7 +59,7 @@ namespace ScriptEditor
             DEBUGINFO("First Parse...");
             new ParserInternal(cTab, this);
 
-            while (parserIsRunning) System.Threading.Thread.Sleep(10); // Avoid stomping on files while the parser is running
+            //while (parserIsRunning) System.Threading.Thread.Sleep(10); // Avoid stomping on files while the parser is running
 
             var ExtParser = new ParserExternal(firstParse);
             cTab.parseInfo = ExtParser.Parse(cTab.textEditor.Text, cTab.filepath, cTab.parseInfo);

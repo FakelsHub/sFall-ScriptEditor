@@ -559,35 +559,25 @@ namespace ScriptEditor.TextEditorUtilities
         internal static void SelectedTextColorRegion(TextLocation position, TextAreaControl TAC)
         {
             if (position.IsEmpty) position = TAC.Caret.Position;
+
             HighlightColor hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(position.Column);
-            if (hc == null)
-                return;
-            if (hc.BackgroundColor == ColorTheme.CodeFunctions) {
-                int pos = TextUtilities.SearchBracketForward(TAC.Document, TAC.Caret.Offset + 1, '{', '}');
-                if (TAC.Caret.Offset > pos && TAC.Document.GetCharAt(TAC.Caret.Offset) != '}') return;
-                
-                int sStart= position.Column, sEnd = position.Column + 1;
-                for (int i = sEnd; i < (sEnd + 32); i++)
-                {
-                    hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(i);
-                    if (hc == null || hc.BackgroundColor != ColorTheme.CodeFunctions) {
-                        sEnd = i;
-                        break;
-                    }
+            if (hc != null && hc.BackgroundColor == ColorTheme.CodeFunctions) {
+                int sEnd  = TextUtilities.SearchBracketForward(TAC.Document, TAC.Caret.Offset + 1, '{', '}');
+                char c = TAC.Document.GetCharAt(TAC.Caret.Offset);
+                if (sEnd == -1) {
+                    if (c != '}') return;
+                    sEnd = TAC.Caret.Offset;
                 }
-                for (int i = sStart; i > 0; i--)
-                {
-                    hc = TAC.Document.GetLineSegment(position.Line).GetColorForPosition(i);
-                    if (hc == null || hc.BackgroundColor != ColorTheme.CodeFunctions) {
-                        sStart = i + 1;
-                        break;
-                    }
+                int sStart = TextUtilities.SearchBracketBackward(TAC.Document, TAC.Caret.Offset - 1, '{', '}');
+                if (sStart == -1) {
+                    if (c != '{') return;
+                    sStart = TAC.Caret.Offset;
                 }
-                
-                TextLocation sSel = new TextLocation(sStart, position.Line);
-                int offset = TAC.Document.PositionToOffset(sSel);
-                if (TAC.Document.GetText(offset, sEnd - sStart).IndexOf(':') != -1) return;
-                TextLocation eSel = new TextLocation(sEnd, position.Line);
+                int len = sEnd - sStart;
+                if (len < 2) return;
+                TextLocation sSel = TAC.Document.OffsetToPosition(sStart);
+                TextLocation eSel = TAC.Document.OffsetToPosition(sEnd + 1);
+                if (sSel.Line != eSel.Line || TAC.Document.GetText(sStart, len).IndexOfAny(new char[] { ':', ',' }) != -1) return;
                 TAC.SelectionManager.SetSelection(sSel, eSel);
             }
         }

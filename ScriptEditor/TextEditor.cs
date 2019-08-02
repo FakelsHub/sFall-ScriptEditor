@@ -303,7 +303,10 @@ namespace ScriptEditor
 
             if (sf != null) sf.Close();
 
-            while (bwSyntaxParser.IsBusy) System.Threading.Thread.Sleep(50); // Avoid stomping on files while the parser is running
+            while (bwSyntaxParser.IsBusy) {
+                System.Threading.Thread.Sleep(100); // Avoid stomping on files while the parser is running
+                Application.DoEvents();
+            }
 
             splitContainer3.Panel1Collapsed = true;
             int dist = this.Height - (this.Height / 4) + 100;
@@ -540,8 +543,9 @@ namespace ScriptEditor
                     SaveAs(tab, close);
                     return;
                 }
-                while (parserIsRunning) {
-                    System.Threading.Thread.Sleep(10); //Avoid stomping on files while the parser is running
+                while (bwSyntaxParser.IsBusy) {
+                    System.Threading.Thread.Sleep(50); // Avoid stomping on files while the parser is running
+                    Application.DoEvents();
                 }
 
                 bool msg = false;
@@ -1236,8 +1240,8 @@ namespace ScriptEditor
                 }
             } 
             else if (e.KeyChar == '(' || e.KeyChar == '[' || e.KeyChar == '{') {
-                if (autoComplete.IsVisible)
-                    autoComplete.Close();
+                if (autoComplete.IsVisible) autoComplete.Close();
+                if (e.KeyChar == '{') return;
 
                 if (Settings.showTips && currentTab.parseInfo != null && e.KeyChar == '(') {
                     string word = TextUtilities.GetWordAt(currentDocument, caret.Offset - 1);
@@ -1256,22 +1260,15 @@ namespace ScriptEditor
                 }
 
                 if (Settings.autoInputPaired && Char.IsWhiteSpace(currentDocument.GetCharAt(caret.Offset))) {
-                    string bracket = ")";
-                    if (e.KeyChar == '[')
-                        bracket = "]";
-                    else if (e.KeyChar == '{')
-                        bracket = "}";
+                    string bracket = (e.KeyChar == '[') ? "]" : ")";
                     currentDocument.Insert(caret.Offset, bracket);
                 }
             } else if (e.KeyChar == ')' || e.KeyChar == ']' || e.KeyChar == '}') {
                 if (toolTips.Active) ToolTipsHide();
-
+                if (e.KeyChar == '}') return;
+                
                 if (Settings.autoInputPaired) {
-                    char bracket = '(';
-                    if (e.KeyChar == ']') 
-                        bracket = '[';
-                    else if (e.KeyChar == '}')
-                        bracket = '{';
+                    char bracket = (e.KeyChar == ']') ? '[' : '(';
                     if (currentDocument.GetCharAt(caret.Offset -1) == bracket && currentDocument.GetCharAt(caret.Offset) == e.KeyChar) {
                         currentDocument.Remove(caret.Offset, 1);
                         // TODO BUG: В контроле баг при использовании TextBuffer - стирается строка символов. 
