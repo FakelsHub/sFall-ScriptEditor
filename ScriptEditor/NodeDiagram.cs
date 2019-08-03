@@ -115,17 +115,17 @@ namespace ScriptEditor
             if (File.Exists(fcd)) {
                 fcdFilePath = fcd;
                 LoadFlowchartDiagram();
-            }
-
-            fcd = Path.Combine(Path.GetDirectoryName(sourceTab.filepath), saveFileDialog.DefaultExt, 
-                               Path.GetFileNameWithoutExtension(sourceTab.filepath) + ext);
-            if (File.Exists(fcd)) {
-                fcdFilePath = fcd;
-                LoadFlowchartDiagram();
-            } else {
-                #if DEBUG
-                    CreateCanvasNodes();
-                #endif
+            } else { // fcd sub folder
+                fcd = Path.Combine(Path.GetDirectoryName(sourceTab.filepath), saveFileDialog.DefaultExt,
+                                   Path.GetFileNameWithoutExtension(sourceTab.filepath) + ext);
+                if (File.Exists(fcd)) {
+                    fcdFilePath = fcd;
+                    LoadFlowchartDiagram();
+                } else {
+                    #if DEBUG
+                        CreateCanvasNodes();
+                    #endif
+                }
             }
         }
         #endregion
@@ -752,7 +752,8 @@ namespace ScriptEditor
             }
             // popup show
             msgPopup.RemoveAll();
-            msgPopup.Show(message, nodesCanvas, x, y, 1000 + (len * 25));
+            msgPopup.Tag = message;
+            msgPopup.Show(message, nodesCanvas, x, y, 1000 + (len * 50));
         }
 
         private void CreatetoolStripButton_Click(object sender, EventArgs e)
@@ -1195,6 +1196,11 @@ namespace ScriptEditor
             this.Close();
         }
 
+        private void addEditRulesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ScriptEditor.TextEditorUI.Function.FunctionsRules().ShowDialog(this);
+        }
+
         #region Save/Load Diagram
         private void openDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1277,7 +1283,7 @@ namespace ScriptEditor
                     AddNodeToCanvas(item, ref shiftY, ref shiftX);
                 }
             } 
-            
+
             nodesCanvas.Visible = true;
             nodesCanvas.Refresh();
             MessageFile.ShowMissingFiles();
@@ -1317,7 +1323,7 @@ namespace ScriptEditor
                     else
                         HideNodes.Add(nodeName, canvasitem);
                 } else
-                    MessageBox.Show("Removed a nonexistent node in the script: " + nodeName, "Loading...");
+                    MessageBox.Show("Deleted existing dialog node: " + nodeName + ", that does not exist in the script code.", "Loading...");
 			}
 
 			ni = nav.Select(@"/NodesDiagram/Note");
@@ -1336,7 +1342,17 @@ namespace ScriptEditor
         #region Handles drawing for ToolTip
         private void toolTip_Draw(object sender, DrawToolTipEventArgs e)
         {
-            TipPainter.DrawMessage(e);
+            if (((ToolTip)sender).Tag != null) {
+                TipPainter.DrawSizeMessage(e);
+            } else {
+                TipPainter.DrawMessage(e);
+            }
+        }
+
+        private void msgPopup_Popup(object sender, PopupEventArgs e) {
+            Size sz = TextRenderer.MeasureText((string)msgPopup.Tag, new Font("Arial", 12.0f, FontStyle.Regular, GraphicsUnit.Point));;
+            sz.Height += 6;
+            e.ToolTipSize = sz;
         }
         #endregion
     }

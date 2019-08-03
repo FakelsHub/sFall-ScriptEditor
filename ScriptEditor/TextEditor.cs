@@ -2679,8 +2679,7 @@ namespace ScriptEditor
         #region Dialog System
         private void dialogNodesDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null)
-                return;
+            if (currentTab == null) return;
 
             var tag = tabControl1.TabPages[currentTab.index].Tag;
             if (tag != null) {
@@ -2696,6 +2695,8 @@ namespace ScriptEditor
                 MessageBox.Show(MessageFile.MissingFile, "Nodes Flowchart Editor");
                 return;
             }
+            ScriptEditor.TextEditorUI.Function.DialogFunctionsRules.BuildOpcodesDictionary();
+
             currentTab.msgFilePath = msgPath;
 
             NodeDiagram NodesView = new NodeDiagram(currentTab);
@@ -2714,14 +2715,16 @@ namespace ScriptEditor
 
         private void previewDialogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null)
-                return;
+            if (currentTab == null) return;
 
             string msgPath;
             if (!MessageFile.GetAssociatePath(currentTab, false, out msgPath)) {
                 MessageBox.Show(MessageFile.MissingFile, "Dialog Preview");
                 return;
             }
+
+            ScriptEditor.TextEditorUI.Function.DialogFunctionsRules.BuildOpcodesDictionary();
+
             currentTab.msgFilePath = msgPath;
             DialogPreview DialogView = new DialogPreview(currentTab);
             if (!DialogView.InitReady) {
@@ -2730,6 +2733,11 @@ namespace ScriptEditor
             }
             else
                 DialogView.Show(this);
+        }
+
+        private void dialogFunctionConfigToolStripMenuItem_Click(object sender, EventArgs e) {
+            ScriptEditor.TextEditorUI.Function.DialogFunctionsRules.BuildOpcodesDictionary();
+            new ScriptEditor.TextEditorUI.Function.FunctionsRules().ShowDialog(this);
         }
 
         private void editNodeCodeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2785,6 +2793,5 @@ namespace ScriptEditor
             return null;
         }
         #endregion
-
     }
 }

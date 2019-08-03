@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
-using ICSharpCode.TextEditor.Document;
+using ScriptEditor.TextEditorUI.Function;
 
 namespace ScriptEditor.CodeTranslation
-{    
+{
     public class DialogueParser
     {
         private static readonly char[] trimming = new char[] { ' ', '(', ')' };
         private static readonly char[] digit = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        
+
         private static int nLine;
         private static ProgramInfo pi;
+
+        #region Dialogue Parser class
 
         public int numberMsgLine;       // msg number line
         public int numberMsgFile = -1;  // msg number file, -1 - если используется msg файл по умолчанию
@@ -24,22 +25,25 @@ namespace ScriptEditor.CodeTranslation
         public int codeNumLine;         // номер строки в коде ноды
         public OpcodeType opcode;
 
-        public DialogueParser(OpcodeType opcode, string code, int offset = -1)
+        private static int nextPosition = -1;
+
+        public DialogueParser(OpcodeType opcode, string name, string code, int offset = -1)
         {
             this.opcode = opcode;
             this.code = code;
+            nextPosition = -1;
 
             switch (opcode) {
                 case OpcodeType.Reply:
                 case OpcodeType.Message:
                 case OpcodeType.gsay_reply:
                 case OpcodeType.gsay_message:
-                    ReplyOpcode(code, offset, opcode);
+                    ReplyOpcode(name, code, offset, opcode);
                     break;
                 case OpcodeType.Option:
                 case OpcodeType.gsay_option:
                 case OpcodeType.giq_option:
-                    OptionOpcode(offset, code, opcode);
+                    OptionOpcode(offset, name, code);
                     break;
                 case OpcodeType.call:
                     CallOpcode(code, offset);
@@ -48,184 +52,289 @@ namespace ScriptEditor.CodeTranslation
                     break;
             }
         }
-        
+
         /*
          * gsay_message({int msg_list}, {int msg_num}, {int reaction});
          * gsay_reply({int msg_list}, {int msg_num});
          * Reply/Message
          */
-        private void ReplyOpcode(string code, int offset, OpcodeType opcode)
+        private void ReplyOpcode(string name, string code, int offset, OpcodeType opcode)
         {
             this.codeNumLine = nLine;
-            
-            int x = code.IndexOf(";", offset) - 1;
-            int sOffset = offset - opcode.ToString().Length;
-            try {
-                this.shortcode = code.Substring(sOffset, x + 1  - sOffset);
-                code = code.Substring(++offset, x - offset);
-            } catch {
-                this.opcode = OpcodeType.None;
-                return;
+
+            int x = code.IndexOf(";", offset);
+            if (x < 0) {
+                 nextPosition = offset + 1;
+            } else {
+                nextPosition = x--;
             }
 
-            int z;
-            if (opcode == OpcodeType.gsay_message) {
-                z = code.LastIndexOf(',');
-                code = code.Remove(z);
-            }
-            if (opcode == OpcodeType.gsay_reply || opcode == OpcodeType.gsay_message) {
-                z = code.LastIndexOf(',');
-                if (!int.TryParse(code.Remove(z++).Trim(trimming), out numberMsgFile)) // тут номер файла msg
-                    numberMsgFile = -1; 
-                code = code.Substring(z, code.Length - z); // тут номер строки
+            string lineMsg;
+            if (DialogFunctionsRules.opcodeTemplates.ContainsKey(name)) {
+                OpcodeTemplate template = DialogFunctionsRules.opcodeTemplates[name];
+                if (template.totalArgs > 1) {
+
+                    int z = -1, argsCount = 0;
+                    do {
+                        argsCount++;
+                        z = code.IndexOf(',', ++z);
+                    } while (z > -1);
+                    if (argsCount != template.totalArgs - 1) {
+                        lineMsg = ReplyParseCode(offset, x, name, ref code);
+                    } else {
+                        code = code.Replace(';', ' ');
+                        string[] args = code.Substring(offset + 1).Split(new char[] { ',' }, template.totalArgs + 1);
+                        lineMsg = args[template.msgArg];
+                        if (template.msgFileArg != -1) {
+                            string msgFile = args[template.msgFileArg];
+                            if (!int.TryParse(msgFile.Trim(trimming), out this.numberMsgFile)) this.numberMsgFile = messageSubCode(msgFile); // извлекаем номер файла msg
+                        }
+                    }
+                } else {
+                    int z = code.IndexOf(')', offset);
+                    lineMsg = code.Substring(offset + 1, z - offset);
+                }
+                // получить короткий код
+                if (this.shortcode == null) {
+                    offset -= name.Length;
+                    this.shortcode = this.code.Substring(offset, ((x > -1) ? x : this.code.Length - 1) - offset + 1);
+                }
+            } else {
+                lineMsg = ReplyParseCode(offset, x, name, ref code);
             }
             // msg line number parse
-            if (!int.TryParse(code.Trim(trimming), out numberMsgLine))
-                numberMsgLine = messageSubCode(code); //неудалось получить номер строки, распарсить доп код.
+            if (lineMsg != string.Empty && !int.TryParse(lineMsg.Trim(trimming), out this.numberMsgLine)) this.numberMsgLine = messageSubCode(lineMsg); // неудалось получить номер строки, распарсить доп код.
 
-            if (opcode == OpcodeType.Reply || opcode == OpcodeType.gsay_reply) {
-                toNode = "[Reply]";
+            if (this.opcode == OpcodeType.Reply || this.opcode == OpcodeType.gsay_reply) {
+                this.toNode = "[Reply]";
                 this.opcode = OpcodeType.Reply;
             } else {
-                toNode = "[Message]";
+                this.toNode = "[Message]";
                 this.opcode = OpcodeType.Message;
             }
         }
-            
+
+        private string ReplyParseCode(int offset, int x, string name, ref string code)
+        {
+            // пробуем парсить код
+            if (x < 0) {
+                this.opcode = OpcodeType.None;
+                return string.Empty;
+            }
+            int sOffset = offset - name.Length;
+            this.shortcode = code.Substring(sOffset, x + 1 - sOffset);
+            if (code[x] == ')') x--;
+            try {
+                code = code.Substring(offset + 1, x - offset);
+            } catch {
+                return string.Empty;
+            }
+
+            int z;
+            if (this.opcode == OpcodeType.gsay_message) {
+                z = code.LastIndexOf(',');
+                code = code.Remove(z);
+            }
+            if (this.opcode == OpcodeType.gsay_reply || this.opcode == OpcodeType.gsay_message) {
+                z = code.IndexOf(',');
+                string fileNum = code.Remove(z++);
+                if (!int.TryParse(fileNum.Trim(trimming), out this.numberMsgFile)) { // тут номер файла msg
+                    this.numberMsgFile = messageSubCode(fileNum);
+                }
+                code = code.Substring(z, code.Length - z); // тут номер строки
+            }
+            return code;
+        }
+
         /*
          * gsay_option(msg_list, msg_num,  procedure, reaction);
          * giq_option (iq_test,  msg_list, msg_num,   procedure, reaction);
-         * NOption    (msg_num, procedure, iq_test);
-         * NLowOption (msg_num, procedure);
+         * XOption    (msg_num, procedure, iq_test);
+         * XLowOption (msg_num, procedure);
          */
-        private void OptionOpcode(int offset, string code, OpcodeType opcode)
+        private void OptionOpcode(int offset, string name, string code)
         {
             this.codeNumLine = nLine;
 
-            //prepare code
-            int z = code.IndexOf("(", offset) + 1;
-            int x = code.IndexOf(";", z) - 1;
-            try {                
-                int sOffset = offset - opcode.ToString().Length;
-                this.shortcode = code.Substring(sOffset, x + 1 - sOffset);
-                code = code.Substring(z, x - z);
-            } catch {
-                this.opcode = OpcodeType.None;
-                return;
+            int x = code.IndexOf(";", offset);
+            if (x != -1) {
+                nextPosition = x--;
+            } else {
+                nextPosition = offset + 1;
             }
 
-            z = code.LastIndexOf(',') + 1;
-            switch (opcode) {
-                case OpcodeType.gsay_option :
-                case OpcodeType.giq_option :
-                    // iq param parse
-                    if (opcode == OpcodeType.giq_option) {
-                        x = code.IndexOf(',');
-                        iq = code.Remove(x).Trim(trimming);
-                        code = code.Substring(++x); // удаляем IQ параметр
-                        z -= x;
-                    } else
-                        iq = "-";
-                    
-                    // node param parse
-                    code = code.Remove(z - 1); // удаляем Reaction параметр
-                    z = code.LastIndexOf(',') + 1;
-                    toNode = code.Substring(z, code.Length - z).Trim(trimming).TrimStart('@');
-                    code = code.Remove(z - 1); // удаляем Node параметр
+            string lineMsg;
+            if (DialogFunctionsRules.opcodeTemplates.ContainsKey(name)) {
+                OpcodeTemplate template = DialogFunctionsRules.opcodeTemplates[name];
 
-                    // msg file number parse
-                    z = code.IndexOf(',');
-                    string fileNum = code.Remove(z);
-                    x = fileNum.IndexOf(',') + 1;
-                    if (!int.TryParse(fileNum.Substring(x).Trim(trimming), out numberMsgFile)) {
-                        numberMsgFile = -1;
-                    } else
-                        code = code.Substring(z + 1); // удаляем 
-                    
-                    // msg line number parse
-                    string num = code;
-                    z = num.IndexOf(',');
-                    if (z > 0)
-                        num = num.Remove(z).Trim(trimming);
-                    if (!int.TryParse(num, out numberMsgLine))
-                        numberMsgLine = messageSubCode(code); // распарсить доп код.
-                    break;
-                
-                // for all macros
-                case OpcodeType.Option :
-                    // iq/node param parse
-                    int result;
-                    string str = code.Substring(z).Trim(trimming);
-                    if (int.TryParse(str, out result)){
-                        iq = result.ToString();
-                        code = code.Remove(z - 1);
-                    } else
-                        toNode = str.TrimStart('@');
+                int z = -1, argsCount = 0;
+                do {
+                    argsCount++;
+                    z = code.IndexOf(',', ++z);
+                } while (z > -1);
+                if (argsCount != template.totalArgs) {
+                    lineMsg = ParseOptionCode(offset, x, name, ref code);
+                } else {
+                    code = code.Replace(';', ' ');
+                    string[] args = code.Substring(offset + 1).Split(new char[] {','}, template.totalArgs + 1);
 
-                    // node param parse
-                    if (toNode == null) {
-                        int y = code.LastIndexOf(',') + 1;
-                        toNode = code.Substring(y, --z - y).Trim(trimming).TrimStart('@');
-                        z = y;
+                    lineMsg = args[template.msgArg];
+                    this.toNode = args[template.nodeArg].Trim(trimming).TrimStart('@');
+
+                    if (template.msgFileArg != -1) {
+                        string msgFile = args[template.msgFileArg];
+                        if (!int.TryParse(msgFile.Trim(trimming), out this.numberMsgFile)) this.numberMsgFile = messageSubCode(msgFile); // извлекаем номер файла msg
                     }
-                    code = code.Remove(z - 1); // удаляем Node параметр
-
-                    // msg line number parse
-                    if (!int.TryParse(code.Trim(trimming), out numberMsgLine))
-                        numberMsgLine = messageSubCode(code); // распарсить доп код.
-                    break;
+                    if (template.iqArg != -1) {
+                        int iq;
+                        if (int.TryParse(args[template.iqArg].Trim(trimming), out iq)) {
+                            this.iq = iq.ToString();
+                        }
+                    } else {
+                        this.iq = "-";
+                    }
+                    // получить короткий код
+                    offset -= name.Length;
+                    this.shortcode = code.Substring(offset, ((x > -1) ? x : code.Length - 1) - offset + 1);
+                    code = args[template.msgArg];
+                }
+            } else {
+                lineMsg = ParseOptionCode(offset, x, name, ref code);
             }
+            // msg line number parse
+            if (lineMsg != string.Empty && !int.TryParse(lineMsg.Trim(trimming), out this.numberMsgLine)) this.numberMsgLine = messageSubCode(code); // распарсить доп код
+        }
+
+        private string ParseOptionCode(int offset, int x, string name, ref string code)
+        {
+            // prepare code
+            //int z = code.IndexOf("(", offset) + 1;
+            if (x < offset) {
+                this.opcode = OpcodeType.None;
+                return string.Empty;
+            }
+            int sOffset = offset - name.Length;
+            this.shortcode = code.Substring(sOffset, x + 1 - sOffset);
+            try {
+                code = code.Substring(++offset, x - offset);
+            } catch {
+                return string.Empty;
+            }
+            int z = code.LastIndexOf(',') + 1;
+
+            string msgNum = string.Empty;
+
+            switch (this.opcode) {
+            case OpcodeType.gsay_option:
+            case OpcodeType.giq_option:
+                // iq param parse
+                if (this.opcode == OpcodeType.giq_option) {
+                    x = code.IndexOf(',');
+                    this.iq = code.Remove(x).Trim(trimming);
+                    code = code.Substring(++x); // удаляем IQ параметр
+                    z -= x;
+                } else {
+                    this.iq = "-";
+                }
+
+                // node param parse
+                code = code.Remove(z - 1); // удаляем Reaction параметр
+                z = code.LastIndexOf(',') + 1;
+                this.toNode = code.Substring(z, code.Length - z).Trim(trimming).TrimStart('@');
+                code = code.Remove(z - 1); // удаляем Node параметр
+
+                // msg file number parse
+                z = code.IndexOf(',');
+                string fileNum = code.Remove(z);
+                x = fileNum.IndexOf(',') + 1;
+                if (!int.TryParse(fileNum.Substring(x).Trim(trimming), out this.numberMsgFile)) {
+                    this.numberMsgFile = messageSubCode(fileNum);
+                }
+                code = code.Substring(z + 1); // удаляем
+
+                // msg line number parse
+                msgNum = code;
+                z = msgNum.IndexOf(',');
+                if (z > 0) msgNum = msgNum.Remove(z); //.Trim(trimming);
+                break;
+
+            // for all macros
+            case OpcodeType.Option:
+                // iq/node param parse
+                int result;
+                string str = code.Substring(z).Trim(trimming);
+                if (int.TryParse(str, out result)) {
+                    this.iq = result.ToString();
+                    code = code.Remove(z - 1);
+                } else {
+                    this.toNode = str.TrimStart('@');
+                }
+                // node param parse
+                if (this.toNode == null) {
+                    int y = code.LastIndexOf(',') + 1;
+                    this.toNode = code.Substring(y, --z - y).Trim(trimming).TrimStart('@');
+                    z = y;
+                }
+                msgNum = code = code.Remove(z - 1); // удаляем Node параметр
+                break;
+            }
+            return msgNum;
         }
 
         //for Call
         private void CallOpcode(string code, int offset)
         {
             int m = code.IndexOf(";", offset);
-            if (m == -1)
-                m = code.Length;
+            if (m == -1) m = code.Length;
             int sOffset = offset - 4;
             this.shortcode = code.Substring(sOffset, m - sOffset);
 
             int x = code.IndexOf('(', offset);
-            if (x > 0)
-                m = x;
-            try 
-            { toNode = code.Substring(offset, m - offset).Trim(); }
-            catch 
-            { toNode = "<Failed get call node name>"; } 
+            if (x > 0 && x < m) m = x;
 
+            try {
+                this.toNode = code.Substring(offset, m - offset).Trim();
+            } catch {
+                this.toNode = "<Failed get call node name>";
+            }
             numberMsgLine = -1;
         }
-                
+
         private int messageSubCode(string scode)
         {
             int result = -1;
             int macroValue = -1;
             string token = null;
-            bool m_str = false;
-            
-            int i = scode.IndexOf('(');
-            if (i != -1) {
-                token = scode.Remove(i).Trim(); //.ToLower();
+            bool isMsgStr = false;
 
-                switch (token.ToLower())
-                {
+            int j = scode.IndexOf('(');
+            if (j != -1) {
+                int i = scode.IndexOf("message_str");
+                if (i == -1) i = scode.IndexOf("random");
+
+                if (i != -1) token = GetOpcodeName(scode, ref i);
+                if (token != null) {
+                    switch (token) {
                     case "message_str":
-                        m_str = true;
+                        isMsgStr = true;
                         break;
                     case "random":
-                        int j = scode.IndexOf(',') - 1;
+                        j = scode.IndexOf(',') - 1;
+                        i = scode.IndexOf('(', i);
                         token = scode.Substring(i + 1, j - i).Trim(trimming);
                         return CheckMacrosValue(token);
+                    }
+                } else {
+                    token = scode.Remove(j).Trim(trimming); //.ToLower();
                 }
             }
 
-            if (token != null && (m_str || pi.macros.ContainsKey(token))) { 
-                string def = m_str ? scode : pi.macros[token].def; //message_str(NAME,x)
+            if (token != null && (isMsgStr || pi.macros.ContainsKey(token))) {
+                string def = isMsgStr ? scode : pi.macros[token].def; //message_str(NAME,x)
                 int x = def.IndexOf("message_str", StringComparison.OrdinalIgnoreCase);
                 int z = def.IndexOf('(');
                 int y = def.IndexOf(',', z);
-                    
+
                 if (x != -1) { //Берем макрос номера файла сообщения
                     string argMsgNum = def.Substring(z + 1, y - z - 1).Trim(trimming); //.ToLower(); //macros NAME
                     macroValue = CheckMacrosValue(argMsgNum);
@@ -233,56 +342,63 @@ namespace ScriptEditor.CodeTranslation
                         return macroValue;
                 }
                 // возвращаем номер msg строки
-                if (m_str)
+                if (isMsgStr)
                     z = scode.IndexOf(',');
                 else
                     z = scode.IndexOf('(');
-                if (z == -1)
-                    return result;
-                
+                if (z == -1) return result;
+
                 numberMsgFile = macroValue; // number msg file
-                
+
                 /* do // ишем первое вхожднение числа
                 {
                     z++;
                     if (z == scode.Length)
                         return result;
                 } while (!Char.IsDigit(scode[z])); */
-                
+
                 z++;
-                if (!m_str)
-                    y = scode.IndexOf(',', z);
-                if (y == -1 || m_str)
-                    y = scode.IndexOf(')', z);
-                string argMsgLine = scode.Substring(z, y - z).Trim(trimming);
-                if (!int.TryParse(argMsgLine, out result)) {
-                    result = scode.LastIndexOf(')');
-                    if (result > -1)
-                        result = messageSubCode(scode.Substring(z, result - z));   
+                if (!isMsgStr) y = scode.IndexOf(',', z);
+                if (y == -1 || isMsgStr) y = scode.IndexOf(')', z);
+
+                string argMsgLine = scode.Substring(z, y - z);
+                if (!int.TryParse(argMsgLine.Trim(trimming), out result)) {
+                    //result = scode.LastIndexOf(')');
+                    //if (result > -1)
+                    //    result = messageSubCode(scode.Substring(z, result - z));
+                    result = messageSubCode(argMsgLine);
                 }
+            } else if (pi.macros.ContainsKey(scode)) {
+                result = CheckMacrosValue(scode);
             } else {
                 // получить первое найденное число
-                int d = scode.IndexOfAny(digit);
-                if (d != -1)
-                    result = CheckDigitValue(d, scode);
+                int d = 0, number = 0;
+                do {
+                    d = scode.IndexOfAny(digit, d);
+                    if (d != -1) {
+                        int n = CheckDigitValue(ref d, scode);
+                        if (number == 0)
+                            number = n;
+                        else
+                            number += n;
+                    }
+                } while (d != -1 && d < scode.Length - 1 && scode.IndexOf('+', d) != -1); // операция суммирования
+                result = number;
             }
-
-            return result;              // return number msg line
+            return result; // return number msg line
         }
 
-        private int CheckDigitValue(int d, string code)
+        private int CheckDigitValue(ref int d, string code)
         {
             int i;
-            for (i = d; i < code.Length; i++) 
+            for (i = d; i < code.Length; i++)
             {
-                if (!Char.IsDigit(code[i]))
-                    break;
+                if (!Char.IsDigit(code[i])) break;
             }
-
             code = code.Substring(d, i - d);
+            d = i;
             return Convert.ToInt32(code);
         }
-
 
         private int CheckMacrosValue(string argToken)
         {
@@ -299,6 +415,8 @@ namespace ScriptEditor.CodeTranslation
             return result;
         }
 
+        #endregion
+
         public static void PrepareNodeCode(string nodeProcedureText, List<DialogueParser> args, ProgramInfo pi, bool excludeComment)
         {
             string[] preNodeBody = nodeProcedureText.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries);
@@ -313,13 +431,13 @@ namespace ScriptEditor.CodeTranslation
                     if (n > 0) {
                         if (++n >= preNodeBody[i].Length)
                             break; // выходим достигнут конец строки
-                        
+
                         int z = preNodeBody[i].IndexOf("else", n);
                         if (excludeComment && z != -1)
                             z = (preNodeBody[i].IndexOf("//") != -1) ? -1 : z; //исключаем перенос для закоменнированных строк кода
                         if (z < 0)
                             break; // в строке нет ключевого слова 'else'
-                        
+
                         int x;
                         for (x = 0; x < preNodeBody[i].Length; x++)
                         {
@@ -336,12 +454,12 @@ namespace ScriptEditor.CodeTranslation
             ParseNodeCode(String.Join("\n", preNodeBody), args, pi, true, excludeComment);
         }
 
-        public static void ParseNodeCode(string text, List<DialogueParser> args, ProgramInfo pi, bool diagram = false, 
+        public static void ParseNodeCode(string text, List<DialogueParser> args, ProgramInfo pi, bool diagram = false,
                                          bool excludeComment = true, StringSplitOptions splitOption = StringSplitOptions.RemoveEmptyEntries)
         {
             DialogueParser.pi = pi;
             int _comm = 0, _count = 0;
-            
+
             Regex regex = new Regex(@"\b" + OpcodeType.call.ToString() + @"\b", RegexOptions.IgnoreCase);
             string[] bodyNode = text.Split(new char[] {'\n'}, splitOption);
 
@@ -349,7 +467,7 @@ namespace ScriptEditor.CodeTranslation
             {
                 nLine = i;
                 string str = bodyNode[i].TrimEnd();
-                
+
                 if (excludeComment || !diagram) {
                     string _str = str.TrimStart();
                     if (ParserInternal.CommentBlockParse(ref _str, ref _comm))
@@ -361,15 +479,15 @@ namespace ScriptEditor.CodeTranslation
                 ReplySubParse(args, str, OpcodeType.Message);
                 ReplySubParse(args, str, OpcodeType.Reply);
                 OptionSubParse(args, str);
-                
+
                 // for call opcode
                 MatchCollection matches = regex.Matches(str);
                 foreach (Match m in matches)
-                    args.Add(new DialogueParser(OpcodeType.call, str, m.Index + 4));
+                    args.Add(new DialogueParser(OpcodeType.call, null, str, m.Index + 4));
 
-                // для диаграмм добавляем код из ноды
+                // для диаграмм добавляем строку кода из ноды
                 if (diagram && _count == args.Count)
-                    args.Add(new DialogueParser(OpcodeType.None, str));
+                    args.Add(new DialogueParser(OpcodeType.None, null, str));
             }
         }
 
@@ -380,16 +498,20 @@ namespace ScriptEditor.CodeTranslation
                 OpcodeType opcode = _opcode;
                 n = incode.IndexOf(opcode.ToString(), n, StringComparison.OrdinalIgnoreCase);
                 if (n > -1) {
-                    if (_opcode == OpcodeType.Message)
-                        if (incode[n + 7].Equals('_')) //проверка на опкод message_str
-                            break;
-                    if (n > 4 && incode.Substring(n - 5, 5).Equals("gsay_", StringComparison.OrdinalIgnoreCase))
+                    string name = GetOpcodeName(incode, ref n);
+                    if (name == null) break; // bad code
+                    if (opcode == OpcodeType.Message) {
+                        if (name == "message_str") break;
+                    }
+                    if (name == "gsay_reply" || name == "gsay_message") {
                         opcode = (opcode == OpcodeType.Reply) ? OpcodeType.gsay_reply : OpcodeType.gsay_message;
-
-                    n += (_opcode == OpcodeType.Reply) ? 5 : 7;
-                    if ((n + 2) < incode.Length) Args.Add(new DialogueParser(opcode, incode, n));
-                };
-            } while (n > -1); 
+                    }
+                    if ((n + 2) < incode.Length) {
+                        Args.Add(new DialogueParser(opcode, name, incode, n));
+                        n = nextPosition;
+                    }
+                }
+            } while (n > -1 && n < incode.Length);
         }
 
         private static void OptionSubParse(List<DialogueParser> Args, string incode)
@@ -399,15 +521,60 @@ namespace ScriptEditor.CodeTranslation
                 OpcodeType opcode = OpcodeType.Option;
                 n = incode.IndexOf(opcode.ToString(), n, StringComparison.OrdinalIgnoreCase);
                 if (n > -1) {
-                    if (n > 3 && incode.Substring(n - 4, 4).Equals("giq_", StringComparison.OrdinalIgnoreCase))
+                    string name = GetOpcodeName(incode, ref n);
+                    if (name == null) break; // bad code
+                    if (name == "gsay_option") {
+                        opcode = OpcodeType.gsay_option;
+                    } else if (name == "giq_option") {
                         opcode = OpcodeType.giq_option;
-                    else if (n > 4 && incode.Substring(n - 5, 5).Equals("gsay_", StringComparison.OrdinalIgnoreCase))
-                            opcode = OpcodeType.gsay_option;
+                    }
+                    Args.Add(new DialogueParser(opcode, name, incode, n)); // n+6
+                    n = nextPosition;
+                }
+            } while (n > -1 && n < incode.Length);
+        }
 
-                    n += 6;
-                    Args.Add(new DialogueParser(opcode, incode, n));
-                };
-            } while (n > -1); 
+        private static string GetOpcodeName(string incode, ref int index)
+        {
+            string name = null;
+            // forward
+            int end = -1;
+            for (int i = index; i < incode.Length; i++) {
+                char c = incode[i];
+                if (c != '_' && !char.IsLetterOrDigit(c)) {
+                    if (c == '(') end = i;
+                    break;
+                }
+            }
+            if (end == -1) return null;
+            int start = -1;
+            // backward
+            for (int i = index - 1; i >= 0; i--) {
+                char c = incode[i];
+                if (c != '_' && !char.IsLetterOrDigit(c)) {
+                    if (char.IsWhiteSpace(c)) start = i + 1;
+                    break;
+                }
+                if (i == 0) start = 0;
+            }
+            if (end != -1) {
+                index = end;
+                if (start != -1) name = incode.Substring(start, end - start).TrimEnd().ToLowerInvariant();
+            }
+            return name;
+        }
+
+        public static OpcodeType GetOpcodeType(string name)
+        {
+            switch (name) {
+                case "Option" :
+                    return OpcodeType.Option;
+                case "Reply" :
+                    return OpcodeType.Reply;
+                case "Message" :
+                    return OpcodeType.Message;
+            }
+            return OpcodeType.None;
         }
 
         public static List<string> GetAllNodesName(Procedure[] procedures)

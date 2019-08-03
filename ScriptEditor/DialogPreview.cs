@@ -91,6 +91,7 @@ namespace ScriptEditor
 
             foreach (DialogueParser line in Arguments)
             {
+                if (line.opcode == OpcodeType.None) continue;
                 int n = number;
                 bool error = false;
                 if (line.numberMsgLine > 0) {

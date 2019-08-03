@@ -191,24 +191,31 @@
     <Compile Include="TextEditor.Designer.cs">
       <DependentUpon>TextEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextEditorUI\Function\DialogFunctionsRules.cs" />
     <Compile Include="TextEditorUI\Nodes\FlowchartTE.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="TextEditorUI\Nodes\FlowchartTE.Designer.cs">
       <DependentUpon>FlowchartTE.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextEditorUI\Functions\Functions.cs" />
+    <Compile Include="TextEditorUI\Function\Functions.cs" />
     <Compile Include="TextEditorUI\Nodes\TemplateNode.cs" />
+    <Compile Include="TextEditorUI\Function\FunctionsRules.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextEditorUI\Function\FunctionsRules.Designer.cs">
+      <DependentUpon>FunctionsRules.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextEditorUI\ToolTips\TipPainter.cs" />
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
     <Compile Include="CodeTranslation\CodeFolder.cs" />
     <Compile Include="TextEditorUI\Error.cs" />
     <Compile Include="SyntaxRules\SyntaxFile.cs" />
     <Compile Include="TextEditorUI\InputBox.cs" />
-    <Compile Include="TextEditorUI\Functions\UserFunction.cs">
+    <Compile Include="TextEditorUI\Function\UserFunction.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextEditorUI\Functions\UserFunction.Designer.cs">
+    <Compile Include="TextEditorUI\Function\UserFunction.Designer.cs">
       <DependentUpon>UserFunction.cs</DependentUpon>
     </Compile>
     <Compile Include="TextEditorUtilities\MessageFile.cs" />
@@ -273,8 +280,11 @@
     <EmbeddedResource Include="TextEditorUI\Nodes\FlowchartTE.resx">
       <DependentUpon>FlowchartTE.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TextEditorUI\Functions\UserFunction.resx">
+    <EmbeddedResource Include="TextEditorUI\Function\UserFunction.resx">
       <DependentUpon>UserFunction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextEditorUI\Function\FunctionsRules.resx">
+      <DependentUpon>FunctionsRules.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

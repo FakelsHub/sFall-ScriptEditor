@@ -42,8 +42,9 @@
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.addNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.addNoteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.addEditRulesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.EmptyLabel = new System.Windows.Forms.ToolStripLabel();
             this.PercentLabel = new System.Windows.Forms.ToolStripLabel();
@@ -213,8 +214,9 @@
             // 
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addNodeToolStripMenuItem,
+            this.addNoteToolStripMenuItem,
             this.toolStripSeparator2,
-            this.addNoteToolStripMenuItem});
+            this.addEditRulesToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -224,23 +226,30 @@
             // addNodeToolStripMenuItem
             // 
             this.addNodeToolStripMenuItem.Name = "addNodeToolStripMenuItem";
-            this.addNodeToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.addNodeToolStripMenuItem.Text = "New Node";
+            this.addNodeToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.addNodeToolStripMenuItem.Text = "Dialog Node";
             this.addNodeToolStripMenuItem.Click += new System.EventHandler(this.addNodeToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(131, 6);
             // 
             // addNoteToolStripMenuItem
             // 
             this.addNoteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("addNoteToolStripMenuItem.Image")));
             this.addNoteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addNoteToolStripMenuItem.Name = "addNoteToolStripMenuItem";
-            this.addNoteToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.addNoteToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.addNoteToolStripMenuItem.Text = "Note";
             this.addNoteToolStripMenuItem.Click += new System.EventHandler(this.addNoteToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(183, 6);
+            // 
+            // addEditRulesToolStripMenuItem
+            // 
+            this.addEditRulesToolStripMenuItem.Name = "addEditRulesToolStripMenuItem";
+            this.addEditRulesToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.addEditRulesToolStripMenuItem.Text = "Functions Config";
+            this.addEditRulesToolStripMenuItem.Click += new System.EventHandler(this.addEditRulesToolStripMenuItem_Click);
             // 
             // toolStripSeparator14
             // 
@@ -542,7 +551,7 @@
             this.deleteNoteToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.ShowImageMargin = false;
-            this.contextMenuStrip.Size = new System.Drawing.Size(169, 198);
+            this.contextMenuStrip.Size = new System.Drawing.Size(169, 176);
             this.contextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenuStrip_Closed);
             this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
             // 
@@ -632,6 +641,7 @@
             // 
             this.msgPopup.OwnerDraw = true;
             this.msgPopup.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.toolTip_Draw);
+            this.msgPopup.Popup += new System.Windows.Forms.PopupEventHandler(this.msgPopup_Popup);
             // 
             // openFileDialog
             // 
@@ -742,5 +752,6 @@
         private System.Windows.Forms.ToolStripMenuItem autoHideNodesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unhideNodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator18;
+        private System.Windows.Forms.ToolStripMenuItem addEditRulesToolStripMenuItem;
     }
 }

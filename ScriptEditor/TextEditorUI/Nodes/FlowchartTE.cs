@@ -23,19 +23,19 @@ namespace ScriptEditor.TextEditorUI.Nodes
     {
         public event EventHandler<CodeArgs> ApplyCode;
         public class CodeArgs : EventArgs
-	    {
+        {
             public string Name { get; private set; }
             public string Code { get; private set; }
             public bool Change { get; set; }
             public bool Close  { get; set; }
             
             public CodeArgs (string name, string code, bool change)
-		    {
+            {
                 Name = name;
                 Code = code;
                 Change = change;
-		    }
-	    }
+            }
+        }
         
         private readonly string customFile = Settings.SettingsFolder + @"\CustomCode.ini";
         
@@ -393,12 +393,13 @@ namespace ScriptEditor.TextEditorUI.Nodes
             int offset = codeline.IndexOf(data.shortcode);
             int len = data.shortcode.Length;
 
-            while (Char.IsLetter(textEditor.Document.GetCharAt(ls.Offset + (offset - 1))))
-            {
-                offset--;
-                len++;
+            if (offset > 0) {
+                while (Char.IsLetter(textEditor.Document.GetCharAt(ls.Offset + (offset - 1))))
+                {
+                    offset--;
+                    len++;
+                }
             }
-            
             TextMarker tm = new TextMarker(ls.Offset + offset, len, TextMarkerType.Underlined, Color.DeepPink);
             textEditor.Document.MarkerStrategy.AddMarker(tm);
             textEditor.Refresh();

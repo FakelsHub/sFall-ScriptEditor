@@ -21,18 +21,25 @@ namespace ScriptEditor.TextEditorUI.ToolTips
 
             // Draw the custom border to appear 3-dimensional
             e.Graphics.DrawLines(new Pen(Color.Gray), new Point[] {
-                new Point (0, e.Bounds.Height - 1), 
-                new Point (e.Bounds.Width - 1, e.Bounds.Height - 1), 
+                new Point (0, e.Bounds.Height - 1),
+                new Point (e.Bounds.Width - 1, e.Bounds.Height - 1),
                 new Point (e.Bounds.Width - 1, 0)
             });
             e.Graphics.DrawLines(new Pen(Color.DarkGray), new Point[] {
-                new Point (0, e.Bounds.Height - 1), 
-                new Point (0, 0), 
+                new Point (0, e.Bounds.Height - 1),
+                new Point (0, 0),
                 new Point (e.Bounds.Width - 1, 0)
             });
 
             // Draw the standard text with customized formatting options
             e.DrawText(sff);
+        }
+
+        public static void DrawSizeMessage(DrawToolTipEventArgs e)
+        {
+            DrawToolTipEventArgs args = new DrawToolTipEventArgs(e.Graphics, e.AssociatedWindow, e.AssociatedControl, e.Bounds, e.ToolTipText, Color.LightYellow, Color.Black,
+                new Font("Arial", 12.0F, FontStyle.Regular, GraphicsUnit.Point));
+            DrawMessage(args);
         }
 
         public static void DrawInfo(DrawToolTipEventArgs e)
