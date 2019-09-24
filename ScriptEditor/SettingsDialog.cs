@@ -24,7 +24,7 @@ namespace ScriptEditor
                 cmbPreprocessor.SelectedIndex = 0;
 
             cbUseBackward.Checked = (Settings.compileBackwardMode > 0);
-            cbIncludePath.Checked = Settings.overrideIncludesPath;
+            cbIncludePath.Checked = Settings.searchIncludePath;
             cbOptimize.SelectedIndex = (Settings.optimize == 255 ? 1 : Settings.optimize);
             cbWarnings.Checked = Settings.showWarnings;
             cbDebug.Checked = Settings.showDebug;
@@ -86,7 +86,7 @@ namespace ScriptEditor
                 Settings.useWatcom = true;
                 break;
             }
-            Settings.overrideIncludesPath = cbIncludePath.Checked;
+            Settings.searchIncludePath = cbIncludePath.Checked;
             Settings.optimize = (byte)cbOptimize.SelectedIndex;
             Settings.showDebug = cbDebug.Checked;
             Settings.showWarnings = cbWarnings.Checked;

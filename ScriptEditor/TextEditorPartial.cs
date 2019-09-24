@@ -374,14 +374,14 @@ namespace ScriptEditor
             if (line.Length < 2)
                 return;
 
-            if (!Settings.overrideIncludesPath && currentTab.filepath == null && !Path.IsPathRooted(line[1])) {
+            if (!Settings.searchIncludePath && currentTab.filepath == null && !Path.IsPathRooted(line[1])) {
                 MessageBox.Show("Cannot open includes given via a relative path for an unsaved script", "Error");
                 return;
             }
-            
-            ParserInternal.OverrideIncludePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
+            if (line[1].IndexOfAny(Path.GetInvalidPathChars()) != -1) return;
+            ParserInternal.GetIncludePath(ref line[1], Path.GetDirectoryName(currentTab.filepath));
             if (Open(line[1], OpenType.File, false) == null)
-                MessageBox.Show("Header file not found!", null, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Header file not found!\n" + line[1], null, MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
 
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)

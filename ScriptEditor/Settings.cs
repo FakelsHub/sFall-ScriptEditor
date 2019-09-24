@@ -38,7 +38,7 @@ namespace ScriptEditor
         public static byte optimize = 1;
         public static bool showWarnings = true;
         public static bool showDebug = true; //show additional information when compiling script
-        public static bool overrideIncludesPath = true;
+        public static bool searchIncludePath = true;
         public static bool warnOnFailedCompile = true;
         public static bool multiThreaded = true;
         public static bool autoOpenMsgs = false;
@@ -174,6 +174,11 @@ namespace ScriptEditor
             recent.Clear();
         }
 
+        public static bool IsSearchIncludes
+        {
+            get { return (searchIncludePath && pathScriptsHFile != null); }
+        }
+
         public static string[] GetRecent() { return recent.ToArray(); }
         public static string[] GetMsgRecent() { return recentMsg.ToArray(); }
 
@@ -198,7 +203,7 @@ namespace ScriptEditor
                     optimize = br.ReadByte();
                     showWarnings = br.ReadBoolean();
                     showDebug = br.ReadBoolean();
-                    overrideIncludesPath = br.ReadBoolean();
+                    searchIncludePath = br.ReadBoolean();
                     outputDir = br.ReadString();
                     if (outputDir.Length == 0)
                         outputDir = null;
@@ -375,7 +380,7 @@ namespace ScriptEditor
             bw.Write(optimize);
             bw.Write(showWarnings);
             bw.Write(showDebug);
-            bw.Write(overrideIncludesPath);
+            bw.Write(searchIncludePath);
             bw.Write(outputDir ?? "");
             bw.Write(warnOnFailedCompile);
             bw.Write(multiThreaded);

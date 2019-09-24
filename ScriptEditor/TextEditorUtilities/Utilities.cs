@@ -532,22 +532,25 @@ namespace ScriptEditor.TextEditorUtilities
                 if (m.TextMarkerType == TextMarkerType.SolidBlock)
                     TAC.Document.MarkerStrategy.RemoveMarker(m);
             }
-            if (!TAC.SelectionManager.HasSomethingSelected)
-                return;
+            if (!TAC.SelectionManager.HasSomethingSelected) return;
             
             string sWord = TAC.SelectionManager.SelectedText.Trim();
             int wordLen = sWord.Length;
-            if (wordLen == 0 || (wordLen < 3 && !Char.IsLetterOrDigit(sWord[0])))
-                return;
+            if (wordLen == 0 || (wordLen < 3 && !Char.IsLetterOrDigit(sWord[0])) || (wordLen == 1 && Char.IsLetter(sWord[0]))) return;
+
+            string word = TAC.Document.LineSegmentCollection[TAC.Caret.Line].GetWord(TAC.SelectionManager.SelectionCollection[0].StartPosition.Column).Word;
+            bool isWordHighlighting = (wordLen == word.Length && sWord == word);
 
             int seek = 0;
             while (seek < TAC.Document.TextLength) {
                 seek = TAC.Document.TextContent.IndexOf(sWord, seek);
-                if (seek == -1)
-                    break;
-                char chS = (seek > 0) ? TAC.Document.GetCharAt(seek - 1) : ' ';
-                char chE = ((seek + wordLen) < TAC.Document.TextLength) ? TAC.Document.GetCharAt(seek + wordLen) : ' ';
-                if (!(Char.IsLetter(chS) || chS == '_') && !(Char.IsLetter(chE) || chE == '_'))
+                if (seek == -1) break;
+                char chS = '\0', chE = '\0'; 
+                if (isWordHighlighting) {
+                    chS = (seek > 0) ? TAC.Document.GetCharAt(seek - 1) : ' ';
+                    chE = ((seek + wordLen) < TAC.Document.TextLength) ? TAC.Document.GetCharAt(seek + wordLen) : ' ';
+                }
+                if (!isWordHighlighting || !(Char.IsLetterOrDigit(chS) || chS == '_') && !(Char.IsLetterOrDigit(chE) || chE == '_'))
                     TAC.Document.MarkerStrategy.AddMarker(new TextMarker(seek, sWord.Length, TextMarkerType.SolidBlock,
                                                           ColorTheme.SelectedHighlight.BackgroundColor, ColorTheme.SelectedHighlight.Color));
                 seek += wordLen;

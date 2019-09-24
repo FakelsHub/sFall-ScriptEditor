@@ -141,13 +141,13 @@
             // cbIncludePath
             // 
             this.cbIncludePath.AutoSize = true;
-            this.cbIncludePath.Location = new System.Drawing.Point(312, 54);
+            this.cbIncludePath.Location = new System.Drawing.Point(293, 54);
             this.cbIncludePath.Name = "cbIncludePath";
-            this.cbIncludePath.Size = new System.Drawing.Size(132, 17);
+            this.cbIncludePath.Size = new System.Drawing.Size(164, 17);
             this.cbIncludePath.TabIndex = 3;
-            this.cbIncludePath.Text = "Override includes path\r\n";
-            this.toolTip.SetToolTip(this.cbIncludePath, "Override path of the included script header files to this selected path.\r\nSearch " +
-                    "for all the necessary header files will be in this selected directory.");
+            this.cbIncludePath.Text = "Search Include from this path";
+            this.toolTip.SetToolTip(this.cbIncludePath, "An additional search of all necessary header files will be made from this selecte" +
+                    "d directory.");
             this.cbIncludePath.UseVisualStyleBackColor = true;
             // 
             // bChange
@@ -346,7 +346,7 @@
             // cbCompilePath
             // 
             this.cbCompilePath.AutoSize = true;
-            this.cbCompilePath.Location = new System.Drawing.Point(312, 15);
+            this.cbCompilePath.Location = new System.Drawing.Point(293, 15);
             this.cbCompilePath.Name = "cbCompilePath";
             this.cbCompilePath.Size = new System.Drawing.Size(142, 17);
             this.cbCompilePath.TabIndex = 14;

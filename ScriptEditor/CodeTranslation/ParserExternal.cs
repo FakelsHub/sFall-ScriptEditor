@@ -15,7 +15,7 @@ namespace ScriptEditor.CodeTranslation
         #region Imports from SSLC DLL
 
         [DllImport("resources\\parser.dll")]
-        private static extern int parse_main(string file, string orig, string dir, string def, Int32 backMode);
+        private static extern int parse_main(string file, string orig, string dir, string def, string includePath, Int32 backMode);
         [DllImport("resources\\parser.dll")]
         private static extern int numProcs();
         [DllImport("resources\\parser.dll")]
@@ -71,11 +71,10 @@ namespace ScriptEditor.CodeTranslation
         {
             // Parse disabled, get only macros
             if (Settings.enableParser && filepath != null) {
-                ParseOverrideIncludes(text);
-                string includePath = (Settings.overrideIncludesPath) ? Settings.pathHeadersFiles : null;
+                File.WriteAllText(parserPath, text, Encoding.Default);
                 try {
-                    lastStatus = parse_main(parserPath, filepath, (includePath ?? Path.GetDirectoryName(filepath)),
-                                            Settings.preprocDef ?? String.Empty, Settings.compileBackwardMode);
+                    lastStatus = parse_main(parserPath, filepath, Path.GetDirectoryName(filepath), Settings.preprocDef,
+                                           (Settings.IsSearchIncludes) ? Settings.pathHeadersFiles : null, Settings.compileBackwardMode);
                 } catch {
                     lastStatus = 3;
                     MessageBox.Show("An unexpected error occurred while parsing text of the script.\n" +
@@ -257,33 +256,6 @@ namespace ScriptEditor.CodeTranslation
                      break; // найдена процедура, прерываем цикл
             }
             return -1;
-        }
-
-        private void ParseOverrideIncludes(string text)
-        {
-            /*
-             *  Пререопределение include путей для парсера более не требутся,
-             *  т.к. путь для поиска include файлов указывается непосредственно парсеру через аргумент строки.
-             *  возможность оставленна только для переопределения неотносительных include путей.
-             */
-            if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
-                string[] linetext = text.Split('\n');
-                for (int i = 0; i < linetext.Length; i++)
-                {
-                    if (linetext[i].ToLower().TrimStart().StartsWith(ParserInternal.INCLUDE)) {
-                        string[] str = linetext[i].Split('"');
-                        if (str.Length < 2)
-                            continue;
-                        if (str[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
-                            continue;
-
-                        if (ParserInternal.OverrideIncludePath(ref str[1]))
-                            linetext[i] = str[0] + '"' + str[1] + '"';
-                    }
-                }
-                text = String.Join("\n", linetext);
-            }
-            File.WriteAllText(parserPath, text, Encoding.Default);
         }
     }
 }

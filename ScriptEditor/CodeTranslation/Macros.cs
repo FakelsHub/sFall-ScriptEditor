@@ -56,7 +56,7 @@ namespace ScriptEditor.CodeTranslation
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    ParserInternal.OverrideIncludePath(ref text[1], dir);
+                    ParserInternal.GetIncludePath(ref text[1], dir);
                     new GetMacros(text[1], null, macros);
                 } else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
                     if (lines[i].TrimEnd().EndsWith(@"\")) {

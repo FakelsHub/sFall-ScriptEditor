@@ -21,34 +21,6 @@ namespace ScriptEditor.CodeTranslation
 
         private string outputSSL;
 
-        private string OverrideIncludeSSLCompile(string file)
-        { 
-            string[] text = File.ReadAllLines(file, (Settings.saveScriptUTF8) ? Encoding.UTF8 : Encoding.Default);
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (text[i].TrimStart().ToLower().StartsWith(ParserInternal.INCLUDE)) {
-                    string[] str = text[i].Split('"');
-                    if (str.Length < 2)
-                        continue;
-                    if (str[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
-                        continue;
-
-                    bool overrides = false;
-                    // для внешних препроцессоров переопределять только неотносительные пути
-                    if (Settings.useMcpp || Settings.useWatcom || Settings.userCmdCompile)
-                        overrides = ParserInternal.OverrideIncludePath(ref str[1]);
-                    else
-                        overrides = ParserInternal.OverrideIncludePath(ref str[1], file);
-                    
-                    if (overrides)
-                        text[i]= str[0] + '"' + str[1] + '"';
-                }
-            }
-            string cfile = Settings.scriptTempPath + '\\' + Path.GetFileName(file);
-            File.WriteAllLines(cfile, text, (Settings.saveScriptUTF8) ? new UTF8Encoding(false) : Encoding.Default);
-            return cfile;
-        }
-
         public static string GetPreprocessedFile(string sName)
         {
             if (!File.Exists(preprocessPath))
@@ -58,11 +30,11 @@ namespace ScriptEditor.CodeTranslation
             File.Delete(sName);
             File.Move(preprocessPath, sName);
 
-            return sName;   
+            return sName;
         }
 
         public string GetOutputPath(string infile, string sourceDir = "")
-        { 
+        {
             string outputFile = Path.GetFileNameWithoutExtension(infile);
             if (sourceDir.Length != 0 && (Settings.useMcpp || Settings.useWatcom))
                 outputFile = outputFile.Remove(outputFile.Length - 6);
@@ -72,8 +44,8 @@ namespace ScriptEditor.CodeTranslation
             if (Settings.ignoreCompPath && sourceDir.Length == 0)
                 sourceDir = Path.GetDirectoryName(infile);
 
-            outputSSL = (Settings.ignoreCompPath) 
-                         ? Path.Combine(sourceDir, outputFile) 
+            outputSSL = (Settings.ignoreCompPath)
+                         ? Path.Combine(sourceDir, outputFile)
                          : Path.Combine(Settings.outputDir, outputFile);
             
             return outputSSL;
@@ -95,47 +67,48 @@ namespace ScriptEditor.CodeTranslation
             };
         }
 #else
+        // командная строка для компилятора
         private string GetSslcCommandLine(string infile, bool preprocess, string sourceDir, bool shortCircuit)
         {
-            // неиспользовать препроцессор компилятора, если используется внешнний mcpp/wcc
-            string usePreprocess = string.Empty;
-            if (!Settings.useMcpp && !Settings.useWatcom)
-                usePreprocess = preprocess ? "-P " : "-p ";
-            
-            return (usePreprocess)
+            string usePreprocess = string.Empty; // неиспользовать препроцессор компилятора, если используется внешнний mcpp/wcc
+            if (!Settings.useMcpp && !Settings.useWatcom) usePreprocess = preprocess ? "-P " : "-p ";
+
+            return ((Settings.IsSearchIncludes) ? "-I\"" + Settings.pathHeadersFiles + "\" " : "-I\"" + Settings.ProgramFolder + "\" ")
+                + (usePreprocess)
                 + ("-O" + Settings.optimize + " ")
                 + ((Settings.compileBackwardMode > 0) ? "-b " : "")
                 + (Settings.showWarnings ? "" : "-n ")
                 + (Settings.showDebug ? "-d " : "")
-                + ("-l ") /* always no logo */
-                + ((Settings.shortCircuit || shortCircuit) ? "-s " : "")
-                + "\"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile, sourceDir)) + "\"";
+                + ((Settings.preprocDef != null) ? ("-l -m" + Settings.preprocDef) : "-l") /* always no logo */
+                + ((Settings.shortCircuit || shortCircuit) ? " -s" : "")
+                + " \"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile, sourceDir)) + "\"";
         }
 
+        // командная строка для внешних препроцессоров
         private string GetCommandLine(string infile, string outfile, string sourceDir, bool preprocess) {
-            string prymaryPath = " ..", secondPath  = " ..";
-            if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
-                prymaryPath = " \"" + sourceDir + "\"";
-                secondPath  = " \"" + Settings.pathHeadersFiles + "\"" ;
+            string searchPaths = " .."; // parent directory "Resources" folder
+            if (Settings.IsSearchIncludes) {
+                searchPaths += " \"" + Settings.pathHeadersFiles + "\"";
             }
 
             return (Settings.useWatcom)
-                    ? /* wcc command line */
+                    ? /* wcc command line: infile outfile -pc/l i-paths [-d"macro"] */
                     ("\"" + infile + "\" ..\\scrTemp\\" + outfile
                      + ((preprocess) ? " c" : " l")
-                     + prymaryPath + secondPath
+                     + searchPaths
                      + ((Settings.preprocDef != null) ? " -d" + Settings.preprocDef : string.Empty))
-                    : /* mcpp command line */
+                    : /* mcpp command line: infile outfile -W1/0 i-paths [-D"macro"] [-P] */
                     ("\"" + infile + "\" ..\\scrTemp\\" + outfile
                      + ((Settings.showWarnings) ? " 1" : " 0")
-                     + prymaryPath + secondPath
+                     + searchPaths
                      + ((Settings.preprocDef != null) ? (" -D" + Settings.preprocDef) : string.Empty)
                      + ((preprocess) ? " -P" : string.Empty));
         }
 
+        // командная строка для внешнего файла компиляции
         private string GetCommandLine(string infile, string sourceDir, bool shortCircuit) {
             sourceDir = " \"" + sourceDir + "\"";
-            string headers = (Settings.pathHeadersFiles != null) 
+            string headers = (Settings.pathHeadersFiles != null)
                             ? "\"" + Settings.pathHeadersFiles + "\"" : "..\\";
             string output = (!Settings.ignoreCompPath && Settings.outputDir != null)
                             ? " \"" + Settings.outputDir + "\"" : sourceDir;
@@ -160,8 +133,7 @@ namespace ScriptEditor.CodeTranslation
 
         public bool Compile(string infile, out string output, List<Error> errors, bool preprocessOnly, bool shortCircuit = false)
         {
-            if (errors != null)
-                errors.Clear();
+            if (errors != null) errors.Clear();
             if (infile == null) {
                 output = "No filename specified";
                 return false;
@@ -172,10 +144,6 @@ namespace ScriptEditor.CodeTranslation
             string srcfile = infile;
             string sourceDir = Path.GetDirectoryName(infile);
 
-            if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
-                infile = OverrideIncludeSSLCompile(infile);
-            }
-
             output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n" + new String('-', 22);
             if (Settings.userCmdCompile && !preprocessOnly) {
                 batPath = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
@@ -184,7 +152,7 @@ namespace ScriptEditor.CodeTranslation
                 success = RunProcess(upsi, Settings.ResourcesFolder, ref output);
             } else {
                 // use external preprocessor
-                string outfile = "preprocess.ssl"; //common preprocess file
+                string outfile = "preprocess.ssl"; // common preprocess file
                 if (Settings.useMcpp || Settings.useWatcom) {
                     output += Environment.NewLine + (Settings.useWatcom ? "Open Watcom C32 preprocessing script: " : "External MCPP preprocessing script: ");
                     output += Path.GetFileName(infile) + Environment.NewLine;
@@ -203,9 +171,8 @@ namespace ScriptEditor.CodeTranslation
                 }
 
                 if (batPath != null) {
-                    if (!success || preprocessOnly)
-                        return success;
-
+                    if (!success || preprocessOnly) return success;
+                    // переименовать файл preprocess.ssl в <scriptname>_[pre].ssl
                     infile = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[pre].ssl");
                     File.Delete(infile);
                     File.Move(Path.Combine(Settings.scriptTempPath, outfile), infile);
@@ -236,10 +203,8 @@ namespace ScriptEditor.CodeTranslation
                 }
 #endif
             }
-            if (errors != null && !Settings.userCmdCompile) 
-                Error.BuildLog(errors, output, srcfile); //(Settings.useWatcom) ? infile : 
-            if (Settings.overrideIncludesPath) 
-                File.Delete(Settings.scriptTempPath + '\\' + Path.GetFileName(srcfile));
+            if (errors != null && !Settings.userCmdCompile)
+                Error.BuildLog(errors, output, srcfile); //(Settings.useWatcom) ? infile :
 
 #if DLL_COMPILER
             output=output.Replace("\n", "\r\n");
@@ -275,7 +240,6 @@ namespace ScriptEditor.CodeTranslation
                 err = File.ReadAllText(file);
                 File.Delete(file);
             }
-
             return err;
         }
 
@@ -285,10 +249,10 @@ namespace ScriptEditor.CodeTranslation
             if (Settings.oldDecompile)
                 program.RemoveAt(0);
 
-            foreach (string exe in program) 
+            foreach (string exe in program)
             {
                 var exePath = Path.Combine(Settings.ResourcesFolder, exe);
-                ProcessStartInfo psi = new ProcessStartInfo(exePath, (Settings.decompileF1 ? "-1": String.Empty) 
+                ProcessStartInfo psi = new ProcessStartInfo(exePath, (Settings.decompileF1 ? "-1": String.Empty)
                                                             + (Settings.tabsToSpaces ? " -s" + Settings.tabSize : String.Empty)
                                                             + " \"" + infile + "\" \"" + decompilationPath + "\"");
                 psi.UseShellExecute = false;

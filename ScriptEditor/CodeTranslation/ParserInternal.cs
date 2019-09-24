@@ -24,6 +24,8 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public class ParserInternal
     {
+        private static readonly char[] pathSeparators = { '\\', '/' };
+
         private static List<string> procNameList = new List<string>();
         private static TextEditor scrptEditor;
 
@@ -229,6 +231,8 @@ namespace ScriptEditor.CodeTranslation
                 if (bufferSSLCode[i].StartsWith("import", StringComparison.OrdinalIgnoreCase)
                     || bufferSSLCode[i].StartsWith("export", StringComparison.OrdinalIgnoreCase)) {
                     bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
+                } else if (bufferSSLCode[i].StartsWith("critical", StringComparison.OrdinalIgnoreCase)) {
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
                 }
 
                 if (bufferSSLCode[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
@@ -269,7 +273,7 @@ namespace ScriptEditor.CodeTranslation
         }
         
         /// <summary>
-        /// Получает регистрово-правильное имя процедуры определенное в скрипте
+        /// Получает правильное(регистрово зависимое) имя процедуры определенное в скрипте
         /// </summary>
         /// <param name="procName"></param>
         /// <returns></returns>
@@ -302,8 +306,11 @@ namespace ScriptEditor.CodeTranslation
 
                 if (CommentBlockParse(ref bufferSSLCode[i], ref commFlag)) continue;
 
-                if (bufferSSLCode[i].StartsWith("import") || bufferSSLCode[i].StartsWith("export")) {
+                bufferSSLCode[i] = bufferSSLCode[i].Replace('\t', ' ');
+                if (bufferSSLCode[i].StartsWith("import ") || bufferSSLCode[i].StartsWith("export ")) {
                     bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
+                } else if (bufferSSLCode[i].StartsWith("critical ")) {
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
                 }
 
                 if (bufferSSLCode[i].StartsWith(PROCEDURE)) {
@@ -427,9 +434,11 @@ namespace ScriptEditor.CodeTranslation
                 
                 // TODO: возможно тут нужна проверка на закоментированный блок /* */
                 
-                if (bufferSSLCode[i].StartsWith("import") || bufferSSLCode[i].StartsWith("export"))
+                if (bufferSSLCode[i].StartsWith("import") || bufferSSLCode[i].StartsWith("export")) {
                     bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
-
+                } else if (bufferSSLCode[i].StartsWith("critical")) {
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
+                }
                 if (IsProcedure(ref bufferSSLCode[i], pName)) {
                     if (bufferSSLCode[i].Length <= (PROC_LEN + pLen))
                         continue; // broken declare
@@ -454,21 +463,19 @@ namespace ScriptEditor.CodeTranslation
             for (int i = 0; i < bufferSSLCode.Length; i++)
             {
                 bufferSSLCode[i] = bufferSSLCode[i].Trim();
-                if (CommentBlockParse(ref bufferSSLCode[i], ref _comm))
-                    continue;
+                if (CommentBlockParse(ref bufferSSLCode[i], ref _comm)) continue;
 
                 // убираем лишнее
                 RemoveCommentLine(ref bufferSSLCode[i], 0);
                 
                 if (bufferSSLCode[i].EndsWith(BEGIN)) {
-                    if (!bufferSSLCode[i].StartsWith(PROCEDURE) && !bufferSSLCode[i - 1].StartsWith(PROCEDURE))
-                        continue;
+                    if (bufferSSLCode[i].StartsWith("critical")) bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
+
+                    if (!bufferSSLCode[i].StartsWith(PROCEDURE) && !bufferSSLCode[i - 1].StartsWith(PROCEDURE)) continue;
                     for (int j = i - 1; j > 0; j--) {
-                       if (bufferSSLCode[j].StartsWith(PROCEDURE))
-                           return j + 1;
+                       if (bufferSSLCode[j].StartsWith(PROCEDURE)) return j + 1;
                     }
-                    if (++i <= bufferSSLCode.Length)
-                        continue;
+                    if (++i <= bufferSSLCode.Length) continue;
                     return -1;  // procedure block is broken
                 }
             }
@@ -494,6 +501,13 @@ namespace ScriptEditor.CodeTranslation
             {
                 bufferSSLCode[i] = bufferSSLCode[i].Trim();
                 if (CommentBlockParse(ref bufferSSLCode[i], ref _comm)) continue;
+
+                bufferSSLCode[i] = bufferSSLCode[i].Replace('\t', ' ');
+                if (bufferSSLCode[i].StartsWith("import ") || bufferSSLCode[i].StartsWith("export ")) {
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
+                } else if (bufferSSLCode[i].StartsWith("critical ")) {
+                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
+                }
 
                 // ищем начало процедуры с искомым именем
                 if (_proc == 0 && IsProcedure(ref bufferSSLCode[i], pName))
@@ -680,7 +694,9 @@ namespace ScriptEditor.CodeTranslation
             List<string> script = File.ReadAllLines(file, Encoding.Default).ToList();
             for (int i = 0; i < script.Count; i++)
             {
-                if (script[i].StartsWith(ParserInternal.PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
+                if (script[i].StartsWith(ParserInternal.PROCEDURE, StringComparison.OrdinalIgnoreCase) 
+                    || script[i].StartsWith("critical ", StringComparison.OrdinalIgnoreCase))
+                {
                     if (script[i + 1].StartsWith(ParserInternal.BEGIN, StringComparison.OrdinalIgnoreCase)) {
                         script[i] += '\u0020' + script[i + 1];
                         script.RemoveAt(i + 1);
@@ -810,47 +826,25 @@ namespace ScriptEditor.CodeTranslation
                         continue;
                     if (text[1].IndexOfAny(Path.GetInvalidPathChars()) != -1)
                         continue;
-                    OverrideIncludePath(ref text[1], dir);
+                    GetIncludePath(ref text[1], dir);
                     include.Add(text[1]);
                 }
             }
             return include;
         }
 
-        // Override includes path
-        public static bool OverrideIncludePath(ref string iPath, string dir)
+        public static void GetIncludePath(ref string iPath, string dir)
         {
-            if (!Path.IsPathRooted(iPath)) {
-                if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
-                    iPath = Path.GetFullPath(Path.Combine(Settings.pathHeadersFiles, iPath));
-                    return true;
-                } else { //если не указана папка c .h файлами то переопределять путь
-                    //относительно папки скрипта или каталога программы
-                    string temp = Path.GetFullPath(Path.Combine(dir, iPath));
-                    if (!File.Exists(temp))
-                        iPath = Path.GetFullPath(Path.Combine(Settings.ProgramFolder, iPath));
-                    else
-                        iPath = temp; //source script dir
-                    return true;
-                }
-            } // переопределить неотносительные пути в случае отсутвия такого .h файла
-              // при переопрелелении пути в таком случае все .h файлы должны находится в одной папке
-            else if (Settings.overrideIncludesPath && Settings.pathHeadersFiles != null) {
-                if (!File.Exists(iPath)) {
-                    iPath = Path.Combine(Settings.pathHeadersFiles, Path.GetFileName(iPath));
-                    return true;
-                }
+            string scrPath = Path.GetFullPath(Path.Combine(dir, iPath)); // исходная папка скрипта (высший приоритетет)
+            string temp = scrPath;
+            if (Settings.IsSearchIncludes && !Path.IsPathRooted(iPath) && !File.Exists(scrPath)) {
+                temp = Path.GetFullPath(Path.Combine(Settings.pathHeadersFiles, iPath)); 
             }
-            return false;
-        }
-
-        public static bool OverrideIncludePath(ref string iPath)
-        {
-            if (Path.IsPathRooted(iPath) && !File.Exists(iPath)) {
-                iPath = Path.Combine(Settings.pathHeadersFiles, Path.GetFileName(iPath));
-                return true;
+            if (!File.Exists(temp)) {
+                temp = Path.GetFullPath(Path.Combine(Settings.ProgramFolder, iPath)); // директория приложения (низший приоритет)
+                if (!File.Exists(temp)) iPath = scrPath;
             }
-            return false;
+            iPath = temp;
         }
         #endregion
     }
