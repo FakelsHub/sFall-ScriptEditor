@@ -73,7 +73,10 @@ namespace ScriptEditor.CodeTranslation
             string usePreprocess = string.Empty; // неиспользовать препроцессор компилятора, если используется внешнний mcpp/wcc
             if (!Settings.useMcpp && !Settings.useWatcom) usePreprocess = preprocess ? "-P " : "-p ";
 
-            return ((Settings.IsSearchIncludes) ? "-I\"" + Settings.pathHeadersFiles + "\" " : "-I\"" + Settings.ProgramFolder + "\" ")
+            string pfDir = "-I\"" + Settings.ProgramFolder + "\" ";
+            string includeDirs = (Settings.IsSearchIncludes) ? "-I\"" + Settings.pathHeadersFiles + "\" " + pfDir : pfDir;
+
+            return (includeDirs)
                 + (usePreprocess)
                 + ("-O" + Settings.optimize + " ")
                 + ((Settings.compileBackwardMode > 0) ? "-b " : "")

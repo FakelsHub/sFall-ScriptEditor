@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -77,8 +77,7 @@ namespace ScriptEditor.TextEditorUtilities
             for (int i = 0; i < linecode.Length; i++)
             {
                 string tmp = linecode[i].TrimStart();
-                if (tmp.Length < 3 || tmp.StartsWith("//") || tmp.StartsWith("/*"))
-                    continue;
+                if (tmp.Length < 3 || (tmp[0] == '/' && (tmp[1] == '/' || tmp[1] == '*'))) continue;
                 // check Quotes
                 GetQuotesPosition(linecode[i], Quotes);
                 foreach (string p in pattern)
