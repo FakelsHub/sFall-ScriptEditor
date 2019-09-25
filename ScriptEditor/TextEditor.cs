@@ -556,7 +556,7 @@ namespace ScriptEditor
                     new ICSharpCode.TextEditor.Actions.RemoveTrailingWS().Execute(currentActiveTextAreaCtrl.TextArea);
 
                 if (close && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0)
-                    CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document);
+                    CodeFolder.SetProceduresCollapsed(tab.textEditor.Document, tab.filename);
 
                 string saveText = tab.textEditor.Text;
                 if (msg && Settings.EncCodePage.CodePage == 866) 
@@ -671,12 +671,8 @@ namespace ScriptEditor
         private void KeepScriptSetting(TabInfo tab, bool skip)
         {
             if (!skip && tab.filepath != null && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
-                if (tab.CheckFileTime() && CodeFolder.SaveMarkFoldCollapsed(tab.textEditor.Document)) {
-                    var encoder = (Settings.saveScriptUTF8) ? new UTF8Encoding(false) : Encoding.Default;
-                    File.WriteAllText(tab.filepath, tab.textEditor.Text, encoder);
-                }
+                CodeFolder.SetProceduresCollapsed(tab.textEditor.Document, tab.filename);
             }
-
             // store last script position
             if (Path.GetExtension(tab.filepath).ToLowerInvariant() == ".ssl" && tab.filename != unsaved)
                 Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
@@ -891,7 +887,6 @@ namespace ScriptEditor
                 selectedNode = ProcTree.SelectedNode.Tag;
 
             ProcTree.Tag = TreeStatus.update;
-            ProcTree.BeginUpdate();
 
             string scrollNode = null;
             if (!newCreate && ProcTree.Nodes.Count != 0) {
@@ -908,6 +903,7 @@ namespace ScriptEditor
                     if (scrollNode != null) break;
                 }
             }
+            ProcTree.BeginUpdate();
             ProcTree.Nodes.Clear();
 
             TreeNode rootNode;
@@ -1001,9 +997,9 @@ namespace ScriptEditor
                 if (nodes != null && nodes.Length > 0)
                     ProcTree.SelectedNode = nodes[0];
             }
-
-            HighlightCurrentPocedure((currentHighlightProc == null) ? currentActiveTextAreaCtrl.Caret.Line : -2);
             ProcTree.EndUpdate();
+            HighlightCurrentPocedure((currentHighlightProc == null) ? currentActiveTextAreaCtrl.Caret.Line : -2);
+            
             // scroll to node
             if (scrollNode != null) {
                 foreach (TreeNode nodes in ProcTree.Nodes) {

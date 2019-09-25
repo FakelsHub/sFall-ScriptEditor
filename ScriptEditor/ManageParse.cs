@@ -67,7 +67,7 @@ namespace ScriptEditor
 
             HighlightProcedures.AddAllToList(cTab.textEditor.Document, cTab.parseInfo.procs);
             CodeFolder.UpdateFolding(cTab.textEditor.Document, cTab.filename, cTab.parseInfo.procs);
-            CodeFolder.LoadFoldCollapse(cTab.textEditor.Document);
+            CodeFolder.GetProceduresCollapse(cTab.textEditor.Document, cTab.filename);
 
             GetParserErrorLog(cTab);
 

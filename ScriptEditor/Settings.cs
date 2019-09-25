@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
@@ -23,6 +24,7 @@ namespace ScriptEditor
 
         private static readonly string RecentPath = Path.Combine(SettingsFolder, "recent.dat");
         private static readonly string SettingsPath = Path.Combine(SettingsFolder, "settings.dat");
+
         public static readonly string SearchHistoryPath = Path.Combine(SettingsFolder, "SearchHistory.ini");
         public static readonly string PreprocDefPath = Path.Combine(SettingsFolder, "PreprocDefine.ini");
 
@@ -32,7 +34,13 @@ namespace ScriptEditor
             {"InconsolataCyr", 11.0f},      {"InputMono", 9.5f},            {"InputMonoCondensed", 9.5f},
             {"Liberation Mono", 10.25f},    {"Meslo LG S DZ", 9.75f},       {"Ubuntu Mono",  11.75f}
         };
-        
+
+        public static readonly List<string> msgListPath = new List<string>();
+        private static List<string> recent = new List<string>();
+        private static List<string> recentMsg = new List<string>();
+        private static Dictionary<string, ushort> scriptPosition = new Dictionary<string, ushort>();
+        private static readonly WindowPos[] windowPositions = new WindowPos[(int)SavedWindows.Count];
+
         const int MAX_RECENT = 40;
 
         public static byte optimize = 1;
@@ -47,11 +55,6 @@ namespace ScriptEditor
         public static string pathScriptsHFile;
         public static string lastMassCompile;
         public static string lastSearchPath;
-        public static readonly List<string> msgListPath = new List<string>();
-        private static List<string> recent = new List<string>();
-        private static List<string> recentMsg = new List<string>();
-        private static Dictionary<string, ushort> scriptPosition = new Dictionary<string, ushort>();
-        private static readonly WindowPos[] windowPositions = new WindowPos[(int)SavedWindows.Count];
         public static int editorSplitterPosition = -1;
         public static int editorSplitterPosition2 = -1;
         public static string language = "english";
@@ -142,7 +145,7 @@ namespace ScriptEditor
         {
             if (scriptPosition.ContainsKey(script))
                 return (ushort)scriptPosition[script];
-            else 
+            else
                 return 0;
         }
 
@@ -300,10 +303,10 @@ namespace ScriptEditor
 
             if (!Directory.Exists(scriptTempPath)) {
                 Directory.CreateDirectory(scriptTempPath);
-            } else 
+            } else
                 foreach (string file in Directory.GetFiles(scriptTempPath))
                     File.Delete(file);
-            File.Delete("errors.txt"); 
+            File.Delete("errors.txt");
 
             if (!Directory.Exists(SettingsFolder)) {
                 Directory.CreateDirectory(SettingsFolder);
@@ -315,21 +318,23 @@ namespace ScriptEditor
             if (!Directory.Exists(templatesFolder)) {
                 Directory.CreateDirectory(templatesFolder);
             }
-            
+
             BinaryReader brRecent = null, brSettings = null;
             if (File.Exists(RecentPath))
                 brRecent = new BinaryReader(File.OpenRead(RecentPath));
             if (File.Exists(SettingsPath))
                 brSettings = new BinaryReader(File.OpenRead(SettingsPath));
             LoadInternal(brSettings, brRecent);
-            
+
+            LoadScriptsProceduresFolding();
+
             if (!File.Exists(SearchHistoryPath))
                 File.Create(SearchHistoryPath).Close();
             if (!File.Exists(PreprocDefPath))
                 File.Create(PreprocDefPath).Close();
             if (!firstRun)
                 FileAssociation.Associate();
-            
+
             EncCodePage = (encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
             //Load custom fonts
@@ -338,8 +343,7 @@ namespace ScriptEditor
                     Fonts.AddFontFile(file);
             } catch (DirectoryNotFoundException ) { }
         }
-            
-        
+
         public static void SetTextAreaFont(ICSharpCode.TextEditor.TextEditorControl TE)
         {
             if (Fonts.Families.Length == 0)
@@ -441,7 +445,7 @@ namespace ScriptEditor
             bwRecent.Write((byte)recent.Count);
             bwRecent.Write((byte)recentMsg.Count);
             for (int i = 0; i < recent.Count; i++)
-                bwRecent.Write(recent[i]); 
+                bwRecent.Write(recent[i]);
             for (int i = 0; i < recentMsg.Count; i++)
                 bwRecent.Write(recentMsg[i]);
             //
@@ -455,6 +459,8 @@ namespace ScriptEditor
                 bwRecent.Write(value[i]);
             }
             bwRecent.Close();
+            // Store folding procedures
+            SaveScriptsProceduresFolding();
         }
 
         public static void SaveSettingData(Form mainfrm)
@@ -485,7 +491,7 @@ namespace ScriptEditor
                     Filter = "Executable file (.exe)|*.exe",
                     Title = "Select executable file"
                 };
-                if (ofd.ShowDialog() == DialogResult.OK) { 
+                if (ofd.ShowDialog() == DialogResult.OK) {
                     ExternalEditorExePath = ofd.FileName;
                     OpenInExternalEditor(file);
                 }
@@ -496,6 +502,95 @@ namespace ScriptEditor
         {
             public bool maximized;
             public int x, y, width, height;
-        } 
+        }
+
+        #region Folding save/load data
+        private static readonly string FoldingPath = Path.Combine(SettingsFolder, "folding.dat");
+
+        private static Dictionary<string, int> scriptsFolding = new Dictionary<string,int>(); // имя скрипта => позиция в массиве proceduresFolding
+        private static HashSet<string>[] proceduresFolding; // имена процедур которые являются свернутыми
+
+        public static void SetScriptProcedureFold(string scriptName, string procedure)
+        {
+            int index;
+            if (!scriptsFolding.TryGetValue(scriptName, out index)) {
+                index = proceduresFolding.Length;
+                Array.Resize(ref proceduresFolding, index + 1);
+                proceduresFolding[index] = new HashSet<string>();
+                proceduresFolding[index].Add(procedure);
+                scriptsFolding.Add(scriptName, index);
+            } else {
+                proceduresFolding[index].Add(procedure);
+            }
+        }
+
+        public static void UsSetScriptProcedureFold(string scriptName, string procedure)
+        {
+            int index;
+            if (!scriptsFolding.TryGetValue(scriptName, out index)) return;
+            proceduresFolding[index].Remove(procedure);
+        }
+
+        public static bool ScriptProcedureIsFold(string scriptName, string procedure)
+        {
+            int index;
+            if (!scriptsFolding.TryGetValue(scriptName, out index)) return false;
+            return proceduresFolding[index].Contains(procedure);
+        }
+
+        private static void SaveScriptsProceduresFolding()
+        {
+            int sCount = scriptsFolding.Count;
+            if (sCount == 0) {
+                File.Delete(FoldingPath);
+                return;
+            }
+            string[] keys = new string[sCount];
+            scriptsFolding.Keys.CopyTo(keys, 0);
+            int[] indexes = new int[sCount];
+            scriptsFolding.Values.CopyTo(indexes, 0);
+
+            BinaryWriter bwFolding = new BinaryWriter(File.Create(FoldingPath));
+            bwFolding.Write(sCount);
+            for (int i = 0; i < sCount; i++) {
+                bwFolding.Write(keys[i]);
+                int pCount = proceduresFolding[indexes[i]].Count;
+                bwFolding.Write(pCount);
+                string[] procedures = new string[pCount];
+                proceduresFolding[indexes[i]].CopyTo(procedures, 0);
+                for (int j = 0; j < pCount; j++) {
+                    bwFolding.Write(procedures[j]);
+                }
+            }
+            bwFolding.Close();
+        }
+
+        private static void LoadScriptsProceduresFolding()
+        {
+            if (File.Exists(FoldingPath)) {
+                BinaryReader brFolding = new BinaryReader(File.OpenRead(FoldingPath));
+                if (brFolding.BaseStream.Length == 0) {
+                    brFolding.Close();
+                    proceduresFolding = new HashSet<string>[0];
+                    return;
+                }
+                int sCount = brFolding.ReadInt32();
+                proceduresFolding = new HashSet<string>[sCount];
+                for (int i = 0; i < sCount; i++) {
+                    string script = brFolding.ReadString();
+                    int pCount =  brFolding.ReadInt32();
+                    if (pCount == 0) continue;
+                    proceduresFolding[i] = new HashSet<string>();
+                    for (int j = 0; j < pCount; j++) {
+                        proceduresFolding[i].Add(brFolding.ReadString());
+                    }
+                    scriptsFolding.Add(script, i);
+                }
+                brFolding.Close();
+            } else {
+                proceduresFolding = new HashSet<string>[0];
+            }
+        }
+        #endregion
     }
 }

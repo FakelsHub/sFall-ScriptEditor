@@ -65,40 +65,28 @@ namespace ScriptEditor.CodeTranslation
             UpdateFolding(document, Path.GetFileName(filepath), parseInformation);
         }
 
-        const string FLDC = " //_FLDC_";
-
-        internal static bool SaveMarkFoldCollapsed(IDocument document)
+        internal static void SetProceduresCollapsed(IDocument document, string nameScript)
         {
-            bool result = false;
+            nameScript = nameScript.ToUpperInvariant();
             foreach (FoldMarker fm in document.FoldingManager.FoldMarker)
             {
-                if (fm.FoldType > FoldType.Region || !fm.IsFolded)
+                if (fm.FoldType != FoldType.MemberBody) continue;
+                if (!fm.IsFolded) {
+                    Settings.UsSetScriptProcedureFold(nameScript, fm.FoldText.Trim());
                     continue;
-
-                LineSegment ls = document.GetLineSegment(fm.StartLine);
-                string line = document.GetText(ls);
-                if (!line.EndsWith(FLDC))
-                    document.Insert(ls.Offset + ls.Length, FLDC);
-                result = true;
+                }
+                Settings.SetScriptProcedureFold(nameScript, fm.FoldText.Trim());
             }
-            return result;
         }
 
-        internal static void LoadFoldCollapse(IDocument document)
+        internal static void GetProceduresCollapse(IDocument document, string nameScript)
         {
+            nameScript = nameScript.ToUpperInvariant();
             foreach (FoldMarker fm in document.FoldingManager.FoldMarker)
             {
-                if (fm.FoldType > FoldType.Region)
-                    continue;
-
-                LineSegment ls = document.GetLineSegment(fm.StartLine);
-                if (document.GetText(ls).EndsWith(FLDC)) {
-                    fm.IsFolded = true;
-                    int len = FLDC.Length;
-                    document.Remove(ls.Offset + ls.Length - len, len);
-                }
+                if (fm.FoldType != FoldType.MemberBody) continue;
+                fm.IsFolded = Settings.ScriptProcedureIsFold(nameScript, fm.FoldText.Trim());
             }
-            if (document.UndoStack.CanUndo) document.UndoStack.ClearAll();
         }
     }
 }
