@@ -16,6 +16,7 @@ namespace ScriptEditor.CodeTranslation
         public Reference[] references;
 
         int isStandart = -1;
+        int isLocal = -1;
 
         public NameType Type() { return NameType.Proc; }
         public Reference[] References() { return references; }
@@ -112,6 +113,13 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
             return false;
+        }
+
+        public bool IsLocal(string script)
+        {
+            if (isLocal != -1) return (isLocal == 1);
+            isLocal = Convert.ToInt32(fstart.ToLowerInvariant() == script.ToLowerInvariant());
+            return (isLocal == 1);
         }
 
         public override string ToString()

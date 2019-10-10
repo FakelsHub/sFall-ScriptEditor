@@ -175,7 +175,7 @@ namespace ScriptEditor
             bool prevStatus = args.tab.parseInfo.parseError;
             args.tab.parseInfo = ExtParser.Parse(args.text, args.tab.filepath, args.tab.parseInfo);
             args.status = ExtParser.LastStatus;
-            args.parseIsFail = prevStatus & (args.status > 0);
+            //args.parseIsFail = prevStatus & (args.status > 0);
             eventArgs.Result = args;
             parserIsRunning = false;
         }
@@ -195,11 +195,11 @@ namespace ScriptEditor
         private void ParserCompleted(TabInfo tab, bool parseIsFail)
         {
             if (currentTab == tab) {
-                Procedure[] procs = null;
-                if (parseIsFail) { // предыдущая попытка парсинга была неудачной
-                    procs = ParserInternal.GetProcsData(tab.textEditor.Text, tab.filepath);// обновить данные об имеющихся процедур
-                }
-                HighlightProcedures.UpdateList(tab.textEditor.Document, (!parseIsFail) ? tab.parseInfo.procs : procs);
+                //Procedure[] procs = null;
+                //if (parseIsFail) { // предыдущая попытка парсинга была неудачной
+                //    procs = ParserInternal.GetProcsData(tab.textEditor.Text, tab.filepath); // обновить данные об имеющихся процедур (для чего?)
+                //}
+                HighlightProcedures.UpdateList(tab.textEditor.Document, tab.parseInfo.procs); //(!parseIsFail) ? tab.parseInfo.procs : procs
                 UpdateNames(); // Update Tree Variables/Procedures
 
                 if (tab.filepath != null) {

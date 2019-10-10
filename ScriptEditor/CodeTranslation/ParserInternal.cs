@@ -103,7 +103,7 @@ namespace ScriptEditor.CodeTranslation
                         break;
                     }
                 }
-                if (!exist) _proc.RemoveAt(i--); // remove unused procedure
+                if (!exist && _proc[1].IsLocal(filepath)) _proc.RemoveAt(i--); // remove unused local procedure
             }
 
             for (int i = 0; i < update_pi.procs.Length; i++)
@@ -473,7 +473,9 @@ namespace ScriptEditor.CodeTranslation
 
                     if (!bufferSSLCode[i].StartsWith(PROCEDURE) && !bufferSSLCode[i - 1].StartsWith(PROCEDURE)) continue;
                     for (int j = i - 1; j > 0; j--) {
-                       if (bufferSSLCode[j].StartsWith(PROCEDURE)) return j + 1;
+                        if (bufferSSLCode[j].StartsWith(PROCEDURE)) {
+                            return (bufferSSLCode[j].IndexOf(';') > 0) ? j + 1 : j - 1;  // имеется ли в строке знак ';'
+                        }
                     }
                     if (++i <= bufferSSLCode.Length) continue;
                     return -1;  // procedure block is broken

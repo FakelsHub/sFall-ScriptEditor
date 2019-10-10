@@ -1507,6 +1507,12 @@ namespace ScriptEditor
             };
             te.ActiveTextAreaControl.TextArea.ToolTipRequest += new ToolTipRequestEventHandler(TextArea_ToolTipRequest);
             te.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(Caret_PositionChanged);
+            te.ActiveTextAreaControl.TextArea.MouseDoubleClick += new MouseEventHandler(TextArea_MouseDoubleClick);
+        }
+
+        void TextArea_MouseDoubleClick(object sender, MouseEventArgs e) {
+            if (e.Button != System.Windows.Forms.MouseButtons.Left) return;
+            Utilities.SelectedTextColorRegion(currentActiveTextAreaCtrl.Caret.Position, currentActiveTextAreaCtrl);
         }
 
         bool setOnlyOnce = false;

@@ -35,7 +35,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                   AutoComleteList.Font = colored ? font.BoldFont : font.RegularFont; }
         }
 
-        public KeyValuePair<int, string> WordPosition { get; set; }
+        public KeyValuePair<int, int> WordPosition { get; set; }
         private TextAreaControl TAC { get; set; }
 
         private ListBox AutoComleteList;
@@ -155,7 +155,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             AutoCompleteItem item = (AutoCompleteItem)AutoComleteList.SelectedItem;
 
             int startOffs = TextUtilities.FindWordStart(TAC.Document, WordPosition.Key); //WordPosition.Key - WordPosition.Value.Length;
-            TAC.Document.Replace(startOffs, WordPosition.Value.Length, item.Name);
+            TAC.Document.Replace(startOffs, WordPosition.Value, item.Name);
             TAC.Caret.Position = TAC.Document.OffsetToPosition(startOffs + item.NameLength);
 
             AutoComleteList.Hide();
@@ -171,15 +171,27 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             bool pressKeyAutoComplite = (keyChar == String.Empty);
 
             TAC = cTab.textEditor.ActiveTextAreaControl;
-            string word = TextUtilities.GetWordAt(TAC.Document, caretOffset) + keyChar;
-            if (pressKeyAutoComplite && word == String.Empty) {
-                word = TextUtilities.GetWordAt(TAC.Document, --caretOffset);
-            }
 
+            string word = TextUtilities.GetWordAt(TAC.Document, caretOffset) + keyChar;
+            int wordLen = word.Length;
+            if (pressKeyAutoComplite) { 
+                if (word == String.Empty) {
+                    word = TextUtilities.GetWordAt(TAC.Document, --caretOffset);
+                    wordLen = word.Length;
+                } else {
+                    if (wordLen > 2) {
+                        int wordStart = caretOffset - TextUtilities.FindWordStart(TAC.Document, caretOffset);
+                        word = word.Remove(wordStart);
+                    } else
+                        word = null;
+                } 
+            }
+            
             if (back && word != null) {
-                if (word.Length > 2)
-                    word = word.Remove(word.Length - 1);
-                else
+                if (wordLen > 2) {
+                    wordLen--;
+                    //word = word.Remove(wordLen);
+                } else
                     word = null;
             }
             
@@ -225,9 +237,9 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                         }
                         AutoComleteList.Show();
                     }
-                    WordPosition = new KeyValuePair<int, string>(TAC.Caret.Offset + shift, word);
+                    WordPosition = new KeyValuePair<int, int>(TAC.Caret.Offset + shift, wordLen);
                 } else if (AutoComleteList.Visible)
-                    WordPosition = new KeyValuePair<int, string>(TAC.Caret.Offset + shift, word);
+                    WordPosition = new KeyValuePair<int, int>(TAC.Caret.Offset + shift, wordLen);
             } else if (AutoComleteList.Visible) {
                         AutoComleteList.Hide();
             }
