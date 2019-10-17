@@ -912,12 +912,6 @@ Note: This will only work for script files and include files (.ssl .h).</value>
         oKoMepfGZkNVszZBdW2ggSQMjmM0QQ0RVHvlOpugRkh+6XkD9f86XlAO9kEAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="pDefineStripComboBox.ToolTipText" xml:space="preserve">
-    <value>Definition of conditional compilation constant for preprocessor #if directives.
-You can add custom defines to file PreprocDefine.ini
-
-Note: This setting used with Open Watcom or external MCPP preprocessor.</value>
-  </data>
   <data name="qCompile_toolStripSplitButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

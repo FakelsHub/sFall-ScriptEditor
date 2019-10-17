@@ -186,8 +186,8 @@ namespace ScriptEditor {
             this.toolStripSeparator34 = new System.Windows.Forms.ToolStripSeparator();
             this.MassCompile_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.roundtripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Preprocess_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.roundtripToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator25 = new System.Windows.Forms.ToolStripSeparator();
             this.decompileF1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.oldDecompileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1892,8 +1892,8 @@ namespace ScriptEditor {
             this.toolStripSeparator34,
             this.MassCompile_ToolStripMenuItem,
             this.toolStripSeparator3,
-            this.roundtripToolStripMenuItem,
             this.Preprocess_ToolStripMenuItem,
+            this.roundtripToolStripMenuItem,
             this.toolStripSeparator25,
             this.decompileF1ToolStripMenuItem,
             this.oldDecompileToolStripMenuItem,
@@ -1948,16 +1948,6 @@ namespace ScriptEditor {
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(185, 6);
             // 
-            // roundtripToolStripMenuItem
-            // 
-            this.roundtripToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.roundtripToolStripMenuItem.Name = "roundtripToolStripMenuItem";
-            this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.roundtripToolStripMenuItem.Text = "Roundtrip";
-            this.roundtripToolStripMenuItem.ToolTipText = "Compile script into output folder and open decompiled script file.";
-            this.roundtripToolStripMenuItem.Click += new System.EventHandler(this.roundtripToolStripMenuItem_Click);
-            // 
             // Preprocess_ToolStripMenuItem
             // 
             this.Preprocess_ToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -1967,6 +1957,16 @@ namespace ScriptEditor {
             this.Preprocess_ToolStripMenuItem.Text = "Preprocess";
             this.Preprocess_ToolStripMenuItem.ToolTipText = "Open script file after preprocessor.";
             this.Preprocess_ToolStripMenuItem.Click += new System.EventHandler(this.preprocessToolStripMenuItem_Click);
+            // 
+            // roundtripToolStripMenuItem
+            // 
+            this.roundtripToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.roundtripToolStripMenuItem.Name = "roundtripToolStripMenuItem";
+            this.roundtripToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.roundtripToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.roundtripToolStripMenuItem.Text = "Roundtrip";
+            this.roundtripToolStripMenuItem.ToolTipText = "Compile script into output folder and open decompiled script file.";
+            this.roundtripToolStripMenuItem.Click += new System.EventHandler(this.roundtripToolStripMenuItem_Click);
             // 
             // toolStripSeparator25
             // 
@@ -2012,7 +2012,8 @@ namespace ScriptEditor {
             "RELEASE"});
             this.pDefineStripComboBox.Name = "pDefineStripComboBox";
             this.pDefineStripComboBox.Size = new System.Drawing.Size(121, 21);
-            this.pDefineStripComboBox.ToolTipText = resources.GetString("pDefineStripComboBox.ToolTipText");
+            this.pDefineStripComboBox.ToolTipText = "Definition of conditional compilation constant for preprocessor #if directives.\r\n" +
+                "You can add custom defines to file PreprocDefine.ini";
             this.pDefineStripComboBox.SelectedIndexChanged += new System.EventHandler(this.pDefineStripComboBox_SelectedIndexChanged);
             // 
             // Help_toolStripButton

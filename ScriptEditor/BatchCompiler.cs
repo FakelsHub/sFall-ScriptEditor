@@ -54,7 +54,7 @@ namespace ScriptEditor
                     e.Cancel = true;
                     break;
                 }
-                if (new Compiler().Compile(s, out unused, null, false))
+                if (new Compiler(false).Compile(s, out unused, null, false))
                     failed = 0;
                 else
                     failed = 1;

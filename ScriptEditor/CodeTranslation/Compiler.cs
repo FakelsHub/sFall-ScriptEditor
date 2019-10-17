@@ -20,6 +20,11 @@ namespace ScriptEditor.CodeTranslation
         private static readonly string preprocessPath = Path.Combine(Settings.scriptTempPath, "preprocess.ssl");
 
         private string outputSSL;
+        private bool tempOutput = false;
+
+        public Compiler(bool isTemp) {
+            tempOutput = isTemp;
+        }
 
         public static string GetPreprocessedFile(string sName)
         {
@@ -40,6 +45,8 @@ namespace ScriptEditor.CodeTranslation
                 outputFile = outputFile.Remove(outputFile.Length - 6);
             
             outputFile = outputFile + ".int";
+
+            if (tempOutput) return Path.Combine(Settings.scriptTempPath, outputFile);
 
             if (Settings.ignoreCompPath && sourceDir.Length == 0)
                 sourceDir = Path.GetDirectoryName(infile);
@@ -271,18 +278,22 @@ namespace ScriptEditor.CodeTranslation
             if (!File.Exists(decompilationPath)) {
                 return null;
             }
-            SaveFileDialog sfDecomp = new SaveFileDialog();
-            sfDecomp.Title = "Enter name to save decompile file";
-            sfDecomp.Filter = "Script files|*.ssl";
-            sfDecomp.RestoreDirectory = true;
-            sfDecomp.InitialDirectory = (!outputFolder || Settings.outputDir == null) ? Path.GetDirectoryName(infile) : Settings.outputDir;
-            sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
             string result;
-            if (sfDecomp.ShowDialog() == DialogResult.OK)
-                result = sfDecomp.FileName;
-            else
-                result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
-            sfDecomp.Dispose();
+            if (!tempOutput) {
+                SaveFileDialog sfDecomp = new SaveFileDialog();
+                sfDecomp.Title = "Enter name to save decompile file";
+                sfDecomp.Filter = "Script files|*.ssl";
+                sfDecomp.RestoreDirectory = true;
+                sfDecomp.InitialDirectory = (!outputFolder || Settings.outputDir == null) ? Path.GetDirectoryName(infile) : Settings.outputDir;
+                sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
+                if (sfDecomp.ShowDialog() == DialogResult.OK)
+                    result = sfDecomp.FileName;
+                else
+                    result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
+                sfDecomp.Dispose();
+            } else {
+                result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[temp].ssl");
+            }
             File.Delete(result);
             File.Move(decompilationPath, result);
             return result;

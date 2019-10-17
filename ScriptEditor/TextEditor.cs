@@ -54,6 +54,7 @@ namespace ScriptEditor
         private bool dbClick;
 
         private int showTipsColumn;
+        private bool roundTrip = false;
 
         internal TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
@@ -153,6 +154,7 @@ namespace ScriptEditor
             DontFind.LoadAsync();
             CompileFail.LoadAsync();
 
+            this.Text += " v." + AboutBox.appVersion;
             tbOutput.Text = "***** " +  AboutBox.appName + " v." + AboutBox.appVersion + AboutBox.appDescription + " *****";
         }
 
@@ -368,7 +370,7 @@ namespace ScriptEditor
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     if (!this.Focused)
                         ShowMe();
-                    string decomp = new Compiler().Decompile(file, outputFolder);
+                    string decomp = new Compiler(roundTrip).Decompile(file, outputFolder);
                     if (decomp == null) {
                         MessageBox.Show("Decompilation of '" + file + "' was not successful", "Error");
                         return null;
@@ -713,7 +715,7 @@ namespace ScriptEditor
             if (tab.changed || tab.filepath == null)
                 return false;
 
-            bool success = new Compiler().Compile(tab.filepath, out msg, tab.buildErrors, preprocess, tab.parseInfo.ShortCircuitEvaluation);
+            bool success = new Compiler(roundTrip).Compile(tab.filepath, out msg, tab.buildErrors, preprocess, tab.parseInfo.ShortCircuitEvaluation);
             
             foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
                 foreach (Error e in tab.buildErrors) {
@@ -1974,8 +1976,7 @@ namespace ScriptEditor
 
         private void roundtripToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null)
-                return;
+            if (currentTab == null) return;
 
             if (Settings.userCmdCompile) {
                 MessageBox.Show("It is required to turn off the compilation option via a user cmd file.");
@@ -1983,11 +1984,13 @@ namespace ScriptEditor
             }
             dgvErrors.Rows.Clear();
             string msg;
+            roundTrip = true;
             bool result = Compile(currentTab, out msg, showIcon: false);
             tbOutput.Text = currentTab.buildLog = msg;
             if (result) {
-                Open(new Compiler().GetOutputPath(currentTab.filepath), OpenType.File, false);
+                Open(new Compiler(true).GetOutputPath(currentTab.filepath), OpenType.File, false);
             }
+            roundTrip = false;
         }
 
         private void editRegisteredScriptsToolStripMenuItem_Click(object sender, EventArgs e)

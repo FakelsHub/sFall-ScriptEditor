@@ -39,9 +39,6 @@ echo   Preprocessing script: OK.
 ren %namescript%.i %namescript%.ssl
 if exist %namescript%.int del %namescript%.int
 
-rem compiling script with original fallout BIS compiler
-rem dos32a.exe bcompile.exe %namescript%.ssl
-
 rem compiling script sfall compiler with BIS compatible mode
 compile.exe -b -O%optimize% %namescript%.ssl
 
