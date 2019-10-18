@@ -681,14 +681,14 @@ int metarule2_explosions(int arg1, int arg2) | - Was made as a dirty easy hack t
 void set_attack_explosion_pattern(x, y)  | - Currently y is not used and x means: 1 - reduced explosion pattern (3 effects are spawned instead of 7), 0 - full pattern.
 void set_attack_explosion_art(x, y)  | - y not used and x is a misc frame ID (last 3 bytes, without object type) to use for the next explosion.
 void set_attack_explosion_radius(x)  | - Changes radius at which explosion will hit secondary targets for the next attack (from the experiments it is limited to something around 8 by the engine).
-void set_attack_is_explosion (type) | - Установить взрывной эффект с повреждением указанного типа для последующей атаки, при этом все цели в радиусе взрыва получат урон указанного типа. | Примечание: В этом случае урон у оружия должен соответствовать указанному типу повреждения.
+void set_attack_is_explosion (type) | - Sets an explosive effect with damage of the specified type for a subsequent attack, with all targets in the blast radius receiving damage of the specified type. || Note: In this case, the weapon's damage must match the damage type specified.
 void set_attack_is_explosion_fire  | - If you call this right before using a weapon with fire damage type, it will produce explosion effects (and radius damage) just like "explosion" type, but all targets will still recieve fire damage.
 
-void set_explosion_radius (grenade, rocket) | - Устанавливает постоянный радиус для взрывов типа гранат и/или для взрывов типа ракеты и динамит. | Установка значения 0 не изменяет соответствующий радиус. || Примечание: Установленный радиус будет сброшен, когда игрок будет начинать или загружать новую игру.
-array get_explosion_damage (itemPid) | - Возвращает массив минимального и максимального урона для указанного взрывчатого предмета.
-void set_dynamite_damage (minDmg, maxDmg) | - Устанавливает минимальный и максимальный урон для предмета динамита.
-void set_plastic_damage (minDmg, maxDmg) | - Устанавливает минимальный и максимальный урон для предмета пластиковой взрывчатки.
-void set_explosion_max_targets (countTargets) | - Устанавливает максимальное количество дополнительных целей при порожении взрывов. | Допустимый диапазон: 1..6 (значение по умолчанию 6).
+void set_explosion_radius (grenade, rocket) | - Sets a constant radius for the explosions of the grenades type and/or explosions of the type of missile and dynamite. | Setting the value to 0 does not change the corresponding radius. || Note: The set radius will be reset when the player starts or loads a new game.
+array get_explosion_damage (itemPid) | - Returns an array of minimum and maximum damage for the specified explosive item.
+void set_dynamite_damage (minDmg, maxDmg) | - Sets the minimum and maximum damage for a dynamite item.
+void set_plastic_damage (minDmg, maxDmg) | - Sets the minimum and maximum damage for a plastic explosive item.
+void set_explosion_max_targets (countTargets) | - Sets the maximum number of additional targets when generating explosions. | The valid range is 1..6 (default value is 6).
 
 array string_split(string, split) | - Takes a string and a seperator, searches the string for all instances of the seperator, and returns a temp array filled with the pieces of the string split at each instance. If you give an empty string as the seperator, the string is split into individual characters.
 string substr(string, start, length)  | - Cuts a substring from a string starting at "start" up to "length" characters. | If start is negative - it indicates starting position from the end of the string (for example substr("test", -2, 2) will return last 2 charactes: "st"). | If length is negative - it means so many characters will be omitted from the end of string (example: substr("test", 0, -2) will return string without last 2 characters: "te").
@@ -743,23 +743,23 @@ void save_array(mixed key, int arrayID) | - Array is saved (arrayID is associate
 int load_array(mixed key) | - Load array from savegame data by the same key provided in "save_array".
 
 // array macros
-void create_lookup_map | - Создает постоянный "lookup" ассоциативный массив, в котором значение существующих ключей доступны только для чтения, и не могут быть изменены. || Примечание: Этот тип массива позволяет хранить ноль (0) для значения ключа.
-void temp_lookup_map | - Создает временный "lookup" ассоциативный массив, в котором значение существующих ключей доступны только для чтения, и не могут быть изменены. || Примечание: Этот тип массива позволяет хранить ноль (0) для значения ключа.
-void sort_map_value (array) | - Сортирует указанный ассоциативный массив в порядке возрастания по значению ключей (value).
-void sort_map_reverse (array) | - Сортирует указанный ассоциативный массив в порядке убывания по значению ключей (value).
-void sort_array (array) | - Сортирует указанный массив в порядке возрастания его значений. || Примечание: Для ассоциативного массива сортировка происходит по ключу (key).
-void sort_array_reverse (array) | - Сортирует указанный массив в порядке убывания его значений. || Примечание: Для ассоциативного массива сортировка происходит по ключу (key).
+void create_lookup_map | - Creates a persistent "lookup" associative array in which the value of existing keys are read-only, and cannot be changed. || Note: This array type allows you to store zero (0) for the key value.
+void temp_lookup_map | - Creates a temporary "lookup" associative array in which the value of existing keys are read-only, and cannot be changed. || Note: this array type allows you to store zero (0) for the key value.
+void sort_map_value (array) | - Sorts the specified associative array in ascending order by key value.
+void sort_map_reverse (array) | - Sorts the specified associative array in descending order by key value.
+void sort_array (array) | - Sorts the specified array in ascending order of its values. || Note: For an associative array, sorting is done by key.
+void sort_array_reverse (array) | - Sorts the specified array in descending order of its values. || Note: For an associative array, sorting is done by key.
 
-int create_array_list (size) | - Создает постоянный массив с указанным размером (size). || Макрос от: create_array(size, 0)
-int temp_array_list (size) | - Создает временный массив с указанным размером (size). || Макрос от: temp_array(size, 0)
-int create_array_map | - Создает постоянный ассоциативный массив. || Макрос от: create_array(-1, 0)
-int temp_array_map | - Создает временный ассоциативный массив. || Макрос от: temp_array(-1, 0)
-bool array_is_map (array) | - Возвращает True, если указанный массив является ассоциативным. || Макрос от: array_key(x, -1) == 1
-bool is_in_array (item, array) | - Возвращает True, если указанный элемент существует в указанном массиве. || Макрос от: scan_array(array, item) != -1
-bool array_exists (array) | - Возвращает True, если указанный указанный массиве существует. || Макрос от: len_array(array) != -1
-void clear_array (array) | - Удаляет все элементы в указанном массиве. || Макрос от: resize_array(array, 0)
-void reverse_array (array) | - Изменяет порядок элементов указанного массива (или карты) на обратный. || Макрос от: resize_array(array, -4)
-void shuffle_array (array) | - Случайным образом перетасовывает элементы указанного массива или карты. || Макрос от: resize_array(array, -5)
+int create_array_list (size) | - Creates a persistent array with the specified size. || Macro: create_array(size, 0)
+int temp_array_list (size) | - Creates a temporary array with the specified size. || Macro: temp_array(size, 0)
+int create_array_map | - Creates a permanent associative array. || Macro: create_array(-1, 0)
+int temp_array_map | - Creates a temporary associative array. || Macro: temp_array(-1, 0)
+bool array_is_map (array) | - Returns True if the specified array is associative. || Macro: array_key(x, -1) == 1
+bool is_in_array (item, array) | - Returns True if the specified element exists in the specified array. || Macro: scan_array(array, item) != -1
+bool array_exists (array) | - Returns True if the specified array exists. || Macro: len_array(array) != -1
+void clear_array (array) | - Removes all elements in the specified array. || Macro: resize_array(array, 0)
+void reverse_array (array) | - Reverses the order of elements in the specified array or map. || Macro: resize_array(array, -4)
+void shuffle_array (array) | - Randomly shuffles the elements of the specified array or map. || Macro: resize_array(array, -5)
 
 // FuncX
 any sfall_func0(string funcName) | - Calls scripting function with given name and no arguments.
