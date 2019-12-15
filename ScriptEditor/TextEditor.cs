@@ -550,30 +550,26 @@ namespace ScriptEditor
                     Application.DoEvents();
                 }
 
-                bool msg = false;
-                if (Path.GetExtension(tab.filename) == ".msg") 
-                    msg = true;
+                bool msg = (Path.GetExtension(tab.filename) == ".msg");
 
-                if (Settings.autoTrailingSpaces && !msg)
+                if (Settings.autoTrailingSpaces && !msg) {
                     new ICSharpCode.TextEditor.Actions.RemoveTrailingWS().Execute(currentActiveTextAreaCtrl.TextArea);
-
-                if (close && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0)
+                }
+                if (close && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
                     CodeFolder.SetProceduresCollapsed(tab.textEditor.Document, tab.filename);
-
+                }
                 string saveText = tab.textEditor.Text;
-                if (msg && Settings.EncCodePage.CodePage == 866) 
+                if (msg && Settings.EncCodePage.CodePage == 866) {
                     saveText = saveText.Replace('\u0425', '\u0058'); //Replacement russian letter "X", to english letter
-
+                }
                 Utilities.NormalizeDelimiter(ref saveText);
 
                 File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage
                                                               : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
                                                                                           : Encoding.Default);
-                if (!close)
-                    tab.FileTime = File.GetLastWriteTime(tab.filepath);
+                if (!close) tab.FileTime = File.GetLastWriteTime(tab.filepath);
                 tab.changed = false;
-                if (!close && tab.index == tabControl1.SelectedIndex)
-                    SetTabTextChange(tab.index);
+                SetTabTextChange(tab.index);
             }
            
         }
