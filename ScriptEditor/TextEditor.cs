@@ -2675,6 +2675,32 @@ namespace ScriptEditor
         {
             Settings.oldDecompile = oldDecompileToolStripMenuItem.Checked;
         }
+
+        private void convertHexDecToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected) return;
+            bool isConvert = false;
+
+            string text = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
+            if (text.IndexOf("0x", StringComparison.CurrentCultureIgnoreCase) != -1) {
+                try {
+                    text = Convert.ToInt32(text, 16).ToString(); // hex -> dec
+                    isConvert = true;
+                } catch (Exception) {}
+            } else {
+                int value;
+                if (int.TryParse(text, out value)) {
+                    text = "0x" + Convert.ToString(value, 16).ToUpper(); // dec -> hex
+                    isConvert = true;
+                }
+            }
+            if (isConvert) {
+                ISelection sel = currentActiveTextAreaCtrl.SelectionManager.SelectionCollection[0];
+                currentDocument.Replace(sel.Offset, sel.Length, text);
+                currentActiveTextAreaCtrl.TextArea.Caret.Column = sel.StartPosition.Column;
+                currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
+            }
+        }
         #endregion
 
         #region Dialog System

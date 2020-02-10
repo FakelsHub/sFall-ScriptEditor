@@ -1050,6 +1050,23 @@ Note: This will only work for script files and include files (.ssl .h).</value>
         H6AEELkuoFpmwud3mBwAxyxA1dGzKyUAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="convertHexDecToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAA
+        CxMBAJqcGAAAAlxJREFUOE9j/P//PwMYMEIoGODI24Ngbw1Uk3OWDLw061YnXBCqjQFkADpmz9vNkLfl
+        PQO3NicnIwcDl2aYYkzH18L/Qlp8puhqsRog5ykR7r3QbkPGybC7+Rdi75feSHze/a30f+RGz7NMLEys
+        yIagGMDAxMBk1ag/r+x5wv/WHzn/O//n/2/+k/G/+FX0/8QbPv8jrjn/l08SacZpgHm17qSi5zH/g7c4
+        PradqLvLqldrg9dGs6uxt9z+ex03+2+9X/2/1kLxz8z8jBIwQ+AuENbnNw3b6fpRwl4oBxigIl67PzIY
+        bv7AoJAgWhFwy/K/yWqlr1IpfEvZpJmsgfIsGAbI+ogncElxOIAkQIHosusTg9b6DwyaHVLr5VKE5rEI
+        M+lhC3C4C0ARCVMAMsBm2ycG9bXvGJi4GST1Og5jDWxwEsAVjRwybFL8+rwWlSeALmnah6KOiY+RH8ML
+        IFtBmEuNQ16rWKEp+JDDS4VAqcbyYx8YdGt2gTGjKAOLSqXYVC4tVhcMA9iEWSU1iuT6vXZZvE265v0/
+        9ab/fwET7kCgbQKceiwy0omCoY7bdE8aTlW4AfQuB4YBXAocekEnbf/HXXT/H3vF5X/qQ6Ah93w/JVz1
+        ehl71f1z7H3X//abtX6xSDCa40wHSnFSjVEP7P+nPvb6X/kz9n/1n4T/Be/D/kdcd/pvMFX+BqsskxPe
+        pAxMiWxuG4zOVv2O+2/eobnBqEZloXqu1GwBW850oJwI3miESfLrc1tGXnf8ysDGIFdy4DU48LBpxAgD
+        ZEU8hmy+wNTGSUgzSA8AXrgWsYHhcq4AAAAASUVORK5CYII=
+</value>
+  </data>
   <data name="UpperCaseToolStripMenuItem1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
