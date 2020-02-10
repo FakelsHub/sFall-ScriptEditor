@@ -56,6 +56,24 @@ namespace ScriptEditor.CodeTranslation
             }
         }
 
+        private static void ProcedureRemoveSpec(ref string sslCode)
+        {
+            if (sslCode.Length < 15) return;
+            int lookLoop = 0;
+            do {
+                if (sslCode.StartsWith("import ") || sslCode.StartsWith("export ") || sslCode.StartsWith("inline ")) {
+                    sslCode = sslCode.Remove(0, 7).TrimStart();
+                    lookLoop++;
+                } else if (sslCode.StartsWith("critical ")) {
+                    sslCode = sslCode.Remove(0, 9).TrimStart();
+                    lookLoop++;
+                } else if (sslCode.StartsWith("pure ")) {
+                    sslCode = sslCode.Remove(0, 5).TrimStart();
+                    lookLoop++;
+                }
+            } while (--lookLoop >= 0);
+        }
+
         /// <summary>
         /// Internal parse script
         /// </summary>
@@ -228,13 +246,7 @@ namespace ScriptEditor.CodeTranslation
                 
                 if (CommentBlockParse(ref bufferSSLCode[i], ref _comm)) continue;
 
-                if (bufferSSLCode[i].StartsWith("import", StringComparison.OrdinalIgnoreCase)
-                    || bufferSSLCode[i].StartsWith("export", StringComparison.OrdinalIgnoreCase)) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
-                } else if (bufferSSLCode[i].StartsWith("critical", StringComparison.OrdinalIgnoreCase)) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
-                }
-
+                ProcedureRemoveSpec(ref bufferSSLCode[i]);
                 if (bufferSSLCode[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
                     string pName = bufferSSLCode[i].Substring(PROC_LEN, bufferSSLCode[i].Length - PROC_LEN);
@@ -307,12 +319,8 @@ namespace ScriptEditor.CodeTranslation
                 if (CommentBlockParse(ref bufferSSLCode[i], ref commFlag)) continue;
 
                 bufferSSLCode[i] = bufferSSLCode[i].Replace('\t', ' ');
-                if (bufferSSLCode[i].StartsWith("import ") || bufferSSLCode[i].StartsWith("export ")) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
-                } else if (bufferSSLCode[i].StartsWith("critical ")) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
-                }
 
+                ProcedureRemoveSpec(ref bufferSSLCode[i]);
                 if (bufferSSLCode[i].StartsWith(PROCEDURE)) {
                     declarLine = -1;
                     beginLine = -1;
@@ -433,12 +441,8 @@ namespace ScriptEditor.CodeTranslation
                 bufferSSLCode[i] = bufferSSLCode[i].Trim();
                 
                 // TODO: возможно тут нужна проверка на закоментированный блок /* */
-                
-                if (bufferSSLCode[i].StartsWith("import") || bufferSSLCode[i].StartsWith("export")) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
-                } else if (bufferSSLCode[i].StartsWith("critical")) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
-                }
+
+                ProcedureRemoveSpec(ref bufferSSLCode[i]);
                 if (IsProcedure(ref bufferSSLCode[i], pName)) {
                     if (bufferSSLCode[i].Length <= (PROC_LEN + pLen))
                         continue; // broken declare
@@ -469,7 +473,7 @@ namespace ScriptEditor.CodeTranslation
                 RemoveCommentLine(ref bufferSSLCode[i], 0);
                 
                 if (bufferSSLCode[i].EndsWith(BEGIN)) {
-                    if (bufferSSLCode[i].StartsWith("critical")) bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
+                    ProcedureRemoveSpec(ref bufferSSLCode[i]);
 
                     if (!bufferSSLCode[i].StartsWith(PROCEDURE) && !bufferSSLCode[i - 1].StartsWith(PROCEDURE)) continue;
                     for (int j = i - 1; j > 0; j--) {
@@ -505,11 +509,8 @@ namespace ScriptEditor.CodeTranslation
                 if (CommentBlockParse(ref bufferSSLCode[i], ref _comm)) continue;
 
                 bufferSSLCode[i] = bufferSSLCode[i].Replace('\t', ' ');
-                if (bufferSSLCode[i].StartsWith("import ") || bufferSSLCode[i].StartsWith("export ")) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 7).TrimStart();
-                } else if (bufferSSLCode[i].StartsWith("critical ")) {
-                    bufferSSLCode[i] = bufferSSLCode[i].Remove(0, 9).TrimStart();
-                }
+
+                ProcedureRemoveSpec(ref bufferSSLCode[i]);
 
                 // ищем начало процедуры с искомым именем
                 if (_proc == 0 && IsProcedure(ref bufferSSLCode[i], pName))
