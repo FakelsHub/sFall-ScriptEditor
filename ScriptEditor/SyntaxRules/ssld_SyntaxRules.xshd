@@ -1102,6 +1102,9 @@
         <Key word = "not" />
         <Key word = "true" />
         <Key word = "false" />
+        <Key word = "andalso" />
+        <Key word = "orelse" />
+        <Key word = "div" />
       </KeyWords>
 
       <KeyWords name = "Constants" bold="true" italic="true" color="IndianRed">

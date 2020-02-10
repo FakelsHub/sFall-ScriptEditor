@@ -1063,6 +1063,9 @@
         <Key word = "true" />
         <Key word = "false" />
         <Key word = "floor" />
+        <Key word = "andalso" />
+        <Key word = "orelse" />
+        <Key word = "div" />
       </KeyWords>
 
       <KeyWords name = "Constants" bold="false" italic="false" color="DarkBlue">

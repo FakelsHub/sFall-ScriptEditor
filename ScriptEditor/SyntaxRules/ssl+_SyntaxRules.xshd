@@ -166,6 +166,8 @@
         <Key word = "not" />
         <Key word = "true" />
         <Key word = "false" />
+        <Key word = "andalso" />
+        <Key word = "orelse" />
       </KeyWords>
 
       <KeyWords name = "FalloutBaseFunctions" bold="true" italic="false" color="#750075">
@@ -1093,6 +1095,7 @@
 
       <KeyWords name = "OpKeywords" bold="true" italic="false" color="Blue">
         <Key word = "floor" />
+        <Key word = "div" />		  
       </KeyWords>
 
       <KeyWords name = "Constants" bold="true" italic="true" color="IndianRed">
