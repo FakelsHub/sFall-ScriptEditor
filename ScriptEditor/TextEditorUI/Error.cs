@@ -147,8 +147,7 @@ namespace ScriptEditor.TextEditorUI
                     tab.parserErrors.Add(error);
                     sb.AppendLine();
                 }
-                if (!warn)
-                    sb.AppendLine(sLog[i]);
+                if (!warn) sb.AppendLine(sLog[i]);
             }
             tab.textEditor.Refresh();
 
@@ -168,10 +167,15 @@ namespace ScriptEditor.TextEditorUI
 
             if (TextEditor.parsingErrors && Path.GetFileName(fpath) == tab.filename) {
                 LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
-                TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightError);
-                tm.ToolTip = message;
-                tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
-                fpath = tab.filepath;
+                List<TextMarker> markers = tab.textEditor.Document.MarkerStrategy.GetMarkers(ls.Offset);
+                if (markers.Count > 0) {
+                    markers[0].ToolTip += Environment.NewLine + message;
+                } else {
+                    TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightError);
+                    tm.ToolTip = message;
+                    tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
+                    fpath = tab.filepath;
+                }
             }
             // add to error tab
             tab.parserErrors.Add(new Error(ErrorType.Error, message, fpath, ePosition.line + 1, ePosition.column));
@@ -184,13 +188,14 @@ namespace ScriptEditor.TextEditorUI
             string fpath = m.Groups[1].Value;
 
             int total = tab.textEditor.Document.TotalNumberOfLines;
-            if (ePosition.line >= total)
-                ePosition.line = total - 1;
+            if (ePosition.line >= total) ePosition.line = total - 1;
 
             if (Path.GetFileName(fpath) == tab.filename) {
                 LineSegment ls = tab.textEditor.Document.GetLineSegment(ePosition.line);
-                List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.GetMarkers(ls.Offset);
-                if (marker.Count > 0) return;
+
+                List<TextMarker> markers = tab.textEditor.Document.MarkerStrategy.GetMarkers(ls.Offset);
+                if (markers.Count > 0) return;
+
                 TextMarker tm = new TextMarker(ls.Offset, ls.Length, TextMarkerType.WaveLine, ColorTheme.HighlightIncludeError);
                 tm.ToolTip = "Error parsing the contents of the header file.";
                 tab.textEditor.Document.MarkerStrategy.AddMarker(tm);
