@@ -14,7 +14,7 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public class Compiler
     {
-        const string bakupFile = @"\BakupINT.tmp";
+        static readonly string bakupIntFile = Settings.scriptTempPath + @"\bakupINT.tmp";
 
         private static readonly string decompilationPath = Path.Combine(Settings.scriptTempPath, "decomp.ssl");
         private static readonly string preprocessPath = Path.Combine(Settings.scriptTempPath, "preprocess.ssl");
@@ -77,7 +77,7 @@ namespace ScriptEditor.CodeTranslation
         // командная строка для компилятора
         private string GetSslcCommandLine(string infile, bool preprocess, string sourceDir, bool shortCircuit)
         {
-            string usePreprocess = string.Empty; // неиспользовать препроцессор компилятора, если используется внешнний mcpp/wcc
+            string usePreprocess = string.Empty; // неиспользовать препроцессор компилятора, если используется внешний mcpp/wcc
             if (!Settings.useMcpp && !Settings.useWatcom) usePreprocess = preprocess ? "-P " : "-p ";
 
             string pfDir = "-I\"" + Settings.ProgramFolder + "\" ";
@@ -85,11 +85,11 @@ namespace ScriptEditor.CodeTranslation
 
             return (includeDirs)
                 + (usePreprocess)
-                + ("-O" + Settings.optimize + " ")
+                + ("-q -l -O" + Settings.optimize + " ")
                 + ((Settings.compileBackwardMode > 0) ? "-b " : "")
                 + (Settings.showWarnings ? "" : "-n ")
                 + (Settings.showDebug ? "-d " : "")
-                + ((Settings.preprocDef != null) ? ("-l -m" + Settings.preprocDef) : "-l") /* always no logo */
+                + ((Settings.preprocDef != null) ? ("-m" + Settings.preprocDef) : "")
                 + ((Settings.shortCircuit || shortCircuit) ? " -s" : "")
                 + " \"" + Path.GetFileName(infile) + "\" -o \"" + (preprocess ? preprocessPath : GetOutputPath(infile, sourceDir)) + "\"";
         }
@@ -198,23 +198,20 @@ namespace ScriptEditor.CodeTranslation
 #else
                 var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
                 ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir, shortCircuit));
-                
-                string bakupPath = Settings.scriptTempPath + bakupFile;
-                if (File.Exists(outputSSL))
-                    File.Copy(outputSSL, bakupPath, true);
+
+                if (File.Exists(outputSSL)) File.Copy(outputSSL, bakupIntFile, true);
 
                 success = RunProcess(psi, Path.GetDirectoryName(infile), ref output);
 
-                if (success)
-                    File.Delete(bakupPath);
-                else if (File.Exists(bakupPath)) {
+                if (success) {
+                    File.Delete(bakupIntFile);
+                } else if (File.Exists(bakupIntFile)) {
                     File.Delete(outputSSL);
-                    File.Move(bakupPath, outputSSL);
+                    File.Move(bakupIntFile, outputSSL);
                 }
 #endif
             }
-            if (errors != null && !Settings.userCmdCompile)
-                Error.BuildLog(errors, output, srcfile); //(Settings.useWatcom) ? infile :
+            if (errors != null && !Settings.userCmdCompile) Error.BuildLog(errors, output, srcfile); //(Settings.useWatcom) ? infile :
 
 #if DLL_COMPILER
             output=output.Replace("\n", "\r\n");
@@ -224,21 +221,20 @@ namespace ScriptEditor.CodeTranslation
 
         private bool RunProcess(ProcessStartInfo psi, string wDir, ref string output)
         {
-            bool success;
             psi.RedirectStandardOutput = true;
             //psi.RedirectStandardError = true;
             psi.UseShellExecute = false;
             psi.CreateNoWindow = true;
             psi.WorkingDirectory = wDir;
             Process wp = Process.Start(psi);
+
             output += /*wp.StandardError.ReadToEnd() +*/ Environment.NewLine;
             output += wp.StandardOutput.ReadToEnd();
-            wp.WaitForExit(1000);
-            if (Settings.useMcpp || Settings.useWatcom)
-                output += GetErrorLog();
-            success = wp.ExitCode == 0;
-            wp.Dispose();
+            if (Settings.useMcpp || Settings.useWatcom) output += GetErrorLog();
 
+            wp.WaitForExit(500);
+            bool success = (wp.ExitCode == 0);
+            wp.Dispose();
             return success;
         }
 
