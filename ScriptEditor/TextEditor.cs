@@ -66,18 +66,18 @@ namespace ScriptEditor
         /// Return: currentTab.textEditor.Document
         /// </summary>
         private IDocument currentDocument { get { return currentTab.textEditor.Document; } }
-        
+
         /// <summary>
         /// Сокращенное свойство.
         /// Return: currentTab.textEditor.ActiveTextAreaControl
         /// </summary>
         private TextAreaControl currentActiveTextAreaCtrl { get { return currentTab.textEditor.ActiveTextAreaControl; } }
-        
+
         private void EnableDoubleBuffering()
         {
            // Set the value of the double-buffering style bits to true.
-           //this.SetStyle(ControlStyles.DoubleBuffer | 
-           //              ControlStyles.UserPaint | 
+           //this.SetStyle(ControlStyles.DoubleBuffer |
+           //              ControlStyles.UserPaint |
            //              ControlStyles.AllPaintingInWmPaint,
            //              true);
            //this.UpdateStyles();
@@ -95,7 +95,7 @@ namespace ScriptEditor
 
             commandsArgs = args;
             Settings.SetupWindowPosition(SavedWindows.Main, this);
-            
+
             if (!Settings.firstRun)
                 WindowState = FormWindowState.Maximized;
 
@@ -118,23 +118,23 @@ namespace ScriptEditor
             SizeFontToString();
 
             toolTips.Active = false;
-            toolTips.Draw += delegate(object sender, DrawToolTipEventArgs e) { TipPainter.DrawInfo(e); }; 
-            
+            toolTips.Draw += delegate(object sender, DrawToolTipEventArgs e) { TipPainter.DrawInfo(e); };
+
             if (Settings.encoding == (byte)EncodingType.OEM866) {
                 EncodingDOSmenuItem.Checked = true;
                 windowsDefaultMenuItem.Checked = false;
             }
-            
+
             // Highlighting
             FileSyntaxModeProvider fsmProvider = new FileSyntaxModeProvider(SyntaxFile.SyntaxFolder); // Create new provider with the highlighting directory.
             HighlightingManager.Manager.AddSyntaxModeFileProvider(fsmProvider); // Attach to the text editor.
             ColorTheme.InitTheme(Settings.highlight == 2, this);
-            
+
             autoComplete = new AutoComplete(panel1, Settings.autocompleteColor);
 
             // Recent files
             UpdateRecentList();
-            
+
             // Templates
             foreach (string file in Directory.GetFiles(Path.Combine(Settings.ResourcesFolder, "templates"), "*.ssl"))
             {
@@ -143,10 +143,10 @@ namespace ScriptEditor
                 mi.Click += new EventHandler(Template_Click); // Open Templates file
                 New_toolStripDropDownButton.DropDownItems.Add(mi);
             }
-       
+
             if (Settings.pathHeadersFiles == null)
                 Headers_toolStripSplitButton.Enabled = false;
-            
+
             HandlerProcedure.CreateProcHandlers(ProcMnContext, this);
             Functions.CreateTree(FunctionsTree);
             ProgramInfo.LoadOpcodes();
@@ -164,11 +164,11 @@ namespace ScriptEditor
             if (m.Msg == SingleInstanceManager.WM_SFALL_SCRIPT_EDITOR_OPEN) {
                 TabInfo result = null;
                 var commandLineArgs = SingleInstanceManager.LoadCommandLine();
-                foreach (var fArg in commandLineArgs) 
+                foreach (var fArg in commandLineArgs)
                 {
                     string file = fArg;
                     bool fcd = FileAssociation.CheckFCDFile(ref file);
-                    if (file != null) 
+                    if (file != null)
                         result = Open(file, OpenType.File, commandline: true, fcdOpen: fcd);
 
                 }
@@ -209,19 +209,19 @@ namespace ScriptEditor
             splitContainer2.Panel1MinSize = 300;
             splitContainer2.Panel2MinSize = 150;
             splitContainer1.SplitterDistance = Size.Height;
-            
+
             if (Settings.editorSplitterPosition == -1)
                 minimizelogsize = Size.Height - (Size.Height / 5);
             else
                 minimizelogsize = Settings.editorSplitterPosition;
-            
+
             if (Settings.editorSplitterPosition2 != -1)
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
             else
                 splitContainer2.SplitterDistance = Size.Width - 200;
-            
+
             showLogWindowToolStripMenuItem.Checked = Settings.showLog;
-            if (Settings.enableParser) 
+            if (Settings.enableParser)
                 CreateTabVarTree();
         }
 
@@ -229,13 +229,13 @@ namespace ScriptEditor
         {
             if (!Settings.firstRun)
                 Settings_ToolStripMenuItem.PerformClick();
-            
+
             // open documents passed from command line
             foreach (string fArg in commandsArgs)
             {
                 string file = fArg;
                 bool fcd = FileAssociation.CheckFCDFile(ref file);
-                if (file != null) 
+                if (file != null)
                     Open(file, TextEditor.OpenType.File, commandline: true, fcdOpen: fcd);
             }
 
@@ -246,7 +246,7 @@ namespace ScriptEditor
 
         private void TextEditor_Resize(object sender, EventArgs e)
         {
-            if (WindowState != FormWindowState.Minimized) 
+            if (WindowState != FormWindowState.Minimized)
                 wState = WindowState;
 
             if (autoComplete != null)
@@ -320,7 +320,7 @@ namespace ScriptEditor
         #endregion
 
         private void UpdateRecentList()
-        { 
+        {
             string[] items = Settings.GetRecent();
             int count = Open_toolStripSplitButton.DropDownItems.Count-1;
             for (int i = 3; i <= count; i++) {
@@ -330,7 +330,7 @@ namespace ScriptEditor
                 Open_toolStripSplitButton.DropDownItems.Add(items[i], null, recentItem_Click);
             }
         }
-        
+
         public void SetFocusDocument()
         {
             TextArea_SetFocus(null, null);
@@ -346,7 +346,7 @@ namespace ScriptEditor
                     file = Path.GetFullPath(file);
 
                 if (commandline && Path.GetExtension(file).ToLower() == ".msg") {
-                    if (currentTab == null) 
+                    if (currentTab == null)
                         wState = FormWindowState.Minimized;
                     MessageEditor.MessageEditorOpen(file, this).SendMsgLine += AcceptMsgLine;
                     return null;
@@ -394,7 +394,7 @@ namespace ScriptEditor
             }
             //Create the text editor and set up the tab
             ICSharpCode.TextEditor.TextEditorControl te = new ICSharpCode.TextEditor.TextEditorControl();
-            
+
             te.TextEditorProperties.LineViewerStyle = LineViewerStyle.FullRow;
             te.TextEditorProperties.TabIndent = Settings.tabSize;
             te.TextEditorProperties.IndentationSize = Settings.tabSize;
@@ -430,13 +430,13 @@ namespace ScriptEditor
             else if (type == OpenType.Text)
                 te.Text = file;
 
-            // set tabinfo 
+            // set tabinfo
             TabInfo ti = new TabInfo();
             ti.index = tabControl1.TabCount;
             ti.history.linePosition = new List<TextLocation>();
             ti.history.pointerCur = -1;
             ti.textEditor = te;
-            
+
             bool createNew = false;
             if (type == OpenType.None) { // only for new create script
                 sfdScripts.FileName = "NewScript";
@@ -450,11 +450,11 @@ namespace ScriptEditor
                 createNew = true;
             } //else
               //  ti.changed = false;
-            
+
             if (type == OpenType.File ) { //&& !alwaysNew
                 if (alwaysNew) {
                     string temp = Path.Combine(Settings.scriptTempPath, unsaved);
-                    File.Copy(file, temp, true); 
+                    File.Copy(file, temp, true);
                     file = temp;
                 }
                 ti.filepath = file;
@@ -463,10 +463,10 @@ namespace ScriptEditor
                 ti.filepath = null;
                 ti.filename = unsaved;
             }
-            
+
             tabs.Add(ti);
             TabPage tp = new TabPage(ti.filename);
-            tp.ImageIndex = (ti.changed) ? 1 : 0; 
+            tp.ImageIndex = (ti.changed) ? 1 : 0;
             tp.Controls.Add(te);
             te.Dock = DockStyle.Fill;
             tabControl1.TabPages.Add(tp);
@@ -481,7 +481,7 @@ namespace ScriptEditor
                         te.Text = Utilities.FormattingCode(te.Text);
                     ti.shouldParse = true;
                     //ti.needsParse = true; // set 'true' only edit text
-                    
+
                     FirstParseScript(ti); // First Parse
 
                     if (!createNew && Settings.storeLastPosition) {
@@ -489,7 +489,7 @@ namespace ScriptEditor
                         te.ActiveTextAreaControl.Caret.Line = pos;
                         te.ActiveTextAreaControl.CenterViewOn(pos, -1);
                     }
-                    if (Settings.autoOpenMsgs && ti.filepath != null) 
+                    if (Settings.autoOpenMsgs && ti.filepath != null)
                         AssociateMsg(ti, false);
                 }
                 ti.FileTime = File.GetLastWriteTime(ti.filepath);
@@ -501,7 +501,7 @@ namespace ScriptEditor
             te.ContextMenuStrip = editorMenuStrip;
             //
             if (tabControl1.TabPages.Count > 1) {
-                if (seltab) 
+                if (seltab)
                     tabControl1.SelectTab(tp);
             } else
                 tabControl1_Selected(null, null);
@@ -511,14 +511,14 @@ namespace ScriptEditor
 
             return ti;
         }
- 
+
         private void CheckChandedFile()
         {
             if (!currentTab.CheckFileTime()) {
                 this.Activated -= TextEditor_Activated;
                 DialogResult result = MessageBox.Show(currentTab.filepath +
-                                                      "\nThe script file was changed in an external program." +
-                                                      "\nDo you want to update the data from the script file?",
+                                                      "\nThe script file was changed outside the editor." +
+                                                      "\nDo you want to update the script file?",
                                                       "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes) {
                     currentTab.FileTime = File.GetLastWriteTime(currentTab.filepath);
@@ -571,7 +571,7 @@ namespace ScriptEditor
                 tab.changed = false;
                 SetTabTextChange(tab.index);
             }
-           
+
         }
 
         private void SaveAs(TabInfo tab, bool close = false)
@@ -594,7 +594,7 @@ namespace ScriptEditor
                     break;
             }
             sfdScripts.FileName = tab.filename;
-            
+
             if (sfdScripts.ShowDialog() == DialogResult.OK) {
                 tab.filepath = sfdScripts.FileName;
                 tab.filename = Path.GetFileName(tab.filepath);
@@ -617,7 +617,7 @@ namespace ScriptEditor
         {
             if (tab == null | tab.index == -1)
                 return;
-            
+
             int i = tab.index;
             var tag = tabControl1.TabPages[i].Tag;
             if (tag != null)
@@ -697,37 +697,32 @@ namespace ScriptEditor
         {
             msg = String.Empty;
             if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
-                if (showMessages)
-                    MessageBox.Show("You cannot compile this file.", "Compile Error");
+                if (showMessages) MessageBox.Show("You cannot compile this file.", "Compile Error");
                 return false;
             }
             if (!Settings.ignoreCompPath && !preprocess && Settings.outputDir == null) {
-                if (showMessages)
-                    MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Compile Error");
+                if (showMessages) MessageBox.Show("No output path selected.\nPlease select your scripts directory before compiling", "Compile Error");
                 return false;
             }
-            if (tab.changed)
-                Save(tab);
-            if (tab.changed || tab.filepath == null)
-                return false;
+            if (tab.changed) Save(tab);
+            if (tab.changed || tab.filepath == null) return false;
 
             bool success = new Compiler(roundTrip).Compile(tab.filepath, out msg, tab.buildErrors, preprocess, tab.parseInfo.ShortCircuitEvaluation);
-            
-            foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message }) {
-                foreach (Error e in tab.buildErrors) {
+
+            foreach (ErrorType et in new ErrorType[] { ErrorType.Error, ErrorType.Warning, ErrorType.Message })
+            {
+                foreach (Error e in tab.buildErrors)
+                {
                     if (e.type == et) {
                         dgvErrors.Rows.Add(e.type.ToString(), Path.GetFileName(e.fileName), e.line, e);
-                        if (et == ErrorType.Error)
-                            dgvErrors.Rows[dgvErrors.Rows.Count - 1].Cells[0].Style.ForeColor = Color.Red;
+                        if (et == ErrorType.Error) dgvErrors.Rows[dgvErrors.Rows.Count - 1].Cells[0].Style.ForeColor = Color.Red;
                     }
                 }
             }
 
-            if (dgvErrors.RowCount > 0)
-                dgvErrors.Rows[0].Cells[0].Selected = false;
-            
-            if (preprocess)
-                return success;
+            if (dgvErrors.RowCount > 0) dgvErrors.Rows[0].Cells[0].Selected = false;
+
+            if (preprocess) return success;
 
             if (!success) {
                 parserLabel.Text = "Failed to compiled: " + tab.filename;
@@ -739,7 +734,7 @@ namespace ScriptEditor
                     if (Settings.warnOnFailedCompile) {
                         tabControl2.SelectedIndex = 2 - Convert.ToInt32(Settings.userCmdCompile);
                         maximize_log();
-                    }// else 
+                    }// else
                      //   new CompiledStatus(false, this).ShowCompileStatus();
                 }
             } else {
@@ -768,12 +763,12 @@ namespace ScriptEditor
                     previousTabIndex = currentTab.index;
                 }
                 currentTab = tabs[tabControl1.SelectedIndex];
-                //if (!Settings.enableParser && currentTab.parseInfo != null) 
+                //if (!Settings.enableParser && currentTab.parseInfo != null)
                 //    currentTab.parseInfo.parseData = false;
-                
-                if (currentTab.msgFileTab != null) 
+
+                if (currentTab.msgFileTab != null)
                     MessageFile.ParseMessages(currentTab);
-                
+
                 // Create or Delete Variable treeview
                 if (!Settings.enableParser && tabControl3.TabPages.Count > 2) {
                     if (currentTab.parseInfo != null) {
@@ -804,7 +799,7 @@ namespace ScriptEditor
                 UpdateLog();
                 currentHighlightProc = null;
                 UpdateNames(true);
-                // text editor set focus 
+                // text editor set focus
                 currentActiveTextAreaCtrl.Select();
                 ControlFormStateOn_Off();
                 this.Text = SSE + currentTab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
@@ -826,14 +821,14 @@ namespace ScriptEditor
             }
         }
 
-        #region Tree browser control 
+        #region Tree browser control
         private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
 
         private enum TreeStatus { idle, update, local }
         internal static Procedure currentHighlightProc = null;
         private  static TreeNode currentHighlightNode = null;
         private bool updateHighlightPocedure = true;
-        
+
         // подсветить процедуру в дереве
         private void HighlightCurrentPocedure(int curLine)
         {
@@ -879,7 +874,7 @@ namespace ScriptEditor
         private void UpdateNames(bool newCreate = false)
         {
             if (currentTab == null || !currentTab.shouldParse || currentTab.parseInfo == null) return;
-            
+
             object selectedNode = null;
             if (ProcTree.SelectedNode != null)
                 selectedNode = ProcTree.SelectedNode.Tag;
@@ -938,7 +933,7 @@ namespace ScriptEditor
                     ProcTree.Nodes[1].Expand();
                 }
             }
-                
+
             if (!Settings.enableParser && !currentTab.parseInfo.parseData) {
                 ProcTree.Nodes.RemoveAt(0);
                 if (tabControl3.TabPages.Count > 2) // удалить и вкладку если отсутсвует информация
@@ -946,7 +941,7 @@ namespace ScriptEditor
             } else {
                 VarTree.BeginUpdate();
                 VarTree.Nodes.Clear();
-                    
+
                 foreach (var s in TREEVARIABLES) {
                     rootNode = VarTree.Nodes.Add(s);
                     rootNode.ForeColor = Color.DodgerBlue;
@@ -969,16 +964,16 @@ namespace ScriptEditor
                     }
                 }
                 if (VarTree.Nodes[0].Nodes.Count == 0) VarTree.Nodes[0].ForeColor = Color.Gray;
-                if (VarTree.Nodes[1].Nodes.Count == 0) VarTree.Nodes[1].ForeColor = Color.Gray;  
-                
+                if (VarTree.Nodes[1].Nodes.Count == 0) VarTree.Nodes[1].ForeColor = Color.Gray;
+
                 foreach (TreeNode node in VarTree.Nodes)
                     SetNodeCollapseStatus(node);
-                
+
                 VarTree.EndUpdate();
             }
-            foreach (TreeNode node in ProcTree.Nodes) 
+            foreach (TreeNode node in ProcTree.Nodes)
                 SetNodeCollapseStatus(node);
- 
+
             if (ProcTree.Nodes[0].Nodes.Count == 0) ProcTree.Nodes[0].ForeColor = Color.Gray;
             if (ProcTree.Nodes.Count > 1) {
                 if (ProcTree.Nodes[1].Nodes.Count == 0)
@@ -997,7 +992,7 @@ namespace ScriptEditor
             }
             ProcTree.EndUpdate();
             HighlightCurrentPocedure((currentHighlightProc == null) ? currentActiveTextAreaCtrl.Caret.Line : -2);
-            
+
             // scroll to node
             if (scrollNode != null) {
                 foreach (TreeNode nodes in ProcTree.Nodes) {
@@ -1108,7 +1103,7 @@ namespace ScriptEditor
         {
             ProcTree.SelectedNode = null;
         }
-        
+
         private void ProcTree_MouseDown(object sender, MouseEventArgs e)
         {
             dbClick = false;
@@ -1118,7 +1113,7 @@ namespace ScriptEditor
                 if (e.Button == MouseButtons.Right) {
                     ProcTree.SelectedNode = tn;
                 }
-            } 
+            }
         }
 
         private void ProcTree_BeforeExpandCollapse(object sender, TreeViewCancelEventArgs e) {
@@ -1197,7 +1192,7 @@ namespace ScriptEditor
                 currentActiveTextAreaCtrl.SelectionManager.SetSelection(start, end);
             else
                 currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
-            
+
             if (!not_this) {
                 if (pselect)
                     currentActiveTextAreaCtrl.TextArea.TextView.FirstVisibleLine = start.Line - 1;
@@ -1211,7 +1206,7 @@ namespace ScriptEditor
         private void TextArea_KeyPressed(object sender, KeyPressEventArgs e)
         {
             var caret = currentActiveTextAreaCtrl.Caret;
-            
+
             if (Settings.autoInputPaired && e.KeyChar == '"') {
                 List<Utilities.Quote> quotes = new  List<Utilities.Quote>();
                 Utilities.GetQuotesPosition(TextUtilities.GetLineAsString(currentDocument, caret.Line), quotes);
@@ -1232,7 +1227,7 @@ namespace ScriptEditor
                     else if (chL == '"' && chR == '"')
                         currentDocument.Remove(caret.Offset, 1);
                 }
-            } 
+            }
             else if (e.KeyChar == '(' || e.KeyChar == '[' || e.KeyChar == '{') {
                 if (autoComplete.IsVisible) autoComplete.Close();
                 if (e.KeyChar == '{') return;
@@ -1260,12 +1255,12 @@ namespace ScriptEditor
             } else if (e.KeyChar == ')' || e.KeyChar == ']' || e.KeyChar == '}') {
                 if (toolTips.Active) ToolTipsHide();
                 if (e.KeyChar == '}') return;
-                
+
                 if (Settings.autoInputPaired) {
                     char bracket = (e.KeyChar == ']') ? '[' : '(';
                     if (currentDocument.GetCharAt(caret.Offset -1) == bracket && currentDocument.GetCharAt(caret.Offset) == e.KeyChar) {
                         currentDocument.Remove(caret.Offset, 1);
-                        // TODO BUG: В контроле баг при использовании TextBuffer - стирается строка символов. 
+                        // TODO BUG: В контроле баг при использовании TextBuffer - стирается строка символов.
                         //currentDocument.TextBufferStrategy.Remove(caret.Offset, 1);
                         //currentActiveTextAreaCtrl.TextArea.Refresh();
                     }
@@ -1318,7 +1313,7 @@ namespace ScriptEditor
             toolTips.Tag = tag;
             toolTips.Show(tipText, panel1, pos, duration);
         }
-        
+
         // Tooltip for opcodes and macros
         void TextArea_ToolTipRequest(object sender, ToolTipRequestEventArgs e)
         {
@@ -1337,11 +1332,11 @@ namespace ScriptEditor
             if (!line.TrimStart().StartsWith(ParserInternal.INCLUDE)) {
                 openIncludeToolStripMenuItem.Enabled = false;
             }
-            
+
             // skip for specific color text
             if (ColorTheme.CheckColorPosition(currentDocument, tl))
-                return; 
-            
+                return;
+
             //Refactor name
             if (!Settings.enableParser) {
                 renameToolStripMenuItem.Text += ": Disabled";
@@ -1474,7 +1469,7 @@ namespace ScriptEditor
             VarTab.Padding = new Padding(0, 2, 2, 2);
             VarTab.BackColor = SystemColors.ControlLightLight;
             VarTab.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            VarTab.Controls.Add(VarTree);            
+            VarTab.Controls.Add(VarTree);
         }
 
         private void SetTabTextChange(int i) { tabControl1.TabPages[i].ImageIndex = (tabs[i].changed ? 1 : 0); }
@@ -1493,7 +1488,7 @@ namespace ScriptEditor
             te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
             te.ActiveTextAreaControl.VScrollBar.Scroll += delegate(object sender, ScrollEventArgs e) {
                 var e1 = new MouseEventArgs(MouseButtons.Left, 1, 0, 0, e.OldValue - e.NewValue);
-                TextArea_MouseWheel(sender, e1); 
+                TextArea_MouseWheel(sender, e1);
             };
             te.ActiveTextAreaControl.TextArea.MouseClick += delegate(object sender, MouseEventArgs e) {
                 if (e.Button == MouseButtons.Middle) {
@@ -1545,23 +1540,23 @@ namespace ScriptEditor
         private void ControlFormStateOn_Off()
         {
             autoComplete.Close();
-            
+
             ShowTabsSpaces();
             ShowLineNumbers(null, null);
-           
+
             if (currentTab.parseInfo != null && currentDocument.FoldingManager.FoldMarker.Count > 0) //currentTab.parseInfo.procs.Length
                 Outline_toolStripButton.Enabled = true;
             else
                 Outline_toolStripButton.Enabled = false;
-            
+
             SetBackForwardButtonState();
-            
+
             if (currentTab.shouldParse) {
                 DecIndentStripButton.Enabled = true;
                 //CommentStripButton.Enabled = true;
                 AlignToLeftToolStripMenuItem.Enabled = true;
                 ToggleBlockCommentToolStripMenuItem.Enabled = true;
-                formatingCodeToolStripMenuItem.Enabled = true; 
+                formatingCodeToolStripMenuItem.Enabled = true;
             } else {
                 DecIndentStripButton.Enabled = false;
                 //CommentStripButton.Enabled = false;
@@ -1583,7 +1578,7 @@ namespace ScriptEditor
             Forward_toolStripButton.Enabled = false;
             GotoProc_StripButton.Enabled = false;
             //Search_toolStripButton.Enabled = false;
-            if (SearchToolStrip.Visible) 
+            if (SearchToolStrip.Visible)
                 Search_Panel(null, null);
             DecIndentStripButton.Enabled = false;
             CommentStripButton.Enabled = false;
@@ -1602,7 +1597,7 @@ namespace ScriptEditor
             if (tag != null) {
                 NodeDiagram ndForm = ((NodeDiagram)tag);
                 if (ndForm.WindowState == FormWindowState.Minimized)
-                    ndForm.WindowState = FormWindowState.Maximized;     
+                    ndForm.WindowState = FormWindowState.Maximized;
                 ndForm.Activate();
                 return;
             }
@@ -1623,9 +1618,9 @@ namespace ScriptEditor
 
             tabControl1.TabPages[currentTab.index].Tag = NodesView;
 
-            this.ParserUpdatedInfo += delegate 
+            this.ParserUpdatedInfo += delegate
             {
-                if (NodesView != null) 
+                if (NodesView != null)
                     NodesView.NeedUpdate = true;
             };
         }
@@ -1660,7 +1655,7 @@ namespace ScriptEditor
         private void editNodeCodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Procedure proc = (Procedure)ProcTree.SelectedNode.Tag;
-            
+
             if (currentTab.messages.Count == 0) {
                 string msgPath;
                 if (!MessageFile.GetAssociatePath(currentTab, false, out msgPath)) {
@@ -1671,7 +1666,7 @@ namespace ScriptEditor
                 MessageFile.ParseMessages(currentTab, File.ReadAllLines(currentTab.msgFilePath, Settings.EncCodePage));
             }
 
-            foreach (var nodeTE in currentTab.nodeFlowchartTE) 
+            foreach (var nodeTE in currentTab.nodeFlowchartTE)
             {
                 if (nodeTE.NodeName == proc.name) {
                     nodeTE.Activate();

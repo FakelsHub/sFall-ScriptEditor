@@ -30,7 +30,7 @@ namespace ScriptEditor.CodeTranslation
         {
             if (!File.Exists(preprocessPath))
                 return null;
-            
+
             sName = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(sName) + "_[preproc].ssl");
             File.Delete(sName);
             File.Move(preprocessPath, sName);
@@ -43,7 +43,7 @@ namespace ScriptEditor.CodeTranslation
             string outputFile = Path.GetFileNameWithoutExtension(infile);
             if (sourceDir.Length != 0 && (Settings.useMcpp || Settings.useWatcom))
                 outputFile = outputFile.Remove(outputFile.Length - 6);
-            
+
             outputFile = outputFile + ".int";
 
             if (tempOutput) return Path.Combine(Settings.scriptTempPath, outputFile);
@@ -54,7 +54,7 @@ namespace ScriptEditor.CodeTranslation
             outputSSL = (Settings.ignoreCompPath)
                          ? Path.Combine(sourceDir, outputFile)
                          : Path.Combine(Settings.outputDir, outputFile);
-            
+
             return outputSSL;
         }
 
@@ -155,6 +155,7 @@ namespace ScriptEditor.CodeTranslation
             string sourceDir = Path.GetDirectoryName(infile);
 
             output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n" + new String('-', 22);
+
             if (Settings.userCmdCompile && !preprocessOnly) {
                 batPath = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
                 ProcessStartInfo upsi = new ProcessStartInfo(batPath, GetCommandLine(infile, sourceDir, shortCircuit));
@@ -167,11 +168,11 @@ namespace ScriptEditor.CodeTranslation
                     output += Environment.NewLine + (Settings.useWatcom ? "Open Watcom C32 preprocessing script: " : "External MCPP preprocessing script: ");
                     output += Path.GetFileName(infile) + Environment.NewLine;
                     output += "Predefine: " + (Settings.preprocDef ?? string.Empty) + Environment.NewLine;
-                    
+
                     batPath = Path.Combine(Settings.ResourcesFolder, Settings.useWatcom ? "wcc.bat" : "mcpp.bat");
                     ProcessStartInfo ppsi = new ProcessStartInfo(batPath, GetCommandLine(infile, outfile, sourceDir, preprocessOnly));
                     success = RunProcess(ppsi, Settings.ResourcesFolder, ref output);
-                    
+
                     output += new string('-', 22) + Environment.NewLine;
                     if (success) {
                         output += "Created preprocessing file: OK\r\n";
@@ -252,8 +253,7 @@ namespace ScriptEditor.CodeTranslation
         public string Decompile(string infile, bool outputFolder)
         {
             List<string> program = new List<string>{ "int2ssl.exe", "int2ssl_v35.exe" };
-            if (Settings.oldDecompile)
-                program.RemoveAt(0);
+            if (Settings.oldDecompile) program.RemoveAt(0);
 
             foreach (string exe in program)
             {
@@ -265,15 +265,12 @@ namespace ScriptEditor.CodeTranslation
                 psi.CreateNoWindow = true;
                 Process p = Process.Start(psi);
                 p.WaitForExit(2000);
-                if (!p.HasExited)
-                    return null;
-                if (p.ExitCode == 0)
-                    break;
+                if (!p.HasExited) return null;
+                if (p.ExitCode == 0) break;
                 p.Dispose();
             }
-            if (!File.Exists(decompilationPath)) {
-                return null;
-            }
+            if (!File.Exists(decompilationPath)) return null;
+
             string result;
             if (!tempOutput) {
                 SaveFileDialog sfDecomp = new SaveFileDialog();
@@ -282,10 +279,12 @@ namespace ScriptEditor.CodeTranslation
                 sfDecomp.RestoreDirectory = true;
                 sfDecomp.InitialDirectory = (!outputFolder || Settings.outputDir == null) ? Path.GetDirectoryName(infile) : Settings.outputDir;
                 sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
+
                 if (sfDecomp.ShowDialog() == DialogResult.OK)
                     result = sfDecomp.FileName;
                 else
                     result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
+
                 sfDecomp.Dispose();
             } else {
                 result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[temp].ssl");

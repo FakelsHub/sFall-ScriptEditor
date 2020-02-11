@@ -988,7 +988,7 @@ namespace ScriptEditor
 
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("explorer", "/select, " + tabs[(int)cmsTabControls.Tag].filepath);
+            System.Diagnostics.Process.Start("explorer", "/n, /select, " + tabs[(int)cmsTabControls.Tag].filepath);
         }
 
         private void tsmiClearAllLog_Click(object sender, EventArgs e)
