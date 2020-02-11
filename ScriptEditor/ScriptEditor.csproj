@@ -96,7 +96,7 @@
     </Compile>
     <Compile Include="CodeTranslation\DialogueParser.cs" />
     <Compile Include="CodeTranslation\Macros.cs" />
-    <Compile Include="ManageParse.cs">
+    <Compile Include="TextEditor.ManageParse.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CodeTranslation\ParserInternal.cs" />
@@ -121,10 +121,10 @@
       <DependentUpon>ProcForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SyntaxRules\HighlightProcedures.cs" />
-    <Compile Include="TextEditorMenuControl.cs">
+    <Compile Include="TextEditor.MenuControl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextEditorUtils.cs">
+    <Compile Include="TextEditor.Utils.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TextEditorUI\ColorTheme.cs" />
