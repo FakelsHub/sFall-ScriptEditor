@@ -26,20 +26,20 @@ namespace ScriptEditor.CodeTranslation
             foreach (string file in headerFiles)
             {
                 new GetMacros(File.ReadAllLines(file, (Settings.saveScriptUTF8)
-                                                       ? Encoding.UTF8 
+                                                       ? Encoding.UTF8
                                                        : Encoding.Default),
                                                        file, "", ProgramInfo.macrosGlobal, false);
             }
         }
 
         public GetMacros(string file, string dir, SortedDictionary<string, Macro> macros)
-        { 
+        {
             if (!File.Exists(file)) {
                 Program.printLog("   <GetMacros> File not found: '" + file + "'");
                 return;
             }
             new GetMacros(File.ReadAllLines(file, (Settings.saveScriptUTF8)
-                                                   ? Encoding.UTF8 
+                                                   ? Encoding.UTF8
                                                    : Encoding.Default),
                                                    file, dir, macros);
         }
@@ -59,15 +59,17 @@ namespace ScriptEditor.CodeTranslation
                     ParserInternal.GetIncludePath(ref text[1], dir);
                     new GetMacros(text[1], null, macros);
                 } else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
-                    if (lines[i].TrimEnd().EndsWith(@"\")) {
+                    lines[i] = lines[i].TrimEnd();
+                    if (lines[i].EndsWith(@"\")) {
                         var sb = new StringBuilder();
                         int lineno = i;
                         lines[i] = lines[i].Substring(8);
                         do {
-                            sb.Append(lines[i].Remove(lines[i].Length - 1).TrimEnd());
+                            sb.Append(lines[i].Remove(lines[i].Length - 1).TrimEnd()); // удаляем символ '\' в конце макроса
                             sb.Append(Environment.NewLine);
                             i++;
-                        } while (lines[i].TrimEnd().EndsWith(@"\"));
+                            lines[i] = lines[i].TrimEnd();
+                        } while (lines[i].EndsWith(@"\"));
                         sb.Append(lines[i]);
                         AddMacro(sb.ToString(), macros, file, lineno);
                     } else
@@ -75,7 +77,7 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
         }
-   
+
         private void AddMacro(string line, SortedDictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
@@ -100,8 +102,8 @@ namespace ScriptEditor.CodeTranslation
         }
 
         private string MacroFormat(string defmacro, int macrolen)
-        { 
-            string[] macroline = defmacro.Split('\n');
+        {
+            string[] macroline = defmacro.Split(new char[]{'\n'}, 42);
             if (macroline.Length > 1) {
                 int indent = -1;
                 macroline[0] = macroline[0].TrimEnd();
@@ -119,12 +121,11 @@ namespace ScriptEditor.CodeTranslation
                         int adjust = macroline[i].Length - macroline[i].TrimStart().Length;
                         if (adjust > indent) adjust = indent;
                         else if (i == 1) indent = adjust;
-                        macroline[i] = macroline[i].Remove(0, adjust); 
+                        macroline[i] = macroline[i].Remove(0, adjust);
                     }
                     catch { Program.printLog("   <MacroFormat> Exception in line " + macroline[i] + " | Macros: " + defmacro); }
-                    if (i > 40 && macroline.Length > 42) { // tip text size
-                        macroline[i++] = " continue...";
-                        Array.Resize(ref macroline, i);
+                    if (i > 40) { // tip text size
+                        macroline[i] = "...continue macro...";
                         break;
                     }
                 }
