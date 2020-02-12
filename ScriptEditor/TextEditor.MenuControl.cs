@@ -1008,8 +1008,7 @@ namespace ScriptEditor
 
         private void RefreshLog_Click(object sender, EventArgs e)
         {
-            if (currentTab != null)
-                OutputErrorLog(currentTab);
+            if (currentTab != null) OutputErrorLog(currentTab);
         }
 
         private void showIndentLineToolStripMenuItem_Click(object sender, EventArgs e)

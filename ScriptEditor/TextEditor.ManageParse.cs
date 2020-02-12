@@ -31,6 +31,7 @@ namespace ScriptEditor
         #region Parser Control
         private void textChanged(object sender, EventArgs e)
         {
+            if (savingRunning) return;
             if (!currentTab.changed) {
                 currentTab.changed = true;
                 SetTabTextChange(currentTab.index);
@@ -242,10 +243,10 @@ namespace ScriptEditor
                 }
             }
             tab.parserLog = Error.ParserLog(log, tab);
-            OutputErrorLog(tab, true);
+            OutputErrorLog(tab);
         }
 
-        private void OutputErrorLog(TabInfo tab, bool parser = false)
+        private void OutputErrorLog(TabInfo tab)
         {
             dgvErrors.Rows.Clear();
             if (Settings.enableParser) {
@@ -255,9 +256,9 @@ namespace ScriptEditor
                         dgvErrors.Rows.Add(err.type.ToString(), Path.GetFileName(err.fileName), err.line, err);
                 }
             }
-            if (!parser && tab.buildLog != null) {
+            if (tab.buildLog != null) {
                 tbOutput.Text = tab.buildLog;
-                if (tsmShowBuildLog.Checked) {
+                if (tsmShowBuildLog.Checked && tab.buildErrors.Count > 0) {
                     dgvErrors.Rows.Add("Build Log");
                     dgvErrors.Rows[dgvErrors.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Gainsboro;
                     foreach (Error err in tab.buildErrors)

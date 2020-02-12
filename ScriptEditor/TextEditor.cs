@@ -55,6 +55,7 @@ namespace ScriptEditor
 
         private int showTipsColumn;
         private bool roundTrip = false;
+        private bool savingRunning = false;
 
         internal TreeView VarTree = new TreeView();
         private TabPage VarTab = new TabPage("Variables");
@@ -549,7 +550,7 @@ namespace ScriptEditor
                     System.Threading.Thread.Sleep(50); // Avoid stomping on files while the parser is running
                     Application.DoEvents();
                 }
-
+                savingRunning = true;
                 bool msg = (Path.GetExtension(tab.filename) == ".msg");
 
                 if (Settings.autoTrailingSpaces && !msg) {
@@ -560,7 +561,7 @@ namespace ScriptEditor
                 }
                 string saveText = tab.textEditor.Text;
                 if (msg && Settings.EncCodePage.CodePage == 866) {
-                    saveText = saveText.Replace('\u0425', '\u0058'); //Replacement russian letter "X", to english letter
+                    saveText = saveText.Replace('\u0425', '\u0058'); // Replacement russian letter "X", to english letter
                 }
                 Utilities.NormalizeDelimiter(ref saveText);
 
@@ -570,8 +571,8 @@ namespace ScriptEditor
                 if (!close) tab.FileTime = File.GetLastWriteTime(tab.filepath);
                 tab.changed = false;
                 SetTabTextChange(tab.index);
+                savingRunning = false;
             }
-
         }
 
         private void SaveAs(TabInfo tab, bool close = false)
@@ -695,6 +696,9 @@ namespace ScriptEditor
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false, bool showIcon = true)
         {
+            extParserTimer.Stop(); // предотвратить запуск парсера после компиляции
+            tab.needsParse = false;
+
             msg = String.Empty;
             if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
                 if (showMessages) MessageBox.Show("You cannot compile this file.", "Compile Error");

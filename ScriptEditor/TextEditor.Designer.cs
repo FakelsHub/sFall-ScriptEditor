@@ -801,6 +801,7 @@ namespace ScriptEditor {
             this.tsmShowParserLog.ShowShortcutKeys = false;
             this.tsmShowParserLog.Size = new System.Drawing.Size(149, 22);
             this.tsmShowParserLog.Text = "Show parser log";
+            this.tsmShowParserLog.Click += new System.EventHandler(this.RefreshLog_Click);
             // 
             // tsmShowBuildLog
             // 
@@ -811,6 +812,7 @@ namespace ScriptEditor {
             this.tsmShowBuildLog.ShowShortcutKeys = false;
             this.tsmShowBuildLog.Size = new System.Drawing.Size(149, 22);
             this.tsmShowBuildLog.Text = "Show build log";
+            this.tsmShowBuildLog.Click += new System.EventHandler(this.RefreshLog_Click);
             // 
             // toolStripSeparator43
             // 
