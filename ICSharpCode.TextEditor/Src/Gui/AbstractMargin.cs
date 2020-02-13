@@ -30,7 +30,9 @@ namespace ICSharpCode.TextEditor
 		
 		public Rectangle DrawingPosition {
 			get {
-				return drawingPosition;
+				return (drawingPosition.IsEmpty)
+						? new Rectangle(0, 0, textArea.Width, textArea.Height)
+						: drawingPosition;
 			}
 			set {
 				drawingPosition = value;
