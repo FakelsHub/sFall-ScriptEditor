@@ -33,7 +33,7 @@ namespace ScriptEditor
             else if (sf.cbWord.Checked)
                 regex = new Regex(@"\b" + sf.tbSearch.Text + @"\b", option);
 
-            if (sf.rbFolder.Checked && Settings.lastSearchPath == null) {
+            if (sf.rbFolder.Checked && (Settings.lastSearchPath == null || !Directory.Exists(Settings.lastSearchPath))) {
                 MessageBox.Show("No search path set.", "Error");
                 return false;
             }
@@ -114,53 +114,45 @@ namespace ScriptEditor
         }
         #endregion
 
-        #region Search&Replace function form
+        #region Search & Replace function form
+        private string lastSearchText = string.Empty;
+
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string searchText = lastSearchText;
             if (sf == null) {
                 sf = new SearchForm();
                 sf.Owner = this;
-                sf.FormClosing += delegate(object a1, FormClosingEventArgs a2) { sf = null; };
-                sf.KeyUp += delegate(object a1, KeyEventArgs a2) {
-                    if (a2.KeyCode == Keys.Escape) {
-                        sf.Close();
-                    }
-                };
-                sf.rbFolder.CheckedChanged += delegate(object a1, EventArgs a2) {
-                    sf.bChange.Enabled = sf.cbSearchSubfolders.Enabled = sf.rbFolder.Checked;
-                    sf.bReplace.Enabled = !sf.rbFolder.Checked;
-                };
-                sf.tbSearch.KeyPress += delegate(object a1, KeyPressEventArgs a2) { if (a2.KeyChar == '\r') { bSearch_Click(null, null); a2.Handled = true; } };
-                sf.bChange.Click += delegate(object a1, EventArgs a2) {
-                    if (sf.fbdSearchFolder.ShowDialog() != DialogResult.OK)
-                        return;
-                    Settings.lastSearchPath = sf.fbdSearchFolder.SelectedPath;
-                    sf.textBox1.Text = Settings.lastSearchPath;
+                sf.FormClosed += delegate(object a1, FormClosedEventArgs a2) {
+                    lastSearchText = sf.tbSearch.Text;
+                    sf = null;
                 };
                 sf.lbFindFiles.MouseDoubleClick += delegate (object a1, MouseEventArgs a2) {
                     string file = sf.lbFindFiles.SelectedItem.ToString();
-                    Utilities.SearchAndScroll(Open(file, OpenType.File).textEditor.ActiveTextAreaControl,
-                                             (Regex)sf.lbFindFiles.Tag, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType);
+                    Utilities.SearchAndScroll(Open(file, OpenType.File, false).textEditor.ActiveTextAreaControl,
+                                             (Regex)sf.lbFindFiles.Tag, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType, false);
                 };
                 sf.bSearch.Click += new EventHandler(bSearch_Click);
                 sf.bReplace.Click += new EventHandler(bReplace_Click);
-                sf.Show();
             } else {
                 sf.WindowState = FormWindowState.Normal;
                 sf.Focus();
-                sf.tbSearch.Focus();
+
+                searchText = sf.tbSearch.Text;
             }
-            string str = "";
-            if (currentTab != null) {
-                str = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
+
+            if (currentTab != null && currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected) {
+                searchText = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
             }
-            if (str.Length == 0 || str.Length > 255) {
-                str = Clipboard.GetText();
+            if (searchText.Length == 0) {
+                searchText = Clipboard.GetText();
             }
-            if (str.Length > 0 && str.Length < 255) {
-                sf.tbSearch.Text = str;
-                sf.tbSearch.SelectAll();
+            if (searchText.Length > 0 && searchText.Length < 255) {
+                sf.tbSearch.Text = searchText;
             }
+            sf.Show();
+            sf.tbSearch.Focus();
+            sf.tbSearch.SelectAll();
         }
 
         private void bSearch_Click(object sender, EventArgs e)

@@ -304,8 +304,6 @@ namespace ScriptEditor
                 KeepScriptSetting(tabs[i], skip);
             }
 
-            if (sf != null) sf.Close();
-
             while (bwSyntaxParser.IsBusy) {
                 System.Threading.Thread.Sleep(100); // Avoid stomping on files while the parser is running
                 Application.DoEvents();

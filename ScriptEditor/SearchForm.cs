@@ -7,16 +7,40 @@ namespace ScriptEditor
 {
     public partial class SearchForm : Form
     {
+        private bool isHide = false;
+
         public SearchForm()
         {
             InitializeComponent();
             if (Settings.lastSearchPath == null) {
-                textBox1.Text = "<unset>";
+                tbSearchPath.Text = "<unset>";
             } else {
-                textBox1.Text = Settings.lastSearchPath;
-                fbdSearchFolder.SelectedPath = Settings.lastSearchPath;
+                tbSearchPath.Text = Settings.lastSearchPath;
             }
             cbFileMask.SelectedIndex = 0;
+
+            this.KeyUp += delegate(object a1, KeyEventArgs a2) {
+                if (a2.KeyCode == Keys.Escape) this.bHide.PerformClick();
+            };
+
+            this.rbFolder.CheckedChanged += delegate(object a1, EventArgs a2) {
+                this.bChange.Enabled = this.cbSearchSubfolders.Enabled = this.rbFolder.Checked;
+                this.bReplace.Enabled = !this.rbFolder.Checked;
+            };
+
+            this.bChange.Click += delegate(object a1, EventArgs a2) {
+                fbdSearchFolder.SelectedPath = Settings.lastSearchPath;
+                if (this.fbdSearchFolder.ShowDialog() != DialogResult.OK) return;
+                Settings.lastSearchPath = this.fbdSearchFolder.SelectedPath;
+                this.tbSearchPath.Text = Settings.lastSearchPath;
+            };
+
+            this.tbSearch.KeyPress += delegate(object a1, KeyPressEventArgs a2) {
+                if (a2.KeyChar == '\r') {
+                    a2.Handled = true;
+                    this.bSearch.PerformClick();
+                }
+            };
         }
 
         public List<string> GetFolderFiles()
@@ -34,17 +58,19 @@ namespace ScriptEditor
 
         private void SearchForm_Deactivate(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized) Opacity = 0.6;
+            if (!isHide && WindowState == FormWindowState.Minimized) Opacity = 0.6;
         }
 
         private void SearchForm_Activated(object sender, EventArgs e)
         {
             Opacity = 1;
+            isHide = false;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void bHide_Click(object sender, EventArgs e)
         {
-            Close();
+            isHide = true;
+            this.Hide();
         }
 
         private void rbFolder_CheckedChanged(object sender, EventArgs e)
@@ -55,6 +81,16 @@ namespace ScriptEditor
         private void cbRegular_CheckedChanged(object sender, EventArgs e)
         {
             cbWord.Enabled = !cbRegular.Checked;
+        }
+
+        private void tbSearchPath_Leave(object sender, EventArgs e)
+        {
+            Settings.lastSearchPath = this.tbSearchPath.Text;
+        }
+
+        private void SearchForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            tbSearchPath_Leave(null, null);
         }
     }
 }

@@ -331,10 +331,10 @@ namespace ScriptEditor.TextEditorUtilities
             return false;
         }
 
-        public static bool SearchAndScroll(TextAreaControl TAC, Regex regex, string searchText, bool mcase, ref ScriptEditor.TextEditor.PositionType type)
+        public static bool SearchAndScroll(TextAreaControl TAC, Regex regex, string searchText, bool mcase, ref ScriptEditor.TextEditor.PositionType type, bool searchContinue = true)
         {
             int start, len;
-            if (Search(TAC.Document.TextContent, searchText, regex, TAC.Caret.Offset + 1, true, mcase, out start, out len)) {
+            if (Search(TAC.Document.TextContent, searchText, regex, (searchContinue) ? TAC.Caret.Offset + 1 : 0, true, mcase, out start, out len)) {
                 FindSelected(TAC, start, len, ref type);
                 return true;
             }
@@ -354,7 +354,7 @@ namespace ScriptEditor.TextEditorUtilities
                 TAC.SelectionManager.SetSelection(locstart, locend);
             }
             TAC.Caret.Position = locstart;
-            TAC.CenterViewOn(locstart.Line, 0);
+            TAC.CenterViewOn(locstart.Line, Math.Max(2, TAC.TextArea.TextView.VisibleLineCount / 4));
         }
 
         public static void SearchForAll(TabInfo tab, string searchText, Regex regex, bool mcase, DataGridView dgv, List<int> offsets, List<int> lengths)

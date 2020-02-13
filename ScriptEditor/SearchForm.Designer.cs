@@ -38,7 +38,7 @@
             this.cbFindAll = new System.Windows.Forms.CheckBox();
             this.tbReplace = new System.Windows.Forms.TextBox();
             this.bReplace = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tbSearchPath = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lbFindFiles = new System.Windows.Forms.ListBox();
             this.cbCase = new System.Windows.Forms.CheckBox();
@@ -46,7 +46,7 @@
             this.cbWord = new System.Windows.Forms.CheckBox();
             this.cbFileMask = new System.Windows.Forms.ComboBox();
             this.labelCount = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.bHide = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -83,22 +83,22 @@
             // rbCurrent
             // 
             this.rbCurrent.AutoSize = true;
-            this.rbCurrent.Checked = true;
             this.rbCurrent.Location = new System.Drawing.Point(153, 91);
             this.rbCurrent.Name = "rbCurrent";
             this.rbCurrent.Size = new System.Drawing.Size(125, 17);
             this.rbCurrent.TabIndex = 2;
-            this.rbCurrent.TabStop = true;
             this.rbCurrent.Text = "Find in current scripts";
             this.rbCurrent.UseVisualStyleBackColor = true;
             // 
             // rbAll
             // 
             this.rbAll.AutoSize = true;
+            this.rbAll.Checked = true;
             this.rbAll.Location = new System.Drawing.Point(153, 120);
             this.rbAll.Name = "rbAll";
             this.rbAll.Size = new System.Drawing.Size(129, 17);
             this.rbAll.TabIndex = 3;
+            this.rbAll.TabStop = true;
             this.rbAll.Text = "Find in all open scripts";
             this.rbAll.UseVisualStyleBackColor = true;
             // 
@@ -139,6 +139,8 @@
             // cbSearchSubfolders
             // 
             this.cbSearchSubfolders.AutoSize = true;
+            this.cbSearchSubfolders.Checked = true;
+            this.cbSearchSubfolders.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbSearchSubfolders.Enabled = false;
             this.cbSearchSubfolders.Location = new System.Drawing.Point(13, 213);
             this.cbSearchSubfolders.Name = "cbSearchSubfolders";
@@ -194,18 +196,18 @@
             this.bReplace.Text = "Find && Replace";
             this.bReplace.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // tbSearchPath
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.tbSearchPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.textBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBox1.Location = new System.Drawing.Point(13, 183);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ShortcutsEnabled = false;
-            this.textBox1.Size = new System.Drawing.Size(418, 20);
-            this.textBox1.TabIndex = 20;
+            this.tbSearchPath.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.tbSearchPath.Cursor = System.Windows.Forms.Cursors.Default;
+            this.tbSearchPath.Location = new System.Drawing.Point(13, 183);
+            this.tbSearchPath.Name = "tbSearchPath";
+            this.tbSearchPath.ShortcutsEnabled = false;
+            this.tbSearchPath.Size = new System.Drawing.Size(418, 20);
+            this.tbSearchPath.TabIndex = 20;
+            this.tbSearchPath.Leave += new System.EventHandler(this.tbSearchPath_Leave);
             // 
             // label3
             // 
@@ -287,14 +289,14 @@
             // 
             // button1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(326, 146);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(104, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Close";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.bHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bHide.Location = new System.Drawing.Point(326, 146);
+            this.bHide.Name = "bHide";
+            this.bHide.Size = new System.Drawing.Size(104, 23);
+            this.bHide.TabIndex = 7;
+            this.bHide.Text = "Hide";
+            this.bHide.UseVisualStyleBackColor = true;
+            this.bHide.Click += new System.EventHandler(this.bHide_Click);
             // 
             // label6
             // 
@@ -323,7 +325,7 @@
             this.Controls.Add(this.cbFindAll);
             this.Controls.Add(this.bSearch);
             this.Controls.Add(this.cbSearchSubfolders);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.bHide);
             this.Controls.Add(this.bChange);
             this.Controls.Add(this.label2);
             this.Controls.Add(label1);
@@ -331,7 +333,7 @@
             this.Controls.Add(this.rbAll);
             this.Controls.Add(this.rbCurrent);
             this.Controls.Add(this.cbRegular);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.tbSearchPath);
             this.Controls.Add(this.tbSearch);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
@@ -344,6 +346,7 @@
             this.Text = "Search & Replace";
             this.Activated += new System.EventHandler(this.SearchForm_Activated);
             this.Deactivate += new System.EventHandler(this.SearchForm_Deactivate);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SearchForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -352,28 +355,28 @@
         #endregion
 
         internal System.Windows.Forms.TextBox tbSearch;
-        internal System.Windows.Forms.CheckBox cbRegular;
-        internal System.Windows.Forms.RadioButton rbCurrent;
-        internal System.Windows.Forms.RadioButton rbAll;
-        internal System.Windows.Forms.RadioButton rbFolder;
-        internal System.Windows.Forms.Button bChange;
-        internal System.Windows.Forms.Button bSearch;
-        internal System.Windows.Forms.FolderBrowserDialog fbdSearchFolder;
-        internal System.Windows.Forms.CheckBox cbFindAll;
         internal System.Windows.Forms.TextBox tbReplace;
-        internal System.Windows.Forms.Button bReplace;
-        internal System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button bHide;
         private System.Windows.Forms.Label label6;
         internal System.Windows.Forms.ListBox lbFindFiles;
         internal System.Windows.Forms.Label labelCount;
-        internal System.Windows.Forms.CheckBox cbCase;
-        internal System.Windows.Forms.CheckBox cbWord;
         private System.Windows.Forms.ComboBox cbFileMask;
-        internal System.Windows.Forms.CheckBox cbSearchSubfolders;
+        internal System.Windows.Forms.Button bSearch;
+        internal System.Windows.Forms.Button bReplace;
+        internal System.Windows.Forms.RadioButton rbFolder;
+        internal System.Windows.Forms.CheckBox cbCase;
+        internal System.Windows.Forms.RadioButton rbCurrent;
+        internal System.Windows.Forms.RadioButton rbAll;
+        internal System.Windows.Forms.CheckBox cbWord;
+        private System.Windows.Forms.CheckBox cbSearchSubfolders;
+        internal System.Windows.Forms.CheckBox cbRegular;
+        internal System.Windows.Forms.CheckBox cbFindAll;
+        private System.Windows.Forms.Button bChange;
+        private System.Windows.Forms.TextBox tbSearchPath;
+        private System.Windows.Forms.FolderBrowserDialog fbdSearchFolder;
 
     }
 }
