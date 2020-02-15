@@ -49,12 +49,12 @@ namespace ICSharpCode.TextEditor
 		bool     hidden       = true;
 		TextArea textArea;
 		Point    currentPos   = new Point(-1, -1);
-		Ime      ime          = null;
+//		Ime      ime          = null;
 		CaretImplementation caretImplementation;
 		
 		static ImplementationMode mode = ImplementationMode.AutoMode;
 		
-		public static ImplementationMode GraphicsMode{
+		public static ImplementationMode GraphicsMode {
 			get { return mode; }
 			set { mode = value; }
 		}
@@ -340,13 +340,13 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			// set the input method editor location
-			if (ime == null) {
-				ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
-			} else {
-				ime.HWnd = textArea.Handle;
-				ime.Font = textArea.Document.TextEditorProperties.Font;
-			}
-			ime.SetIMEWindowLocation(pos.X, pos.Y);
+//			if (ime == null) {
+//				ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
+//			} else {
+//				ime.HWnd = textArea.Handle;
+//				ime.Font = textArea.Document.TextEditorProperties.Font;
+//			}
+//			ime.SetIMEWindowLocation(pos.X, pos.Y);
 			
 			currentPos = pos;
 		}
@@ -401,8 +401,7 @@ namespace ICSharpCode.TextEditor
 			void CaretTimerTick(object sender, EventArgs e)
 			{
 				blink = !blink;
-				if (visible)
-					textArea.UpdateLine(parentCaret.Line);
+				if (visible) textArea.UpdateLine(parentCaret.Line);
 			}
 			
 			public override bool Create(int width, int height)
@@ -425,7 +424,7 @@ namespace ICSharpCode.TextEditor
 			{
 				this.x = x - 1;
 				this.y = y;
-				return true;
+				return blink = true;
 			}
 			public override void PaintCaret(Graphics g)
 			{

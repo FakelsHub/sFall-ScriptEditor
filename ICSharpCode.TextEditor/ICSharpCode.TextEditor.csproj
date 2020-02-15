@@ -139,7 +139,7 @@
     <Compile Include="Src\Document\Selection\DefaultSelection.cs" />
     <Compile Include="Src\Document\FoldingStrategy\IFoldingStrategy.cs" />
     <Compile Include="Src\Document\FoldingStrategy\IndentFoldingStrategy.cs" />
-    <Compile Include="Src\Gui\Ime.cs" />
+    <None Include="Src\Gui\Ime.cs" />
     <Compile Include="Src\Gui\TextAreaUpdate.cs" />
     <Compile Include="Src\Document\Selection\SelectionManager.cs" />
     <None Include="Src\Gui\CompletionWindow\ICompletionData.cs" />
