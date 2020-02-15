@@ -33,6 +33,7 @@ namespace ICSharpCode.TextEditor
 	}
 	
 	public enum ImplementationMode {
+		AutoMode,
 		SoftwareMode,
 		Win32Mode
 	}
@@ -43,20 +44,19 @@ namespace ICSharpCode.TextEditor
 		int       column        = 0;
 		int       desiredXPos   = 0;
 		CaretMode caretMode;
-		
-		static bool     caretCreated = false;
+
+		static bool caretCreated = false;
 		bool     hidden       = true;
 		TextArea textArea;
 		Point    currentPos   = new Point(-1, -1);
 		Ime      ime          = null;
 		CaretImplementation caretImplementation;
 		
-		static ImplementationMode mode = ImplementationMode.Win32Mode;
+		static ImplementationMode mode = ImplementationMode.AutoMode;
 		
 		public static ImplementationMode GraphicsMode{
-			set { 
-				mode = value; 
-			}
+			get { return mode; }
+			set { mode = value; }
 		}
 		
 		/// <value>
@@ -133,10 +133,35 @@ namespace ICSharpCode.TextEditor
 			this.textArea = textArea;
 			textArea.GotFocus  += new EventHandler(GotFocus);
 			textArea.LostFocus += new EventHandler(LostFocus);
-			if (mode == ImplementationMode.SoftwareMode || Environment.OSVersion.Platform == PlatformID.Unix)
+			
+			if (mode == ImplementationMode.AutoMode) {
+				switch (Environment.OSVersion.Platform) {
+				case PlatformID.Unix:
+				case PlatformID.MacOSX:
+					mode = ImplementationMode.SoftwareMode;
+					break;
+				default:
+					mode = ImplementationMode.Win32Mode;
+					break;
+				}
+			}
+			CreateGraphicsMode();
+		}
+		
+		private void CreateGraphicsMode()
+		{
+			if (mode == ImplementationMode.SoftwareMode)
 				caretImplementation = new ManagedCaret(this);
 			else
 				caretImplementation = new Win32Caret(this);
+		}
+		
+		public void RecreateGraphicsMode()
+		{
+			caretImplementation.Dispose();
+			caretCreated = false;
+			CreateGraphicsMode();
+			CreateCaret();
 		}
 		
 		public void Dispose()
@@ -259,8 +284,7 @@ namespace ICSharpCode.TextEditor
 
 		void PaintCaretLine(Graphics g)
 		{
-			if (!textArea.Document.TextEditorProperties.CaretLine)
-				return;
+			if (!textArea.Document.TextEditorProperties.CaretLine) return;
 
 			HighlightColor caretLineColor = textArea.Document.HighlightingStrategy.GetColorFor("CaretLine");
 
@@ -336,8 +360,8 @@ namespace ICSharpCode.TextEditor
 		#region Caret implementation
 		internal void PaintCaret(Graphics g)
 		{
-			caretImplementation.PaintCaret(g);
 			PaintCaretLine(g);
+			caretImplementation.PaintCaret(g);
 		}
 		
 		abstract class CaretImplementation : IDisposable
@@ -359,7 +383,7 @@ namespace ICSharpCode.TextEditor
 		
 		class ManagedCaret : CaretImplementation
 		{
-			System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 300 };
+			System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer { Interval = 500 };
 			bool visible;
 			bool blink = true;
 			int x, y, width, height;
@@ -385,7 +409,7 @@ namespace ICSharpCode.TextEditor
 			{
 				this.visible = true;
 				this.width = width;
-				this.height = height;
+				this.height = height - 1;
 				timer.Enabled = true;
 				return true;
 			}
@@ -405,11 +429,13 @@ namespace ICSharpCode.TextEditor
 			}
 			public override void PaintCaret(Graphics g)
 			{
-				if (visible && blink)
+				if (blink && visible) {
+					g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
 					if (parentCaret.CaretMode == CaretMode.OverwriteMode)
-						g.FillRectangle(BrushRegistry.GetBrush(Color.FromArgb(128, 0, 0, 0)), x + 1, y, width, height);
+						g.FillRectangle(BrushRegistry.GetBrush((this.textArea.TextEditorProperties.DarkScheme) ? Color.FromArgb(160, 255, 255, 255) : Color.FromArgb(144, 0, 0, 0)), x + 1, y, width, height);
 					else
-						g.DrawRectangle(Pens.Black, x, y, width - 1, height);
+						g.DrawRectangle((this.textArea.TextEditorProperties.DarkScheme) ? Pens.White : Pens.Black, x, y, width - 1, height);
+				}
 			}
 			public override void Destroy()
 			{
@@ -449,7 +475,7 @@ namespace ICSharpCode.TextEditor
 			
 			public override bool Create(int width, int height)
 			{
-				return CreateCaret(textArea.Handle, 0, width, height);
+				return CreateCaret(textArea.Handle, 0, width, height - 1);
 			}
 			public override void Hide()
 			{
