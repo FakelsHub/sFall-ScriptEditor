@@ -25,8 +25,8 @@ namespace ScriptEditor {
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextEditor));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.FunctionTreeLeft = new System.Windows.Forms.TreeView();
@@ -147,6 +147,8 @@ namespace ScriptEditor {
             this.gotoToLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.Edit_toolStripButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.splitDocumentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ToggleBlockCommentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.capitalizeCaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator40 = new System.Windows.Forms.ToolStripSeparator();
@@ -197,14 +199,13 @@ namespace ScriptEditor {
             this.About_toolStripButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.splitDocumentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.Settings_ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.encodingMessagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsDefaultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EncodingDOSmenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.win32RenderTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.caretSoftwareModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator30 = new System.Windows.Forms.ToolStripSeparator();
             this.ParsingErrorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showIndentLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -856,8 +857,8 @@ namespace ScriptEditor {
             // 
             // cType
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.cType.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cType.DefaultCellStyle = dataGridViewCellStyle3;
             this.cType.HeaderText = "Type";
             this.cType.Name = "cType";
             this.cType.ReadOnly = true;
@@ -871,8 +872,8 @@ namespace ScriptEditor {
             // 
             // cLine
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.cLine.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cLine.DefaultCellStyle = dataGridViewCellStyle4;
             this.cLine.HeaderText = "Line";
             this.cLine.Name = "cLine";
             this.cLine.ReadOnly = true;
@@ -1595,6 +1596,8 @@ namespace ScriptEditor {
             // Edit_toolStripButton
             // 
             this.Edit_toolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.splitDocumentToolStripMenuItem,
+            this.toolStripSeparator1,
             this.ToggleBlockCommentToolStripMenuItem,
             this.capitalizeCaseToolStripMenuItem,
             this.toolStripSeparator40,
@@ -1614,6 +1617,22 @@ namespace ScriptEditor {
             this.Edit_toolStripButton.Size = new System.Drawing.Size(61, 22);
             this.Edit_toolStripButton.Text = "Code";
             this.Edit_toolStripButton.ToolTipText = "Code text tool";
+            // 
+            // splitDocumentToolStripMenuItem
+            // 
+            this.splitDocumentToolStripMenuItem.Enabled = false;
+            this.splitDocumentToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("splitDocumentToolStripMenuItem.Image")));
+            this.splitDocumentToolStripMenuItem.Name = "splitDocumentToolStripMenuItem";
+            this.splitDocumentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.splitDocumentToolStripMenuItem.Size = new System.Drawing.Size(265, 22);
+            this.splitDocumentToolStripMenuItem.Text = "Split Document";
+            this.splitDocumentToolStripMenuItem.ToolTipText = "Split document viewer";
+            this.splitDocumentToolStripMenuItem.Click += new System.EventHandler(this.SplitDoc_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(262, 6);
             // 
             // ToggleBlockCommentToolStripMenuItem
             // 
@@ -2052,12 +2071,11 @@ namespace ScriptEditor {
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.splitDocumentToolStripMenuItem,
-            this.toolStripSeparator1,
             this.Settings_ToolStripMenuItem,
             this.encodingMessagesToolStripMenuItem,
             this.toolStripSeparator5,
             this.win32RenderTextToolStripMenuItem,
+            this.caretSoftwareModeToolStripMenuItem,
             this.toolStripSeparator30,
             this.ParsingErrorsToolStripMenuItem,
             this.showIndentLineToolStripMenuItem,
@@ -2071,22 +2089,6 @@ namespace ScriptEditor {
             this.toolStripDropDownButton2.ShowDropDownArrow = false;
             this.toolStripDropDownButton2.Size = new System.Drawing.Size(64, 22);
             this.toolStripDropDownButton2.Text = "Options";
-            // 
-            // splitDocumentToolStripMenuItem
-            // 
-            this.splitDocumentToolStripMenuItem.Enabled = false;
-            this.splitDocumentToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("splitDocumentToolStripMenuItem.Image")));
-            this.splitDocumentToolStripMenuItem.Name = "splitDocumentToolStripMenuItem";
-            this.splitDocumentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.splitDocumentToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.splitDocumentToolStripMenuItem.Text = "Split Document";
-            this.splitDocumentToolStripMenuItem.ToolTipText = "Split document viewer";
-            this.splitDocumentToolStripMenuItem.Click += new System.EventHandler(this.SplitDoc_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
             // 
             // Settings_ToolStripMenuItem
             // 
@@ -2143,6 +2145,16 @@ namespace ScriptEditor {
             this.win32RenderTextToolStripMenuItem.ToolTipText = "Use WinAPI functions to output display text.\r\n(this works faster than the graphic" +
                 "s GDI method).";
             this.win32RenderTextToolStripMenuItem.Click += new System.EventHandler(this.win32RenderTextToolStripMenuItem_Click);
+            // 
+            // caretSoftwareModeToolStripMenuItem
+            // 
+            this.caretSoftwareModeToolStripMenuItem.Checked = true;
+            this.caretSoftwareModeToolStripMenuItem.CheckOnClick = true;
+            this.caretSoftwareModeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.caretSoftwareModeToolStripMenuItem.Name = "caretSoftwareModeToolStripMenuItem";
+            this.caretSoftwareModeToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.caretSoftwareModeToolStripMenuItem.Text = "Caret software mode";
+            this.caretSoftwareModeToolStripMenuItem.Click += new System.EventHandler(this.caretModeToolStripMenuItem_Click);
             // 
             // toolStripSeparator30
             // 
@@ -2677,7 +2689,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem Save_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem Settings_ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem Preprocess_ToolStripMenuItem;
@@ -2700,7 +2711,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripMenuItem openHeaderFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.Button Split_button;
-        private System.Windows.Forms.ToolStripMenuItem splitDocumentToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.TextBox tbOutput;
         private System.Windows.Forms.ToolStripSplitButton GotoProc_StripButton;
@@ -2844,5 +2854,8 @@ namespace ScriptEditor {
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator53;
         private System.Windows.Forms.ToolStripMenuItem convertHexDecToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator54;
+        private System.Windows.Forms.ToolStripMenuItem splitDocumentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem caretSoftwareModeToolStripMenuItem;
     }
 }

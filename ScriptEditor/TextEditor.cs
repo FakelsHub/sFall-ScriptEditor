@@ -394,6 +394,9 @@ namespace ScriptEditor
             //Create the text editor and set up the tab
             ICSharpCode.TextEditor.TextEditorControl te = new ICSharpCode.TextEditor.TextEditorControl();
 
+            if (caretSoftwareModeToolStripMenuItem.CheckState == CheckState.Indeterminate)
+                caretSoftwareModeToolStripMenuItem.Checked = (Caret.GraphicsMode == ImplementationMode.SoftwareMode);
+
             te.TextEditorProperties.LineViewerStyle = LineViewerStyle.FullRow;
             te.TextEditorProperties.TabIndent = Settings.tabSize;
             te.TextEditorProperties.IndentationSize = Settings.tabSize;

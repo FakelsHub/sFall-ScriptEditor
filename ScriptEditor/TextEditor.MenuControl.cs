@@ -1074,6 +1074,14 @@ namespace ScriptEditor
             Settings.winAPITextRender = win32RenderTextToolStripMenuItem.Checked;
         }
 
+        private void caretModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Caret.GraphicsMode = (caretSoftwareModeToolStripMenuItem.Checked) ? ImplementationMode.SoftwareMode : ImplementationMode.Win32Mode;
+            foreach (var tb in tabs) {
+                tb.textEditor.ActiveTextAreaControl.Caret.RecreateGraphicsMode();
+            }
+        }
+
         private void openInExternalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings.OpenInExternalEditor(tabs[(int)cmsTabControls.Tag].filepath);
