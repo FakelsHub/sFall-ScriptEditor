@@ -202,6 +202,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbSearchPath.BackColor = System.Drawing.SystemColors.ControlLight;
             this.tbSearchPath.Cursor = System.Windows.Forms.Cursors.Default;
+            this.tbSearchPath.Enabled = false;
             this.tbSearchPath.Location = new System.Drawing.Point(13, 183);
             this.tbSearchPath.Name = "tbSearchPath";
             this.tbSearchPath.ShortcutsEnabled = false;
@@ -242,6 +243,7 @@
             this.cbCase.TabIndex = 22;
             this.cbCase.Text = "Match case";
             this.cbCase.UseVisualStyleBackColor = true;
+            this.cbCase.Click += new System.EventHandler(this.cbCase_Click);
             // 
             // label4
             // 
@@ -262,6 +264,7 @@
             this.cbWord.TabIndex = 24;
             this.cbWord.Text = "Whole word only";
             this.cbWord.UseVisualStyleBackColor = true;
+            this.cbWord.Click += new System.EventHandler(this.cbWord_Click);
             // 
             // cbFileMask
             // 
@@ -287,7 +290,7 @@
             this.labelCount.TabIndex = 26;
             this.labelCount.Text = "0";
             // 
-            // button1
+            // bHide
             // 
             this.bHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bHide.Location = new System.Drawing.Point(326, 146);
@@ -370,13 +373,13 @@
         internal System.Windows.Forms.CheckBox cbCase;
         internal System.Windows.Forms.RadioButton rbCurrent;
         internal System.Windows.Forms.RadioButton rbAll;
-        internal System.Windows.Forms.CheckBox cbWord;
         private System.Windows.Forms.CheckBox cbSearchSubfolders;
         internal System.Windows.Forms.CheckBox cbRegular;
         internal System.Windows.Forms.CheckBox cbFindAll;
         private System.Windows.Forms.Button bChange;
         private System.Windows.Forms.TextBox tbSearchPath;
         private System.Windows.Forms.FolderBrowserDialog fbdSearchFolder;
+        private System.Windows.Forms.CheckBox cbWord;
 
     }
 }

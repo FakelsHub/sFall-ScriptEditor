@@ -30,7 +30,7 @@ namespace ScriptEditor
 
             if (sf.cbRegular.Checked)
                 regex = new Regex(sf.tbSearch.Text, option);
-            else if (sf.cbWord.Checked)
+            else if (Settings.searchWholeWord)
                 regex = new Regex(@"\b" + sf.tbSearch.Text + @"\b", option);
 
             if (sf.rbFolder.Checked && (Settings.lastSearchPath == null || !Directory.Exists(Settings.lastSearchPath))) {

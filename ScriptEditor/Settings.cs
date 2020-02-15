@@ -95,6 +95,8 @@ namespace ScriptEditor
         public static bool winAPITextRender = true;
         public static int compileBackwardMode = 0;
         private static string ExternalEditorExePath;
+        public static bool searchIgnoreCase = false;
+        public static bool searchWholeWord = false;
 
         // for Flowchart
         public static bool autoUpdate = false;
@@ -276,6 +278,8 @@ namespace ScriptEditor
                     if (ExternalEditorExePath.Length == 0)
                         ExternalEditorExePath = null;
                     oldDecompile = br.ReadBoolean();
+                    searchIgnoreCase = br.ReadBoolean();
+                    searchWholeWord = br.ReadBoolean();
                 } catch {
                     MessageBox.Show("An error occurred while reading configuration file.\n"
                                     + "File setting.dat may be in wrong format.", "Setting read error");
@@ -438,6 +442,8 @@ namespace ScriptEditor
             bw.Write(winAPITextRender);
             bw.Write(ExternalEditorExePath ?? "");
             bw.Write(oldDecompile);
+            bw.Write(searchIgnoreCase);
+            bw.Write(searchWholeWord);
             bw.Close();
 
             // Recent files

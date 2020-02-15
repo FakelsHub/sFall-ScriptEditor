@@ -19,6 +19,9 @@ namespace ScriptEditor
             }
             cbFileMask.SelectedIndex = 0;
 
+            cbCase.Checked = !Settings.searchIgnoreCase;
+            cbWord.Checked = Settings.searchWholeWord;
+
             this.KeyUp += delegate(object a1, KeyEventArgs a2) {
                 if (a2.KeyCode == Keys.Escape) this.bHide.PerformClick();
             };
@@ -76,6 +79,7 @@ namespace ScriptEditor
         private void rbFolder_CheckedChanged(object sender, EventArgs e)
         {
             cbFileMask.Enabled = rbFolder.Checked;
+            tbSearchPath.Enabled = rbFolder.Checked;
         }
 
         private void cbRegular_CheckedChanged(object sender, EventArgs e)
@@ -91,6 +95,16 @@ namespace ScriptEditor
         private void SearchForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             tbSearchPath_Leave(null, null);
+        }
+
+        private void cbCase_Click(object sender, EventArgs e)
+        {
+            Settings.searchIgnoreCase = !cbCase.Checked;
+        }
+
+        private void cbWord_Click(object sender, EventArgs e)
+        {
+            Settings.searchWholeWord = cbWord.Checked;
         }
     }
 }
