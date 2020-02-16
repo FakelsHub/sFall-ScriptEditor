@@ -36,6 +36,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label = new System.Windows.Forms.Label();
+            this.bHelp = new System.Windows.Forms.Button();
             this.typeColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.functionColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.argsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -113,6 +114,19 @@
             this.label.Tag = "Указание неверных данных для функции выведет программу из строя.";
             this.label.Text = "Note: Specifying incorrect data for the function will crashing the program.";
             // 
+            // bHelp
+            // 
+            this.bHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bHelp.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bHelp.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.bHelp.Location = new System.Drawing.Point(430, 212);
+            this.bHelp.Name = "bHelp";
+            this.bHelp.Size = new System.Drawing.Size(20, 20);
+            this.bHelp.TabIndex = 4;
+            this.bHelp.Text = "?";
+            this.bHelp.UseVisualStyleBackColor = true;
+            this.bHelp.Click += new System.EventHandler(this.bHelp_Click);
+            // 
             // typeColumn
             // 
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -124,6 +138,7 @@
             "Reply",
             "Message"});
             this.typeColumn.Name = "typeColumn";
+            this.typeColumn.ToolTipText = "Type of function.";
             this.typeColumn.Width = 80;
             // 
             // functionColumn
@@ -189,6 +204,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(462, 234);
+            this.Controls.Add(this.bHelp);
             this.Controls.Add(this.label);
             this.Controls.Add(this.dgvTemplates);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -214,6 +230,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Label label;
+        private System.Windows.Forms.Button bHelp;
         private System.Windows.Forms.DataGridViewComboBoxColumn typeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn functionColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn argsColumn;
