@@ -103,33 +103,34 @@ namespace ICSharpCode.TextEditor
 				secondaryTextArea = new TextAreaControl(this);
 				secondaryTextArea.Dock = DockStyle.Bottom;
 				secondaryTextArea.Height = Height / 2;
-                
+
 				secondaryTextArea.TextArea.GotFocus += delegate {
 					SetActiveTextAreaControl(secondaryTextArea);
 				};
-                
-                textAreaSplitter =  new Splitter();
+				
+				textAreaSplitter =  new Splitter();
 				textAreaSplitter.BorderStyle = BorderStyle.FixedSingle;
-                textAreaSplitter.BackColor = Color.Orange;
+				textAreaSplitter.BackColor = Color.Orange;
 				textAreaSplitter.Height = 8;
 				textAreaSplitter.Dock = DockStyle.Bottom;
-                textAreaPanel.Controls.Add(textAreaSplitter);
+				textAreaPanel.Controls.Add(textAreaSplitter);
 				textAreaPanel.Controls.Add(secondaryTextArea);
 				InitializeTextAreaControl(secondaryTextArea);
 				secondaryTextArea.OptionsChanged();
 
-                secondaryTextArea.Caret.Line = primaryTextArea.Caret.Line;
-                secondaryTextArea.CenterViewOn(secondaryTextArea.Caret.Line, 0);
-                secondaryTextArea.TextArea.Select();
+				secondaryTextArea.Caret.Line = primaryTextArea.Caret.Line;
+				secondaryTextArea.CenterViewOn(secondaryTextArea.Caret.Line, 0);
+				secondaryTextArea.TextArea.Select();
 			} else {
-                secondaryTextArea.Visible = !secondaryTextArea.Visible;
-                textAreaSplitter.Visible = !textAreaSplitter.Visible;
+				if (secondaryTextArea.TextArea.Focused) primaryTextArea.Caret.Position = secondaryTextArea.Caret.Position;
+				secondaryTextArea.Visible = !secondaryTextArea.Visible;
+				textAreaSplitter.Visible = !textAreaSplitter.Visible;
 				if (secondaryTextArea.Visible == false)
-                    SetActiveTextAreaControl(primaryTextArea);
-                else 
-                    secondaryTextArea.TextArea.Select();
+					SetActiveTextAreaControl(primaryTextArea);
+				else
+					secondaryTextArea.TextArea.Select();
 
-                //textAreaPanel.Controls.Remove(secondaryTextArea);
+				//textAreaPanel.Controls.Remove(secondaryTextArea);
 				//textAreaPanel.Controls.Remove(textAreaSplitter);
 				
 				//secondaryTextArea.Dispose();
