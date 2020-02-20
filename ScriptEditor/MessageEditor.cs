@@ -27,7 +27,6 @@ namespace ScriptEditor
         private bool isEditMode = false;
 
         private const string COMMENT = "#";
-        private const string lineMarker = "\u25B2";
         private const char pcMarker = '\u25CF';
         private Color pcColor = Color.FromArgb(0, 0, 220);
         private Color cmColor;
@@ -52,6 +51,8 @@ namespace ScriptEditor
         #region Entry DGV
         private class Entry
         {
+            static private bool wrapLine = false;
+
             public string msgLine = string.Empty;
             public string msglip = string.Empty;
             public string msgText = string.Empty;
@@ -62,39 +63,56 @@ namespace ScriptEditor
 
             public int tabCount = 1;
 
+            static public bool IsWrap
+            {
+                get { return wrapLine; }
+            }
+
             public Entry() { }
 
             public Entry(string line)
             {
+                //wrapLine = false;
+                if (line.Length == 0) return;
                 if (line.TrimStart().StartsWith(COMMENT)) {
                     msgLine = "-";
                     msgText = line;
                     commentLine = true;
                 } else {
-                    string[] splitLine = line.Split(new char[] {'}'}, StringSplitOptions.RemoveEmptyEntries);
-                    if (splitLine.Length < 3) {
-                        if (line.Length == 0)
-                            return;
-                        msgLine = lineMarker;
-                        msgText = line.TrimEnd('}');
-                    } else {
-                        string mark = String.Empty;
-                        if (splitLine[0].StartsWith("\t")) {
-                            tabCount = splitLine[0].Length;
-                            splitLine[0] = splitLine[0].TrimStart('\t');
-                            tabCount -= splitLine[0].Length;
-                            mark = pcMarker + " ";
-                            pcMark = true;
-                        }
-                        int z = splitLine[0].IndexOf('{');
-                        msgLine = splitLine[0].Substring(z + 1);     //номер строки
-                        z = splitLine[1].IndexOf('{');
-                        msglip = splitLine[1].Substring(z + 1);
-                        z = splitLine[2].IndexOf('{');
-                        msgText = mark + splitLine[2].Substring(z + 1);
-                        if (splitLine.Length > 3)
-                            description = splitLine[3].TrimEnd();
+                    string[] splitLine = line.Split(new char[] {'}'}, 4);
+                    if (splitLine.Length == 0) return; // msg bad
+
+                    wrapLine = splitLine.Length == 3;
+                    string mark = String.Empty;
+                    if (splitLine[0].StartsWith("\t")) {
+                        tabCount = splitLine[0].Length;
+                        splitLine[0] = splitLine[0].TrimStart('\t');
+                        tabCount -= splitLine[0].Length;
+                        mark = pcMarker + " ";
+                        pcMark = true;
                     }
+                    int z = splitLine[0].IndexOf('{');
+                    msgLine = splitLine[0].Substring(z + 1); // номер строки
+
+                    z = splitLine[1].IndexOf('{');
+                    msglip = splitLine[1].Substring(z + 1);
+
+                    z = splitLine[2].IndexOf('{');
+                    msgText = mark + splitLine[2].Substring(z + 1);
+                    if (splitLine.Length > 3 && splitLine[3].Length > 0)
+                        description = splitLine[3].TrimEnd();
+                }
+            }
+
+            public void Append(string line)
+            {
+                int end = line.IndexOf('}');
+                wrapLine = (end == -1);
+                if (wrapLine) {
+                    msgText += Environment.NewLine + line;
+                } else {
+                    msgText += Environment.NewLine + line.Remove(end);
+                    description = line.Substring(end + 1).TrimEnd();
                 }
             }
 
@@ -112,11 +130,8 @@ namespace ScriptEditor
                         pcMark = false;
                     }
                     return (tab + "{" + (msgLine) + "}{" + msglip + "}{" + text + "}" + description);
-                } else if (msgLine == lineMarker) {
-                    prev = true;
-                    return (msgText + "}" + description);
-                } else
-                    return (msgText + description);
+                }
+                return (msgText + description);
             }
         }
         #endregion
@@ -197,7 +212,7 @@ namespace ScriptEditor
                     }
             }
             msgEdit.SendStripButton.Enabled = sendState;
-            
+
             return msgEdit;
         }
 
@@ -211,7 +226,7 @@ namespace ScriptEditor
 
                 ti.msgFilePath = msgPath;
             }
-            
+
             // Show form
             MessageEditor msgEdit = new MessageEditor(msgPath, ti);
             msgEdit.scriptForm = frm;
@@ -229,7 +244,7 @@ namespace ScriptEditor
         {
             if (msgPath == null)
                 MessageBox.Show("No output path selected.", "Error");
-            
+
             // Show form
             MessageEditor msgEdit = new MessageEditor(msgPath, null);
             msgEdit.scriptForm = frm;
@@ -264,7 +279,7 @@ namespace ScriptEditor
 
             if (Settings.encoding == (byte)EncodingType.OEM866)
                 encodingTextDOSToolStripMenuItem.Checked = true;
-            
+
             StripComboBox.SelectedIndex = 2;
             if (!Settings.msgLipColumn) {
                 dgvMessage.Columns[3].Visible = false;
@@ -301,11 +316,19 @@ namespace ScriptEditor
 
             for (int i = 0; i < linesMsg.Count; i++)
             {
-                AddRow(new Entry(linesMsg[i]));
-                if (progress != null)
-                    progress.SetProgress = i;
+                Entry entry;
+                try {
+                    entry = new Entry(linesMsg[i]);
+                } catch (Exception) {
+                    MessageBox.Show("Message file is bad!\nLine Error: " + i.ToString());
+                    break;
+                }
+                while (Entry.IsWrap && ++i < linesMsg.Count) entry.Append(linesMsg[i]);
+
+                AddRow(entry);
+                if (progress != null) progress.SetProgress = i;
             }
-            
+
             if (progress != null)
                 progress.Dispose();
 
@@ -327,15 +350,15 @@ namespace ScriptEditor
             {
                 Entry entries = (Entry)dgvMessage.Rows[i].Cells[0].Value;
                 string line = entries.ToString(out prevLine);
-                
+
                 if (replaceX)
                     line = line.Replace('\u0425', '\u0058'); //Replacement of Russian letter "X", to English letter
-                
+
                 linesMsg.Add(line);
-                
+
                 if (prevLine)
                     linesMsg[i - 1] = linesMsg[i - 1].TrimEnd('}');
-                
+
                 foreach (DataGridViewCell cells in dgvMessage.Rows[i].Cells)
                 {
                     switch (cells.ColumnIndex) {
@@ -366,7 +389,7 @@ namespace ScriptEditor
 
             DataGridViewCell cell = dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex];
             Entry entry = (Entry)dgvMessage.Rows[e.RowIndex].Cells[0].Value;
-            
+
             string val = (string)cell.Value;
             if (val == null)
                 val = string.Empty;
@@ -488,7 +511,7 @@ namespace ScriptEditor
             int Line = 0, nLine;
             bool _comm = false;
             bool isEdit = dgvMessage.IsCurrentCellInEditMode;
-            
+
             for (int n = SelectLine.row; n >= 0; n--)
             {
                 if (int.TryParse((string)dgvMessage.Rows[n].Cells[1].Value, out Line)) break;
@@ -516,7 +539,7 @@ namespace ScriptEditor
             allow = false;
             try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
             catch { };
-            
+
             if (isEdit)
                 dgvMessage.BeginEdit(false);
 
@@ -532,10 +555,10 @@ namespace ScriptEditor
         {
             if (sender != null)
                 SelectLine.row++;
-            
+
             InsertRow(SelectLine.row, new Entry(""));
             allow = false;
-            
+
             if (sender == null)
                 SelectLine.row++;
             try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
@@ -571,7 +594,7 @@ namespace ScriptEditor
                 dgvMessage.Rows.RemoveAt(SelectLine.row);
             } else
                 SelectLine.row++;
-            
+
             InsertRow(SelectLine.row, new Entry(comment));
             allow = false;
             try { dgvMessage.Rows[SelectLine.row].Cells[SelectLine.col].Selected = true; }
@@ -995,7 +1018,7 @@ namespace ScriptEditor
 
             if (editAllowed && dgvMessage.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected)
                 dgvMessage.BeginEdit(false);
-            
+
             editAllowed = true;
         }
 
@@ -1004,8 +1027,12 @@ namespace ScriptEditor
             Entry entry = (Entry)dgvMessage.Rows[SelectLine.row].Cells[0].Value;
             string desc = entry.description;
             if (InputBox.ShowDialog("Add/Edit Description line", ref desc, 125) == DialogResult.OK) {
-                entry.description = desc;
-                dgvMessage.Rows[SelectLine.row].Cells[2].ToolTipText = desc.Trim();
+                desc = desc.Trim();
+                if (desc.Length > 0 && entry.description.Length == 0)
+                    entry.description = " # " + desc;
+                else
+                    entry.description = desc;
+                dgvMessage.Rows[SelectLine.row].Cells[2].ToolTipText = desc;
 
                 msgSaveButton.Enabled = true;
             }

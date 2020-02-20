@@ -112,7 +112,7 @@ namespace ScriptEditor
             if (e.Button != MouseButtons.Left) {
                 for (int i = 0; i < tabs.Count; i++)
                 {
-                    if (tabControl1.GetTabRect(i).Contains(e.X, e.Y)) {
+                    if (tabControl1.GetTabRect(i).Contains(e.Location)) {
                         if (e.Button == MouseButtons.Middle)
                             Close(tabs[i]);
                         else if (e.Button == MouseButtons.Right) {
@@ -121,7 +121,7 @@ namespace ScriptEditor
                             foreach (ToolStripItem item in cmsTabControls.Items)
                                 item.Visible = true;
 
-                            cmsTabControls.Show(tabControl1, e.X, e.Y);
+                            cmsTabControls.Show(tabControl1, e.Location);
                         }
                         return;
                     }
@@ -134,7 +134,7 @@ namespace ScriptEditor
             if (e.Button != MouseButtons.Left) {
                 for (int i = 3; i < tabControl2.TabPages.Count; i++)
                 {
-                    if (tabControl2.GetTabRect(i).Contains(e.X, e.Y)) {
+                    if (tabControl2.GetTabRect(i).Contains(e.Location)) {
                         if (e.Button == MouseButtons.Middle) {
                             int stbi = tabControl2.SelectedIndex;
                             if (stbi == i)
@@ -150,7 +150,7 @@ namespace ScriptEditor
                             foreach (ToolStripItem item in cmsTabControls.Items)
                                 item.Visible = (item.Text == "Close");
 
-                            cmsTabControls.Show(tabControl2, e.X, e.Y);
+                            cmsTabControls.Show(tabControl2, e.Location);
                         }
                         return;
                     }
