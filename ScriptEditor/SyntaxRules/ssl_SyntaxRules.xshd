@@ -541,6 +541,7 @@
         <Key word = "self_max_hits" />
         <Key word = "self_is_poisoned" />
         <Key word = "self_ai" />
+        <Key word = "self_team" />
         <Key word = "dude_strength" />
         <Key word = "dude_perception" />
         <Key word = "dude_endurance" />
