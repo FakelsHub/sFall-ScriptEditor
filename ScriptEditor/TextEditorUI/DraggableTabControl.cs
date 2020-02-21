@@ -9,7 +9,8 @@ public delegate void SwapEventHandler(object sender, TabsSwappedEventArgs e);
 public class DraggableTabControl : TabControl
 {
     private TabPage m_DraggedTab;
-    
+    private int m_X;
+
     [Category("Action")]
     [Description("Fires before tabs are swapped (indexes indicate positions before swap)")]
     public event SwapEventHandler tabsSwapped;
@@ -24,14 +25,16 @@ public class DraggableTabControl : TabControl
     private void OnMouseDown(object sender, MouseEventArgs e)
     {
         m_DraggedTab = TabAt(e.Location);
+        m_X = e.X;
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
     {
-        if (e.Button != MouseButtons.Left || m_DraggedTab == null)
+        if (e.Button != MouseButtons.Left || m_DraggedTab == null || e.X == m_X)
         {
             return;
         }
+        m_X = e.X;
 
         TabPage tab = TabAt(e.Location);
 
@@ -41,10 +44,8 @@ public class DraggableTabControl : TabControl
         }
 
         Swap(m_DraggedTab, tab);
-        
-        //SelectedTab = m_DraggedTab;
     }
-    
+
    /* private void OnMouseUp(object sender, MouseEventArgs e)
     {
         m_DraggedTab = TabAt(e.Location);
@@ -69,14 +70,16 @@ public class DraggableTabControl : TabControl
     {
         int iA = TabPages.IndexOf(a);
         int iB = TabPages.IndexOf(b);
+
+        int d = GetTabRect(iA).Width - GetTabRect(iB).Width;
+
         if (tabsSwapped != null) {
         	tabsSwapped(this, new TabsSwappedEventArgs(iA, iB));
         }
         TabPages.RemoveAt(iB);
-        //TabPages.Remove(a);
-        //TabPages.Insert(iB, a);
-        //TabPages.Remove(b);
         TabPages.Insert(iA, b);
+
+        if (d < -1) Cursor.Position = new Point((iA > iB) ? Cursor.Position.X + d : Cursor.Position.X - d, Cursor.Position.Y);
     }
 }
 
