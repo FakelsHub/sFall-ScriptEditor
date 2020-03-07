@@ -479,6 +479,7 @@ namespace ScriptEditor
                     tp.ToolTipText = ti.filepath;
                 string ext = Path.GetExtension(file).ToLower();
                 if (ext == ".ssl" || ext == ".h") {
+                    te.Text = Utilities.NormalizeNewLine(te.Text);
                     if (formatCodeToolStripMenuItem.Checked)
                         te.Text = Utilities.FormattingCode(te.Text);
                     ti.shouldParse = true;
@@ -564,7 +565,7 @@ namespace ScriptEditor
                 if (msg && Settings.EncCodePage.CodePage == 866) {
                     saveText = saveText.Replace('\u0425', '\u0058'); // Replacement russian letter "X", to english letter
                 }
-                Utilities.NormalizeDelimiter(ref saveText);
+                Utilities.ConvertToUnixPlatform(ref saveText);
 
                 File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage
                                                               : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
@@ -1208,8 +1209,12 @@ namespace ScriptEditor
             currentTab.textEditor.Refresh();
         }
 
+        private int inputPairedBrackets = 0;
+        private char keyPressChar;
+
         private void TextArea_KeyPressed(object sender, KeyPressEventArgs e)
         {
+            keyPressChar = e.KeyChar;
             var caret = currentActiveTextAreaCtrl.Caret;
 
             if (Settings.autoInputPaired && e.KeyChar == '"') {
@@ -1254,6 +1259,7 @@ namespace ScriptEditor
                 }
 
                 if (Settings.autoInputPaired && Char.IsWhiteSpace(currentDocument.GetCharAt(caret.Offset))) {
+                    inputPairedBrackets = 2;
                     string bracket = (e.KeyChar == '[') ? "]" : ")";
                     currentDocument.Insert(caret.Offset, bracket);
                 }
@@ -1261,7 +1267,7 @@ namespace ScriptEditor
                 if (toolTips.Active) ToolTipsHide();
                 if (e.KeyChar == '}') return;
 
-                if (Settings.autoInputPaired) {
+                if (Settings.autoInputPaired && inputPairedBrackets > 0) {
                     char bracket = (e.KeyChar == ']') ? '[' : '(';
                     if (currentDocument.GetCharAt(caret.Offset -1) == bracket && currentDocument.GetCharAt(caret.Offset) == e.KeyChar) {
                         currentDocument.Remove(caret.Offset, 1);
@@ -1276,12 +1282,15 @@ namespace ScriptEditor
                         autoComplete.GenerateList(e.KeyChar.ToString(), currentTab, caret.Offset - 1, toolTips.Tag);
                 }
             }
+            if (inputPairedBrackets > 0) inputPairedBrackets--;
         }
 
         void TextArea_KeyUp(object sender, KeyEventArgs e)
         {
+            if (!currentTab.shouldParse) return;
             updateHighlightPocedure = true;
-            if (e.KeyCode == Keys.OemSemicolon) Utilities.FormattingCodeSmart(currentActiveTextAreaCtrl);
+
+            if (e.KeyCode == Keys.OemSemicolon && keyPressChar == ';') Utilities.FormattingCodeSmart(currentActiveTextAreaCtrl);
 
             if (!Settings.showTips || toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue))) return;
 

@@ -87,7 +87,7 @@ namespace ScriptEditor.TextEditorUtilities
                         n = linecode[i].IndexOf(p, n);
                         if (n < 0)
                             break;
-                        
+
                         // skiping quotes "..."
                         bool inQuotes = false;
                         foreach (Quote q in Quotes)
@@ -145,7 +145,7 @@ namespace ScriptEditor.TextEditorUtilities
             int indent = -1;
             if (TAC.SelectionManager.HasSomethingSelected) {
                 ISelection position = TAC.SelectionManager.SelectionCollection[0];
-                
+
                 for (int i = position.StartPosition.Line; i <= position.EndPosition.Line; i++)
                 {
                     CheckSpacesIndent(i, ref indent, TAC.Document);
@@ -420,7 +420,7 @@ namespace ScriptEditor.TextEditorUtilities
 
             if (!Search(text, find, s_regex, start, false, false, out z, out x))
                 return -1;
-            
+
             return z;
         }
 
@@ -471,7 +471,7 @@ namespace ScriptEditor.TextEditorUtilities
             ISegment segmentS = document.GetLineSegment(block.begin);
             ISegment segmentE = document.GetLineSegment(block.end);
             int len = (segmentE.Offset + segmentE.Length) - segmentS.Offset;
-            
+
             int inc_s = 0;
             int inc_e = 2;
             if (block.end < document.TotalNumberOfLines - 1) {
@@ -504,7 +504,7 @@ namespace ScriptEditor.TextEditorUtilities
         {
             TAC.Document.UndoStack.StartUndoGroup();
             TAC.SelectionManager.ClearSelection();
-            
+
             // proc body paste
             int len = TextUtilities.GetLineAsString(TAC.Document, procLine).Trim().Length;
             if (len > 0) {
@@ -532,7 +532,7 @@ namespace ScriptEditor.TextEditorUtilities
                     TAC.Document.MarkerStrategy.RemoveMarker(m);
             }
             if (!TAC.SelectionManager.HasSomethingSelected) return;
-            
+
             string sWord = TAC.SelectionManager.SelectedText.Trim();
             int wordLen = sWord.Length;
             if (wordLen == 0 || (wordLen < 3 && !Char.IsLetterOrDigit(sWord[0])) || (wordLen == 1 && Char.IsLetter(sWord[0]))) return;
@@ -544,7 +544,7 @@ namespace ScriptEditor.TextEditorUtilities
             while (seek < TAC.Document.TextLength) {
                 seek = TAC.Document.TextContent.IndexOf(sWord, seek);
                 if (seek == -1) break;
-                char chS = '\0', chE = '\0'; 
+                char chS = '\0', chE = '\0';
                 if (isWordHighlighting) {
                     chS = (seek > 0) ? TAC.Document.GetCharAt(seek - 1) : ' ';
                     chE = ((seek + wordLen) < TAC.Document.TextLength) ? TAC.Document.GetCharAt(seek + wordLen) : ' ';
@@ -583,17 +583,17 @@ namespace ScriptEditor.TextEditorUtilities
                 TAC.SelectionManager.SetSelection(sSel, eSel);
             }
         }
-        
+
         // Paste autocomplete KeyWord construction code
         internal static bool AutoCompleteKeyWord(TextAreaControl TAC)
         {
             Caret caret = TAC.Caret;
             if (ColorTheme.CheckColorPosition(TAC.Document, caret.Position))
                 return false;
-            
+
             int offsetShift = 1;
             if (TAC.Document.TextLength == caret.Offset) offsetShift++;
-            
+
             string keyword = TextUtilities.GetWordAt(TAC.Document, caret.Offset - offsetShift);
             if (keyword.Length < 2)
                 return false;
@@ -715,7 +715,7 @@ namespace ScriptEditor.TextEditorUtilities
                 Utilities.SelectedTextColorRegion(caret.Position, TAC);
             }
             TAC.Document.UndoStack.EndUndoGroup();
-            
+
             return keyWordMatch;
         }
 
@@ -761,7 +761,7 @@ namespace ScriptEditor.TextEditorUtilities
         {
             int replace_count = 0;
             MatchCollection matches = s_regex.Matches(document);
-            
+
             foreach (Match m in matches) {
                 int offset = (differ * replace_count) + (m.Index + 1);
                 document = document.Remove(offset, (m.Length - 2));
@@ -776,7 +776,7 @@ namespace ScriptEditor.TextEditorUtilities
             int replace_count = 0;
             MatchCollection matches = s_regex.Matches(document.TextContent);
             document.UndoStack.StartUndoGroup();
-            
+
             foreach (Match m in matches) {
                 int offset = (differ * replace_count) + (m.Index + 1);
                 document.Replace(offset, (m.Length - 2), newText);
@@ -792,7 +792,7 @@ namespace ScriptEditor.TextEditorUtilities
 
             List<Match> match = new List<Match>();
             bool decl =false, define = false;
-            
+
             foreach (var refer in pi.References()) {
                 foreach (Match m in matches) {
                     int line = document.OffsetToPosition(m.Index).Line + 1;
@@ -866,7 +866,7 @@ namespace ScriptEditor.TextEditorUtilities
         {
             ISegment segmentB = document.GetLineSegment(_begin);
             ISegment segmentE = document.GetLineSegment(_end);
-            
+
             int Offset = segmentB.Offset + _bcol;
             int Length;
             if (_ecol > 0)
@@ -887,7 +887,7 @@ namespace ScriptEditor.TextEditorUtilities
             return TAC.SelectionManager.SelectedText;
         }
 
-        internal static void NormalizeDelimiter(ref string text)
+        internal static string NormalizeNewLine(string text)
         {
             char[] delimetr = new char[] {'\r', '\n'};
 
@@ -908,6 +908,20 @@ namespace ScriptEditor.TextEditorUtilities
                             text = text.Insert(offset, delimetr[0].ToString());
                         break;
                 }
+                offset++;
+            };
+            return text;
+        }
+
+        internal static void ConvertToUnixPlatform(ref string text)
+        {
+            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            int offset = 0;
+            while (offset < text.Length)
+            {
+                offset = text.IndexOf('\r', offset);
+                if (offset == -1) break;
+                text = text.Remove(offset, 1);
                 offset++;
             };
         }

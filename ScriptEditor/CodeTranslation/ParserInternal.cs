@@ -83,12 +83,12 @@ namespace ScriptEditor.CodeTranslation
         {
             scrptEditor = frm as TextEditor;
             TextEditor.parserIsRunning = true; // internal parse work
-            
+
             UpdateParseBuffer(_ti.textEditor.Text, false);
-            
+
             ProgramInfo _pi = new ProgramInfo(CountProcedures, 0);
             _ti.parseInfo = InternalProcParse(_pi, _ti.textEditor.Text, _ti.filepath);
-            
+
             TextEditor.parserIsRunning = false;
         }
 
@@ -105,7 +105,7 @@ namespace ScriptEditor.CodeTranslation
 
             UpdateParseBuffer(textscript, false);
             ProgramInfo update_pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
-            
+
             for (int i = 0; i < _proc.Count; i++)
             {
                 bool exist = false;
@@ -139,7 +139,7 @@ namespace ScriptEditor.CodeTranslation
             }
             _pi.procs = _proc.ToArray();
             _pi.RebuildProcedureDictionary();
-            
+
             return _pi;
         }
 
@@ -186,9 +186,9 @@ namespace ScriptEditor.CodeTranslation
                 _pi.procs[i].variables = new Variable[0];    // empty not used
             }
             _pi.parsed = true;
-            
+
             bufferSSLCode = null;
-            
+
             return _pi;
         }
 
@@ -227,9 +227,9 @@ namespace ScriptEditor.CodeTranslation
         public static Procedure[] GetProcsData(string textscript, string filepath)
         {
             UpdateParseBuffer(textscript, false); // Не переводить в нижний регист для получения правильных имен процедур
-            
+
             ProgramInfo _pi = InternalProcParse(new ProgramInfo(CountProcedures, 0), textscript, filepath);
-            
+
             return _pi.procs;
         }
 
@@ -238,21 +238,21 @@ namespace ScriptEditor.CodeTranslation
         {
             int _comm = 0;
             procNameList.Clear();
-            
+
             for (int i = 0; i < bufferSSLCode.Length; i++)
             {
                 bool addList = true;
                 bufferSSLCode[i] = bufferSSLCode[i].TrimStart();
-                
+
                 if (CommentBlockParse(ref bufferSSLCode[i], ref _comm)) continue;
 
                 ProcedureRemoveSpec(ref bufferSSLCode[i]);
                 if (bufferSSLCode[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
                     string pName = bufferSSLCode[i].Substring(PROC_LEN, bufferSSLCode[i].Length - PROC_LEN);
-                    
+
                     RemoveCommentLine(ref pName, 0);
-                    
+
                     // delete Begin or other information from procedure name
                     bool cut = false;
                     int z = pName.IndexOf('(');
@@ -283,7 +283,7 @@ namespace ScriptEditor.CodeTranslation
                 }
             }
         }
-        
+
         /// <summary>
         /// Получает правильное(регистрово зависимое) имя процедуры определенное в скрипте
         /// </summary>
@@ -300,7 +300,7 @@ namespace ScriptEditor.CodeTranslation
         }
 
         /// <summary>
-        /// Получает список блоков с номерами строк для всех процедур скрипта 
+        /// Получает список блоков с номерами строк для всех процедур скрипта
         /// </summary>
         /// <param name="procNameLst"></param>
         /// <returns></returns>
@@ -347,7 +347,7 @@ namespace ScriptEditor.CodeTranslation
                                  // в процессе проверяем и любое объявление процедур
                                  if (bufferSSLCode[i].StartsWith(PROCEDURE)) break;
                                  if (bufferSSLCode[i].TrimStart().StartsWith(BEGIN)) {
-                                    beginLine = i; // это начало блока процедуры 
+                                    beginLine = i; // это начало блока процедуры
                                     break;
                                  }
                             }
@@ -407,7 +407,7 @@ namespace ScriptEditor.CodeTranslation
                             }
                         }
                         if (procBlockLst[i].end == -1) {  // procedure block end is broken
-                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}' of the keyword 'end' was not found.\r\n", beginLine + 1, GetCaseCorrectProcedureName(procNameLst[i])));                        
+                            scrptEditor.intParserPrint(String.Format("[Error] <Internal Parser> Line: {0} : When parsing of procedure '{1}' of the keyword 'end' was not found.\r\n", beginLine + 1, GetCaseCorrectProcedureName(procNameLst[i])));
                         }
                     }
                 }
@@ -435,11 +435,11 @@ namespace ScriptEditor.CodeTranslation
         {
             pName = pName.ToLowerInvariant();
             int pLen = pName.Length;
-            
+
             for (int i = 0; i < bufferSSLCode.Length; i++)
             {
                 bufferSSLCode[i] = bufferSSLCode[i].Trim();
-                
+
                 // TODO: возможно тут нужна проверка на закоментированный блок /* */
 
                 ProcedureRemoveSpec(ref bufferSSLCode[i]);
@@ -448,7 +448,7 @@ namespace ScriptEditor.CodeTranslation
                         continue; // broken declare
 
                     RemoveCommentLine(ref bufferSSLCode[i], PROC_LEN + pLen);
-                    
+
                     if (bufferSSLCode[i].LastIndexOf(';') >= (PROC_LEN + pLen))
                         return i; //found
                 }
@@ -463,7 +463,7 @@ namespace ScriptEditor.CodeTranslation
         public static int GetEndLineProcDeclaration()
         {
             int _comm = 0;
-            
+
             for (int i = 0; i < bufferSSLCode.Length; i++)
             {
                 bufferSSLCode[i] = bufferSSLCode[i].Trim();
@@ -471,7 +471,7 @@ namespace ScriptEditor.CodeTranslation
 
                 // убираем лишнее
                 RemoveCommentLine(ref bufferSSLCode[i], 0);
-                
+
                 if (bufferSSLCode[i].EndsWith(BEGIN)) {
                     ProcedureRemoveSpec(ref bufferSSLCode[i]);
 
@@ -498,11 +498,11 @@ namespace ScriptEditor.CodeTranslation
         {
             int _begin = 0, _proc = 0, _comm = 0, lineProc = 0;
             ProcedureBlock procBlock = new ProcedureBlock() { declar = -1 };
-            
+
             pName = pName.ToLowerInvariant();
             int pLen = pName.Length;
             if (startline < 0) startline = 0;
-            
+
             for (int i = startline; i < bufferSSLCode.Length; i++)
             {
                 bufferSSLCode[i] = bufferSSLCode[i].Trim();
@@ -647,7 +647,7 @@ namespace ScriptEditor.CodeTranslation
                 int z = sLine.IndexOf("  ", 9);
                 if (z > 0) {
                     int x = CheckAtComment(sLine, 9);
-                    
+
                     int y = sLine.IndexOfAny(new char[] {';', ')'}, 9);
                     if (y > 0) { // определяем наименьшее значение x и y
                         if (x == -1 || y < x) // позиция скобки не находится в комментариях
@@ -697,7 +697,7 @@ namespace ScriptEditor.CodeTranslation
             List<string> script = File.ReadAllLines(file, Encoding.Default).ToList();
             for (int i = 0; i < script.Count; i++)
             {
-                if (script[i].StartsWith(ParserInternal.PROCEDURE, StringComparison.OrdinalIgnoreCase) 
+                if (script[i].StartsWith(ParserInternal.PROCEDURE, StringComparison.OrdinalIgnoreCase)
                     || script[i].StartsWith("critical ", StringComparison.OrdinalIgnoreCase))
                 {
                     if (script[i + 1].StartsWith(ParserInternal.BEGIN, StringComparison.OrdinalIgnoreCase)) {
@@ -788,7 +788,8 @@ namespace ScriptEditor.CodeTranslation
                 if (procBlock.begin == -1 && buffer.StartsWith(VARIABLE)) {
                     int boffset = buffer.IndexOf(" " + BEGIN) + 1;
                     if (boffset > 0) {
-                        buffer = buffer.Remove(boffset + BEGIN.Length);
+                        int len = boffset + BEGIN.Length;
+                        if (buffer.Length > len) buffer = buffer.Remove(len);
 
                         int z = buffer.IndexOf("  ", 8);
                         if (z > 0)
@@ -841,7 +842,7 @@ namespace ScriptEditor.CodeTranslation
             string scrPath = Path.GetFullPath(Path.Combine(dir, iPath)); // исходная папка скрипта (высший приоритетет)
             string temp = scrPath;
             if (Settings.IsSearchIncludes && !Path.IsPathRooted(iPath) && !File.Exists(scrPath)) {
-                temp = Path.GetFullPath(Path.Combine(Settings.pathHeadersFiles, iPath)); 
+                temp = Path.GetFullPath(Path.Combine(Settings.pathHeadersFiles, iPath));
             }
             if (!File.Exists(temp)) {
                 temp = Path.GetFullPath(Path.Combine(Settings.ProgramFolder, iPath)); // директория приложения (низший приоритет)
