@@ -1,4 +1,5 @@
-﻿namespace ScriptEditor {
+﻿
+namespace ScriptEditor {
     partial class RegisterScript {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +29,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterScript));
-            this.dgvScripts = new System.Windows.Forms.DataGridView();
+            this.dgvScripts = new ScriptEditor.TextEditorUI.DataGridViewEx();
             this.EntryCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cLine = new System.Windows.Forms.DataGridViewButtonColumn();
             this.cScript = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -352,7 +353,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dgvScripts;
+        private ScriptEditor.TextEditorUI.DataGridViewEx dgvScripts;
         private System.Windows.Forms.GroupBox groupBox;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.TextBox DefinetextBox;

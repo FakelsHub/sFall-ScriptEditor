@@ -30,7 +30,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageEditor));
-            this.dgvMessage = new System.Windows.Forms.DataGridView();
+            this.dgvMessage = new TextEditorUI.DataGridViewEx();
             this.EntryCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -740,7 +740,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dgvMessage;
+        private TextEditorUI.DataGridViewEx dgvMessage;
         private System.Windows.Forms.GroupBox groupBox;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolStrip toolStrip;

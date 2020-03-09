@@ -145,6 +145,9 @@
     <Compile Include="CodeTranslation\Reference.cs" />
     <Compile Include="CodeTranslation\Variable.cs" />
     <Compile Include="TextEditorUI\CommonDGV.cs" />
+    <Compile Include="TextEditorUI\DataGridViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TextEditorUI\DraggableTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
