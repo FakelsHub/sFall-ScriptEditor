@@ -131,10 +131,11 @@ namespace ScriptEditor
                         continue;
                     line[0] = line[0].TrimStart(' ', '{');
                     int lineno;
-                    if (!int.TryParse(line[0], out lineno) || lineno > entries.Length + 101)
-                        continue;
-                    entries[lineno - 101].name = line[2].TrimStart(' ', '{');
-                    entries[lineno - 101].msglip = line[1].TrimStart(' ', '{');
+                    if (!int.TryParse(line[0], out lineno)) continue;
+                    lineno -= 101;
+                    if (lineno >= entries.Length) continue;
+                    entries[lineno].name = line[2].TrimStart(' ', '{');
+                    entries[lineno].msglip = line[1].TrimStart(' ', '{');
                 }
                 linesMsg.Clear();
             }
