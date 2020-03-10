@@ -40,10 +40,11 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             get { return name.Length; }
         }
 
-        public NameType GetType
+        public new NameType GetType
         {
             get
-            {   switch (type)
+            {
+                switch (type)
                 {
                     case "M": // Macros
                         return NameType.Macro;

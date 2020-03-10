@@ -64,6 +64,7 @@ namespace ScriptEditor.TextEditorUI
         {
             return message;
         }
+
         // for compile
         public static void BuildLog(List<Error> errors, string output, string srcfile)
         {

@@ -800,19 +800,26 @@ namespace ScriptEditor
 
         private void FunctionsTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Button != MouseButtons.Left)
-                return;
+            if (e.Button != MouseButtons.Left) return;
 
             if (e.Node.Tag != null && currentTab != null) {
                 if (!Functions.NodeHitCheck(e.Location, e.Node.Bounds))
                     return;
 
-                string space = new string(' ', currentActiveTextAreaCtrl.Caret.Column);
                 string code = e.Node.Tag.ToString();
-                if (code.Contains("<cr>"))
-                    code = code.Replace("<cr>", Environment.NewLine + space);
-                else if (code.EndsWith(")"))
-                    code += " ";
+                int posCR = code.IndexOf("<cr>");
+                if (posCR != -1) {
+                    string space = new string(' ', currentActiveTextAreaCtrl.Caret.Column);
+                    code = code.Remove(posCR) + Environment.NewLine + space;
+                }
+                if (!currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected) {
+                    char c = currentDocument.GetCharAt(currentActiveTextAreaCtrl.Caret.Offset - 1);
+                    if (char.IsLetterOrDigit(c)) code = " " + code;
+                    if (posCR == -1) {
+                        c = currentDocument.GetCharAt(currentActiveTextAreaCtrl.Caret.Offset);
+                        if (char.IsLetterOrDigit(c)) code += " ";
+                    }
+                }
                 currentActiveTextAreaCtrl.TextArea.InsertString(code);
             } else if (Functions.NodeHitCheck(e.Location, e.Node.Bounds))
                         e.Node.Toggle();
