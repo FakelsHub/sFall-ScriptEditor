@@ -105,7 +105,7 @@ namespace ScriptEditor
                     dgv.Dock = DockStyle.Fill;
                     tabControl2.TabPages.Add(tp);
                     tabControl2.SelectTab(tp);
-                    maximize_log();
+                    MaximizeLog();
                     return true;
                 }
             }
@@ -320,7 +320,7 @@ namespace ScriptEditor
             dgv.Dock = DockStyle.Fill;
             tabControl2.TabPages.Add(tp);
             tabControl2.SelectTab(tp);
-            maximize_log();
+            MaximizeLog();
             TextArea_SetFocus(null, null);
         }
 

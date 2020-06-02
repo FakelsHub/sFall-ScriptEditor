@@ -42,7 +42,7 @@ namespace ScriptEditor
         private GoToLine goToLine;
 
         private int previousTabIndex = -1;
-        private int minimizelogsize;
+        private int minimizeLogSize;
         private PositionType PosChangeType;
         private int moveActive = -1;
         private int fuctionPanel = -1;
@@ -212,9 +212,9 @@ namespace ScriptEditor
             splitContainer1.SplitterDistance = Size.Height;
 
             if (Settings.editorSplitterPosition == -1)
-                minimizelogsize = Size.Height - (Size.Height / 5);
+                minimizeLogSize = Size.Height - (Size.Height / 5);
             else
-                minimizelogsize = Settings.editorSplitterPosition;
+                minimizeLogSize = Settings.editorSplitterPosition;
 
             if (Settings.editorSplitterPosition2 != -1)
                 splitContainer2.SplitterDistance = Settings.editorSplitterPosition2;
@@ -340,6 +340,9 @@ namespace ScriptEditor
         public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false,
                             bool seltab = true, bool commandline = false, bool fcdOpen = false, bool alreadyOpen = true, bool outputFolder = false)
         {
+            bool decompileSuccess = false;
+            string infile = null;
+
             if (type == OpenType.File) {
                 if (!Path.IsPathRooted(file))
                     file = Path.GetFullPath(file);
@@ -369,12 +372,19 @@ namespace ScriptEditor
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     if (!this.Focused)
                         ShowMe();
-                    string decomp = new Compiler(roundTrip).Decompile(file, outputFolder);
+                    
+                    infile = file;
+                    tbOutput.Clear();
+                    tabControl2.SelectedIndex = 1;
+                    MaximizeLog();
+
+                    string decomp = new Compiler(roundTrip).Decompile(file, this);
                     if (decomp == null) {
                         MessageBox.Show("Decompilation of '" + file + "' was not successful", "Error");
                         return null;
                     } else {
                         file = decomp;
+                        decompileSuccess = true;
                         // fix for procedure begin
                         ParserInternal.FixProcedureBegin(file);
                     }
@@ -512,6 +522,26 @@ namespace ScriptEditor
             if (fcdOpen)
                 dialogNodesDiagramToolStripMenuItem_Click(null, null);
 
+            if (decompileSuccess) {
+                SaveFileDialog sfDecomp = new SaveFileDialog();
+                sfDecomp.Title = "Enter name to save decompile file";
+                sfDecomp.Filter = "Script files|*.ssl";
+                sfDecomp.RestoreDirectory = true;
+                sfDecomp.InitialDirectory = (!outputFolder || Settings.outputDir == null) ? Path.GetDirectoryName(infile) : Settings.outputDir;
+                sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
+
+                if (sfDecomp.ShowDialog() == DialogResult.OK) {
+                    ti.filename = Path.GetFileName(sfDecomp.FileName);
+                    ti.filepath = sfDecomp.FileName;
+
+                    tabControl1.TabPages[ti.index].Text = tabs[ti.index].filename;
+                    tabControl1.TabPages[ti.index].ToolTipText = tabs[ti.index].filepath;
+
+                    File.Copy(file, ti.filepath, true);
+                    File.Delete(file);
+                }
+                sfDecomp.Dispose();
+            }
             return ti;
         }
 
@@ -698,9 +728,6 @@ namespace ScriptEditor
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false, bool showIcon = true)
         {
-            extParserTimer.Stop(); // предотвратить запуск парсера после компиляции
-            tab.needsParse = false;
-
             msg = String.Empty;
             if (string.Compare(Path.GetExtension(tab.filename), ".ssl", true) != 0) {
                 if (showMessages) MessageBox.Show("You cannot compile this file.", "Compile Error");
@@ -739,7 +766,7 @@ namespace ScriptEditor
                 if (showMessages) {
                     if (Settings.warnOnFailedCompile) {
                         tabControl2.SelectedIndex = 2 - Convert.ToInt32(Settings.userCmdCompile);
-                        maximize_log();
+                        MaximizeLog();
                     }// else
                      //   new CompiledStatus(false, this).ShowCompileStatus();
                 }
@@ -811,19 +838,6 @@ namespace ScriptEditor
                 this.Text = SSE + currentTab.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
 
                 if (sender != null) CheckChandedFile();
-            }
-        }
-
-        private void UpdateLog()
-        {
-            if (autoRefreshToolStripMenuItem.Checked)
-                OutputErrorLog(currentTab);
-            else {
-                if (Settings.enableParser)
-                    tbOutputParse.Text = currentTab.parserLog;
-
-                if (currentTab.buildLog != null)
-                    tbOutput.Text = currentTab.buildLog;
             }
         }
 
@@ -1523,6 +1537,7 @@ namespace ScriptEditor
         }
 
         bool setOnlyOnce = false;
+
         private void EnableFormControls()
         {
             TabClose_button.Visible = true;
@@ -1719,5 +1734,25 @@ namespace ScriptEditor
             return null;
         }
         #endregion
+
+        private void UpdateLog()
+        {
+            if (autoRefreshToolStripMenuItem.Checked)
+                OutputErrorLog(currentTab);
+            else {
+                if (Settings.enableParser)
+                    tbOutputParse.Text = currentTab.parserLog;
+
+                if (currentTab.buildLog != null)
+                    tbOutput.Text = currentTab.buildLog;
+            }
+        }
+
+        public void PrintBuildLog(object sender, System.Diagnostics.DataReceivedEventArgs e)
+        {
+            tbOutput.BeginInvoke((MethodInvoker)(() =>
+                tbOutput.AppendText(e.Data + Environment.NewLine))
+            );
+        }
     }
 }

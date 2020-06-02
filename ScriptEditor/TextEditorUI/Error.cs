@@ -112,13 +112,7 @@ namespace ScriptEditor.TextEditorUI
         // for parser
         public static string ParserLog(string log, TabInfo tab)
         {
-            List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.TextMarker.ToList();
-            foreach (TextMarker m in marker) {
-                if (m.TextMarkerType == TextMarkerType.WaveLine)
-                    tab.textEditor.Document.MarkerStrategy.RemoveMarker(m);
-            }
-            if (tab.parserErrors.Count > 0)
-                tab.parserErrors.Clear();
+            ClearParserErrors(tab);
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("------ Script: {0} < Parse Time: {1} > ------\r\n",
@@ -153,6 +147,19 @@ namespace ScriptEditor.TextEditorUI
             tab.textEditor.Refresh();
 
             return sb.ToString();
+        }
+
+        public static void ClearParserErrors(TabInfo tab)
+        {
+            List<TextMarker> marker = tab.textEditor.Document.MarkerStrategy.TextMarker.ToList();
+
+            foreach (TextMarker m in marker)
+            {
+                if (m.TextMarkerType == TextMarkerType.WaveLine)
+                    tab.textEditor.Document.MarkerStrategy.RemoveMarker(m);
+            }
+
+            if (tab.parserErrors.Count > 0) tab.parserErrors.Clear();
         }
 
         private static void HighlightError(string error, TabInfo tab)

@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
+using ScriptEditor;
 using ScriptEditor.TextEditorUI;
 
 namespace ScriptEditor.CodeTranslation
@@ -233,7 +234,7 @@ namespace ScriptEditor.CodeTranslation
             output += wp.StandardOutput.ReadToEnd();
             if (Settings.useMcpp || Settings.useWatcom) output += GetErrorLog();
 
-            wp.WaitForExit(500);
+            wp.WaitForExit(1000);
             bool success = (wp.ExitCode == 0);
             wp.Dispose();
             return success;
@@ -250,7 +251,7 @@ namespace ScriptEditor.CodeTranslation
             return err;
         }
 
-        public string Decompile(string infile, bool outputFolder)
+        public string Decompile(string infile, Form scrForm)
         {
             List<string> program = new List<string>{ "int2ssl.exe", "int2ssl_v35.exe" };
             if (Settings.oldDecompile) program.RemoveAt(0);
@@ -263,32 +264,27 @@ namespace ScriptEditor.CodeTranslation
                                                             + " \"" + infile + "\" \"" + decompilationPath + "\"");
                 psi.UseShellExecute = false;
                 psi.CreateNoWindow = true;
+                psi.RedirectStandardOutput = true;
+
                 Process p = Process.Start(psi);
-                p.WaitForExit(2000);
-                if (!p.HasExited) return null;
-                if (p.ExitCode == 0) break;
-                p.Dispose();
+                p.OutputDataReceived += ((TextEditor)scrForm).PrintBuildLog;
+                p.BeginOutputReadLine();
+
+                while (true) {
+                    Application.DoEvents();
+                    if (p.HasExited) break;
+                }
+                if (p.ExitCode == 0) {
+                    p.Close();
+                    break;
+                }
+                p.Close();
             }
             if (!File.Exists(decompilationPath)) return null;
 
-            string result;
-            if (!tempOutput) {
-                SaveFileDialog sfDecomp = new SaveFileDialog();
-                sfDecomp.Title = "Enter name to save decompile file";
-                sfDecomp.Filter = "Script files|*.ssl";
-                sfDecomp.RestoreDirectory = true;
-                sfDecomp.InitialDirectory = (!outputFolder || Settings.outputDir == null) ? Path.GetDirectoryName(infile) : Settings.outputDir;
-                sfDecomp.FileName = Path.GetFileNameWithoutExtension(infile);
+            string result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile));
+            result += (!tempOutput) ? "_[decomp].ssl" : "_[temp].ssl";
 
-                if (sfDecomp.ShowDialog() == DialogResult.OK)
-                    result = sfDecomp.FileName;
-                else
-                    result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[decomp].ssl");
-
-                sfDecomp.Dispose();
-            } else {
-                result = Path.Combine(Settings.scriptTempPath, Path.GetFileNameWithoutExtension(infile) + "_[temp].ssl");
-            }
             File.Delete(result);
             File.Move(decompilationPath, result);
             return result;

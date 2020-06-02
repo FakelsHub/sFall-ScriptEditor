@@ -74,7 +74,7 @@ namespace ScriptEditor
 
             if (cTab.parseInfo.parseError) {
                 tabControl2.SelectedIndex = 2;
-                if (WindowState != FormWindowState.Minimized) maximize_log();
+                if (WindowState != FormWindowState.Minimized) MaximizeLog();
             }
             firstParse = false;
         }

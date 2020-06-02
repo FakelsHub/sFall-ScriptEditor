@@ -101,8 +101,14 @@ namespace ScriptEditor
         {
             if (currentTab != null) {
                 dgvErrors.Rows.Clear();
+
+                extParserTimer.Stop(); // предотвратить запуск парсера после компиляции
+                currentTab.needsParse = false;
+
                 string msg;
-                Compile(currentTab, out msg);
+                if (Compile(currentTab, out msg)) {
+                    Error.ClearParserErrors(currentTab);
+                }
                 tbOutput.Text = currentTab.buildLog = msg;
             }
         }
@@ -156,7 +162,7 @@ namespace ScriptEditor
                     }
                 }
             }
-            else if (e.Button == MouseButtons.Left && minimizelogsize != 0 )
+            else if (e.Button == MouseButtons.Left && minimizeLogSize != 0 )
                 minimizelog_button.PerformClick();
         }
 
@@ -379,6 +385,7 @@ namespace ScriptEditor
                 return;
 
             dgvErrors.Rows.Clear();
+
             string msg;
             bool result = Compile(currentTab, out msg, true, true);
             tbOutput.Text = currentTab.buildLog = msg;
@@ -403,6 +410,10 @@ namespace ScriptEditor
                 return;
             }
             dgvErrors.Rows.Clear();
+
+            extParserTimer.Stop(); // предотвратить запуск парсера после компиляции
+            currentTab.needsParse = false;
+
             string msg;
             roundTrip = true;
             bool result = Compile(currentTab, out msg, showIcon: false);
@@ -588,35 +599,35 @@ namespace ScriptEditor
 
         private void minimize_log_button_Click(object sender, EventArgs e)
         {
-            if (minimizelogsize == 0) {
-                minimizelogsize = splitContainer1.SplitterDistance;
+            if (minimizeLogSize == 0) {
+                minimizeLogSize = splitContainer1.SplitterDistance;
                 splitContainer1.SplitterDistance = Size.Height;
-                Settings.editorSplitterPosition = minimizelogsize;
+                Settings.editorSplitterPosition = minimizeLogSize;
             } else {
                 int hs = Size.Height - (Size.Height / 4);
                 if (Settings.editorSplitterPosition == -1)
                     Settings.editorSplitterPosition = hs;
-                if (minimizelogsize > (hs + 100))
+                if (minimizeLogSize > (hs + 100))
                     splitContainer1.SplitterDistance = hs;
                 else
                     splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
-                minimizelogsize = 0;
+                minimizeLogSize = 0;
             }
         }
 
-        private void maximize_log()
+        private void MaximizeLog()
         {
             if (currentTab == null && splitContainer1.Panel2Collapsed) {
                 showLogWindowToolStripMenuItem.Checked = true;
                 splitContainer1.Panel2Collapsed = false;
             }
-            if (minimizelogsize == 0) return;
+            if (minimizeLogSize == 0) return;
 
             if (Settings.editorSplitterPosition == -1) {
                 Settings.editorSplitterPosition = Size.Height - (Size.Height / 4);
             }
             splitContainer1.SplitterDistance = Settings.editorSplitterPosition;
-            minimizelogsize = 0;
+            minimizeLogSize = 0;
         }
 
         private void showLogWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1041,7 +1052,7 @@ namespace ScriptEditor
             if (report.Count > 0) {
                 currentTab.parserErrors = report;
                 tabControl2.SelectedIndex = 2;
-                maximize_log();
+                MaximizeLog();
             } else
                 MessageBox.Show("No mistakes!", "Checker");
         }
