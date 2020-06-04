@@ -424,13 +424,9 @@ namespace ScriptEditor
             }
         }
 
-        private void TextArea_MouseWheel(object sender, MouseEventArgs e)
+        private void VScrollBar_ValueChanged(object sender, EventArgs e)
         {
-            if (e.Delta == 0)
-                return;
-            
-            autoComplete.TA_MouseScroll(currentTab.textEditor.ActiveTextAreaControl, e);
-
+            autoComplete.TA_MouseScroll(currentTab.textEditor.ActiveTextAreaControl);
             if (toolTips.Active) ToolTipsHide();
         }
 
@@ -581,7 +577,7 @@ namespace ScriptEditor
             
             ProcForm CreateProcFrm = new ProcForm(name, true);
             if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure)
-                CreateProcFrm.checkBox1.Enabled = false;
+                CreateProcFrm.CopyProcedure = false;
             else 
                 CreateProcFrm.groupBox1.Enabled = false;
             
@@ -593,14 +589,14 @@ namespace ScriptEditor
             }
 
             ProcedureBlock block = new ProcedureBlock();
-            if (CreateProcFrm.radioButton2.Checked) {
+            if (CreateProcFrm.PlaceAt == InsertAt.After) {
                 var proc = (Procedure)ProcTree.SelectedNode.Tag;
                 block.begin = proc.d.start;
                 block.end = proc.d.end;
                 block.declar = proc.d.declared;  
             }
 
-            PrepareInsertProcedure(CreateProcFrm.ProcedureName, block, CreateProcFrm.radioButton2.Checked, inc);
+            PrepareInsertProcedure(CreateProcFrm.ProcedureName, block, CreateProcFrm.PlaceAt, inc);
             
             CreateProcFrm.Dispose();
             ProcTree.HideSelection = true;
@@ -610,18 +606,20 @@ namespace ScriptEditor
         private void createProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string word = null;
+
             bool IsSelectProcedure = ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure;
             if (IsSelectProcedure)
                 word = ProcTree.SelectedNode.Name;
             else if (currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected)
                 word = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
+
             ProcForm CreateProcFrm = new ProcForm(word, false, true);
 
-            if (!IsSelectProcedure)
+            if (!IsSelectProcedure && currentHighlightProc == null) {
                 CreateProcFrm.groupBox1.Enabled = false;
-            else
-                CreateProcFrm.radioButton2.Checked = true;
-            
+            } else
+                CreateProcFrm.SetInsertAtArter = true;
+
             ProcTree.HideSelection = false;
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
                 ProcTree.HideSelection = true;
@@ -635,25 +633,25 @@ namespace ScriptEditor
             }
             
             ProcedureBlock block = new ProcedureBlock();
-            if (CreateProcFrm.checkBox1.Checked || CreateProcFrm.radioButton2.Checked) {
-                var proc = (Procedure)ProcTree.SelectedNode.Tag;
+            if (CreateProcFrm.CopyProcedure || CreateProcFrm.PlaceAt == InsertAt.After) {
+                var proc = (currentHighlightProc != null) ? currentHighlightProc : (Procedure)ProcTree.SelectedNode.Tag;
                 block.begin = proc.d.start;
                 block.end = proc.d.end;
                 block.declar = proc.d.declared;
-                block.copy = CreateProcFrm.checkBox1.Checked;
+                block.copy = CreateProcFrm.CopyProcedure;
             }
 
             name = CreateProcFrm.ProcedureName;
-            PrepareInsertProcedure(name, block, CreateProcFrm.radioButton2.Checked);
-            
+            PrepareInsertProcedure(name, block, CreateProcFrm.PlaceAt);
+
             CreateProcFrm.Dispose();
             ProcTree.HideSelection = true;
         }
 
         // Create procedure block
-        private void PrepareInsertProcedure(string name, ProcedureBlock block, bool after = false, byte overrides = 0)
+        private void PrepareInsertProcedure(string name, ProcedureBlock block, InsertAt placeAt = InsertAt.Caret, byte overrides = 0)
         {
-            int procLine, declrLine, caretline = 3;
+            int declrLine, procLine = 0, caretline = 3;
             string procbody;
             
             //Copy from procedure
@@ -666,21 +664,40 @@ namespace ScriptEditor
             string procblock = (overrides > 0)
                        ? "\r\nprocedure " + name + " begin\r\n" + procbody + "end"
                        : "\r\nprocedure " + name + " begin\r\n\r\nend";
-            
+
+            int total = currentDocument.TotalNumberOfLines - 1;
+            Procedure pTop = currentTab.parseInfo.GetTopProcedure();
+            int declrEndLine = ParserInternal.GetRegionDeclaration(currentTab.textEditor.Document.TextContent, (pTop != null) ? pTop.d.start - 1 : total).end;
+            int caretLine = currentActiveTextAreaCtrl.Caret.Line;
+
+            if (total == 0 || caretLine <= declrEndLine) placeAt = InsertAt.End;
+
             // declaration line
-            if (after)
+            if (placeAt == InsertAt.Caret) { 
+                procLine = caretLine;
+                Procedure p = currentTab.parseInfo.GetNearProcedure(procLine); // найти процедуру которая расположена рядом
+                if (p != null) {
+                    declrLine = p.d.Declaration;
+                    if (procLine < p.d.start) {
+                        declrLine--; // размесить над
+                    }
+                    if ((procLine + 2) == p.d.start) {
+                        procblock += Environment.NewLine;
+                    }
+                } else {
+                    placeAt = InsertAt.End;
+                    ParserInternal.UpdateParseBuffer(currentTab.textEditor.Text);
+                    declrLine = ParserInternal.GetEndLineProcDeclaration();
+                }
+            }
+            else if (placeAt == InsertAt.After)
                 declrLine = block.declar;
             else {
                 ParserInternal.UpdateParseBuffer(currentTab.textEditor.Text);
                 declrLine = ParserInternal.GetEndLineProcDeclaration();
             }
-            if (declrLine == -1) {
-                declrLine = 0;
-                MessageBox.Show("The declaration procedure is broken, declaration written to beginning of script.", "Warning");
-            }
             // procedure line
-            int total = currentDocument.TotalNumberOfLines - 1;
-            if (after) {
+            if (placeAt == InsertAt.After) {
                 procLine = block.end; // after current procedure
                 if (procLine > total)
                     procLine = block.end = total;
@@ -688,16 +705,19 @@ namespace ScriptEditor
                     block.end++;
                 if (TextUtilities.GetLineAsString(currentDocument, block.end).Trim().Length > 0)
                     procblock += Environment.NewLine;
-            } else
+            }
+            else if (placeAt == InsertAt.End) {
                 procLine = total; // paste to end script
-            
+            }
+            if (declrLine <= -1) declrLine = declrEndLine  + 1;
+
             Utilities.InsertProcedure(currentActiveTextAreaCtrl, name, procblock, declrLine, procLine, ref caretline);
             
             caretline += procLine + overrides;
             currentActiveTextAreaCtrl.Caret.Column = 0;
             currentActiveTextAreaCtrl.Caret.Line = caretline;
             currentActiveTextAreaCtrl.CenterViewOn(caretline, 0);
-            
+
             currentHighlightProc = null;
             HighlightProcedures.AddToList(currentDocument, name);
             ForceParseScript();

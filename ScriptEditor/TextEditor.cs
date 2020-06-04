@@ -858,7 +858,7 @@ namespace ScriptEditor
                 currentHighlightProc = null;
                 currentHighlightNode = null;
             } else {
-                proc = currentTab.parseInfo.GetProcedurePosition(curLine);
+                proc = currentTab.parseInfo.GetProcedureFromPosition(curLine);
             }
             if (proc != null && proc != currentHighlightProc) {
                 if (currentHighlightProc != null && currentHighlightProc.name.Equals(proc.name, StringComparison.OrdinalIgnoreCase)) return;
@@ -1513,11 +1513,14 @@ namespace ScriptEditor
             te.ActiveTextAreaControl.TextArea.KeyPress += TextArea_KeyPressed;
             te.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
             te.ActiveTextAreaControl.TextArea.PreviewKeyDown += TextArea_PreviewKeyDown;
-            te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
-            te.ActiveTextAreaControl.VScrollBar.Scroll += delegate(object sender, ScrollEventArgs e) {
-                var e1 = new MouseEventArgs(MouseButtons.Left, 1, 0, 0, e.OldValue - e.NewValue);
-                TextArea_MouseWheel(sender, e1);
-            };
+
+            te.ActiveTextAreaControl.VScrollBar.ValueChanged += VScrollBar_ValueChanged;
+            //te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
+            //te.ActiveTextAreaControl.VScrollBar.Scroll += delegate(object sender, ScrollEventArgs e) {
+            //    var e1 = new MouseEventArgs(MouseButtons.Left, 1, 0, 0, e.OldValue - e.NewValue);
+            //    TextArea_MouseWheel(sender, e1);
+            //};
+
             te.ActiveTextAreaControl.TextArea.MouseClick += delegate(object sender, MouseEventArgs e) {
                 if (e.Button == MouseButtons.Middle) {
                     Utilities.HighlightingSelectedText(currentActiveTextAreaCtrl);

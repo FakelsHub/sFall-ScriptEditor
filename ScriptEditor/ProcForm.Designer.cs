@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.rbAfterSelProcedure = new System.Windows.Forms.RadioButton();
+            this.rbPasteAtEnd = new System.Windows.Forms.RadioButton();
+            this.cbCopyBodyProc = new System.Windows.Forms.CheckBox();
             this.tbName = new System.Windows.Forms.TextBox();
             this.Cancel = new System.Windows.Forms.Button();
             this.Create = new System.Windows.Forms.Button();
@@ -40,9 +40,9 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Controls.Add(this.checkBox1);
+            this.groupBox1.Controls.Add(this.rbAfterSelProcedure);
+            this.groupBox1.Controls.Add(this.rbPasteAtEnd);
+            this.groupBox1.Controls.Add(this.cbCopyBodyProc);
             this.groupBox1.Location = new System.Drawing.Point(12, 38);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(265, 65);
@@ -50,37 +50,37 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Procedure options";
             // 
-            // radioButton2
+            // rbAfterSelProcedure
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(141, 19);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(118, 17);
-            this.radioButton2.TabIndex = 2;
-            this.radioButton2.Text = "Insert after selected";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.rbAfterSelProcedure.AutoSize = true;
+            this.rbAfterSelProcedure.Location = new System.Drawing.Point(141, 19);
+            this.rbAfterSelProcedure.Name = "rbAfterSelProcedure";
+            this.rbAfterSelProcedure.Size = new System.Drawing.Size(118, 17);
+            this.rbAfterSelProcedure.TabIndex = 2;
+            this.rbAfterSelProcedure.Text = "Insert after selected";
+            this.rbAfterSelProcedure.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // rbPasteAtEnd
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(16, 19);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(113, 17);
-            this.radioButton1.TabIndex = 1;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Paste at end script";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.rbPasteAtEnd.AutoSize = true;
+            this.rbPasteAtEnd.Checked = true;
+            this.rbPasteAtEnd.Location = new System.Drawing.Point(16, 19);
+            this.rbPasteAtEnd.Name = "rbPasteAtEnd";
+            this.rbPasteAtEnd.Size = new System.Drawing.Size(113, 17);
+            this.rbPasteAtEnd.TabIndex = 1;
+            this.rbPasteAtEnd.TabStop = true;
+            this.rbPasteAtEnd.Text = "Paste at end script";
+            this.rbPasteAtEnd.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // cbCopyBodyProc
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(16, 42);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(203, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Copy from current selected procedure";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cbCopyBodyProc.AutoSize = true;
+            this.cbCopyBodyProc.Location = new System.Drawing.Point(16, 42);
+            this.cbCopyBodyProc.Name = "cbCopyBodyProc";
+            this.cbCopyBodyProc.Size = new System.Drawing.Size(203, 17);
+            this.cbCopyBodyProc.TabIndex = 0;
+            this.cbCopyBodyProc.Text = "Copy from current selected procedure";
+            this.cbCopyBodyProc.UseVisualStyleBackColor = true;
             // 
             // tbName
             // 
@@ -143,10 +143,10 @@
 
         private System.Windows.Forms.Button Cancel;
         protected internal System.Windows.Forms.GroupBox groupBox1;
-        protected internal System.Windows.Forms.CheckBox checkBox1;
         protected internal System.Windows.Forms.Button Create;
-        private System.Windows.Forms.RadioButton radioButton1;
-        protected internal System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton rbPasteAtEnd;
         private System.Windows.Forms.TextBox tbName;
+        private System.Windows.Forms.RadioButton rbAfterSelProcedure;
+        private System.Windows.Forms.CheckBox cbCopyBodyProc;
     }
 }

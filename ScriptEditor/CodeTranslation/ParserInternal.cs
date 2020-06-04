@@ -459,7 +459,7 @@ namespace ScriptEditor.CodeTranslation
         /// <summary>
         /// Получить номер последней строки в списке процедурных деклараций
         /// </summary>
-        /// <returns>Номер строки в коде (0 если строку не удалось получить)</returns>
+        /// <returns>Номер строки в коде (-1 если строку не удалось получить)</returns>
         public static int GetEndLineProcDeclaration()
         {
             int _comm = 0;
@@ -476,16 +476,16 @@ namespace ScriptEditor.CodeTranslation
                     ProcedureRemoveSpec(ref bufferSSLCode[i]);
 
                     if (!bufferSSLCode[i].StartsWith(PROCEDURE) && !bufferSSLCode[i - 1].StartsWith(PROCEDURE)) continue;
-                    for (int j = i - 1; j > 0; j--) {
+                    for (int j = i - 1; j >= 0; j--) {
                         if (bufferSSLCode[j].StartsWith(PROCEDURE)) {
                             return (bufferSSLCode[j].IndexOf(';') > 0) ? j + 1 : j - 1;  // имеется ли в строке знак ';'
                         }
                     }
                     if (++i <= bufferSSLCode.Length) continue;
-                    return -1;  // procedure block is broken
+                    return -2;  // procedure block is broken
                 }
             }
-            return 0; // not found procedure declaration
+            return -1; // not found procedure declaration
         }
 
         /// <summary>
@@ -713,9 +713,9 @@ namespace ScriptEditor.CodeTranslation
         /// <summary>
         /// Получить номера строк для региона деклараций
         /// </summary>
-        public static ProcedureBlock GetRegionDeclaration(string text, int lineStart)
+        public static ProcedureBlock GetRegionDeclaration(string text, int endLine)
         {
-            bufferSSLCode = text.Split(new char[]{'\n'}, lineStart + 1);
+            bufferSSLCode = text.Split(new char[]{'\n'}, endLine + 1);
             int lenBuff = bufferSSLCode.Length - 1;
 
             int _comm = 0;
@@ -742,7 +742,7 @@ namespace ScriptEditor.CodeTranslation
                 ret = true;
             }
 
-            for (int i = lineStart - 1; i > procBlock.begin; i--)
+            for (int i = endLine - 1; i > procBlock.begin; i--)
             {
                 if (bufferSSLCode[i].Trim().Length > 0) {
                     procBlock.end = i;  // found end declaration

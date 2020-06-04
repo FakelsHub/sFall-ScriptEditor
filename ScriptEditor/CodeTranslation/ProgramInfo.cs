@@ -8,10 +8,10 @@ namespace ScriptEditor.CodeTranslation
 {
     public enum ValueType : int { Int = 1, Float = 2, String = 3 }
     public enum VarType : int { Local = 1, Global = 2, Import = 3, Export = 4 }
-    
+
     [Flags]
     public enum ProcType : int { None = 0, Timed = 0x01, Conditional = 0x02, Import = 0x04, Export = 0x08, Critical = 0x10, Pure = 0x20, Inline = 0x40 }
-    public enum NameType { None, Macro, LVar, GVar, Proc }    
+    public enum NameType { None, Macro, LVar, GVar, Proc }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcedureData
@@ -22,19 +22,26 @@ namespace ScriptEditor.CodeTranslation
         private readonly int unused0; // larger union
         private readonly int unused1; // namelist
         public int args;
-        public int defined;           // line num of the procedure definition
+
+        // line num of the procedure definition (тоже самое что и d.start)
+        // NOTE: может иметь значение -1 если отсутстует объявление процедуры в скрипте, в этом случае d.declared будет иметь значение d.start
+        public int defined;
         private readonly int unused2;
         public int numVariables;
         private readonly int unused3;
         public int numRefs;
         private readonly int unused4;
-        public int declared;
+        public int declared;          // Объявление (declaration)
         public IntPtr fdeclared;
         public int start;
         public IntPtr fstart;
         public int end;
         public IntPtr fend;
-    }    
+
+        public int Declaration {
+            get { return (defined == -1) ? defined : declared; }
+        }
+    }
 
     [StructLayout(LayoutKind.Explicit)]
     public struct VariableData
@@ -213,20 +220,55 @@ namespace ScriptEditor.CodeTranslation
         /// </summary>
         /// <param name="lineNumber">Строка</param>
         /// <returns></returns>
-        public Procedure GetProcedurePosition(int lineNumber)
+        public Procedure GetProcedureFromPosition(int lineNumber)
         {
             lineNumber++;
             foreach (Procedure p in procs)
             {
-                int pLine = (p.d.defined != -1) ? p.d.defined: p.d.declared;
-                if (lineNumber >= pLine & lineNumber <= p.d.end)
+                //int pLine = (p.d.defined != -1) ? p.d.defined: p.d.declared;
+                if (lineNumber >= p.d.start & lineNumber <= p.d.end)
                     return p;
             }
             return null;
         }
 
+        public Procedure GetNearProcedure(int lineNumber)
+        {
+            if (procs.Length == 0) return null;
+
+            lineNumber++;
+            List<KeyValuePair<int, Procedure>> values = new List<KeyValuePair<int, Procedure>>();
+
+            foreach (Procedure p in procs)
+            {
+                values.Add(new KeyValuePair<int, Procedure>(p.d.start, p));
+            }
+            values.Sort((a, b) => { return a.Key.CompareTo(b.Key); });
+
+            int index;
+            for (index = 0; index < values.Count; index++)
+            {
+                if (lineNumber < values[index].Key) return values[index].Value; // возвращает следующую процедуру
+            }
+            return values[index - 1].Value; // возвращает самую последнию
+        }
+
         /// <summary>
-        /// Проверить объявлено ли имя в коде скрипта 
+        /// Возвращает самую первую (верхнию) по расположению скрипта процедуру
+        /// </summary>
+        /// <returns></returns>
+        public Procedure GetTopProcedure()
+        {
+            Procedure top = null;
+            foreach (Procedure p in procs)
+            {
+                if (top == null || p.d.start < top.d.start) top = p;
+            }
+            return top;
+        }
+
+        /// <summary>
+        /// Проверить объявлено ли имя в коде скрипта
         /// </summary>
         /// <param name="name">Проверяемое имя</param>
         /// <param name="renType">Тип проверки</param>
@@ -237,9 +279,9 @@ namespace ScriptEditor.CodeTranslation
                 NameType type = LookupTokenType(name, file, line);
                 if (type == NameType.None)
                     return false;
-  
+
                 switch (renType)
-                {    
+                {
                     case NameType.Macro:
                     case NameType.GVar:
                     case NameType.Proc:
@@ -248,18 +290,18 @@ namespace ScriptEditor.CodeTranslation
                         return (type == NameType.LVar);
                     default :
                         return false;
-                } 
+                }
             } else
                 return CheckExistsName(name);
         }
-        
+
         // for unparsed data
         public bool CheckExistsName(string pName, bool checkMacros = true)
         {
             foreach (var p in procs)
                 if (p.name.Equals(pName, StringComparison.OrdinalIgnoreCase))
                     return true; // found
-            
+
             // check script macros
             return (checkMacros) ? macros.ContainsKey(pName) : false; // false - not found
         }
@@ -338,9 +380,9 @@ namespace ScriptEditor.CodeTranslation
                     AddMacrosList(_macros, entry);
                 }
             }
-            foreach (var entry in _macros) 
+            foreach (var entry in _macros)
                 matches.Add(entry.Key + entry.Value);
-            
+
             // remove dublicates
             for (int i = 0; i < matches.Count; i++)
             {
@@ -406,7 +448,7 @@ namespace ScriptEditor.CodeTranslation
                 return -1;
             }
         }
-        
+
         public void MacrosGetValue(ref string token) {
             token = macros[token].def.Trim('(', ')');
             int i = token.IndexOf(')');

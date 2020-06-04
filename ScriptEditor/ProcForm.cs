@@ -6,6 +6,12 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ScriptEditor
 {
+    internal enum InsertAt {
+        End   = 0,
+        After = 1,
+        Caret = 2
+    }
+
     public partial class ProcForm : Form
     {
         private bool proc;
@@ -15,6 +21,29 @@ namespace ScriptEditor
         public string ProcedureName
         {
             get { return tbName.Text; }
+        }
+
+        internal InsertAt PlaceAt
+        {
+            get {
+                if (!cbCopyBodyProc.Enabled) return InsertAt.Caret;
+                return (rbPasteAtEnd.Checked) ? InsertAt.End : InsertAt.After;
+            }
+        }
+
+        public bool SetInsertAtArter
+        {
+            set { rbAfterSelProcedure.Checked = value; }
+        }
+
+        /// <summary>
+        /// Получает установленное значение копировать ли тело процедуры.
+        /// Включает или Выключает элемент управления.
+        /// </summary>
+        public bool CopyProcedure
+        {
+            get { return cbCopyBodyProc.Checked; }
+            set { cbCopyBodyProc.Enabled = value; }
         }
 
         public ProcForm(string name, bool readOnly = false, bool proc = false)

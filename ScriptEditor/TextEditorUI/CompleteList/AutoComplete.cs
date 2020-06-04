@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
@@ -14,11 +15,60 @@ using ScriptEditor.TextEditorUI.ToolTips;
 
 namespace ScriptEditor.TextEditorUI.CompleteList
 {
+    /// <summary>
+    /// Отрисовывает границы списка цветом определенным BorderColor
+    /// </summary>
+    public class CompleteListBox : ListBox
+    {
+        const int  WM_NCPAINT     = 0x85;
+        //const uint RDW_INVALIDATE = 0x1;
+        //const uint RDW_IUPDATENOW = 0x100;
+        //const uint RDW_FRAME      = 0x400;
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetWindowDC(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        /*
+        [DllImport("user32.dll")]
+        static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprc, IntPtr hrgn, uint flags);
+
+        void RedrawWindowControl()
+        {
+            RedrawWindow(Handle, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_IUPDATENOW | RDW_INVALIDATE);
+        }
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            RedrawWindowControl();
+        }
+        */
+
+        public Color BorderColor { get; set; }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+            if (m.Msg == WM_NCPAINT && BorderStyle != System.Windows.Forms.BorderStyle.None && BorderColor != Color.Transparent) {
+                var hdc = GetWindowDC(this.Handle);
+
+                using (var g = Graphics.FromHdcInternal(hdc))
+                using (var p = new Pen(BorderColor))
+                    g.DrawRectangle(p, new Rectangle(0, 0, Width - 1, Height - 1));
+
+                ReleaseDC(this.Handle, hdc);
+            }
+        }
+    }
+
     public class AutoComplete
     {
         private const int countItems = 12;
         private const int height = 17;
-        
+
         private int x, y, itemWidth, itemHeight;
         private bool hidden;
 
@@ -27,7 +77,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                                         Color.White, Color.FromArgb(240, 190, 100));
 
         public bool ShiftCaret { get; set; } // используется для возврата курсора каретки на ключевое слово.
-        
+
         bool colored;
         public bool Colored {
             private get { return colored; }
@@ -38,7 +88,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         public KeyValuePair<int, int> WordPosition { get; set; }
         private TextAreaControl TAC { get; set; }
 
-        private ListBox AutoComleteList;
+        private CompleteListBox AutoComleteList;
         private ToolTip tipAC;
         private Panel panel;
         private ImageList imageList;
@@ -53,7 +103,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             FontFamily family = Settings.Fonts.Families.FirstOrDefault(f => f.Name == "InputMono");
             this.font = new FontContainer(new Font((family ?? FontFamily.GenericMonospace), 10, FontStyle.Regular, GraphicsUnit.Point));
 
-            AutoComleteList = new ListBox();
+            AutoComleteList = new CompleteListBox();
             AutoComleteList.Cursor = Cursors.Help;
             AutoComleteList.ItemHeight = height;
             AutoComleteList.MaximumSize = new Size(350, (countItems * height) + 4);
@@ -94,9 +144,11 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         {
             if (ColorTheme.IsDarkTheme) {
                 AutoComleteList.BackColor = ColorTheme.TipGradient.BackgroundColor;
+                AutoComleteList.BorderColor = Color.DimGray;
                 AutoComleteList.BorderStyle = BorderStyle.FixedSingle;
             } else {
                 AutoComleteList.BackColor = Color.GhostWhite;
+                AutoComleteList.BorderColor = Color.Transparent;
                 AutoComleteList.BorderStyle = BorderStyle.Fixed3D;
             }
         }
@@ -114,10 +166,9 @@ namespace ScriptEditor.TextEditorUI.CompleteList
         {
             if (hidden) {
                 hidden = false;
-                AutoComleteList.Show();
+                if (SetScrollPosition(TAC)) AutoComleteList.Show();
             }
-            if (TAC != null)
-                TAC.TextEditorProperties.MouseWheelTextZoom = true;
+            if (TAC != null) TAC.TextEditorProperties.MouseWheelTextZoom = true;
         }
 
         public void Close()
@@ -174,7 +225,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
             string word = TextUtilities.GetWordAt(TAC.Document, caretOffset) + keyChar;
             int wordLen = word.Length;
-            if (pressKeyAutoComplite) { 
+            if (pressKeyAutoComplite) {
                 if (word == String.Empty) {
                     word = TextUtilities.GetWordAt(TAC.Document, --caretOffset);
                     wordLen = word.Length;
@@ -184,9 +235,9 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                         word = word.Remove(wordStart);
                     } else
                         word = null;
-                } 
+                }
             }
-            
+
             if (back && word != null) {
                 if (wordLen > 2) {
                     wordLen--;
@@ -194,12 +245,12 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                 } else
                     word = null;
             }
-            
+
             if (word != null && word.Length > 1) {
                 var matches = (cTab.parseInfo != null)
                     ? cTab.parseInfo.LookupAutosuggest(word)
                     : ProgramInfo.LookupOpcode(word);
-                
+
                 int shift = (back) ? -1 : pressKeyAutoComplite ? 0 : 1;
 
                 if (matches.Count > 0) {
@@ -214,7 +265,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
                             maxLen = acItem.NameLength;
                     }
                     AutoComleteList.EndUpdate();
-                    
+
                     // size
                     AutoComleteList.Height = AutoComleteList.PreferredHeight - 3;
                     AutoComleteList.Width = (maxLen * 10) + shift_x
@@ -245,34 +296,33 @@ namespace ScriptEditor.TextEditorUI.CompleteList
             }
         }
 
-        public void TA_MouseScroll(TextAreaControl ATAC, MouseEventArgs e)
+        private const int shiftY = 50;
+
+        private bool SetScrollPosition(TextAreaControl tac)
         {
-            if (IsVisible /*&& e.Delta != 0*/) {
-                int shiftY = 50;
-                int bottom = shiftY + ATAC.Height + ATAC.Location.Y;
-                int top = shiftY + ATAC.Parent.Height - ATAC.Height;
+            int bottom = shiftY + tac.Height + tac.Location.Y;
+            int top = shiftY + tac.Parent.Height - tac.Height;
 
-                var tePos = ATAC.FindForm().PointToClient(ATAC.Parent.PointToScreen(ATAC.Location));
-                var caretPos = ATAC.Caret.ScreenPosition;
-                
-                tePos.Offset(caretPos);
-                if (e.Button == MouseButtons.None) {
-                    if (e.Delta < 0)
-                        tePos.Offset(0, -32);
-                    else
-                        tePos.Offset(0, 70);
-                } else
-                    tePos.Offset(0, e.Delta + 18);
+            var tePos = tac.FindForm().PointToClient(tac.Parent.PointToScreen(tac.Location));
+            var caretPos = tac.Caret.ScreenPosition;
 
-                if (tePos.Y > bottom || tePos.Y < ATAC.Location.Y + shiftY) {
-                    Close();
-                    return;
-                } else
-                    tipAC.Hide(panel);
+            tePos.Offset(caretPos);
+            tePos.Offset(0, 18);
 
-                tePos.X = AutoComleteList.Location.X;
-                AutoComleteList.Location = tePos;
-            }
+            if (!hidden && (tePos.Y > bottom || tePos.Y < tac.Location.Y + shiftY)) {
+                Close();
+                return false;
+            } else
+                tipAC.Hide(panel);
+
+            tePos.X = AutoComleteList.Location.X;
+            AutoComleteList.Location = tePos;
+            return true;
+        }
+
+        public void TA_MouseScroll(TextAreaControl tac)
+        {
+            if (IsVisible) SetScrollPosition(tac);
         }
 
         public void TA_PreviewKeyDown(PreviewKeyDownEventArgs e)
@@ -382,7 +432,7 @@ namespace ScriptEditor.TextEditorUI.CompleteList
 
         // Specify custom text formatting flags
         static StringFormat sf = new StringFormat() { Trimming = StringTrimming.EllipsisCharacter };
-        
+
         const int shift_x = 20;
 
         private void ACL_Draw(object s, DrawItemEventArgs e)

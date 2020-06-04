@@ -53,7 +53,7 @@ namespace ScriptEditor
 
             NodesComboBox.Items.AddRange(DialogueParser.GetAllNodesName(scrProc).ToArray());
 
-            Procedure curProc = sourceTab.parseInfo.GetProcedurePosition(sourceTab.textEditor.ActiveTextAreaControl.Caret.Line);
+            Procedure curProc = sourceTab.parseInfo.GetProcedureFromPosition(sourceTab.textEditor.ActiveTextAreaControl.Caret.Line);
             if (curProc == null || !NodesComboBox.Items.Contains(curProc.name)) {
                 int indx = sourceTab.parseInfo.GetProcedureIndex("talk_p_proc");
                 if (indx == -1)
