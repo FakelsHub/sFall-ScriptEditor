@@ -92,6 +92,46 @@ namespace ScriptEditor.CodeTranslation
             TextEditor.parserIsRunning = false;
         }
 
+        public static ProgramInfo UpdatePI(ProgramInfo pi, string filepath)
+        {
+            string name = Path.GetFileName(filepath);
+
+            for (int i = 0; i < pi.procs.Length; i++)
+            {
+                var p = pi.procs[i];
+                p.fdeclared = filepath;
+                p.fstart = filepath;
+                p.filename = name;
+
+                for (int j = 0; j < p.references.Length; j++)
+                {
+                    p.references[j].file = filepath;
+                }
+                for (int j = 0; j < p.variables.Length; j++)
+                {
+                    p.variables[j].fdeclared = filepath;
+                    //p.variables[j].filename = name;
+                    for (int n = 0; n < p.variables[j].references.Length; n++)
+                    {
+                        p.variables[j].references[n].file = filepath;
+                    }
+                }
+            }
+
+            for (int i = 0; i < pi.vars.Length; i++)
+            {
+                var v = pi.vars[i];
+                v.fdeclared = filepath;
+                v.filename = name;
+
+                for (int j = 0; j < v.references.Length; j++)
+                {
+                    v.references[j].file = filepath;
+                }
+            }
+            return pi;
+        }
+
         /// <summary>
         /// Обновляет данные о процедурах, удаляет устаревшие или добавляет новые
         /// </summary>
@@ -121,7 +161,7 @@ namespace ScriptEditor.CodeTranslation
                         break;
                     }
                 }
-                if (!exist && _proc[1].IsLocal(filepath)) _proc.RemoveAt(i--); // remove unused local procedure
+                if (!exist && _proc[i].IsLocal(filepath)) _proc.RemoveAt(i--); // remove unused local procedure
             }
 
             for (int i = 0; i < update_pi.procs.Length; i++)

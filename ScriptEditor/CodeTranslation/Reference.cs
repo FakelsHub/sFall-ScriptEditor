@@ -8,7 +8,7 @@ namespace ScriptEditor.CodeTranslation
 {
     public class Reference
     {
-        public readonly string file;
+        public string file;
         public readonly int line;
 
         public Reference(string file, int line)

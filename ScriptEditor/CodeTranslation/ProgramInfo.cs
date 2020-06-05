@@ -83,6 +83,7 @@ namespace ScriptEditor.CodeTranslation
         public bool parsed = false;
         public bool parseData = false;   // Data Variables and Procedures received.
         public bool parseError = false;
+        public bool reParseData = false; // true - обновляет информацию о процедурах и переменных для случаев когда работа внешенго парсера невозможна
 
         public IParserInfo Lookup(string _token, string file, int line)
         {

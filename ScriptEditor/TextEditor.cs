@@ -600,6 +600,7 @@ namespace ScriptEditor
                 File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage
                                                               : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
                                                                                           : Encoding.Default);
+
                 if (!close) tab.FileTime = File.GetLastWriteTime(tab.filepath);
                 tab.changed = false;
                 SetTabTextChange(tab.index);
@@ -639,6 +640,7 @@ namespace ScriptEditor
                 if (Settings.enableParser && (ext == ".ssl" || ext == ".h")) {
                     tab.shouldParse = true;
                     tab.needsParse = true;
+                    tab.parseInfo.reParseData = true;
                     parserLabel.Text = "Parser: Wait for update";
                     ParseScript();
                 }
