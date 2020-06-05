@@ -58,7 +58,7 @@ namespace ScriptEditor
                                 tabControl1.SelectTab(tab);
                             return true;
                         }
-                        caretOffset = 0; // search from begin 
+                        caretOffset = 0; // search from begin
                     } while (tab != endtab);
                 } else {
                     sf.lbFindFiles.Items.Clear();
@@ -195,9 +195,9 @@ namespace ScriptEditor
                 return;
             int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentActiveTextAreaCtrl.Caret.Offset + 1,
                                             CaseButton.Checked, WholeWordButton.Checked);
-            if (z != -1) 
+            if (z != -1)
                 Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType);
-            else 
+            else
                 DontFind.Play();
             addSearchTextComboBox(find);
         }
@@ -212,7 +212,7 @@ namespace ScriptEditor
             int z = Utilities.SearchPanel(text, find, offset - 1, CaseButton.Checked, WholeWordButton.Checked, true);
             if (z != -1)
                 Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType);
-            else 
+            else
                 DontFind.Play();
             addSearchTextComboBox(find);
         }
@@ -223,11 +223,11 @@ namespace ScriptEditor
             if (find.Length == 0)
                 return;
             string replace = ReplaceTextBox.Text.Trim();
-            int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentActiveTextAreaCtrl.Caret.Offset, 
+            int z = Utilities.SearchPanel(currentTab.textEditor.Text, find, currentActiveTextAreaCtrl.Caret.Offset,
                                             CaseButton.Checked, WholeWordButton.Checked);
-            if (z != -1) 
+            if (z != -1)
                 Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType, replace);
-            else 
+            else
                 DontFind.Play();
             addSearchTextComboBox(find);
         }
@@ -241,9 +241,9 @@ namespace ScriptEditor
             string replace = ReplaceTextBox.Text.Trim();
             int z, offset = 0;
             do {
-                z = Utilities.SearchPanel(currentTab.textEditor.Text, find, offset, 
+                z = Utilities.SearchPanel(currentTab.textEditor.Text, find, offset,
                                             CaseButton.Checked, WholeWordButton.Checked);
-                if (z != -1) 
+                if (z != -1)
                     currentActiveTextAreaCtrl.Document.Replace(z, find.Length, replace);
                 offset = z + 1;
             } while (z != -1);
@@ -253,9 +253,9 @@ namespace ScriptEditor
         private void SendtoolStripButton_Click(object sender, EventArgs e)
         {
             string word = currentActiveTextAreaCtrl.SelectionManager.SelectedText;
-            if (word == string.Empty) 
+            if (word == string.Empty)
                 word = TextUtilities.GetWordAt(currentDocument, currentActiveTextAreaCtrl.Caret.Offset);
-            if (word != string.Empty) 
+            if (word != string.Empty)
                 SearchTextComboBox.Text = word;
         }
 
@@ -306,8 +306,8 @@ namespace ScriptEditor
                     line = r.line,
                     column = TextUtilities.GetLineAsString(currentDocument, r.line - 1).IndexOf(word, StringComparison.OrdinalIgnoreCase),
                     len = word.Length,
-                    message = (String.Compare(Path.GetFileName(r.file), currentTab.filename, true) == 0) 
-                               ? TextUtilities.GetLineAsString(currentDocument, r.line - 1).TrimStart() 
+                    message = (String.Compare(Path.GetFileName(r.file), currentTab.filename, true) == 0)
+                               ? TextUtilities.GetLineAsString(currentDocument, r.line - 1).TrimStart()
                                : "< Preview is not possible: for viewing goto this the reference link >"
                 };
                 if (error.column > 0)
@@ -344,12 +344,12 @@ namespace ScriptEditor
                     return;
 
                 ParserInternal.UpdateParseBuffer(currentTab.textEditor.Text);
-                
+
                 word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 line = ParserInternal.GetProcedureBlock(word, 0, true).begin;
                 if (line != -1)
-                    line++; 
-                else 
+                    line++;
+                else
                     return;
             } else {
                 //TextLocation tl = (TextLocation)editorMenuStrip.Tag;
@@ -381,23 +381,23 @@ namespace ScriptEditor
             Refactor.Rename((IParserInfo)renameToolStripMenuItem.Tag, currentDocument, currentTab, tabs);
         }
         #endregion
-        
+
         #region Autocomplete and tips function control
         private void TextArea_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             //PosChangeType = PositionType.OverridePos; // Save position change for navigation, if key was pressed
-            
+
             if (e.KeyCode == Keys.Enter) updateHighlightPocedure = false;
 
             if (autoComplete.IsVisible) {
                 autoComplete.TA_PreviewKeyDown(e);
                 if (Settings.autocomplete && e.KeyCode == Keys.Back) {
-                    autoComplete.GenerateList(String.Empty, currentTab, 
+                    autoComplete.GenerateList(String.Empty, currentTab,
                         currentActiveTextAreaCtrl.Caret.Offset - 1, toolTips.Tag, true);
                 }
             }
             if (toolTips.Active) {
-                if (e.KeyCode == Keys.Up || (e.KeyCode == Keys.Down && !autoComplete.IsVisible) 
+                if (e.KeyCode == Keys.Up || (e.KeyCode == Keys.Down && !autoComplete.IsVisible)
                     || e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape
                     || (toolTips.Tag != null && !(bool)toolTips.Tag)) {
                         ToolTipsHide();
@@ -434,11 +434,11 @@ namespace ScriptEditor
         {
             if (autoComplete.IsVisible && (bool)toolTips.Tag)
                 autoComplete.Close();
-            
+
             toolTips.Hide(panel1);
             toolTips.Tag = toolTips.Active = false;
         }
-        
+
         private void TextEditor_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ControlKey) {
@@ -474,13 +474,13 @@ namespace ScriptEditor
          */
         internal enum PositionType { AddPos, NoStore, OverridePos, Disabled }
 
-        private void SetBackForwardButtonState() 
+        private void SetBackForwardButtonState()
         {
             if (currentTab.history.pointerCur > 0)
                 Back_toolStripButton.Enabled = true;
             else
                 Back_toolStripButton.Enabled = false;
-            
+
             if (currentTab.history.pointerCur == currentTab.history.pointerEnd || currentTab.history.pointerCur < 0)
                 Forward_toolStripButton.Enabled = false;
             else if (currentTab.history.pointerCur > 0 || currentTab.history.pointerCur < currentTab.history.pointerEnd)
@@ -506,7 +506,7 @@ namespace ScriptEditor
             if (PosChangeType >= PositionType.NoStore) { // also OverridePos
                 if (PosChangeType == PositionType.OverridePos && currentTab.history.pointerCur != -1)
                     currentTab.history.linePosition[currentTab.history.pointerCur] = _position;
-                
+
                 PosChangeType = PositionType.AddPos; // set default
                 return;
             }
@@ -525,23 +525,23 @@ namespace ScriptEditor
                 goto PosChange;
             }
 
-            SetBackForwardButtonState();  
+            SetBackForwardButtonState();
         }
 
         private void Back_toolStripButton_Click(object sender, EventArgs e)
         {
             if (currentTab == null || currentTab.history.pointerCur == 0)
                 return;
-            
+
             currentTab.history.pointerCur--;
-            GotoViewLine(); 
+            GotoViewLine();
         }
 
         private void Forward_toolStripButton_Click(object sender, EventArgs e)
         {
             if (currentTab == null || currentTab.history.pointerCur >= currentTab.history.pointerEnd)
                 return;
-            
+
             currentTab.history.pointerCur++;
             GotoViewLine();
         }
@@ -557,12 +557,12 @@ namespace ScriptEditor
             int lastLine = firstLine + currentActiveTextAreaCtrl.TextArea.TextView.VisibleLineCount - 1;
             if (_position.Line <= firstLine || _position.Line + 1 >= lastLine)
                 currentActiveTextAreaCtrl.CenterViewOn(currentActiveTextAreaCtrl.Caret.Line, 0);
-            
+
             SetBackForwardButtonState();
         }
         #endregion
 
-        #region Procedure function Create/Rename/Delete/Move 
+        #region Procedure function Create/Rename/Delete/Move
         // Create Handlers Procedures
         public void CreateProcBlock(string name)
         {
@@ -574,13 +574,13 @@ namespace ScriptEditor
             byte inc = 0;
             if (name == "look_at_p_proc" || name == "description_p_proc")
                 inc++;
-            
+
             ProcForm CreateProcFrm = new ProcForm(name, true);
             if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure)
                 CreateProcFrm.CopyProcedure = false;
-            else 
+            else
                 CreateProcFrm.groupBox1.Enabled = false;
-            
+
             ProcTree.HideSelection = false;
 
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
@@ -593,11 +593,11 @@ namespace ScriptEditor
                 var proc = (Procedure)ProcTree.SelectedNode.Tag;
                 block.begin = proc.d.start;
                 block.end = proc.d.end;
-                block.declar = proc.d.declared;  
+                block.declar = proc.d.declared;
             }
 
             PrepareInsertProcedure(CreateProcFrm.ProcedureName, block, CreateProcFrm.PlaceAt, inc);
-            
+
             CreateProcFrm.Dispose();
             ProcTree.HideSelection = true;
         }
@@ -631,7 +631,7 @@ namespace ScriptEditor
                 MessageBox.Show("A procedure with this name has already been declared.", "Info");
                 return;
             }
-            
+
             ProcedureBlock block = new ProcedureBlock();
             if (CreateProcFrm.CopyProcedure || CreateProcFrm.PlaceAt == InsertAt.After) {
                 var proc = (currentHighlightProc != null) ? currentHighlightProc : (Procedure)ProcTree.SelectedNode.Tag;
@@ -653,14 +653,14 @@ namespace ScriptEditor
         {
             int declrLine, procLine = 0, caretline = 3;
             string procbody;
-            
+
             //Copy from procedure
             if (block.copy) {
                 procbody = Utilities.GetRegionText(currentDocument, block.begin, block.end - 2) + Environment.NewLine;
                 overrides = 1;
-            } else 
+            } else
                 procbody = new string(' ', Settings.tabSize) + ("script_overrides;\r\n\r\n");
-            
+
             string procblock = (overrides > 0)
                        ? "\r\nprocedure " + name + " begin\r\n" + procbody + "end"
                        : "\r\nprocedure " + name + " begin\r\n\r\nend";
@@ -673,7 +673,7 @@ namespace ScriptEditor
             if (total == 0 || caretLine <= declrEndLine) placeAt = InsertAt.End;
 
             // declaration line
-            if (placeAt == InsertAt.Caret) { 
+            if (placeAt == InsertAt.Caret) {
                 procLine = caretLine;
                 Procedure p = currentTab.parseInfo.GetNearProcedure(procLine); // найти процедуру которая расположена рядом
                 if (p != null) {
@@ -712,7 +712,7 @@ namespace ScriptEditor
             if (declrLine <= -1) declrLine = declrEndLine  + 1;
 
             Utilities.InsertProcedure(currentActiveTextAreaCtrl, name, procblock, declrLine, procLine, ref caretline);
-            
+
             caretline += procLine + overrides;
             currentActiveTextAreaCtrl.Caret.Column = 0;
             currentActiveTextAreaCtrl.Caret.Line = caretline;
@@ -730,11 +730,11 @@ namespace ScriptEditor
             Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
             if (proc == null)
                 return;
-            
+
             ProcTree.HideSelection = false;
             string newName = Refactor.RenameProcedure(proc, currentDocument, currentTab, tabs);
             ProcTree.HideSelection = true;
-            
+
             if (newName != null) {
                 ForceParseScript();
                 SetFocusDocument();
@@ -783,17 +783,17 @@ namespace ScriptEditor
             ParserInternal.UpdateParseBuffer(currentDocument.TextContent);
             ProcedureBlock block = ParserInternal.GetProcedureBlock(moveProc.name, 0, true);
             block.declar = moveProc.d.declared;
-            
+
             string copy_defproc;
             string copy_procbody = Environment.NewLine + Utilities.GetRegionText(currentDocument, block.begin, block.end);
 
             currentDocument.UndoStack.StartUndoGroup();
             currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
-            
+
             Utilities.DeleteProcedure(currentDocument, block, out copy_defproc);
 
             string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
-            
+
             ParserInternal.UpdateParseBuffer(currentDocument.TextContent);
             // insert declration
             int offset;
@@ -816,10 +816,10 @@ namespace ScriptEditor
             }
             offset = currentDocument.PositionToOffset(new TextLocation(0, p_begin));
             offset += TextUtilities.GetLineAsString(currentDocument, p_begin).Length;
-            
+
             currentDocument.Insert(offset, copy_procbody);
             currentDocument.UndoStack.EndUndoGroup();
-            
+
             // Перемещение процедуры в дереве
             if (sIndex > moveActive && !moveToEnd)
                 sIndex--;
@@ -902,8 +902,9 @@ namespace ScriptEditor
 
         private void ProcMnContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Parent != null 
-                && (int)ProcTree.SelectedNode.Parent.Tag == 1 /*&& ProcTree.SelectedNode.Tag is Procedure*/) {
+            if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure &&
+                ProcTree.SelectedNode.Parent != null && (int)ProcTree.SelectedNode.Parent.Tag == 1)
+            {
                 Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
                 string pName = proc.name.ToLower();
                 if (pName.IndexOf("node") > -1 || pName == "talk_p_proc")

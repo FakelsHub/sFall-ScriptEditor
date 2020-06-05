@@ -228,9 +228,7 @@ namespace ScriptEditor
         {
             for (int i = 0; i < tabs.Count; i++)
             {
-                Save(tabs[i]);
-                if (tabs[i].changed)
-                    break;
+                if (tabs[i].changed) Save(tabs[i]);
             }
         }
 
