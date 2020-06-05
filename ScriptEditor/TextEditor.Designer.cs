@@ -1398,8 +1398,8 @@ namespace ScriptEditor {
             this.saveUTF8ToolStripMenuItem.Name = "saveUTF8ToolStripMenuItem";
             this.saveUTF8ToolStripMenuItem.ShowShortcutKeys = false;
             this.saveUTF8ToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.saveUTF8ToolStripMenuItem.Text = "Save Text in UTF-8";
-            this.saveUTF8ToolStripMenuItem.ToolTipText = resources.GetString("saveUTF8ToolStripMenuItem.ToolTipText");
+            this.saveUTF8ToolStripMenuItem.Text = "Save in UTF-8";
+            this.saveUTF8ToolStripMenuItem.ToolTipText = "Always save the script file in UTF-8 encoding, otherwise used the Windows ANSI encoding page.";
             this.saveUTF8ToolStripMenuItem.Click += new System.EventHandler(this.saveUTF8ToolStripMenuItem_Click);
             // 
             // toolStripSeparator8

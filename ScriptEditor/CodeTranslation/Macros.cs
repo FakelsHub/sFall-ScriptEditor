@@ -8,6 +8,11 @@ namespace ScriptEditor.CodeTranslation
 {
     internal class GetMacros
     {
+        private static string[] ReadAllLines(string file)
+        {
+            return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(file).Split('\n');
+        }
+
         public static string[] GetHeadersFiles(string dirHeaders)
         {
             if (dirHeaders == null || !Directory.Exists(dirHeaders)) {
@@ -25,10 +30,7 @@ namespace ScriptEditor.CodeTranslation
             ProgramInfo.macrosGlobal.Clear();
             foreach (string file in headerFiles)
             {
-                new GetMacros(File.ReadAllLines(file, (Settings.saveScriptUTF8)
-                                                       ? Encoding.UTF8
-                                                       : Encoding.Default),
-                                                       file, "", ProgramInfo.macrosGlobal, false);
+                new GetMacros(ReadAllLines(file), file, "", ProgramInfo.macrosGlobal, false);
             }
         }
 
@@ -38,18 +40,39 @@ namespace ScriptEditor.CodeTranslation
                 Program.printLog("   <GetMacros> File not found: '" + file + "'");
                 return;
             }
-            new GetMacros(File.ReadAllLines(file, (Settings.saveScriptUTF8)
-                                                   ? Encoding.UTF8
-                                                   : Encoding.Default),
-                                                   file, dir, macros);
+            new GetMacros(ReadAllLines(file), file, dir, macros);
         }
 
         public GetMacros(string[] lines, string file, string dir, SortedDictionary<string, Macro> macros, bool include = true)
         {
-            if (dir == null)
-                dir = Path.GetDirectoryName(file);
-            for (int i = 0; i < lines.Length; i++) {
-                lines[i] = lines[i].Replace('\t', ' ').TrimStart();
+            if (dir == null) dir = Path.GetDirectoryName(file);
+
+            bool commentBlock = false;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Length < 2) continue;
+                lines[i] = lines[i].Replace('\t',' ').Trim(); // убираем все лишнее
+
+                #region Пропускаем закоментированные макросы
+
+                if (lines[i].StartsWith("//")) continue;
+                if (!commentBlock) {
+                    if (lines[i].StartsWith("/*")) {
+                        if (lines[i].LastIndexOf("*/") == -1) commentBlock = true; // в встроке нет закрывающего тэга
+                        continue;
+                    }
+                } else {
+                    int close = lines[i].IndexOf("*/");
+                    if (close == -1) continue;
+                    commentBlock = false;
+                    close += 2;
+                    if (close == lines[i].Length) continue;
+                    lines[i] =  lines[i].Remove(0, close).TrimStart();
+                }
+                if (lines[i].Length <= 8) continue; // минимальное необходимое значение для ключевого слова #define
+
+                #endregion
+
                 if (include && lines[i].StartsWith(ParserInternal.INCLUDE)) {
                     string[] text = lines[i].Split('"');
                     if (text.Length < 2)
@@ -59,13 +82,13 @@ namespace ScriptEditor.CodeTranslation
                     ParserInternal.GetIncludePath(ref text[1], dir);
                     new GetMacros(text[1], null, macros);
                 } else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
-                    lines[i] = lines[i].TrimEnd();
+                    //lines[i] = lines[i].TrimEnd();
                     if (lines[i].EndsWith(@"\")) {
                         var sb = new StringBuilder();
                         int lineno = i;
                         lines[i] = lines[i].Substring(8);
                         do {
-                            sb.Append(lines[i].Remove(lines[i].Length - 1).TrimEnd()); // удаляем символ '\' в конце макроса
+                            sb.Append(lines[i].Remove(lines[i].Length - 1).TrimEnd()); // удаляем пробелы и символ '\' в конце макроса
                             sb.Append(Environment.NewLine);
                             i++;
                             lines[i] = lines[i].TrimEnd();
@@ -81,7 +104,7 @@ namespace ScriptEditor.CodeTranslation
         private void AddMacro(string line, SortedDictionary<string, Macro> macros, string file, int lineno)
         {
             string token, macro, def;
-            line = line.Trim();
+            line = line.TrimStart();
             int firstspace = line.IndexOf(' ');
             if (firstspace == -1)
                 return;

@@ -553,10 +553,6 @@
         IfDUQYSrHkKcdRHooAM/Wx142e9heHB+A68zs8Z6+9uLAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="saveUTF8ToolStripMenuItem.ToolTipText" xml:space="preserve">
-    <value>Always save the script file in UTF-8 encoding (otherwise used the Windows encoding page).
-Note: Macro descriptions can unreadable letters of comments if their script files or header files have a different encoding than UTF.</value>
-  </data>
   <data name="Save_toolStripSplitButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
