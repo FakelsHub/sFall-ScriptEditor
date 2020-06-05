@@ -22,12 +22,20 @@ namespace ICSharpCode.TextEditor
 	[ToolboxItem(true)]
 	public class TextEditorControl : TextEditorControlBase
 	{
+		private enum TextAreaSide
+		{
+			Primary,
+			Secondary
+		}
+		
 		protected Panel textAreaPanel     = new Panel();
 		TextAreaControl primaryTextArea;
 		Splitter        textAreaSplitter  = null;
 		TextAreaControl secondaryTextArea = null;
 		
 		PrintDocument   printDocument = null;
+		
+		private TextAreaSide textAreaLastLeave;
 		
 		[Browsable(false)]
 		public PrintDocument PrintDocument {
@@ -76,6 +84,9 @@ namespace ICSharpCode.TextEditor
 			primaryTextArea.TextArea.GotFocus += delegate {
 				SetActiveTextAreaControl(primaryTextArea);
 			};
+			primaryTextArea.TextArea.Leave += delegate {
+				textAreaLastLeave = TextAreaSide.Primary;
+			};
 			primaryTextArea.Dock = DockStyle.Fill;
 			textAreaPanel.Controls.Add(primaryTextArea);
 			InitializeTextAreaControl(primaryTextArea);
@@ -118,11 +129,20 @@ namespace ICSharpCode.TextEditor
 				InitializeTextAreaControl(secondaryTextArea);
 				secondaryTextArea.OptionsChanged();
 
-				secondaryTextArea.Caret.Line = primaryTextArea.Caret.Line;
+				secondaryTextArea.TextArea.Leave += delegate {
+					textAreaLastLeave = TextAreaSide.Secondary;
+				};
+				
+				secondaryTextArea.Caret.Position = primaryTextArea.Caret.Position;
 				secondaryTextArea.CenterViewOn(secondaryTextArea.Caret.Line, 0);
 				secondaryTextArea.TextArea.Select();
 			} else {
-				if (secondaryTextArea.TextArea.Focused) primaryTextArea.Caret.Position = secondaryTextArea.Caret.Position;
+				if (!primaryTextArea.TextArea.Focused && (secondaryTextArea.TextArea.Focused || textAreaLastLeave == TextAreaSide.Secondary)) {
+					primaryTextArea.Caret.Position = secondaryTextArea.Caret.Position;
+				} else {
+					secondaryTextArea.Caret.Position = primaryTextArea.Caret.Position;
+					secondaryTextArea.CenterViewOn(secondaryTextArea.Caret.Line, 0);
+				}
 				secondaryTextArea.Visible = !secondaryTextArea.Visible;
 				textAreaSplitter.Visible = !textAreaSplitter.Visible;
 				if (secondaryTextArea.Visible == false)

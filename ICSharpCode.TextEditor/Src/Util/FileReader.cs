@@ -16,6 +16,13 @@ namespace ICSharpCode.TextEditor.Util
 	/// </summary>
 	public static class FileReader
 	{
+		private enum EncType {
+			Error        = 0,
+			ASCII        = 1,
+			UTF8         = 2,
+			UTF8Sequence = 3
+		}
+		
 		public static bool IsUnicode(Encoding encoding)
 		{
 			int codepage = encoding.CodePage;
@@ -27,12 +34,12 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			using (StreamReader reader = OpenStream(fs, encoding)) {
 				reader.Peek();
-				encoding = reader.CurrentEncoding;
+				if (encoding != null) encoding = reader.CurrentEncoding;
 				return reader.ReadToEnd();
 			}
 		}
 		
-		public static string ReadFileContent(string fileName, Encoding encoding)
+		public static string ReadFileContent(string fileName, Encoding encoding = null)
 		{
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
 				return ReadFileContent(fs, ref encoding);
@@ -41,9 +48,6 @@ namespace ICSharpCode.TextEditor.Util
 		
 		public static StreamReader OpenStream(Stream fs, Encoding defaultEncoding)
 		{
-			if (fs == null)
-				throw new ArgumentNullException("fs");
-			
 			if (fs.Length >= 2) {
 				// the autodetection of StreamReader is not capable of detecting the difference
 				// between ISO-8859-1 and UTF-8 without BOM.
@@ -62,55 +66,52 @@ namespace ICSharpCode.TextEditor.Util
 				}
 			} else {
 				if (defaultEncoding != null) {
-					return new StreamReader(fs, defaultEncoding);
+					return new StreamReader(fs, defaultEncoding, false);
 				} else {
-					return new StreamReader(fs);
+					return new StreamReader(fs, false);
 				}
 			}
 		}
 		
-		static StreamReader AutoDetect(Stream fs, byte firstByte, byte secondByte, Encoding defaultEncoding)
+		private static StreamReader AutoDetect(Stream fs, byte firstByte, byte secondByte, Encoding defaultEncoding)
 		{
 			int max = (int)Math.Min(fs.Length, 500000); // look at max. 500 KB
-			const int ASCII = 0;
-			const int Error = 1;
-			const int UTF8  = 2;
-			const int UTF8Sequence = 3;
-			int state = ASCII;
+			
+			EncType state = EncType.ASCII;
 			int sequenceLength = 0;
-			byte b;
-			for (int i = 0; i < max; i++) {
-				if (i == 0) {
-					b = firstByte;
+
+			byte b = firstByte;
+			for (int i = 0; i < max; i++)
+			{
+				if (i >= 2) {
+					b = (byte)fs.ReadByte();
 				} else if (i == 1) {
 					b = secondByte;
-				} else {
-					b = (byte)fs.ReadByte();
 				}
-				if (b < 0x80) {
-					// normal ASCII character
-					if (state == UTF8Sequence) {
-						state = Error;
+				
+				if (b < 0x80) { // normal ASCII character
+					if (state == EncType.UTF8Sequence) {
+						state = EncType.ASCII;
 						break;
 					}
-				} else if (b < 0xc0) {
-					// 10xxxxxx : continues UTF8 byte sequence
-					if (state == UTF8Sequence) {
+				}
+				else if (b < 0xc0) { // 10xxxxxx : continues UTF8 byte sequence
+					if (state == EncType.UTF8Sequence) {
 						--sequenceLength;
 						if (sequenceLength < 0) {
-							state = Error;
+							state = EncType.Error;
 							break;
 						} else if (sequenceLength == 0) {
-							state = UTF8;
+							state = EncType.UTF8;
 						}
 					} else {
-						state = Error;
+						state = EncType.Error;
 						break;
 					}
-				} else if (b >= 0xc2 && b < 0xf5) {
-					// beginning of byte sequence
-					if (state == UTF8 || state == ASCII) {
-						state = UTF8Sequence;
+				}
+				else if (b >= 0xc2 && b < 0xf5) { // beginning of byte sequence
+					if (state == EncType.UTF8 || state == EncType.ASCII) {
+						state = EncType.UTF8Sequence;
 						if (b < 0xe0) {
 							sequenceLength = 1; // one more byte following
 						} else if (b < 0xf0) {
@@ -119,33 +120,32 @@ namespace ICSharpCode.TextEditor.Util
 							sequenceLength = 3; // three more bytes following
 						}
 					} else {
-						state = Error;
+						state = EncType.Error;
 						break;
 					}
 				} else {
 					// 0xc0, 0xc1, 0xf5 to 0xff are invalid in UTF-8 (see RFC 3629)
-					state = Error;
+					state = EncType.Error;
 					break;
 				}
 			}
+			
 			fs.Position = 0;
 			switch (state) {
-				case ASCII:
-				case Error:
+				case EncType.Error:
+				case EncType.ASCII:
 					// when the file seems to be ASCII or non-UTF8,
-					// we read it using the user-specified encoding so it is saved again
-					// using that encoding.
-					if (IsUnicode(defaultEncoding)) {
+					// we read it using the user-specified encoding so it is saved again using that encoding.
+					if (defaultEncoding == null || IsUnicode(defaultEncoding)) {
 						// the file is not Unicode, so don't read it using Unicode even if the
 						// user has choosen Unicode as the default encoding.
 						
-						// If we don't do this, SD will end up always adding a Byte Order Mark
-						// to ASCII files.
+						// If we don't do this, SD will end up always adding a Byte Order Mark to ASCII files.
 						defaultEncoding = Encoding.Default; // use system encoding instead
 					}
-					return new StreamReader(fs, defaultEncoding);
+					return new StreamReader(fs, defaultEncoding, false);
 				default:
-					return new StreamReader(fs);
+					return new StreamReader(fs, false);
 			}
 		}
 	}
