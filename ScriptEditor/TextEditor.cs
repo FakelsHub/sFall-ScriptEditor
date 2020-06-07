@@ -374,7 +374,7 @@ namespace ScriptEditor
                 if (string.Compare(Path.GetExtension(file), ".int", true) == 0) {
                     if (!this.Focused)
                         ShowMe();
-                    
+
                     infile = file;
                     tbOutput.Clear();
                     tabControl2.SelectedIndex = 1;
@@ -604,6 +604,12 @@ namespace ScriptEditor
                                                                                           : Encoding.Default);
 
                 if (!close) tab.FileTime = File.GetLastWriteTime(tab.filepath);
+
+                if (tab.changed && Settings.pathHeadersFiles != null && Path.GetExtension(tab.filename).ToLower() == ".h" &&
+                    Settings.pathHeadersFiles.ToLower() == Path.GetDirectoryName(tab.filepath).ToLower()) {
+                    GetMacros.GetGlobalMacros(Settings.pathHeadersFiles);
+                }
+
                 tab.changed = false;
                 SetTabTextChange(tab.index);
                 savingRunning = false;
@@ -1464,7 +1470,7 @@ namespace ScriptEditor
             parserLabel = new ToolStripLabel((Settings.enableParser) ? "Parser: No file" : parseoff);
             parserLabel.Alignment = ToolStripItemAlignment.Right;
             parserLabel.Click += delegate(object sender, EventArgs e) { ParseScript(0); };
-            parserLabel.ToolTipText = "Click - Run update parser info.";
+            parserLabel.ToolTipText = "Click - Update parser data.";
             parserLabel.TextChanged += delegate(object sender, EventArgs e) { parserLabel.ForeColor = Color.Black; };
             ToolStrip.Items.Add(parserLabel);
 

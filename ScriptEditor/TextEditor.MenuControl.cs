@@ -1148,6 +1148,12 @@ namespace ScriptEditor
                 currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
             }
         }
+
+        private void tsbUpdateParserData_Click(object sender, EventArgs e)
+        {
+            if (currentTab == null) return;
+            ParseScript(0);
+        }
         #endregion
     }
 }
