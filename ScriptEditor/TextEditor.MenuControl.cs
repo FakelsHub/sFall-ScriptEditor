@@ -335,7 +335,7 @@ namespace ScriptEditor
 
         private void registerScriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null)
+            if (currentTab == null || RegistredScriptDialogShow)
                 return;
 
             if (currentTab.filepath == null) {
@@ -424,7 +424,7 @@ namespace ScriptEditor
 
         private void editRegisteredScriptsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RegisterScript.Registration(null);
+            if (!RegistredScriptDialogShow) RegisterScript.Registration(null);
         }
 
         private void associateMsgToolStripMenuItem_Click(object sender, EventArgs e)

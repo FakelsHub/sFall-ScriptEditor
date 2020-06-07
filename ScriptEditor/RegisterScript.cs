@@ -10,7 +10,7 @@ namespace ScriptEditor
     public partial class RegisterScript : Form
     {
         private static TextEditor TE;
-        
+
         private class Entry
         {
             public int row;
@@ -115,7 +115,7 @@ namespace ScriptEditor
                 }
                 AllowCheckBox.Enabled = true;
                 DefinetextBox.Enabled = true;
-            } else 
+            } else
                 NotSaved = false;
 
             Entry[] entries = new Entry[lines.Count];
@@ -172,9 +172,11 @@ namespace ScriptEditor
             } else {
                 scriptH = Settings.pathScriptsHFile;
                 if (!File.Exists(scriptH)) scriptH = null;
-            } // Show form
+            }
+            // Show form
             TE = (TextEditor)ActiveForm;
-            (new RegisterScript(script, lstPath, msgPath, scriptH)).ShowDialog();
+            TE.RegistredScriptDialogShow = true;
+            (new RegisterScript(script, lstPath, msgPath, scriptH)).Show(ActiveForm);
         }
 
         private void RegisterScript_FormClosing(object sender, FormClosingEventArgs e)
@@ -186,6 +188,7 @@ namespace ScriptEditor
                 }
             }
             UndatFile.selectDatFile = null;
+            TE.RegistredScriptDialogShow = false;
         }
 
         private void Save_button_Click(object sender, EventArgs e)
@@ -198,13 +201,13 @@ namespace ScriptEditor
                 int index = (int)dgvScripts.Rows[i].Cells[1].Value;
                 entries[index - 1] = (Entry)dgvScripts.Rows[i].Cells[0].Value;
             }
-            foreach (Entry entry in entries) 
+            foreach (Entry entry in entries)
                 lines.Add(entry.GetAsString());
             File.WriteAllLines(lstPath, lines.ToArray(), System.Text.Encoding.Default);
             lines.Clear();
             if (msgPath != null) {
                 linesMsg.Add(DESCMSG);
-                foreach (Entry entry in entries) 
+                foreach (Entry entry in entries)
                     linesMsg.Add(entry.GetMsgAsString());
                 File.WriteAllLines(msgPath, linesMsg.ToArray(), Settings.EncCodePage);
                 linesMsg.Clear();
@@ -277,14 +280,14 @@ namespace ScriptEditor
         {
             cell cell = new cell();
             string find_str = FindtextBox.Text.Trim();
-            if (find_str.Length == 0) return cell; 
+            if (find_str.Length == 0) return cell;
             if (rev == -1 && rowStart == 0) rowStart = dgvScripts.RowCount - 1;
             for (int row = rowStart; row < dgvScripts.RowCount; row += rev)
             {
-                if (row < 0) break; 
+                if (row < 0) break;
                 for (int col = colStart; col < dgvScripts.ColumnCount; col++)
                 {
-                    if (dgvScripts.Rows[row].Cells[col].Value == null) 
+                    if (dgvScripts.Rows[row].Cells[col].Value == null)
                         continue;
                     string value = dgvScripts.Rows[row].Cells[col].Value.ToString();
                     if (value.IndexOf(find_str, 0, StringComparison.OrdinalIgnoreCase) != -1) {
@@ -338,7 +341,7 @@ namespace ScriptEditor
         private void dgvScripts_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             SelectLine.col = e.ColumnIndex;
-            SelectLine.row = e.RowIndex;     
+            SelectLine.row = e.RowIndex;
         }
 
         private void dgvScripts_CellContentClick(object sender, DataGridViewCellEventArgs e)

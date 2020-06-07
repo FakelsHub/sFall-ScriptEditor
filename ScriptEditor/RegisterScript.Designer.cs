@@ -334,7 +334,6 @@ namespace ScriptEditor {
             this.Controls.Add(this.label2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(250, 250);
             this.Name = "RegisterScript";
             this.ShowInTaskbar = false;

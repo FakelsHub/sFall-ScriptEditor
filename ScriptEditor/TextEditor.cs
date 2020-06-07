@@ -74,6 +74,8 @@ namespace ScriptEditor
         /// </summary>
         private TextAreaControl currentActiveTextAreaCtrl { get { return currentTab.textEditor.ActiveTextAreaControl; } }
 
+        internal bool RegistredScriptDialogShow { get; set; }
+
         private void EnableDoubleBuffering()
         {
            // Set the value of the double-buffering style bits to true.
