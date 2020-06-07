@@ -15,8 +15,6 @@ namespace ScriptEditor.CodeTranslation
     /// </summary>
     public class Compiler
     {
-        static readonly string bakupIntFile = Settings.scriptTempPath + @"\bakupINT.tmp";
-
         private static readonly string decompilationPath = Path.Combine(Settings.scriptTempPath, "decomp.ssl");
         private static readonly string preprocessPath = Path.Combine(Settings.scriptTempPath, "preprocess.ssl");
 
@@ -142,7 +140,7 @@ namespace ScriptEditor.CodeTranslation
         private static extern IntPtr FetchBuffer();
 #endif
 
-        public bool Compile(string infile, out string output, List<Error> errors, bool preprocessOnly, bool shortCircuit = false)
+        public bool Compile(string infile, out string output, List<Error> errors, bool preprocessOnly, bool shortCircuit = false, bool batch = false)
         {
             if (errors != null) errors.Clear();
             if (infile == null) {
@@ -155,31 +153,40 @@ namespace ScriptEditor.CodeTranslation
             string srcfile = infile;
             string sourceDir = Path.GetDirectoryName(infile);
 
-            output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n" + new String('-', 22);
+            if (!batch)
+                output = "****** " + DateTime.Now.ToString("HH:mm:ss") + " ******\r\n" + new String('-', 22);
+            else
+                output = string.Empty;
 
             if (Settings.userCmdCompile && !preprocessOnly) {
                 batPath = Path.Combine(Settings.ResourcesFolder, "usercomp.bat");
                 ProcessStartInfo upsi = new ProcessStartInfo(batPath, GetCommandLine(infile, sourceDir, shortCircuit));
+
                 if (Encoding.Default.WindowsCodePage == 1251) upsi.StandardOutputEncoding = Encoding.GetEncoding("cp866");
-                success = RunProcess(upsi, Settings.ResourcesFolder, ref output);
+
+                success = RunProcess(upsi, Settings.ResourcesFolder, ref output, batch);
             } else {
                 // use external preprocessor
-                string outfile = "preprocess.ssl"; // common preprocess file
+                string outfile = (batch) ? Path.GetRandomFileName() : "preprocess.ssl"; // common preprocess file (generate random name for batch compile)
                 if (Settings.useMcpp || Settings.useWatcom) {
-                    output += Environment.NewLine + (Settings.useWatcom ? "Open Watcom C32 preprocessing script: " : "External MCPP preprocessing script: ");
-                    output += Path.GetFileName(infile) + Environment.NewLine;
-                    output += "Predefine: " + (Settings.preprocDef ?? string.Empty) + Environment.NewLine;
-
+                    if (!batch) {
+                        output += Environment.NewLine + (Settings.useWatcom ? "Open Watcom C32 preprocessing script: " : "External MCPP preprocessing script: ");
+                        output += Path.GetFileName(infile) + Environment.NewLine;
+                        output += "Predefine: " + (Settings.preprocDef ?? string.Empty) + Environment.NewLine;
+                    }
                     batPath = Path.Combine(Settings.ResourcesFolder, Settings.useWatcom ? "wcc.bat" : "mcpp.bat");
-                    ProcessStartInfo ppsi = new ProcessStartInfo(batPath, GetCommandLine(infile, outfile, sourceDir, preprocessOnly));
-                    success = RunProcess(ppsi, Settings.ResourcesFolder, ref output);
 
-                    output += new string('-', 22) + Environment.NewLine;
-                    if (success) {
-                        output += "Created preprocessing file: OK\r\n";
-                        output += "[Done] Preprocessing script successfully completed.\r\n";
-                    } else
-                        output += "[Error] Preprocessing script failed...";
+                    ProcessStartInfo ppsi = new ProcessStartInfo(batPath, GetCommandLine(infile, outfile, sourceDir, preprocessOnly));
+                    success = RunProcess(ppsi, Settings.ResourcesFolder, ref output, batch);
+
+                    if (!batch) {
+                        output += new string('-', 22) + Environment.NewLine;
+                        if (success) {
+                            output += "Created preprocessing file: OK\r\n";
+                            output += "[Done] Preprocessing script successfully completed.\r\n";
+                        } else
+                            output += "[Error] Preprocessing script failed...";
+                    }
                 }
 
                 if (batPath != null) {
@@ -201,15 +208,21 @@ namespace ScriptEditor.CodeTranslation
                 var exePath = Path.Combine(Settings.ResourcesFolder, "compile.exe");
                 ProcessStartInfo psi = new ProcessStartInfo(exePath, GetSslcCommandLine(infile, preprocessOnly, sourceDir, shortCircuit));
 
-                if (File.Exists(outputSSL)) File.Copy(outputSSL, bakupIntFile, true);
+                string backupIntFile = null;
+                if (File.Exists(outputSSL)) {
+                    backupIntFile = Path.Combine(Settings.scriptTempPath, Path.GetRandomFileName()); // generate random name for batch compile
+                    File.Copy(outputSSL, backupIntFile, true);
+                }
 
-                success = RunProcess(psi, Path.GetDirectoryName(infile), ref output);
+                success = RunProcess(psi, Path.GetDirectoryName(infile), ref output, batch);
 
-                if (success) {
-                    File.Delete(bakupIntFile);
-                } else if (File.Exists(bakupIntFile)) {
-                    File.Delete(outputSSL);
-                    File.Move(bakupIntFile, outputSSL);
+                if (backupIntFile != null) {
+                    if (success) {
+                        File.Delete(backupIntFile);
+                    } else if (File.Exists(backupIntFile)) {
+                        File.Delete(outputSSL);
+                        File.Move(backupIntFile, outputSSL); // restore
+                    }
                 }
 #endif
             }
@@ -221,28 +234,34 @@ namespace ScriptEditor.CodeTranslation
             return success;
         }
 
-        private bool RunProcess(ProcessStartInfo psi, string wDir, ref string output)
+        private bool RunProcess(ProcessStartInfo psi, string wDir, ref string output, bool batch)
         {
-            psi.RedirectStandardOutput = true;
-            //psi.RedirectStandardError = true;
+            if (!batch) {
+                psi.RedirectStandardOutput = true;
+                //psi.RedirectStandardError = true;
+            }
             psi.UseShellExecute = false;
             psi.CreateNoWindow = true;
             psi.WorkingDirectory = wDir;
+
             Process wp = Process.Start(psi);
 
-            output += /*wp.StandardError.ReadToEnd() +*/ Environment.NewLine;
-            output += wp.StandardOutput.ReadToEnd();
-            if (Settings.useMcpp || Settings.useWatcom) output += GetErrorLog();
-
+            if (!batch) {
+                output += /*wp.StandardError.ReadToEnd() +*/ Environment.NewLine;
+                output += wp.StandardOutput.ReadToEnd();
+                if (Settings.useMcpp || Settings.useWatcom) output += GetErrorLog();
+            }
             wp.WaitForExit(1000);
+
             bool success = (wp.ExitCode == 0);
+
             wp.Dispose();
             return success;
         }
 
         private string GetErrorLog()
         {
-            string err = null;
+            string err = string.Empty;
             string file = Path.Combine(Settings.ResourcesFolder, Settings.useMcpp ? "mcpp.err" : "wcc.err");
             if (File.Exists(file)) {
                 err = File.ReadAllText(file);

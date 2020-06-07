@@ -415,7 +415,7 @@ namespace ScriptEditor.CodeTranslation
             return matches;
         }
 
-        public bool ShortCircuitEvaluation
+        public bool ShortCircuitEvaluation  // это не может быть использовано при массовой компиляции
         {
             get {
                 string token = "SFALL_SC_EVALUATION";
