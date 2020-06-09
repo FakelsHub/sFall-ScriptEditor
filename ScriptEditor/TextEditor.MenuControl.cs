@@ -250,14 +250,17 @@ namespace ScriptEditor
             }
             bool option = Settings.ignoreCompPath;
             Settings.ignoreCompPath = false;
-            if (Settings.lastMassCompile != null)
-                fbdMassCompile.SelectedPath = Settings.lastMassCompile;
 
-            if (fbdMassCompile.ShowDialog() != DialogResult.OK)
-                return;
+            string compileFolder = Settings.solutionProjectFolder;
+            if (compileFolder == null) {
+                if (Settings.lastMassCompile != null)
+                    fbdMassCompile.SelectedPath = Settings.lastMassCompile;
 
-            Settings.lastMassCompile = fbdMassCompile.SelectedPath;
-            BatchCompiler.CompileFolder(fbdMassCompile.SelectedPath);
+                if (fbdMassCompile.ShowDialog() != DialogResult.OK) return;
+
+                Settings.lastMassCompile = compileFolder = fbdMassCompile.SelectedPath;
+            }
+            BatchCompiler.CompileFolder(compileFolder);
             Settings.ignoreCompPath = option;
         }
 

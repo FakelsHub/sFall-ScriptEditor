@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 using ICSharpCode.TextEditor;
 
@@ -34,39 +35,49 @@ namespace ScriptEditor.TextEditorUI
 
         public string filepath;
         public string filename;
-                
+
         public bool changed;
+
+        public bool DisableParseAndStatusChange { get; set; }
 
         private DateTime fileTime;
         public DateTime FileTime
-        { 
+        {
             set { fileTime = value; }
         }
 
         public bool CheckFileTime()
-        { 
-            DateTime time = System.IO.File.GetLastWriteTime(filepath);
+        {
+            DateTime time = File.GetLastWriteTime(filepath);
             return (time == fileTime);
+        }
+
+        internal void SaveInternal(string saveText, bool isMsg = false, bool isClose = false)
+        {
+            File.WriteAllText(filepath, saveText, (isMsg) ? Settings.EncCodePage
+                                                          : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
+                                                                                      : Encoding.Default);
+            if (!isClose) fileTime = File.GetLastWriteTime(filepath);
         }
 
         /// <summary>
         /// The path to associated message file.
         /// </summary>
-        public string msgFilePath; 
+        public string msgFilePath;
 
         /// <summary>
         /// An opened tab with MSG file associated with currently opened SSL.
         /// Link to associated message tab.
         /// </summary>
-        public TabInfo msgFileTab; 
+        public TabInfo msgFileTab;
 
         public readonly Dictionary<int, string> messages = new Dictionary<int, string>();
-        
+
         /// <summary>
         /// The node procedure TextEditor list control of this tab.
         /// </summary>
         public List<FlowchartTE> nodeFlowchartTE = new List<FlowchartTE>();
-        
+
         /// <summary>
         /// Indicates that this tab requires you to update the nodes information in the flowcharts.
         /// </summary>
@@ -89,7 +100,7 @@ namespace ScriptEditor.TextEditorUI
 
         public string parserLog;
         public List<Error> parserErrors = new List<Error>();
-        
+
         public string buildLog;
         public List<Error> buildErrors = new List<Error>();
 

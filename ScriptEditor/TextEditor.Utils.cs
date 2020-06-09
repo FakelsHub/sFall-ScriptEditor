@@ -457,7 +457,7 @@ namespace ScriptEditor
 
         private void showAutocompleteWordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Settings.autocomplete) {
+            if (currentTab != null && Settings.autocomplete) {
                 Caret caret = currentActiveTextAreaCtrl.Caret;
                 if (!ColorTheme.CheckColorPosition(currentDocument, caret.Position))
                     autoComplete.GenerateList(String.Empty, currentTab, caret.Offset, null);

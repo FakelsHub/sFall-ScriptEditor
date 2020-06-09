@@ -97,6 +97,7 @@ namespace ScriptEditor
         private static string ExternalEditorExePath;
         public static bool searchIgnoreCase = false;
         public static bool searchWholeWord = false;
+        public static string solutionProjectFolder;
 
         // for Flowchart
         public static bool autoUpdate = false;
@@ -199,6 +200,7 @@ namespace ScriptEditor
         private static void LoadInternal(BinaryReader br, BinaryReader brRecent)
         {
             if (br != null) {
+                string temp;
                 try {
                     firstRun = br.ReadBoolean();
                     allowDefine = br.ReadBoolean();
@@ -209,27 +211,30 @@ namespace ScriptEditor
                     showWarnings = br.ReadBoolean();
                     showDebug = br.ReadBoolean();
                     searchIncludePath = br.ReadBoolean();
-                    outputDir = br.ReadString();
-                    if (outputDir.Length == 0)
-                        outputDir = null;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) outputDir = temp;
+
                     warnOnFailedCompile = br.ReadBoolean();
                     multiThreaded = br.ReadBoolean();
-                    lastMassCompile = br.ReadString();
-                    if (lastMassCompile.Length == 0)
-                        lastMassCompile = null;
-                    lastSearchPath = br.ReadString();
-                    if (lastSearchPath.Length == 0)
-                        lastSearchPath = null;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) lastMassCompile = temp;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) lastSearchPath = temp;
+
                     LoadWindowPos(br, 0);
                     editorSplitterPosition = br.ReadInt32();
                     autoOpenMsgs = br.ReadBoolean();
                     editorSplitterPosition2 = br.ReadInt32();
-                    pathHeadersFiles = br.ReadString();
-                    if (pathHeadersFiles.Length == 0)
-                        pathHeadersFiles = null;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) pathHeadersFiles = temp;
+
                     language = br.ReadString();
-                    if (language.Length == 0)
-                        language = "english";
+                    if (language.Length == 0) language = "english";
+
                     tabsToSpaces = br.ReadBoolean();
                     tabSize = br.ReadInt32();
                     enableParser = br.ReadBoolean();
@@ -238,21 +243,24 @@ namespace ScriptEditor
                     showLog = br.ReadBoolean();
                     parserWarn = br.ReadBoolean();
                     useWatcom = br.ReadBoolean();
-                    preprocDef = br.ReadString();
-                    if (preprocDef.Length == 0)
-                        preprocDef = null;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) preprocDef = temp;
+
                     ignoreCompPath = br.ReadBoolean();
+
                     byte MsgItems = br.ReadByte();
-                    for (byte i = 0; i < MsgItems; i++)
-                        msgListPath.Add(br.ReadString());
+                    for (byte i = 0; i < MsgItems; i++) msgListPath.Add(br.ReadString());
+
                     openMsgEditor = br.ReadBoolean();
                     userCmdCompile = br.ReadBoolean();
                     msgHighlightComment = br.ReadBoolean();
                     msgHighlightColor = br.ReadByte();
                     msgFontSize = br.ReadByte();
-                    pathScriptsHFile = br.ReadString();
-                    if (pathScriptsHFile.Length == 0)
-                        pathScriptsHFile = null;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) pathScriptsHFile = temp;
+
                     associateID = br.ReadBoolean();
                     //
                     autoUpdate = br.ReadBoolean();
@@ -274,12 +282,16 @@ namespace ScriptEditor
                     saveScriptUTF8 = br.ReadBoolean();
                     decompileF1 = br.ReadBoolean();
                     winAPITextRender = br.ReadBoolean();
-                    ExternalEditorExePath = br.ReadString();
-                    if (ExternalEditorExePath.Length == 0)
-                        ExternalEditorExePath = null;
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) ExternalEditorExePath = temp;
+
                     oldDecompile = br.ReadBoolean();
                     searchIgnoreCase = br.ReadBoolean();
                     searchWholeWord = br.ReadBoolean();
+
+                    temp = br.ReadString();
+                    if (temp.Length > 0) solutionProjectFolder = temp;
                 } catch {
                     MessageBox.Show("An error occurred while reading configuration file.\n"
                                     + "File setting.dat may be in wrong format.", "Setting read error");
@@ -444,6 +456,7 @@ namespace ScriptEditor
             bw.Write(oldDecompile);
             bw.Write(searchIgnoreCase);
             bw.Write(searchWholeWord);
+            bw.Write(solutionProjectFolder ?? "");
             bw.Close();
 
             // Recent files

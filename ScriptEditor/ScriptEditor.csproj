@@ -212,6 +212,12 @@
     <Compile Include="TextEditorUI\Function\FunctionsRules.Designer.cs">
       <DependentUpon>FunctionsRules.cs</DependentUpon>
     </Compile>
+    <Compile Include="PreviewRename.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PreviewRename.Designer.cs">
+      <DependentUpon>PreviewRename.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextEditorUI\ToolTips\TipPainter.cs" />
     <Compile Include="TextEditorUI\HandlerProcedure.cs" />
     <Compile Include="CodeTranslation\CodeFolder.cs" />
@@ -239,7 +245,9 @@
     <Compile Include="TextEditorUtilities\UndatFile.cs" />
     <Compile Include="TextEditorUtilities\Utilities.cs" />
     <Compile Include="TextEditorUI\WorkerArgs.cs" />
-    <Compile Include="TextEditorUI\CompleteList\AutoComplete.cs" />
+    <Compile Include="TextEditorUI\CompleteList\AutoComplete.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutBox.resx">
@@ -291,6 +299,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TextEditorUI\Function\FunctionsRules.resx">
       <DependentUpon>FunctionsRules.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PreviewRename.resx">
+      <DependentUpon>PreviewRename.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

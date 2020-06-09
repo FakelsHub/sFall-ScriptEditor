@@ -31,7 +31,7 @@ namespace ScriptEditor
         #region Parser Control
         private void textChanged(object sender, EventArgs e)
         {
-            if (savingRunning) return;
+            if (savingRunning || currentTab.DisableParseAndStatusChange) return;
             if (!currentTab.changed) {
                 currentTab.changed = true;
                 SetTabTextChange(currentTab.index);

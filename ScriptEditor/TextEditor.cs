@@ -93,6 +93,9 @@ namespace ScriptEditor
         public TextEditor(string[] args)
         {
             InitializeComponent();
+
+            tabControl3.TabPages.RemoveAt(2); // скрываем от пользователя еще нереализованный функционал
+
             EnableDoubleBuffering();
             InitControlEvent();
 
@@ -599,14 +602,10 @@ namespace ScriptEditor
                 }
                 Utilities.ConvertToUnixPlatform(ref saveText);
 
-                File.WriteAllText(tab.filepath, saveText, msg ? Settings.EncCodePage
-                                                              : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
-                                                                                          : Encoding.Default);
-
-                if (!close) tab.FileTime = File.GetLastWriteTime(tab.filepath);
+                tab.SaveInternal(saveText, msg, close);
 
                 if (tab.changed && Settings.pathHeadersFiles != null && Path.GetExtension(tab.filename).ToLower() == ".h" &&
-                    Settings.pathHeadersFiles.ToLower() == Path.GetDirectoryName(tab.filepath).ToLower()) {
+                    String.Equals(Settings.pathHeadersFiles, Path.GetDirectoryName(tab.filepath), StringComparison.OrdinalIgnoreCase)) {
                     GetMacros.GetGlobalMacros(Settings.pathHeadersFiles);
                 }
 
@@ -1399,8 +1398,8 @@ namespace ScriptEditor
                         findDeclerationToolStripMenuItem.Enabled = true;
                         findDefinitionToolStripMenuItem.Enabled = false;
                         renameToolStripMenuItem.Text += (nt == NameType.LVar)
-                                                        ? (((Variable)item).IsArgument ? ": Argument Variable" : ": Local Variable")
-                                                        : ": Script Variable";
+                                                        ? (((Variable)item).IsArgument ? ": Argument variable" : ": Local variable")
+                                                        : ": Script variable";
                         if (item.IsExported)
                             renameToolStripMenuItem.ToolTipText = "Note: Renaming exported variables will result in an error in the scripts using this variable.";
                         break;
@@ -1417,11 +1416,11 @@ namespace ScriptEditor
                         findDeclerationToolStripMenuItem.Enabled = true;
                         findDefinitionToolStripMenuItem.Enabled = false;
                         Macro mcr = (Macro)item;
-                        if (!ProgramInfo.macrosGlobal.ContainsKey(mcr.name) && mcr.fdeclared == currentTab.filepath)
-                            renameToolStripMenuItem.Text += ": Local Macros";
+                        if (!ProgramInfo.macrosGlobal.ContainsKey(mcr.token) && mcr.fdeclared == currentTab.filepath)
+                            renameToolStripMenuItem.Text += ": Local macro";
                         else {
-                            renameToolStripMenuItem.Text += ": Global Macros";
-                            renameToolStripMenuItem.Enabled = false; // TODO: for next version
+                            renameToolStripMenuItem.Text += ": Global macro";
+                            //renameToolStripMenuItem.Enabled = false; // TODO: for next version
                             renameToolStripMenuItem.ToolTipText = "The feature is disabled, will be available in future versions.";
                         }
                         break;
@@ -1466,13 +1465,17 @@ namespace ScriptEditor
 
         #region Control set states
         private void InitControlEvent()
-        {   // Parser
+        {
+            if (Settings.solutionProjectFolder != null) SetProjectFolderText();
+
+            // Parser
             parserLabel = new ToolStripLabel((Settings.enableParser) ? "Parser: No file" : parseoff);
             parserLabel.Alignment = ToolStripItemAlignment.Right;
+            parserLabel.Overflow = ToolStripItemOverflow.Never;
             parserLabel.Click += delegate(object sender, EventArgs e) { ParseScript(0); };
             parserLabel.ToolTipText = "Click - Update parser data.";
             parserLabel.TextChanged += delegate(object sender, EventArgs e) { parserLabel.ForeColor = Color.Black; };
-            ToolStrip.Items.Add(parserLabel);
+            ToolStripMain.Items.Add(parserLabel);
 
             // Parser timer
             extParserTimer = new Timer();
@@ -1766,6 +1769,25 @@ namespace ScriptEditor
             tbOutput.BeginInvoke((MethodInvoker)(() =>
                 tbOutput.AppendText(e.Data + Environment.NewLine))
             );
+        }
+
+        private void tsmSetProjectFolder_Click(object sender, EventArgs e)
+        {
+            if (fbdProjectFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                Settings.solutionProjectFolder = fbdProjectFolder.SelectedPath;
+                SetProjectFolderText();
+            }
+        }
+
+        private void SetProjectFolderText()
+        {
+            tslProject.Text = "Project: " + Settings.solutionProjectFolder;
+            tslProject.Enabled = true;
+        }
+
+        private void tslProject_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", Settings.solutionProjectFolder);
         }
     }
 }

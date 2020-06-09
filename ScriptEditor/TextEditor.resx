@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="cmsFunctions.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>737, 55</value>
+    <value>1183, 17</value>
   </metadata>
   <metadata name="TabClose_button.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -134,7 +134,7 @@
 </value>
   </data>
   <metadata name="toolTips.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>646, 17</value>
+    <value>828, 17</value>
   </metadata>
   <metadata name="Split_button.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -156,7 +156,7 @@
 </value>
   </data>
   <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>501, 55</value>
+    <value>273, 54</value>
   </metadata>
   <data name="imageList1.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
@@ -219,7 +219,7 @@
 </value>
   </data>
   <metadata name="SearchToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>412, 17</value>
+    <value>594, 17</value>
   </metadata>
   <data name="CaseButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -353,7 +353,7 @@
 </value>
   </data>
   <metadata name="cmsError.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>148, 54</value>
+    <value>1433, 17</value>
   </metadata>
   <data name="refreshLogToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -384,9 +384,9 @@
     <value>True</value>
   </metadata>
   <metadata name="ProcMnContext.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>244, 54</value>
+    <value>17, 54</value>
   </metadata>
-  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="toolStripProcedures.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>313, 17</value>
   </metadata>
   <data name="GoBeginStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -438,10 +438,31 @@
         wAAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>542, 17</value>
+  <metadata name="toolStripSolution.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>461, 17</value>
   </metadata>
-  <metadata name="ToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <data name="tsbSetProjectFolder.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALASURBVDhPhZJ9TMxxHMfvD3/4B5vMmGGG9YetsWUNM2vR
+        PM+MijYPeUjaQpPWSa4Hqe565EoPXA+6o26KswjFWsl6QBxHT1dREpKe7rqrXu5+F5UZn+39x3f7vl7f
+        93ffr+hvI83rwpoLuZ0EK9rxT27DO64ZzwsN7Dinw/W0lrV+dTj5vGAMmTxWOLsMrj4eRV48TKzGTLh6
+        CHGuAf9rA/im9nNE3vdvwaQGKW0c/dUgWMeGgP80UBXVoKllUqzCb33DdHSb0X82ofs4xMpNh/4vKKwa
+        QV1puULOJzq/m2ntMvG+fYi6FqNNoL4e724JE1NQoKTACj41oSozklXaz5n0D3z4aqbhkwltm5GapnEB
+        9a8yMfTkM9StxPxFQV5WLGpNCdkl/aTf70Gu+caxBD3NnSbeWqo/1xt4Vj9oE+RnxzHYrRIEVnik8wpm
+        7SlU16LJSY1EcTmMtIQQUmRiLkUF8lJvpKrBQLluTHAjU8pgV6Zw+qgFpl4MWu+/xiqobjTw9J2BJ28G
+        bILcjCj6OtKE062CYrVUyL28GDTKKApyIlGmhZIlP8/VxGBS48TIpUGCTBDkpEXS25okVG8ul1CoimOk
+        ORRaIsajt6ybzsK70/DWl7qbbuzd42YTKOTh/GiMhjYZt2/EUvlAZts4sX7tLoYrtmB46ExDtgOH9637
+        cfLwtmXCm2ckSviuC6Wl4hyFShmjTRJ4fcwG1nlZYA8Mpa70Fq3hq3oFoT5L8XCxSxBg68hjxLwuDeHW
+        9RhoDIEX+6F6N6byrQw8cqZH40R75hK0Mjsk3otZ6zgfR/tp9mO4SJR0MZD8rGi0d45TGy/6nUrZFEqj
+        pnI3bAaKwHkk+y/Ec/OiUaflCzePobaJjwggXnKUi0EHOOvnzgmv7Rx0W8/OjatwWe3ASoelLJg7i9kz
+        pzPHbvoff18k+glWx32p7WdRngAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>724, 17</value>
+  </metadata>
+  <metadata name="ToolStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>217, 17</value>
   </metadata>
   <data name="FunctionButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -989,6 +1010,37 @@ Note: This will only work for script files and include files (.ssl .h).</value>
         YII=
 </value>
   </data>
+  <data name="tsmSetProjectFolder.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6
+        JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAACXBIWXMAAAsMAAALDAE/QCLIAAACvElE
+        QVQ4T4WSaUiTcQCH96EPfTJIiSIqoqIPgRQkUuEHyS6LiCg7hA4jj4wiqaRpNvPWedY0rZxHbqYjrUVl
+        pUV4hGa2XM685pFH5pnH5qY+7cgsivzwfHjhfZ7/78/7CoC/iMnrxUxYTg+B0k78ktvximvBPayRfVc1
+        bL+oxumcCkefmr/lmUDWG7j7ahpJ0SSxSiMhigmEOTr80sfwTR3ltGTk/4E/FqS04zmzIFDDtktzLJA/
+        eYeymj8wB/tHJukaMKL9akDzZQKHXafmDhRWTqGoMF0hu5ueQSNtvQY+d06gatVbA4p78YdM8DsFBTIK
+        zGK5AfkbPZklo1y+3UFHn5HGbgPqdj3vmmcDNHzMQDeUz8SADOM3KXmZsSiUxWQVj3L72RASZT/eCVpa
+        egzUmaa/1+p42zBuDeRnxTE+ILcEzPJUzy2M6gvI06PITg1HevM6aQlBpIiF3Ij054NWT2WjjlLNz0Bu
+        RgzjvRmW06dNMg1CUHv9E3OgqklHeb2O15/GrIGcO5GMdKVZTjcHihQxFp7mRaOURVKQHY4sLZhMyTXu
+        JgaSGidEEnPFErMEstPC+d6WZJneUiqiUB7HVEswtIbOojU9NwdA/UWo80V1342jR9ysAakkhOGmKGgX
+        8zA3lornYuuLv8+vPsBk2W50L5xpzLLn7LEdw+c99q4zf3LBnUQRg5pgWsuuUigTM90sglpvq6jyMMmH
+        0ZVs5/uTLfQpNhDss4YjLnYJM/+MQBItpLYkiAf3oqEpCGqOQ9VBDKV7GHvpzJDSkc6M1ajFtoi8VuG0
+        cRkb19qs/RVIivAnPzMK9aMzVMcLflEhnkdJ5HweX1+A1H8pyX4rcHddOe24frnrjGwJxIdeIl7kScSV
+        EwScO4Tpbpx0c2H/zk1s3WyPg/0ali+xY9FCGxbb2picWRkQ/ADx4+xLA2xtzgAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="Settings_ToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6
+        JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAACXBIWXMAAAsMAAALDAE/QCLIAAABjUlE
+        QVQ4T6WQW0sCURSF+y1h0R8oinrrqainoOegSPwXvQXVQxI2TahEGqVWhl1Mw0sXMbOxxAlimgyDirKL
+        drOLtjpnYIZqtKIWLNbe55z9cdhlAP5lpXCt7eOrZ/08bJ4dWOcj1P0fB2UrBR0oJaMjiJrmrqIQpXAG
+        9kgUl8HqgTfEy5ABcqQGOFbiJIpraNwtDcsmUgMml7ZJAGbrNDQVVZieW5R6qnyhgIUAB4c7XBpgcW2S
+        AMo1leA4Dm3tHVJvME1Bz1rAjNlhWwyhuqmTHqsB5tl1EoDduYD6hka4vUGpFw6PscuLiMYPYLT7SgNG
+        bX4Sn5UvvOH24Rmn6XsIqWtlF0RqwPCElwQQi8Wg0+mQTCaRe3pF+uYRRycZJA7SMJEf1LZ002dqAKVT
+        abVaKRmGQebuCYMjFvTqTejpYzCzHEFd6w8AURTBsizOL9I4v3oAxx9hIyrAFxZgca6W3oEMoHp+yeM6
+        m0PqLIu9w0tEEqfwbaWkHfwIoPmdvwXQy99YnqFWir8ZZe/pUxM8xH8A7gAAAABJRU5ErkJggg==
+</value>
+  </data>
   <data name="toolStripDropDownButton2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -1033,7 +1085,7 @@ Note: This will only work for script files and include files (.ssl .h).</value>
 </value>
   </data>
   <metadata name="cmsTabControls.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 54</value>
+    <value>1302, 17</value>
   </metadata>
   <metadata name="ofdScripts.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
@@ -1042,13 +1094,13 @@ Note: This will only work for script files and include files (.ssl .h).</value>
     <value>118, 17</value>
   </metadata>
   <metadata name="fbdMassCompile.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>736, 17</value>
+    <value>918, 17</value>
   </metadata>
   <metadata name="bwSyntaxParser.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>606, 55</value>
+    <value>378, 54</value>
   </metadata>
   <metadata name="editorMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>371, 55</value>
+    <value>143, 54</value>
   </metadata>
   <data name="highlightToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1191,6 +1243,9 @@ Note: This will only work for script files and include files (.ssl .h).</value>
         wS1wsg6n76AVOHcn/4V26AftcHAI/AKjIbtwue9lZAAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="fbdProjectFolder.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>1050, 17</value>
+  </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAMAMDAAAAEAIACoJQAANgAAACAgAAABACAAqBAAAN4lAAAQEAAAAQAgAGgEAACGNgAAKAAAADAA

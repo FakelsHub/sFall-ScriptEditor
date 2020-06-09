@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -759,61 +758,90 @@ namespace ScriptEditor.TextEditorUtilities
     #region Script code text functions
         public static int ReplaceCommonText(Regex s_regex, ref string document, string newText, int differ)
         {
-            int replace_count = 0;
             MatchCollection matches = s_regex.Matches(document);
 
-            foreach (Match m in matches) {
-                int offset = (differ * replace_count) + (m.Index + 1);
-                document = document.Remove(offset, (m.Length - 2));
+            int replace_count = 0;
+            foreach (Match m in matches)
+            {
+                int offset = (differ * replace_count) + m.Index;
+                document = document.Remove(offset, m.Length);
                 document = document.Insert(offset, newText);
                 replace_count++;
             }
-            return replace_count;
+            return matches.Count;
         }
 
-        public static void ReplaceDocumentText(Regex s_regex, IDocument document, string newText, int differ)
+        // используется для замены имени процедур
+        public static int ReplaceSpecialText(Regex s_regex, ref string document, string newText, int differ)
         {
+            MatchCollection matches = s_regex.Matches(document);
+
             int replace_count = 0;
+            foreach (Match m in matches)
+            {
+                var shiftOffset = (m.Groups.Count > 1) ? m.Groups[1].Length : 0;
+                int offset = (differ * replace_count) + (m.Index + shiftOffset);
+
+                document = document.Remove(offset, (m.Length - shiftOffset));
+                document = document.Insert(offset, newText);
+                replace_count++;
+            }
+            return matches.Count;
+        }
+
+        public static void ReplaceIDocumentText(Regex s_regex, IDocument document, string newText, int differ)
+        {
             MatchCollection matches = s_regex.Matches(document.TextContent);
             document.UndoStack.StartUndoGroup();
 
-            foreach (Match m in matches) {
-                int offset = (differ * replace_count) + (m.Index + 1);
-                document.Replace(offset, (m.Length - 2), newText);
-                replace_count++;
+            int replace_count = 0;
+            foreach (Match m in matches)
+            {
+                ReplaceMatch(document, newText, differ * replace_count++, m);
             }
             document.UndoStack.EndUndoGroup();
         }
 
-        public static void ReplaceDocumentRefText(Regex s_regex, IDocument document, IParserInfo pi, string newText, int differ)
+        public static void ReplaceByProcedureReferenceIDocument(Regex s_regex, IDocument document, IParserInfo pi, string newText, int differ)
         {
-            int replace_count = 0;
             MatchCollection matches = s_regex.Matches(document.TextContent);
 
             List<Match> match = new List<Match>();
-            bool decl =false, define = false;
+            bool decl = false, define = false;
 
-            foreach (var refer in pi.References()) {
-                foreach (Match m in matches) {
+            foreach (var refer in pi.References())
+            {
+                foreach (Match m in matches)
+                {
                     int line = document.OffsetToPosition(m.Index).Line + 1;
                     if (refer.line == line) {
                         match.Add(m);
-                    } else if (!decl && ((Procedure)pi).d.declared == line) {
+                    }
+                    else if (!decl && ((Procedure)pi).d.declared == line) {
                         match.Add(m);
                         decl = true;
-                    } else if (!define && ((Procedure)pi).d.defined == line) {
+                    }
+                    else if (!define && ((Procedure)pi).d.defined == line) { // может быть -1 если declared не было объявлено
                         match.Add(m);
                         define = true;
                     }
                 }
             }
             document.UndoStack.StartUndoGroup();
-            foreach (Match m in match) {
-                 int offset = (differ * replace_count) + (m.Index + 1);
-                 document.Replace(offset, (m.Length - 2), newText);
-                 replace_count++;
+
+            int replace_count = 0;
+            foreach (Match m in match)
+            {
+                ReplaceMatch(document, newText, differ * replace_count++, m);
             }
             document.UndoStack.EndUndoGroup();
+        }
+
+        private static void ReplaceMatch(IDocument document, string newText, int replacedCount, Match m)
+        {
+            var shiftOffset = (m.Groups.Count > 1) ? m.Groups[1].Length : 0;
+            int offset = replacedCount + (m.Index + shiftOffset);
+            document.Replace(offset, (m.Length - shiftOffset), newText);
         }
 
         internal static string GetProcedureCode(IDocument document, Procedure curProc)

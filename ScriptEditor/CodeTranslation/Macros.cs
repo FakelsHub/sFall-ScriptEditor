@@ -106,22 +106,24 @@ namespace ScriptEditor.CodeTranslation
             string token, macro, def;
             line = line.TrimStart();
             int firstspace = line.IndexOf(' ');
-            if (firstspace == -1)
-                return;
+
+            if (firstspace == -1) return;
+
             int firstbracket = line.IndexOf('(');
+
             if (firstbracket != -1 && firstbracket < firstspace) {
                 int closebracket = line.IndexOf(')');
-                if (line.Length == closebracket + 1)
-                    return; //second check, because spaces are allowed between macro arguments
+                if (line.Length == closebracket + 1) return; //second check, because spaces are allowed between macro arguments
+
                 macro = line.Remove(closebracket + 1);
-                token = line.Remove(firstbracket); //.ToLowerInvariant(); //макросы записываются в том регистре в котором они объявлены
+                token = line.Remove(firstbracket);
                 def = MacroFormat(line.Substring(closebracket + 1), macro.Length);
             } else {
                 macro = line.Remove(firstspace);
-                token = macro; //.ToLowerInvariant();
+                token = macro;
                 def = MacroFormat(line.Substring(firstspace), macro.Length);
             }
-            macros[token] = new Macro(macro, def, file, lineno + 1);
+            macros[token] = new Macro(token, macro, def, file, lineno + 1); // макросы записываются в том регистре в котором они объявлены
         }
 
         private string MacroFormat(string defmacro, int macrolen)

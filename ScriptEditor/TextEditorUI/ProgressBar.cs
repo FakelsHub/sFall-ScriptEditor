@@ -17,7 +17,7 @@ namespace ScriptEditor.TextEditorUI
 
             progressForm = new Form()
             {
-                MinimumSize = new Size(200, 20), Width = 312, Height = 20, 
+                MinimumSize = new Size(200, 20), Width = 312, Height = 20,
                 ControlBox = false, ShowIcon = false, ShowInTaskbar = false,
                 StartPosition = (owner.Location.IsEmpty) ? FormStartPosition.CenterScreen : FormStartPosition.Manual,
                 FormBorderStyle = FormBorderStyle.FixedSingle
@@ -38,6 +38,12 @@ namespace ScriptEditor.TextEditorUI
                 bar.Value = value;
                 Application.DoEvents();
             }
+        }
+
+        public void IncProgress()
+        {
+            if (bar.Value < bar.Maximum) bar.Value++;
+            Application.DoEvents();
         }
 
         public void Dispose()

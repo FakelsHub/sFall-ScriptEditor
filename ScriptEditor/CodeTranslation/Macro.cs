@@ -7,6 +7,7 @@ namespace ScriptEditor.CodeTranslation
 {
     public class Macro : IParserInfo
     {
+        public readonly string token;
         public readonly string name;
         public readonly string def;
         public readonly int declared;
@@ -21,12 +22,13 @@ namespace ScriptEditor.CodeTranslation
             line = declared;
         }
 
-        public Macro(string name, string def, string file, int line)
+        public Macro(string token, string name, string def, string file, int line)
         {
             this.name = name;
             this.def = def;
             this.fdeclared = file;
             this.declared = line;
+            this.token = token;
         }
 
         public override string ToString()
