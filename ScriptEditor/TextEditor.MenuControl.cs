@@ -420,7 +420,7 @@ namespace ScriptEditor
             bool result = Compile(currentTab, out msg, showIcon: false);
             tbOutput.Text = currentTab.buildLog = msg;
             if (result) {
-                Open(new Compiler(true).GetOutputPath(currentTab.filepath), OpenType.File, false);
+                Open(new Compiler(true).GetOutputPath(currentTab.filepath), OpenType.File, false, clearBuildLog: false);
             }
             roundTrip = false;
         }

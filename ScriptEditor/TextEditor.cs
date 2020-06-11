@@ -342,8 +342,8 @@ namespace ScriptEditor
 
         public enum OpenType { None, File, Text }
 
-        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false,
-                            bool seltab = true, bool commandline = false, bool fcdOpen = false, bool alreadyOpen = true, bool outputFolder = false)
+        public TabInfo Open(string file, OpenType type, bool addToMRU = true, bool alwaysNew = false, bool recent = false, bool seltab = true,
+                            bool commandline = false, bool fcdOpen = false, bool alreadyOpen = true, bool outputFolder = false, bool clearBuildLog = true)
         {
             bool decompileSuccess = false;
             string infile = null;
@@ -379,7 +379,7 @@ namespace ScriptEditor
                         ShowMe();
 
                     infile = file;
-                    tbOutput.Clear();
+                    if (clearBuildLog) tbOutput.Clear();
                     tabControl2.SelectedIndex = 1;
                     MaximizeLog();
 
@@ -784,7 +784,7 @@ namespace ScriptEditor
                     new CompiledStatus(true, this).ShowCompileStatus();
                 parserLabel.Text = "Compiled: " + tab.filename + " at " + DateTime.Now.ToString("HH:mm:ss");
                 parserLabel.ForeColor = Color.DarkGreen;
-                msg += "\r\n Compilation Successfully!";
+                msg += "\r\n Compilation Successfully!\r\n";
             }
             return success;
         }
