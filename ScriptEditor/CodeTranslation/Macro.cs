@@ -8,8 +8,8 @@ namespace ScriptEditor.CodeTranslation
     public class Macro : IParserInfo
     {
         public readonly string token;
-        public readonly string name;
-        public readonly string def;
+        public readonly string defname;
+        public readonly string code;
         public readonly int declared;
         public readonly string fdeclared;
 
@@ -22,10 +22,10 @@ namespace ScriptEditor.CodeTranslation
             line = declared;
         }
 
-        public Macro(string token, string name, string def, string file, int line)
+        public Macro(string token, string defname, string code, string file, int line)
         {
-            this.name = name;
-            this.def = def;
+            this.defname = defname;
+            this.code = code;
             this.fdeclared = file;
             this.declared = line;
             this.token = token;
@@ -38,12 +38,12 @@ namespace ScriptEditor.CodeTranslation
                 declare = string.Empty;
             else
                 declare = "\n\nDeclare file: " + declare;
-            return "Define: " + name + "\n" + def + declare;
+            return "Define: " + defname + "\n" + code + declare;
         }
 
         public string ToString(bool a)
         {
-            return "Define: " + name;
+            return "Define: " + defname;
         }
 
         public bool IsImported { get { return false; } }

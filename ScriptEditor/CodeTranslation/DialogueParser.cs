@@ -330,7 +330,7 @@ namespace ScriptEditor.CodeTranslation
             }
 
             if (token != null && (isMsgStr || pi.macros.ContainsKey(token))) {
-                string def = isMsgStr ? scode : pi.macros[token].def; //message_str(NAME,x)
+                string def = isMsgStr ? scode : pi.macros[token].code; //message_str(NAME,x)
                 int x = def.IndexOf("message_str", StringComparison.OrdinalIgnoreCase);
                 int z = def.IndexOf('(');
                 int y = def.IndexOf(',', z);

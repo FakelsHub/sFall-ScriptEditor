@@ -376,7 +376,7 @@ namespace ScriptEditor.CodeTranslation
             }
             foreach (var entry in macrosGlobal) {
                 if (entry.Key.IndexOf(part, StringComparison.OrdinalIgnoreCase) == 0) {
-                    if (_macros.ContainsKey(entry.Value.name))
+                    if (_macros.ContainsKey(entry.Value.defname))
                         continue;
                     AddMacrosList(_macros, entry);
                 }
@@ -399,8 +399,8 @@ namespace ScriptEditor.CodeTranslation
 
         private static void AddMacrosList(SortedList<string, string> _macros, KeyValuePair<string, Macro> entry)
         {
-            string def = (entry.Value.def.Length > 300) ? "No preview macros." : entry.Value.def;
-            _macros.Add(entry.Value.name, "|Define:\n" + def + "|M");
+            string def = (entry.Value.code.Length > 300) ? "No preview macros." : entry.Value.code;
+            _macros.Add(entry.Value.defname, "|Define:\n" + def + "|M");
         }
 
         public static List<string> LookupOpcode(string part)
@@ -451,7 +451,7 @@ namespace ScriptEditor.CodeTranslation
         }
 
         public void MacrosGetValue(ref string token) {
-            token = macros[token].def.Trim('(', ')');
+            token = macros[token].code.Trim('(', ')');
             int i = token.IndexOf(')');
             if (i > 0)
                 token = token.Remove(i);

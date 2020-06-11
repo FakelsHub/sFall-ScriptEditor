@@ -184,7 +184,7 @@ namespace ScriptEditor.TextEditorUtilities
             Dictionary<string, List<PreviewMatch>> matchFiles = PreviewRenameGlobalMacros(s_regex, tabs, files);
 
             // выбор совпадений
-            var previewForm = new PreviewRename(macros.name, macros.name.Replace(macros.token, newName));
+            var previewForm = new PreviewRename(macros.defname, macros.defname.Replace(macros.token, newName));
             previewForm.BuildTreeMatches(matchTabs, matchFiles);
 
             matchTabs.Clear();
@@ -258,7 +258,6 @@ namespace ScriptEditor.TextEditorUtilities
             if (pf != null) pf.Dispose();
 
             //MessageBox.Show(String.Format("Произведено переименование {0} макросов, в {1} файлах.", total, previewFiles.Count));
-
              cTab.DisableParseAndStatusChange = false;
         }
 
@@ -285,7 +284,7 @@ namespace ScriptEditor.TextEditorUtilities
 
                 if (textContent.IndexOf("#define", offset - 7, 7) != -1) break; // да, это строка определения макроса
             }
-            offset += (macros.name.Length + diff) + 1;
+            offset += (macros.defname.Length + diff) + 1;
 
             if (diff > 0) {
                 int removeCount = 0;
@@ -303,7 +302,7 @@ namespace ScriptEditor.TextEditorUtilities
         private static void DefineMacroAdjustSpaces(Macro macros, IDocument document, int diff)
         {
             int offset = document.PositionToOffset(new TextLocation(0, macros.declared - 1));
-            offset += (macros.name.Length + 8) + diff;
+            offset += (macros.defname.Length + 8) + diff;
 
             if (diff > 0) {
                 int removeCount = 0;
