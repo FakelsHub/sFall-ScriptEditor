@@ -802,39 +802,50 @@ namespace ScriptEditor.TextEditorUtilities
             document.UndoStack.EndUndoGroup();
         }
 
-        public static void ReplaceByProcedureReferenceIDocument(Regex s_regex, IDocument document, IParserInfo pi, string newText, int differ)
+        public static void ReplaceByReferences(Regex s_regex, IDocument document, IParserInfo pi, string newText, int differ)
         {
             MatchCollection matches = s_regex.Matches(document.TextContent);
 
-            List<Match> match = new List<Match>();
-            bool decl = false, define = false;
+            bool isVariable = (pi is Variable);
 
-            foreach (var refer in pi.References())
+            bool decl = false, define = isVariable;
+            int declared = (isVariable) ? (((Variable)pi).IsArgument) ? ((Variable)pi).adeclared : ((Variable)pi).d.declared
+                                        : ((Procedure)pi).d.declared;
+
+            List<Reference> references = pi.References().ToList();
+            List<Match> renameReferences = new List<Match>();
+
+            foreach (Match m in matches)
             {
-                foreach (Match m in matches)
-                {
-                    int line = document.OffsetToPosition(m.Index).Line + 1;
-                    if (refer.line == line) {
-                        match.Add(m);
-                    }
-                    else if (!decl && ((Procedure)pi).d.declared == line) {
-                        match.Add(m);
-                        decl = true;
-                    }
-                    else if (!define && ((Procedure)pi).d.defined == line) { // может быть -1 если declared не было объявлено
-                        match.Add(m);
-                        define = true;
+                int line = document.OffsetToPosition(m.Index).Line + 1;
+
+                if (!decl && declared == line) {
+                    renameReferences.Add(m);
+                    decl = true;
+                } else if (!define && ((Procedure)pi).d.defined == line) { // может быть -1 если declared для процедуры не был объявлен
+                    renameReferences.Add(m);
+                    define = true;
+                } else {
+                    for (int i = 0; i < references.Count; i++)
+                    {
+                        if (references[i].line == line) {
+                            renameReferences.Add(m);
+                            references.RemoveAt(i);
+                            break;
+                        }
                     }
                 }
             }
             document.UndoStack.StartUndoGroup();
 
             int replace_count = 0;
-            foreach (Match m in match)
+            foreach (Match refMatch in renameReferences)
             {
-                ReplaceMatch(document, newText, differ * replace_count++, m);
+                ReplaceMatch(document, newText, differ * replace_count++, refMatch);
             }
             document.UndoStack.EndUndoGroup();
+
+            if (references.Count > 0) MessageBox.Show("Some of the references have not been renamed.", "Warning");
         }
 
         private static void ReplaceMatch(IDocument document, string newText, int replacedCount, Match m)

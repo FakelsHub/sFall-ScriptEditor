@@ -1741,13 +1741,18 @@ namespace ScriptEditor
         #endregion
 
         #region Static Functions
-        internal static TabInfo CheckTabs(List<TabInfo> tabs, string checkFile)
+        internal static TabInfo CheckTabs(List<TabInfo> tabs, string filepath)
         {
-            foreach (TabInfo tab in tabs) {
-                if (string.Compare(tab.filepath, checkFile, true) == 0)
-                    return tab;
+            foreach (TabInfo tab in tabs)
+            {
+                if (String.Equals(tab.filepath, filepath, StringComparison.OrdinalIgnoreCase)) return tab;
             }
             return null;
+        }
+
+        internal static bool CheckTabs(string filepath, List<TabInfo> tabs)
+        {
+            return CheckTabs(tabs, filepath) != null;
         }
         #endregion
 

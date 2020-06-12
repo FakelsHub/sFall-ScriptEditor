@@ -19,7 +19,8 @@ namespace ScriptEditor.TextEditorUtilities
         internal static void Rename(IParserInfo item, IDocument document, TabInfo cTab, List<TabInfo> tabs)
         {
             string newName;
-            switch ((NameType)item.Type()) {
+            switch ((NameType)item.Type())
+            {
                 case NameType.LVar: // local procedure variable
                     Variable lvar = (Variable)item;
                     newName = lvar.name;
@@ -29,9 +30,9 @@ namespace ScriptEditor.TextEditorUtilities
                         MessageBox.Show("The local variable this name already exists.", "Unable to rename");
                         return;
                     }
-                    document.UndoStack.StartUndoGroup();
-                    RenameVariable(lvar, newName, RegexOptions.IgnoreCase, document);
+                    RenameVariable(lvar, newName, RegexOptions.IgnoreCase, document); // rename only via references
                     break;
+
                 case NameType.GVar: // script variable
                     Variable gvar = (Variable)item;
                     newName = gvar.name;
@@ -41,15 +42,13 @@ namespace ScriptEditor.TextEditorUtilities
                         MessageBox.Show("The variable/procedure or declared macro this name already exists.", "Unable to rename");
                         return;
                     }
-                    document.UndoStack.StartUndoGroup();
-                    // rename only via references
-                    RenameVariable(gvar, newName, RegexOptions.IgnoreCase, document);
-                    // for all script text
-                    //RenameMacros(gvar.name, newName, RegexOptions.IgnoreCase, document);
+                    RenameVariable(gvar, newName, RegexOptions.IgnoreCase, document); // rename only via references
                     break;
+
                 case NameType.Proc:
                     RenameProcedure((Procedure)item, document, cTab, tabs);
                     return;
+
                 case NameType.Macro:
                     Macro macros = (Macro)item;
 
@@ -63,7 +62,6 @@ namespace ScriptEditor.TextEditorUtilities
                         MessageBox.Show("The variable/procedure or declared macro this name already exists.", "Unable to rename");
                         return;
                     }
-
                     int diff = newName.Length - macros.token.Length;
 
                     // Для глобальных требуется переименовать все макросы во всех открытых вкладках и во всех файлах проекта/мода
@@ -73,19 +71,18 @@ namespace ScriptEditor.TextEditorUtilities
                         GetMacros.GetGlobalMacros(Settings.pathHeadersFiles);
                         return;
                     }
-
-                    document.UndoStack.StartUndoGroup();
                     RenameMacros(macros.token, newName, RegexOptions.None, document);
                     if (diff != 0) DefineMacroAdjustSpaces(macros, document, diff);
                     break;
             }
-            document.UndoStack.EndUndoGroup();
         }
 
         #region Переименование макросов
 
         private static void RenameMacros(string find, string newName, RegexOptions option, IDocument document)
         {
+            document.UndoStack.StartUndoGroup();
+
             int offset = 0;
             while (offset < document.TextLength)
             {
@@ -95,6 +92,7 @@ namespace ScriptEditor.TextEditorUtilities
                 document.Replace(offset, find.Length, newName);
                 offset += newName.Length;
             }
+            document.UndoStack.EndUndoGroup();
         }
 
         public struct PreviewMatch
@@ -161,7 +159,7 @@ namespace ScriptEditor.TextEditorUtilities
             foreach (var file in files)
             {
                 if (pf != null) pf.IncProgress();
-                if (CheckTabs(file, tabs)) continue; // next file
+                if (TextEditor.CheckTabs(file, tabs)) continue; // next file
 
                 string textContent = System.IO.File.ReadAllText(file);
                 MatchesCollect(ref preview, regex, file, textContent);
@@ -261,15 +259,6 @@ namespace ScriptEditor.TextEditorUtilities
              cTab.DisableParseAndStatusChange = false;
         }
 
-        private static bool CheckTabs(string file, List<TabInfo> tabs)
-        {
-            foreach (var tab in tabs)
-            {
-                if (string.Equals(file, tab.filepath, StringComparison.OrdinalIgnoreCase)) return true;
-            }
-            return false;
-        }
-
         // insert/delete spaces in define macro
         private static void DefineMacroAdjustSpaces(Macro macros, string newName, ref string textContent, int diff)
         {
@@ -319,41 +308,10 @@ namespace ScriptEditor.TextEditorUtilities
 
         private static void RenameVariable(Variable var, string newName, RegexOptions option, IDocument document)
         {
-            int z, offset;
-            int nameLen = var.name.Length;
-            foreach (var refs in var.references)
-            {
-                LineSegment ls = document.GetLineSegment(refs.line - 1);
-                offset = 0;
-                while (offset < ls.Length)
-                {
-                    z = Utilities.SearchWholeWord(TextUtilities.GetLineAsString(document, refs.line - 1), var.name, offset, option);
-                    if (z == -1)
-                        break;
-                    document.Replace(ls.Offset + z, nameLen, newName);
-                    offset = z + newName.Length;
-                }
-            }
-
-            int decline = var.adeclared;
-            if (decline > 0) {
-                decline--;
-                z = Utilities.SearchWholeWord(TextUtilities.GetLineAsString(document, decline), var.name, 0, option);
-                document.Replace(document.GetLineSegment(decline).Offset + z, nameLen, newName);
-            }
-
-            decline = var.d.declared - 1;
-            for (int i = decline; i > 0; i--)
-            {
-                z = Utilities.SearchWholeWord(TextUtilities.GetLineAsString(document, i), var.name, 0, option);
-                if (z == -1)
-                    continue;
-                LineSegment ls = document.GetLineSegment(i);
-                document.Replace(ls.Offset + z, nameLen, newName);
-                break;
-            }
+            Utilities.ReplaceByReferences(new Regex(@"\b" + var.name + @"\b", option), document, var, newName, newName.Length - var.name.Length);
         }
 
+        // вызывается из редактора нодов диалога
         internal static string RenameProcedure(string oldName, IDocument document, TabInfo cTab)
         {
             Procedure proc = new Procedure();
@@ -375,7 +333,7 @@ namespace ScriptEditor.TextEditorUtilities
             }
 
             bool extFile = false;
-            if (tabs != null && proc.filename != cTab.filename.ToLower()) {
+            if (tabs != null && proc.filename != cTab.filename.ToLower()) { // не совсем понятно, при каких условиях это верно
                 switch (MessageBox.Show("Also renaming the procedure in a file: " + proc.filename.ToUpper() + " ?", "Procedure rename", MessageBoxButtons.YesNoCancel)) {
                     case DialogResult.Cancel :
                         return null;
@@ -386,23 +344,26 @@ namespace ScriptEditor.TextEditorUtilities
             }
             int differ = newName.Length - proc.name.Length;
 
-            Regex s_regex = new Regex(@"(\bprocedure\s|\bcall\s|=\s*)\s*" + proc.name + @"\b", // осуществить поиск всех процедур совпадающих по имени
-                                      RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-            if (proc.References().Length == 0)
+            Regex s_regex;
+            if (proc.References().Length == 0) {
+                s_regex = new Regex(@"(\bprocedure\s|\bcall\s|[=,(]\s*)\s*" + proc.name + @"\b", // осуществить поиск всех процедур совпадающих по имени
+                                    RegexOptions.Multiline | RegexOptions.IgnoreCase);
                 Utilities.ReplaceIDocumentText(s_regex, document, newName, differ);
-            else
-                Utilities.ReplaceByProcedureReferenceIDocument(s_regex, document, proc, newName, differ); //replace by reference
+            } else {
+                s_regex = new Regex(@"\b" + proc.name + @"\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                Utilities.ReplaceByReferences(s_regex, document, proc, newName, differ); // rename by reference
+            }
 
-            // replace to other file/tabs
+            // rename in other file/tab
             if (extFile) {
-                string text = System.IO.File.ReadAllText(proc.fstart);
+                string text = File.ReadAllText(proc.fstart);
                 Utilities.ReplaceSpecialText(s_regex, ref text, newName, differ);
-                System.IO.File.WriteAllText(proc.fstart, text);
+                File.WriteAllText(proc.fstart, text);
+
                 TabInfo tab = TextEditor.CheckTabs(tabs, proc.fstart);
                 if (tab != null) {
                     Utilities.ReplaceIDocumentText(s_regex, tab.textEditor.Document, newName, differ);
-                    tab.FileTime = System.IO.File.GetLastWriteTime(proc.fstart);
+                    tab.FileTime = File.GetLastWriteTime(proc.fstart);
                 }
             }
             TextEditor.currentHighlightProc = null;
