@@ -853,7 +853,8 @@ namespace ScriptEditor
         #region Tree browser control
         private void CreateTabVarTree() { tabControl3.TabPages.Insert(1, VarTab); }
 
-        private enum TreeStatus { idle, update, local }
+        private enum TreeStatus { idle, update, freeze }
+
         internal static Procedure currentHighlightProc = null;
         private  static TreeNode currentHighlightNode = null;
         private bool updateHighlightPocedure = true;
@@ -902,6 +903,11 @@ namespace ScriptEditor
         // Create names for procedures and variables in treeview
         private void UpdateNames(bool newCreate = false)
         {
+            if (ProcTree.Tag != null && (TreeStatus)ProcTree.Tag == TreeStatus.freeze) {
+                ProcTree.Tag = TreeStatus.idle;
+                return;
+            }
+
             if (currentTab == null || !currentTab.shouldParse || currentTab.parseInfo == null) return;
 
             object selectedNode = null;
@@ -1363,7 +1369,7 @@ namespace ScriptEditor
         private void UpdateEditorToolStripMenu()
         {
             TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
-            //editorMenuStrip.Tag = tl;
+
             // includes
             string line = TextUtilities.GetLineAsString(currentDocument, tl.Line).Trim();
             if (!line.TrimStart().StartsWith(ParserInternal.INCLUDE)) {
@@ -1380,29 +1386,34 @@ namespace ScriptEditor
                 renameToolStripMenuItem.ToolTipText = "It is required to enable the parser in the settings.";
                 return;
             }
+
             if (currentTab.parseInfo != null) {
-                NameType nt = NameType.None;
+                NameType itemType = NameType.None;
                 IParserInfo item = null;
+
                 string word = TextUtilities.GetWordAt(currentDocument, currentDocument.PositionToOffset(tl));
                 item = currentTab.parseInfo.Lookup(word, currentTab.filepath, tl.Line + 1);
                 if (item != null) {
-                    nt = item.Type();
+                    itemType = item.Type();
                     renameToolStripMenuItem.Tag = item;
                     if (!currentTab.needsParse)
                         renameToolStripMenuItem.Enabled = true;
                 }
-                switch (nt) {
+
+                switch (itemType)
+                {
                     case NameType.LVar: // variable procedure
                     case NameType.GVar: // variable script
                         findReferencesToolStripMenuItem.Enabled = true;
                         findDeclerationToolStripMenuItem.Enabled = true;
                         findDefinitionToolStripMenuItem.Enabled = false;
-                        renameToolStripMenuItem.Text += (nt == NameType.LVar)
+                        renameToolStripMenuItem.Text += (itemType == NameType.LVar)
                                                         ? (((Variable)item).IsArgument ? ": Argument variable" : ": Local variable")
                                                         : ": Script variable";
                         if (item.IsExported)
                             renameToolStripMenuItem.ToolTipText = "Note: Renaming exported variables will result in an error in the scripts using this variable.";
                         break;
+
                     case NameType.Proc:
                         findReferencesToolStripMenuItem.Enabled = currentTab.parseInfo.parseData; //true;
                         findDeclerationToolStripMenuItem.Enabled = true;
@@ -1411,19 +1422,18 @@ namespace ScriptEditor
                         if (item.IsExported)
                             renameToolStripMenuItem.ToolTipText = "Note: Renaming exported procedures will result in an error in the scripts using this procedure.";
                         break;
+
                     case NameType.Macro:
                         findReferencesToolStripMenuItem.Enabled = false;
                         findDeclerationToolStripMenuItem.Enabled = true;
                         findDefinitionToolStripMenuItem.Enabled = false;
-                        Macro mcr = (Macro)item;
-                        if (!ProgramInfo.macrosGlobal.ContainsKey(mcr.token) && mcr.fdeclared == currentTab.filepath)
+                        Macro macro = (Macro)item;
+                        if (!ProgramInfo.macrosGlobal.ContainsKey(macro.token) && macro.fdeclared == currentTab.filepath)
                             renameToolStripMenuItem.Text += ": Local macro";
-                        else {
+                        else
                             renameToolStripMenuItem.Text += ": Global macro";
-                            //renameToolStripMenuItem.Enabled = false; // TODO: for next version
-                            renameToolStripMenuItem.ToolTipText = "The feature is disabled, will be available in future versions.";
-                        }
                         break;
+
                     default:
                         if (!currentTab.parseInfo.parseData) {
                             renameToolStripMenuItem.Text += ": Out of data";
@@ -1774,25 +1784,6 @@ namespace ScriptEditor
             tbOutput.BeginInvoke((MethodInvoker)(() =>
                 tbOutput.AppendText(e.Data + Environment.NewLine))
             );
-        }
-
-        private void tsmSetProjectFolder_Click(object sender, EventArgs e)
-        {
-            if (fbdProjectFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-                Settings.solutionProjectFolder = fbdProjectFolder.SelectedPath;
-                SetProjectFolderText();
-            }
-        }
-
-        private void SetProjectFolderText()
-        {
-            tslProject.Text = "Project: " + Settings.solutionProjectFolder;
-            tslProject.Enabled = true;
-        }
-
-        private void tslProject_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("explorer", Settings.solutionProjectFolder);
         }
     }
 }

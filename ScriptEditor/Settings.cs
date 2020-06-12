@@ -26,6 +26,7 @@ namespace ScriptEditor
         private static readonly string SettingsPath = Path.Combine(SettingsFolder, "settings.dat");
 
         public static readonly string SearchHistoryPath = Path.Combine(SettingsFolder, "SearchHistory.ini");
+        public static readonly string SearchFoldersPath = Path.Combine(SettingsFolder, "SearchPaths.ini");
         public static readonly string PreprocDefPath = Path.Combine(SettingsFolder, "PreprocDefine.ini");
 
         public static PrivateFontCollection Fonts = new PrivateFontCollection();
@@ -35,7 +36,9 @@ namespace ScriptEditor
             {"Liberation Mono", 10.25f},    {"Meslo LG S DZ", 9.75f},       {"Ubuntu Mono",  11.75f}
         };
 
+        public static List<string> searchListPath = new List<string>();
         public static readonly List<string> msgListPath = new List<string>();
+
         private static List<string> recent = new List<string>();
         private static List<string> recentMsg = new List<string>();
         private static Dictionary<string, ushort> scriptPosition = new Dictionary<string, ushort>();
@@ -493,6 +496,7 @@ namespace ScriptEditor
                 if (--capHSearchHistory < 0) break;
             }
             sw.Close();
+            File.WriteAllLines(Settings.SearchFoldersPath, searchListPath);
             openMsgEditor = frm.msgAutoOpenEditorStripMenuItem.Checked;
             if (frm.WindowState != FormWindowState.Minimized) SaveWindowPosition(SavedWindows.Main, mainfrm);
             Save();

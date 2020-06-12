@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ScriptEditor
 {
@@ -12,33 +13,45 @@ namespace ScriptEditor
         public SearchForm()
         {
             InitializeComponent();
+
+            cbSearchPath.Items.AddRange((Settings.searchListPath.Count > 0)
+                                        ? Settings.searchListPath.Cast<String>().ToArray()
+                                        : File.ReadAllLines(Settings.SearchFoldersPath));
+
             if (Settings.lastSearchPath == null) {
-                tbSearchPath.Text = "<unset>";
+                cbSearchPath.Text = "<unset>";
             } else {
-                tbSearchPath.Text = Settings.lastSearchPath;
+                cbSearchPath.Text = Settings.lastSearchPath;
             }
             cbFileMask.SelectedIndex = 0;
 
             cbCase.Checked = !Settings.searchIgnoreCase;
             cbWord.Checked = Settings.searchWholeWord;
 
-            this.KeyUp += delegate(object a1, KeyEventArgs a2) {
+            this.KeyUp += delegate(object a1, KeyEventArgs a2)
+            {
                 if (a2.KeyCode == Keys.Escape) this.bHide.PerformClick();
             };
 
-            this.rbFolder.CheckedChanged += delegate(object a1, EventArgs a2) {
+            this.rbFolder.CheckedChanged += delegate(object a1, EventArgs a2)
+            {
                 this.bChange.Enabled = this.cbSearchSubfolders.Enabled = this.rbFolder.Checked;
                 this.bReplace.Enabled = !this.rbFolder.Checked;
             };
 
-            this.bChange.Click += delegate(object a1, EventArgs a2) {
-                fbdSearchFolder.SelectedPath = Settings.lastSearchPath;
+            this.bChange.Click += delegate(object a1, EventArgs a2)
+            {
+                this.fbdSearchFolder.SelectedPath = Settings.lastSearchPath;
                 if (this.fbdSearchFolder.ShowDialog() != DialogResult.OK) return;
+
                 Settings.lastSearchPath = this.fbdSearchFolder.SelectedPath;
-                this.tbSearchPath.Text = Settings.lastSearchPath;
+
+                if (CheckSearchPath()) this.cbSearchPath.Items.Add(Settings.lastSearchPath);
+                this.cbSearchPath.Text = Settings.lastSearchPath;
             };
 
-            this.tbSearch.KeyPress += delegate(object a1, KeyPressEventArgs a2) {
+            this.cbSearch.KeyPress += delegate(object a1, KeyPressEventArgs a2)
+            {
                 if (a2.KeyChar == '\r') {
                     a2.Handled = true;
                     this.bSearch.PerformClick();
@@ -57,6 +70,15 @@ namespace ScriptEditor
                 files.AddRange(Directory.GetFiles(Settings.lastSearchPath, cbFileMask.Text, so));
 
             return files;
+        }
+
+        private bool CheckSearchPath()
+        {
+            foreach (string item in this.cbSearchPath.Items)
+            {
+                if (String.Equals(item, Settings.lastSearchPath, StringComparison.OrdinalIgnoreCase)) return false;
+            }
+            return true;
         }
 
         private void SearchForm_Deactivate(object sender, EventArgs e)
@@ -79,7 +101,7 @@ namespace ScriptEditor
         private void rbFolder_CheckedChanged(object sender, EventArgs e)
         {
             cbFileMask.Enabled = rbFolder.Checked;
-            tbSearchPath.Enabled = rbFolder.Checked;
+            cbSearchPath.Enabled = rbFolder.Checked;
         }
 
         private void cbRegular_CheckedChanged(object sender, EventArgs e)
@@ -87,14 +109,10 @@ namespace ScriptEditor
             cbWord.Enabled = !cbRegular.Checked;
         }
 
-        private void tbSearchPath_Leave(object sender, EventArgs e)
-        {
-            Settings.lastSearchPath = this.tbSearchPath.Text;
-        }
-
         private void SearchForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            tbSearchPath_Leave(null, null);
+            Settings.searchListPath.Clear();
+            Settings.searchListPath.AddRange(cbSearchPath.Items.Cast<String>().ToList());
         }
 
         private void cbCase_Click(object sender, EventArgs e)
@@ -105,6 +123,11 @@ namespace ScriptEditor
         private void cbWord_Click(object sender, EventArgs e)
         {
             Settings.searchWholeWord = cbWord.Checked;
+        }
+
+        private void cbSearchPath_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Settings.lastSearchPath = cbSearchPath.Text;
         }
     }
 }

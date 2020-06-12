@@ -22,16 +22,17 @@ namespace ScriptEditor
         #region Search Function
         private bool SubSearchInternal(List<int> offsets, List<int> lengths)
         {
+            addSearchTextComboBox(sf.cbSearch.Text);
+
             RegexOptions option = RegexOptions.None;
             Regex regex = null;
 
-            if (!sf.cbCase.Checked)
-                option = RegexOptions.IgnoreCase;
+            if (!sf.cbCase.Checked) option = RegexOptions.IgnoreCase;
 
             if (sf.cbRegular.Checked)
-                regex = new Regex(sf.tbSearch.Text, option);
+                regex = new Regex(sf.cbSearch.Text, option);
             else if (Settings.searchWholeWord)
-                regex = new Regex(@"\b" + sf.tbSearch.Text + @"\b", option);
+                regex = new Regex(@"\b" + sf.cbSearch.Text + @"\b", option);
 
             if (sf.rbFolder.Checked && (Settings.lastSearchPath == null || !Directory.Exists(Settings.lastSearchPath))) {
                 MessageBox.Show("No search path set.", "Error");
@@ -41,7 +42,7 @@ namespace ScriptEditor
                 if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
                     if (currentTab == null)
                         return false;
-                    if (Utilities.SearchAndScroll(currentActiveTextAreaCtrl, regex, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType))
+                    if (Utilities.SearchAndScroll(currentActiveTextAreaCtrl, regex, sf.cbSearch.Text, sf.cbCase.Checked, ref PosChangeType))
                         return true;
                 } else if (sf.rbAll.Checked) {
                     int starttab = currentTab == null ? 0 : currentTab.index;
@@ -52,7 +53,7 @@ namespace ScriptEditor
                         if (++tab == tabs.Count)
                             tab = 0; //restart tab
                         int start, len;
-                        if (Utilities.Search(tabs[tab].textEditor.Text, sf.tbSearch.Text, regex, caretOffset + 1, false, sf.cbCase.Checked, out start, out len)) {
+                        if (Utilities.Search(tabs[tab].textEditor.Text, sf.cbSearch.Text, regex, caretOffset + 1, false, sf.cbCase.Checked, out start, out len)) {
                             Utilities.FindSelected(tabs[tab].textEditor.ActiveTextAreaControl, start, len, ref PosChangeType);
                             if (currentTab == null || currentTab.index != tab)
                                 tabControl1.SelectTab(tab);
@@ -67,7 +68,7 @@ namespace ScriptEditor
                     ProgressBarForm progress = new ProgressBarForm(this, files.Count, "Search matches...");
                     for (int i = 0; i < files.Count; i++)
                     {
-                        if (Utilities.Search(File.ReadAllText(files[i]), sf.tbSearch.Text, regex, sf.cbCase.Checked))
+                        if (Utilities.Search(File.ReadAllText(files[i]), sf.cbSearch.Text, regex, sf.cbCase.Checked))
                             sf.lbFindFiles.Items.Add(files[i]);
                         progress.SetProgress = i;
                     }
@@ -85,22 +86,22 @@ namespace ScriptEditor
                 if (sf.rbCurrent.Checked || (sf.rbAll.Checked && tabs.Count < 2)) {
                     if (currentTab == null)
                         return false;
-                    Utilities.SearchForAll(currentTab, sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
+                    Utilities.SearchForAll(currentTab, sf.cbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
                 } else if (sf.rbAll.Checked) {
                     for (int i = 0; i < tabs.Count; i++)
-                        Utilities.SearchForAll(tabs[i], sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
+                        Utilities.SearchForAll(tabs[i], sf.cbSearch.Text, regex, sf.cbCase.Checked, dgv, offsets, lengths);
                 } else {
                     List<string> files = sf.GetFolderFiles();
                     ProgressBarForm progress = new ProgressBarForm(this, files.Count, "Search matches...");
                     for (int i = 0; i < files.Count; i++) {
-                        Utilities.SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), sf.tbSearch.Text, regex, sf.cbCase.Checked, dgv);
+                        Utilities.SearchForAll(File.ReadAllLines(files[i]), Path.GetFullPath(files[i]), sf.cbSearch.Text, regex, sf.cbCase.Checked, dgv);
                         progress.SetProgress = i;
                     }
                     progress.Dispose();
                 }
                 if (dgv.RowCount > 0) {
                     TabPage tp = new TabPage("Search results");
-                    tp.ToolTipText = "Find text: " + sf.tbSearch.Text;
+                    tp.ToolTipText = "Find text: " + sf.cbSearch.Text;
                     tp.Controls.Add(dgv);
                     dgv.Dock = DockStyle.Fill;
                     tabControl2.TabPages.Add(tp);
@@ -124,21 +125,23 @@ namespace ScriptEditor
                 sf = new SearchForm();
                 sf.Owner = this;
                 sf.FormClosed += delegate(object a1, FormClosedEventArgs a2) {
-                    lastSearchText = sf.tbSearch.Text;
+                    lastSearchText = sf.cbSearch.Text;
                     sf = null;
                 };
                 sf.lbFindFiles.MouseDoubleClick += delegate (object a1, MouseEventArgs a2) {
                     string file = sf.lbFindFiles.SelectedItem.ToString();
                     Utilities.SearchAndScroll(Open(file, OpenType.File, false).textEditor.ActiveTextAreaControl,
-                                             (Regex)sf.lbFindFiles.Tag, sf.tbSearch.Text, sf.cbCase.Checked, ref PosChangeType, false);
+                                             (Regex)sf.lbFindFiles.Tag, sf.cbSearch.Text, sf.cbCase.Checked, ref PosChangeType, false);
                 };
                 sf.bSearch.Click += new EventHandler(bSearch_Click);
                 sf.bReplace.Click += new EventHandler(bReplace_Click);
+
+                sf.cbSearch.Items.AddRange(SearchTextComboBox.Items.Cast<String>().ToArray());
             } else {
                 sf.WindowState = FormWindowState.Normal;
                 sf.Focus();
 
-                searchText = sf.tbSearch.Text;
+                searchText = sf.cbSearch.Text;
             }
 
             if (currentTab != null && currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected) {
@@ -148,25 +151,25 @@ namespace ScriptEditor
                 searchText = Clipboard.GetText();
             }
             if (searchText.Length > 0 && searchText.Length < 255) {
-                sf.tbSearch.Text = searchText;
+                sf.cbSearch.Text = searchText;
             }
             sf.Show();
-            sf.tbSearch.Focus();
-            sf.tbSearch.SelectAll();
+            sf.cbSearch.Focus();
+            sf.cbSearch.SelectAll();
         }
 
         private void bSearch_Click(object sender, EventArgs e)
         {
-            sf.tbSearch.Text = sf.tbSearch.Text.Trim();
-            if (sf.tbSearch.Text.Length == 0)
+            sf.cbSearch.Text = sf.cbSearch.Text.Trim();
+            if (sf.cbSearch.Text.Length == 0)
                 return;
             SubSearchInternal(null, null);
         }
 
         void bReplace_Click(object sender, EventArgs e)
         {
-            sf.tbSearch.Text = sf.tbSearch.Text.Trim();
-            if (sf.rbFolder.Checked || sf.tbSearch.Text.Length == 0)
+            sf.cbSearch.Text = sf.cbSearch.Text.Trim();
+            if (sf.rbFolder.Checked || sf.cbSearch.Text.Length == 0)
                 return;
             if (sf.cbFindAll.Checked) {
                 List<int> lengths = new List<int>(), offsets = new List<int>();
@@ -728,14 +731,17 @@ namespace ScriptEditor
         private void renameProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
-            if (proc == null)
-                return;
+            if (proc == null) return;
 
             ProcTree.HideSelection = false;
             string newName = Refactor.RenameProcedure(proc, currentDocument, currentTab, tabs);
             ProcTree.HideSelection = true;
 
             if (newName != null) {
+                ProcTree.SelectedNode.Text = newName; // обновить имя в обозревателе
+
+                // выполнить обновление
+                ProcTree.Tag = TreeStatus.freeze; // предотвращает следующее обновление обозревателя
                 ForceParseScript();
                 SetFocusDocument();
             }
@@ -753,14 +759,18 @@ namespace ScriptEditor
             //}
 
             if (MessageBox.Show("Are you sure you want to delete \"" + proc.name + "\" procedure?",
-                "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
+                                "Warning", MessageBoxButtons.YesNo) == DialogResult.No) {
                 return;
-
+            }
             Utilities.PrepareDeleteProcedure(proc, currentDocument);
+            ProcTree.Nodes.Remove(ProcTree.SelectedNode);
+
             currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
 
             currentHighlightProc = null;
             HighlightProcedures.DeleteFromList(currentDocument, proc.name);
+
+            ProcTree.Tag = TreeStatus.freeze; // предотвращает следующее обновление обозревателя
             ForceParseScript();
             SetFocusDocument();
         }

@@ -735,8 +735,8 @@ namespace ScriptEditor
 
         private void addSearchTextComboBox(string world)
         {
-            if (world.Length == 0)
-                return;
+            if (world.Length == 0) return;
+
             bool addSearchText = true;
             foreach (var item in SearchTextComboBox.Items)
             {
@@ -745,8 +745,10 @@ namespace ScriptEditor
                     break;
                 }
             }
-            if (addSearchText)
+            if (addSearchText) {
                 SearchTextComboBox.Items.Insert(0, world);
+                if (sf != null) sf.cbSearch.Items.Insert(0, world); // add to advanced search form
+            }
         }
 
         private void DecIndentStripButton_Click(object sender, EventArgs e)
@@ -1150,6 +1152,25 @@ namespace ScriptEditor
                 currentActiveTextAreaCtrl.TextArea.Caret.Column = sel.StartPosition.Column;
                 currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
             }
+        }
+
+        private void tsmSetProjectFolder_Click(object sender, EventArgs e)
+        {
+            if (fbdProjectFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                Settings.solutionProjectFolder = fbdProjectFolder.SelectedPath;
+                SetProjectFolderText();
+            }
+        }
+
+        private void SetProjectFolderText()
+        {
+            tslProject.Text = "Project: " + Settings.solutionProjectFolder;
+            tslProject.Enabled = true;
+        }
+
+        private void tslProject_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("explorer", Settings.solutionProjectFolder);
         }
 
         private void tsbUpdateParserData_Click(object sender, EventArgs e)

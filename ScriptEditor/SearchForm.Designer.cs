@@ -25,7 +25,7 @@
         private void InitializeComponent() {
             System.Windows.Forms.Label label1;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SearchForm));
-            this.tbSearch = new System.Windows.Forms.TextBox();
+            this.cbSearch = new System.Windows.Forms.ComboBox();
             this.cbRegular = new System.Windows.Forms.CheckBox();
             this.rbCurrent = new System.Windows.Forms.RadioButton();
             this.rbAll = new System.Windows.Forms.RadioButton();
@@ -38,7 +38,7 @@
             this.cbFindAll = new System.Windows.Forms.CheckBox();
             this.tbReplace = new System.Windows.Forms.TextBox();
             this.bReplace = new System.Windows.Forms.Button();
-            this.tbSearchPath = new System.Windows.Forms.TextBox();
+            this.cbSearchPath = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lbFindFiles = new System.Windows.Forms.ListBox();
             this.cbCase = new System.Windows.Forms.CheckBox();
@@ -60,14 +60,15 @@
             label1.TabIndex = 5;
             label1.Text = "Folder to search:";
             // 
-            // tbSearch
+            // cbSearch
             // 
-            this.tbSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbSearch.Location = new System.Drawing.Point(13, 23);
-            this.tbSearch.Name = "tbSearch";
-            this.tbSearch.Size = new System.Drawing.Size(418, 20);
-            this.tbSearch.TabIndex = 0;
+            this.cbSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSearch.FormattingEnabled = true;
+            this.cbSearch.Location = new System.Drawing.Point(13, 22);
+            this.cbSearch.Name = "cbSearch";
+            this.cbSearch.Size = new System.Drawing.Size(418, 21);
+            this.cbSearch.TabIndex = 28;
             // 
             // cbRegular
             // 
@@ -179,8 +180,8 @@
             // 
             // tbReplace
             // 
-            this.tbReplace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbReplace.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbReplace.Location = new System.Drawing.Point(13, 62);
             this.tbReplace.Name = "tbReplace";
             this.tbReplace.Size = new System.Drawing.Size(418, 20);
@@ -196,19 +197,18 @@
             this.bReplace.Text = "Find && Replace";
             this.bReplace.UseVisualStyleBackColor = true;
             // 
-            // tbSearchPath
+            // cbSearchPath
             // 
-            this.tbSearchPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbSearchPath.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.tbSearchPath.Cursor = System.Windows.Forms.Cursors.Default;
-            this.tbSearchPath.Enabled = false;
-            this.tbSearchPath.Location = new System.Drawing.Point(13, 183);
-            this.tbSearchPath.Name = "tbSearchPath";
-            this.tbSearchPath.ShortcutsEnabled = false;
-            this.tbSearchPath.Size = new System.Drawing.Size(418, 20);
-            this.tbSearchPath.TabIndex = 20;
-            this.tbSearchPath.Leave += new System.EventHandler(this.tbSearchPath_Leave);
+            this.cbSearchPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSearchPath.Enabled = false;
+            this.cbSearchPath.FormattingEnabled = true;
+            this.cbSearchPath.Location = new System.Drawing.Point(12, 184);
+            this.cbSearchPath.Name = "cbSearchPath";
+            this.cbSearchPath.Size = new System.Drawing.Size(418, 21);
+            this.cbSearchPath.Sorted = true;
+            this.cbSearchPath.TabIndex = 29;
+            this.cbSearchPath.SelectedIndexChanged += new System.EventHandler(this.cbSearchPath_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -221,9 +221,9 @@
             // 
             // lbFindFiles
             // 
-            this.lbFindFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbFindFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lbFindFiles.FormattingEnabled = true;
             this.lbFindFiles.HorizontalScrollbar = true;
             this.lbFindFiles.Location = new System.Drawing.Point(13, 254);
@@ -314,7 +314,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(443, 268);
+            this.ClientSize = new System.Drawing.Size(443, 272);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.labelCount);
             this.Controls.Add(this.cbFileMask);
@@ -336,8 +336,8 @@
             this.Controls.Add(this.rbAll);
             this.Controls.Add(this.rbCurrent);
             this.Controls.Add(this.cbRegular);
-            this.Controls.Add(this.tbSearchPath);
-            this.Controls.Add(this.tbSearch);
+            this.Controls.Add(this.cbSearchPath);
+            this.Controls.Add(this.cbSearch);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MaximizeBox = false;
@@ -357,7 +357,7 @@
 
         #endregion
 
-        internal System.Windows.Forms.TextBox tbSearch;
+        internal System.Windows.Forms.ComboBox cbSearch;
         internal System.Windows.Forms.TextBox tbReplace;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
@@ -377,7 +377,7 @@
         internal System.Windows.Forms.CheckBox cbRegular;
         internal System.Windows.Forms.CheckBox cbFindAll;
         private System.Windows.Forms.Button bChange;
-        private System.Windows.Forms.TextBox tbSearchPath;
+        private System.Windows.Forms.ComboBox cbSearchPath;
         private System.Windows.Forms.FolderBrowserDialog fbdSearchFolder;
         private System.Windows.Forms.CheckBox cbWord;
 
