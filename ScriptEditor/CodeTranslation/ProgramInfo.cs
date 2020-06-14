@@ -201,6 +201,11 @@ namespace ScriptEditor.CodeTranslation
             macros = new SortedDictionary<string, Macro>();
         }
 
+        public bool ProcedureIsExist(string name)
+        {
+            return (GetProcedureIndex(name, procs) != -1);
+        }
+
         public int GetProcedureIndex(string name)
         {
             return GetProcedureIndex(name, procs);
@@ -210,13 +215,18 @@ namespace ScriptEditor.CodeTranslation
         {
             for (int i = 0; i < proc.Length;  i++)
             {
-                if (proc[i].name == name)
+                if (String.Equals(proc[i].Name, name, StringComparison.OrdinalIgnoreCase))
                     return i;
             }
             return -1;
         }
 
-         /// <summary>
+        public Procedure GetProcedureByIndex(int index, Procedure[] proc = null)
+        {
+            return (proc == null) ? procs[index] : proc[index];
+        }
+
+        /// <summary>
         /// Получить процедуру по номеру строки из скрипта.
         /// </summary>
         /// <param name="lineNumber">Строка</param>

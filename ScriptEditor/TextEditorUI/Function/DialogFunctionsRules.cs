@@ -15,12 +15,12 @@ namespace ScriptEditor.TextEditorUI.Function {
 
         public OpcodeTemplate(OpcodeType opcode, string name, int msg, int msgFile = 0, int node = 0, int iq = 0, int total = 1) {
             this.opcode = opcode;
-            opcodeName = name;
-            msgArg = msg - 1;
-            msgFileArg = msgFile - 1;
-            nodeArg = node - 1;
-            iqArg = iq - 1;
-            totalArgs = total;
+            opcodeName  = name;
+            msgArg      = msg - 1;
+            msgFileArg  = msgFile - 1;
+            nodeArg     = node - 1;
+            iqArg       = iq - 1;
+            totalArgs   = total;
         }
     }
 
@@ -48,7 +48,7 @@ namespace ScriptEditor.TextEditorUI.Function {
                 string[] fileBuf = File.ReadAllLines(RulesFile);
                 foreach (string item in fileBuf) {
                     string line = item.TrimStart();
-                    if (line.Length == 0) continue;
+                    if (line.Length == 0 || line[0] == ';') continue;
                     string[] args = line.Split(',');
 
                     OpcodeType type = DialogueParser.GetOpcodeType(args[0]);
@@ -62,11 +62,11 @@ namespace ScriptEditor.TextEditorUI.Function {
                                         int.Parse(args[2])  // total func args
                     );
                     template.isDefault = false;
-                    opcodeTemplates.Add(template.opcodeName.ToLowerInvariant(), template);
+                    opcodeTemplates.Add(template.opcodeName.ToLower(), template);
                 }
             }
             foreach (var item in templates) {
-                opcodeTemplates.Add(item.opcodeName.ToLowerInvariant(), item);
+                opcodeTemplates.Add(item.opcodeName.ToLower(), item);
             }
         }
 

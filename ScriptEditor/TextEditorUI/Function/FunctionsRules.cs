@@ -34,13 +34,14 @@ namespace ScriptEditor.TextEditorUI.Function {
                 DialogFunctionsRules.opcodeTemplates.Remove(key);
                 DialogFunctionsRules.opcodeTemplates.Add(p.Key, p.Value);
             }
+
             pair.Value.opcode = DialogueParser.GetOpcodeType(row.Cells[0].Value.ToString());
             pair.Value.opcodeName = row.Cells[1].Value.ToString();
-            pair.Value.totalArgs = (int)row.Cells[2].Value;
-            pair.Value.msgArg = (int)row.Cells[3].Value - 1;
-            pair.Value.nodeArg = (int)row.Cells[4].Value - 1;
-            pair.Value.iqArg = (int)row.Cells[5].Value - 1;
-            pair.Value.msgFileArg = (int)row.Cells[6].Value - 1;
+            pair.Value.totalArgs = Convert.ToInt32(row.Cells[2].Value);
+            pair.Value.msgArg = Convert.ToInt32(row.Cells[3].Value) - 1;
+            pair.Value.nodeArg = Convert.ToInt32(row.Cells[4].Value) - 1;
+            pair.Value.iqArg = Convert.ToInt32(row.Cells[5].Value) - 1;
+            pair.Value.msgFileArg = Convert.ToInt32(row.Cells[6].Value) - 1;
         }
 
         private void AddToTemplate(DataGridViewRow row, string key) {
@@ -88,11 +89,11 @@ namespace ScriptEditor.TextEditorUI.Function {
                 KeyValuePair<string, OpcodeTemplate> pair = (KeyValuePair<string, OpcodeTemplate>)row.Tag;
                 if (row.Cells[0].Value.ToString() != pair.Value.opcode.ToString()
                     || key != pair.Key
-                    || (int)row.Cells[2].Value != pair.Value.totalArgs
-                    || (int)row.Cells[3].Value != pair.Value.msgArg + 1
-                    || (int)row.Cells[4].Value != pair.Value.nodeArg + 1
-                    || (int)row.Cells[5].Value != pair.Value.iqArg + 1
-                    || (int)row.Cells[6].Value != pair.Value.msgFileArg + 1)
+                    || Convert.ToInt32(row.Cells[2].Value) != pair.Value.totalArgs
+                    || Convert.ToInt32(row.Cells[3].Value) != pair.Value.msgArg + 1
+                    || Convert.ToInt32(row.Cells[4].Value) != pair.Value.nodeArg + 1
+                    || Convert.ToInt32(row.Cells[5].Value) != pair.Value.iqArg + 1
+                    || Convert.ToInt32(row.Cells[6].Value) != pair.Value.msgFileArg + 1)
                 {
                     ChangeToTemplate(row, key);
                     needSave = true;
@@ -124,7 +125,9 @@ namespace ScriptEditor.TextEditorUI.Function {
                             "Message:\tПозиция, указывающая на аргумент функции с номером текстового сообщения.\n" +
                             "Node:\tПозиция, указывающая на аргумент функции к процедуре перехода. Значение 0, аргумент не используется.\n" +
                             "IQ:\tПозиция, указывающая на аргумент функции с IQ. Значение 0, если аргумент не используется.\n" +
-                            "File:\tПозиция, указывающая на аргумент с номером файла сообщения. Значение 0, если агрумент не используется.",
+                            "File:\tПозиция, указывающая на аргумент с номером файла сообщения. Значение 0, если агрумент не используется.\n\n" +
+                            "Example sets for macro: NOption(Message, Node, IQ);\n" +
+                            "Args=3, Message=1, Node=2, IQ=3, File=0",
                             "Help"
             );
         }

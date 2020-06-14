@@ -53,8 +53,8 @@
             this.dgvTemplates.AllowUserToDeleteRows = false;
             this.dgvTemplates.AllowUserToResizeRows = false;
             this.dgvTemplates.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvTemplates.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvTemplates.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvTemplates.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
@@ -92,12 +92,12 @@
             this.deleteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(128, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(86, 26);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(85, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -136,7 +136,8 @@
             this.typeColumn.Items.AddRange(new object[] {
             "Option",
             "Reply",
-            "Message"});
+            "Message",
+            "Call"});
             this.typeColumn.Name = "typeColumn";
             this.typeColumn.ToolTipText = "Type of function.";
             this.typeColumn.Width = 80;
@@ -176,8 +177,7 @@
             this.gotoColumn.DefaultCellStyle = dataGridViewCellStyle5;
             this.gotoColumn.HeaderText = "Node";
             this.gotoColumn.Name = "gotoColumn";
-            this.gotoColumn.ToolTipText = "A position indicating an argument in a function with a node procedure. Set to 0 -" +
-                " if not used.";
+            this.gotoColumn.ToolTipText = "A position indicating an argument in a function with a node procedure. Set to 0 - if not used.";
             this.gotoColumn.Width = 35;
             // 
             // iqColumn
@@ -195,8 +195,7 @@
             this.FileColumn.DefaultCellStyle = dataGridViewCellStyle7;
             this.FileColumn.HeaderText = "File";
             this.FileColumn.Name = "FileColumn";
-            this.FileColumn.ToolTipText = "A position indicating an argument in a function with a message file number. Set t" +
-                "o 0 - if not used.";
+            this.FileColumn.ToolTipText = "A position indicating an argument in a function with a message file number. Set to 0 - if not used.";
             this.FileColumn.Width = 35;
             // 
             // FunctionsRules

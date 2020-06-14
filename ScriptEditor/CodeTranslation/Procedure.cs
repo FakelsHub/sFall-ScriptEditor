@@ -6,6 +6,9 @@ namespace ScriptEditor.CodeTranslation
 {
     public class Procedure : IParserInfo
     {
+        private string nameLCase;
+
+        // регистро-зависимое имя процедуры
         public string name;
         public string fdeclared;
         public string fstart;
@@ -17,6 +20,17 @@ namespace ScriptEditor.CodeTranslation
 
         int isStandart = -1;
         int isLocal = -1;
+
+        /// <summary>
+        /// Имя процедуры в нижнем регистре
+        /// </summary>
+        public string Name
+        {
+            get {
+                if (nameLCase == null) nameLCase = name.ToLower();
+                return nameLCase;
+            }
+        }
 
         public NameType Type() { return NameType.Proc; }
         public Reference[] References() { return references; }
