@@ -492,7 +492,7 @@ namespace ScriptEditor
 
         private void Caret_PositionChanged(object sender, EventArgs e)
         {
-            string ext = Path.GetExtension(currentTab.filename).ToLower();
+            string ext = Path.GetExtension(currentTab.filename).ToLowerInvariant();
             if (ext != ".ssl" && ext != ".h") return;
 
             TextLocation _position = currentActiveTextAreaCtrl.Caret.Position;
@@ -916,7 +916,7 @@ namespace ScriptEditor
                 ProcTree.SelectedNode.Parent != null && (int)ProcTree.SelectedNode.Parent.Tag == 1)
             {
                 Procedure proc = ProcTree.SelectedNode.Tag as Procedure;
-                string pName = proc.name.ToLower();
+                string pName = proc.Name;
                 if (pName.IndexOf("node") > -1 || pName == "talk_p_proc")
                     editNodeCodeToolStripMenuItem.Enabled = true;
                 else

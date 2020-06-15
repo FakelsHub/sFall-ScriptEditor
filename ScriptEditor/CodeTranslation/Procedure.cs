@@ -14,6 +14,7 @@ namespace ScriptEditor.CodeTranslation
         public string fstart;
         //public string fend; //just assume this is the same file as fstart
         public string filename;
+
         public ProcedureData d;
         public Variable[] variables;
         public Reference[] references;
@@ -27,7 +28,7 @@ namespace ScriptEditor.CodeTranslation
         public string Name
         {
             get {
-                if (nameLCase == null) nameLCase = name.ToLower();
+                if (nameLCase == null) nameLCase = name.ToLowerInvariant();
                 return nameLCase;
             }
         }
@@ -95,7 +96,7 @@ namespace ScriptEditor.CodeTranslation
         {
             if (isStandart != -1) return (isStandart == 1);
             if (name != null) {
-                switch (name.ToLower()) {
+                switch (Name) {
                 case "combat_is_over_p_proc" :
                 case "combat_is_starting_p_proc" :
                 case "combat_p_proc" :

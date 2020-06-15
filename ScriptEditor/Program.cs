@@ -25,7 +25,7 @@ namespace ScriptEditor
             Directory.SetCurrentDirectory(Application.StartupPath);
             
             if (args.Length > 0 && mutex.WaitOne(TimeSpan.Zero, true) 
-                && Path.GetExtension(args[0]).ToLower() == ".msg") {
+                && Path.GetExtension(args[0]).ToLowerInvariant() == ".msg") {
                 mutex.Close();
                 // run only Messages editor
                 printLog("Run only message editor...");

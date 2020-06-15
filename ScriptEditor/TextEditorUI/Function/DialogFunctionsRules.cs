@@ -62,11 +62,11 @@ namespace ScriptEditor.TextEditorUI.Function {
                                         int.Parse(args[2])  // total func args
                     );
                     template.isDefault = false;
-                    opcodeTemplates.Add(template.opcodeName.ToLower(), template);
+                    opcodeTemplates.Add(template.opcodeName.ToLowerInvariant(), template);
                 }
             }
             foreach (var item in templates) {
-                opcodeTemplates.Add(item.opcodeName.ToLower(), item);
+                opcodeTemplates.Add(item.opcodeName.ToLowerInvariant(), item);
             }
         }
 

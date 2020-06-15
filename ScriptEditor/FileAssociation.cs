@@ -26,7 +26,7 @@ namespace ScriptEditor
                 Exists = true;
             else 
                 Exists = false;
-            ext = Path.GetExtension(ext).ToLower();
+            ext = Path.GetExtension(ext).ToLowerInvariant();
             bool result = (Array.IndexOf(extAllowed, ext) > -1);
             if (!result)
                 MessageBox.Show("You can not open this file type in the editor.", "Error - file is not allowed");

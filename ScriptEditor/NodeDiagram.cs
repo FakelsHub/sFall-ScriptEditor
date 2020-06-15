@@ -588,8 +588,9 @@ namespace ScriptEditor
                 {
                     JumpNodeToolStripMenuItem.DropDownItems.Add(linkTo.NameTo, null, new EventHandler(JumpClick));
                     int count = JumpNodeToolStripMenuItem.DropDownItems.Count - 1;
+
                     JumpNodeToolStripMenuItem.DropDownItems[count].ForeColor = (HideNodes.ContainsKey(linkTo.NameTo)) 
-                                                                                ? Color.Gray : Color.OrangeRed;
+                                                                             ? Color.Gray : Color.OrangeRed;
                 }
 
                 string linkLine = String.Join(":", NodeItem.GetNodeData.LinkedFromNodes);

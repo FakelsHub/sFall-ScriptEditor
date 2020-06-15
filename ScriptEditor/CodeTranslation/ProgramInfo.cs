@@ -178,7 +178,7 @@ namespace ScriptEditor.CodeTranslation
         public void BuildDictionaries()
         {
             for (int i = 0; i < procs.Length; i++) {
-                procLookup[procs[i].name.ToLowerInvariant()] = procs[i];
+                procLookup[procs[i].Name] = procs[i];
             }
             for (int i = 0; i < vars.Length; i++) {
                 varLookup[vars[i].name.ToLowerInvariant()] = vars[i];
@@ -189,7 +189,7 @@ namespace ScriptEditor.CodeTranslation
         {
             procLookup.Clear();
             for (int i = 0; i < procs.Length; i++)
-                procLookup.Add(procs[i].name.ToLowerInvariant(), procs[i]);
+                procLookup.Add(procs[i].Name, procs[i]);
         }
 
         public ProgramInfo(int procs, int vars)
@@ -215,7 +215,7 @@ namespace ScriptEditor.CodeTranslation
         {
             for (int i = 0; i < proc.Length;  i++)
             {
-                if (String.Equals(proc[i].Name, name, StringComparison.OrdinalIgnoreCase))
+                if (proc[i].Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                     return i;
             }
             return -1;
@@ -365,7 +365,7 @@ namespace ScriptEditor.CodeTranslation
                 System.Threading.Thread.Sleep(50); //Avoid stomping on files while the parser is running
 
             List<string> matches = LookupOpcode(part);
-            part = part.ToLower();
+            part = part.ToLowerInvariant();
             foreach (var entry in new Dictionary<string, Procedure>(procLookup)) {
                 if (entry.Key.IndexOf(part) == 0) {
                     matches.Add(entry.Value.name + "|" + entry.Value.ToString(true) + "|P");

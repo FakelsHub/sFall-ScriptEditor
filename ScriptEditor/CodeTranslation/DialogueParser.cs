@@ -367,7 +367,7 @@ namespace ScriptEditor.CodeTranslation
                         return CheckMacrosValue(token);
                     }
                 } else {
-                    token = scode.Remove(j).Trim(trimming); //.ToLower();
+                    token = scode.Remove(j).Trim(trimming); //.ToLowerInvariant();
                 }
             }
 
@@ -378,7 +378,7 @@ namespace ScriptEditor.CodeTranslation
                 int y = def.IndexOf(',', z);
 
                 if (x != -1) { //Берем макрос номера файла сообщения
-                    string argMsgNum = def.Substring(z + 1, y - z - 1).Trim(trimming); //.ToLower(); //macros NAME
+                    string argMsgNum = def.Substring(z + 1, y - z - 1).Trim(trimming); //.ToLowerInvariant(); //macros NAME
                     macroValue = CheckMacrosValue(argMsgNum);
                     if (macroValue == -1)
                         return macroValue;
@@ -644,7 +644,7 @@ namespace ScriptEditor.CodeTranslation
             }
             if (end != -1) {
                 index = end;
-                if (start != -1) name = incode.Substring(start, end - start).TrimEnd().ToLower();
+                if (start != -1) name = incode.Substring(start, end - start).TrimEnd().ToLowerInvariant();
             }
             return name;
         }
@@ -669,9 +669,7 @@ namespace ScriptEditor.CodeTranslation
             List<string> nodesName = new List<string>();
             foreach (var p in procedures)
             {
-                if ((p.name.IndexOf("node", StringComparison.OrdinalIgnoreCase) > -1) ||
-                    p.name.Equals("talk_p_proc", StringComparison.OrdinalIgnoreCase))
-                {
+                if ((p.Name.IndexOf("node") > -1) || p.Name == "talk_p_proc") {
                     nodesName.Add(p.name);
                 }
             }

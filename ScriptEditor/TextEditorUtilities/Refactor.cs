@@ -333,7 +333,7 @@ namespace ScriptEditor.TextEditorUtilities
             }
 
             bool extFile = false;
-            if (tabs != null && proc.filename != cTab.filename.ToLower()) { // не совсем понятно, при каких условиях это верно
+            if (tabs != null && proc.filename != cTab.filename.ToLowerInvariant()) { // не совсем понятно, при каких условиях это верно
                 switch (MessageBox.Show("Also renaming the procedure in a file: " + proc.filename.ToUpper() + " ?", "Procedure rename", MessageBoxButtons.YesNoCancel)) {
                     case DialogResult.Cancel :
                         return null;
@@ -346,11 +346,11 @@ namespace ScriptEditor.TextEditorUtilities
 
             Regex s_regex;
             if (proc.References().Length == 0) {
-                s_regex = new Regex(@"(\bprocedure\s|\bcall\s|[=,(]\s*)\s*" + proc.name + @"\b", // осуществить поиск всех процедур совпадающих по имени
+                s_regex = new Regex(@"(\bprocedure\s|\bcall\s|[=,(]\s*)\s*" + proc.Name + @"\b", // осуществить поиск всех процедур совпадающих по имени
                                     RegexOptions.Multiline | RegexOptions.IgnoreCase);
                 Utilities.ReplaceIDocumentText(s_regex, document, newName, differ);
             } else {
-                s_regex = new Regex(@"\b" + proc.name + @"\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                s_regex = new Regex(@"\b" + proc.Name + @"\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                 Utilities.ReplaceByReferences(s_regex, document, proc, newName, differ); // rename by reference
             }
 

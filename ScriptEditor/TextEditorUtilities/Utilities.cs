@@ -18,7 +18,7 @@ namespace ScriptEditor.TextEditorUtilities
     /// </summary>
     internal sealed class Utilities
     {
-        const string endKeyWord = "end";
+        private const string endKeyWord = "end";
 
         internal struct Quote
         {

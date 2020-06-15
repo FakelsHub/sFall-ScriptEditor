@@ -352,7 +352,7 @@ namespace ScriptEditor
                 if (!Path.IsPathRooted(file))
                     file = Path.GetFullPath(file);
 
-                if (commandline && Path.GetExtension(file).ToLower() == ".msg") {
+                if (commandline && Path.GetExtension(file).ToLowerInvariant() == ".msg") {
                     if (currentTab == null)
                         wState = FormWindowState.Minimized;
                     MessageEditor.MessageEditorOpen(file, this).SendMsgLine += AcceptMsgLine;
@@ -492,7 +492,7 @@ namespace ScriptEditor
             if (type == OpenType.File) {
                 if (!alwaysNew)
                     tp.ToolTipText = ti.filepath;
-                string ext = Path.GetExtension(file).ToLower();
+                string ext = Path.GetExtension(file).ToLowerInvariant();
                 if (ext == ".ssl" || ext == ".h") {
                     te.Text = Utilities.NormalizeNewLine(te.Text);
                     if (formatCodeToolStripMenuItem.Checked)
@@ -604,7 +604,7 @@ namespace ScriptEditor
 
                 tab.SaveInternal(saveText, msg, close);
 
-                if (tab.changed && Settings.pathHeadersFiles != null && Path.GetExtension(tab.filename).ToLower() == ".h" &&
+                if (tab.changed && Settings.pathHeadersFiles != null && Path.GetExtension(tab.filename).ToLowerInvariant() == ".h" &&
                     String.Equals(Settings.pathHeadersFiles, Path.GetDirectoryName(tab.filepath), StringComparison.OrdinalIgnoreCase)) {
                     GetMacros.GetGlobalMacros(Settings.pathHeadersFiles);
                 }
@@ -620,7 +620,7 @@ namespace ScriptEditor
             if (tab == null)
                 return;
 
-            switch (Path.GetExtension(tab.filename).ToLower()) {
+            switch (Path.GetExtension(tab.filename).ToLowerInvariant()) {
                 case ".ssl":
                     sfdScripts.FilterIndex = 1;
                     break;
@@ -643,7 +643,7 @@ namespace ScriptEditor
                 tabControl1.TabPages[tab.index].ToolTipText = tabs[tab.index].filepath;
                 Save(tab, close);
                 Settings.AddRecentFile(tab.filepath);
-                string ext = Path.GetExtension(tab.filepath).ToLower();
+                string ext = Path.GetExtension(tab.filepath).ToLowerInvariant();
                 if (Settings.enableParser && (ext == ".ssl" || ext == ".h")) {
                     tab.shouldParse = true;
                     tab.needsParse = true;
@@ -958,7 +958,7 @@ namespace ScriptEditor
                     tn2.ToolTipText = var.ToString();
                     tn.Nodes.Add(tn2);
                 }
-                if (p.filename.ToLower() != currentTab.filename.ToLower() || p.IsImported) {
+                if (p.filename.Equals(currentTab.filename, StringComparison.OrdinalIgnoreCase) == false || p.IsImported) {
                     tn.ToolTipText = p.ToString() + "\ndeclarate file: " + p.filename;
                     ProcTree.Nodes[0].Nodes.Add(tn);
                     ProcTree.Nodes[0].Expand();
@@ -988,7 +988,7 @@ namespace ScriptEditor
                 foreach (Variable var in currentTab.parseInfo.vars) {
                     TreeNode tn = new TreeNode(var.name);
                     tn.Tag = var;
-                    if (var.filename.ToLower() != currentTab.filename.ToLower()) {
+                    if (var.filename.Equals(currentTab.filename, StringComparison.OrdinalIgnoreCase) == false) {
                         tn.ToolTipText = var.ToString() + "\ndeclarate file: " + var.filename;
                         VarTree.Nodes[0].Nodes.Add(tn);
                         VarTree.Nodes[0].Expand();

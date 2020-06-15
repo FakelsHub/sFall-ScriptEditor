@@ -208,7 +208,7 @@ namespace ScriptEditor.CodeTranslation
                                 var.references[k] = Reference.FromPtr(tmp[k * 2], tmp[k * 2 + 1]);
                         }
                         var.adeclared = ParseProcedureArguments(pi.procs[i].d.start, var.d.declared,
-                                                                var.name.ToLower(), scriptCode);
+                                                                var.name.ToLowerInvariant(), scriptCode);
                     }
                 }
             }
@@ -229,7 +229,7 @@ namespace ScriptEditor.CodeTranslation
             int len = ParserInternal.VARIABLE.Length + vName.Length;
             for (int i = start - 1; i > end; i--)
             {
-                string line = code[i].TrimStart().ToLower();
+                string line = code[i].TrimStart().ToLowerInvariant();
                 if (len > line.Length)
                     continue;
 

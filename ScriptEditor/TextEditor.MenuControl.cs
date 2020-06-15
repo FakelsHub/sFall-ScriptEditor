@@ -193,7 +193,7 @@ namespace ScriptEditor
 
         private void saveAsTemplateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null || Path.GetExtension(currentTab.filepath).ToLower() != ".ssl")
+            if (currentTab == null || Path.GetExtension(currentTab.filepath).ToLowerInvariant() != ".ssl")
                 return;
 
             SaveFileDialog sfdTemplate = new SaveFileDialog();
@@ -345,7 +345,7 @@ namespace ScriptEditor
                 MessageBox.Show("You cannot register an unsaved script.", "Error");
                 return;
             }
-            string fName = Path.GetExtension(currentTab.filename).ToLower();
+            string fName = Path.GetExtension(currentTab.filename).ToLowerInvariant();
             if (fName != ".ssl" && fName != ".int") {
                 MessageBox.Show("You cannot register this file.", "Error");
                 return;
@@ -554,7 +554,7 @@ namespace ScriptEditor
             if (currentTab == null)
                 return;
 
-            if (Path.GetExtension(currentTab.filename).ToLower() != ".msg")
+            if (Path.GetExtension(currentTab.filename).ToLowerInvariant() != ".msg")
                 currentDocument.TextEditorProperties.ShowSpaces = showTabsAndSpacesToolStripMenuItem.Checked;
 
             currentDocument.TextEditorProperties.ShowTabs = showTabsAndSpacesToolStripMenuItem.Checked;;
@@ -705,7 +705,7 @@ namespace ScriptEditor
             } else if (browserToolStripMenuItem.Checked)
                     splitContainer2.Panel2Collapsed = false;
 
-            if (Path.GetExtension(currentTab.filename).ToLower() != ".msg") {
+            if (Path.GetExtension(currentTab.filename).ToLowerInvariant() != ".msg") {
                 currentDocument.TextEditorProperties.ShowLineNumbers = textLineNumberToolStripMenuItem.Checked;
                 currentTab.textEditor.Refresh();
                 tsmMessageTextChecker.Enabled = false;

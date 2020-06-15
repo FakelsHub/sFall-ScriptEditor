@@ -18,7 +18,7 @@ namespace ScriptEditor.SyntaxRules
             HighlightExtraWord procedures = document.ExtraWordList;
             foreach (var p in procs)
             {
-                string name = p.name.ToLower();
+                string name = p.Name;
                 if (!p.IsStandart() && !procedures.WordExist(name)) { // ProgramInfo.opcodes_list.ContainsKey(name)
                     procedures.AddToList(document, name);
                     refresh = true;
@@ -29,13 +29,13 @@ namespace ScriptEditor.SyntaxRules
 
         static public void AddToList(IDocument document, string name)
         {
-            document.ExtraWordList.AddToList(document, name.ToLower());
+            document.ExtraWordList.AddToList(document, name.ToLowerInvariant());
             document.HighlightingStrategy.MarkTokens(document);
         }
 
         static public void DeleteFromList(IDocument document, string name)
         {
-            document.ExtraWordList.RemoveFromList(name.ToLower());
+            document.ExtraWordList.RemoveFromList(name.ToLowerInvariant());
             document.HighlightingStrategy.MarkTokens(document);
         }
 
@@ -46,7 +46,7 @@ namespace ScriptEditor.SyntaxRules
             {
                 if (p.IsStandart()) continue;
 
-                string name = p.name.ToLower();
+                string name = p.Name;
                 pList.Add(name);
                 if (!document.ExtraWordList.WordExist(name)) {
                     document.ExtraWordList.AddToList(document, name); // add procedure

@@ -151,7 +151,7 @@ namespace ScriptEditor.CodeTranslation
                 bool exist = false;
                 foreach (Procedure p in update_pi.procs)
                 {
-                    if (String.Equals(_proc[i].name, p.name, StringComparison.OrdinalIgnoreCase)
+                    if (p.name.Equals(_proc[i].name, StringComparison.OrdinalIgnoreCase)
                         && _proc[i].fdeclared == p.fdeclared) {
                         _proc[i].d.start = p.d.start;
                         _proc[i].d.end = p.d.end;
@@ -169,7 +169,7 @@ namespace ScriptEditor.CodeTranslation
                 bool exist = false;
                 for (int j = 0; j < _proc.Count; j++)
                 {
-                    if (String.Equals(update_pi.procs[i].name, _proc[j].name, StringComparison.OrdinalIgnoreCase)
+                    if (update_pi.procs[i].name.Equals(_proc[j].name, StringComparison.OrdinalIgnoreCase)
                         && update_pi.procs[i].fdeclared == _proc[j].fdeclared) {
                             exist = true;
                             break;
@@ -249,7 +249,7 @@ namespace ScriptEditor.CodeTranslation
             {
                 if (_pi.procs[i].fdeclared != scriptFile) continue;
 
-                string pName = _pi.procs[i].name.ToLowerInvariant();
+                string pName = _pi.procs[i].Name;
                 int n = procedureNames.FindIndex(name => name == pName);
                 if (n == -1 || n >= listBlock.Count) continue;
 
@@ -810,7 +810,7 @@ namespace ScriptEditor.CodeTranslation
 
             for (int i = start; i < lenBuff; i++)
             {
-                string buffer = bufferSSLCode[i].TrimStart().ToLower();
+                string buffer = bufferSSLCode[i].TrimStart().ToLowerInvariant();
                 if (CommentBlockParse(ref buffer, ref _comm))
                     continue;
                 RemoveCommentLine(ref buffer, 0);
