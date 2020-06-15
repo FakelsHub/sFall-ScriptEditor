@@ -28,36 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxProcedure = new System.Windows.Forms.GroupBox();
             this.rbAfterSelProcedure = new System.Windows.Forms.RadioButton();
             this.rbPasteAtEnd = new System.Windows.Forms.RadioButton();
             this.cbCopyBodyProc = new System.Windows.Forms.CheckBox();
             this.tbName = new System.Windows.Forms.TextBox();
             this.Cancel = new System.Windows.Forms.Button();
             this.Create = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxProcedure.SuspendLayout();
             this.SuspendLayout();
             // 
-            // groupBox1
+            // groupBoxProcedure
             // 
-            this.groupBox1.Controls.Add(this.rbAfterSelProcedure);
-            this.groupBox1.Controls.Add(this.rbPasteAtEnd);
-            this.groupBox1.Controls.Add(this.cbCopyBodyProc);
-            this.groupBox1.Location = new System.Drawing.Point(12, 38);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(265, 65);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Procedure options";
+            this.groupBoxProcedure.Controls.Add(this.rbAfterSelProcedure);
+            this.groupBoxProcedure.Controls.Add(this.rbPasteAtEnd);
+            this.groupBoxProcedure.Controls.Add(this.cbCopyBodyProc);
+            this.groupBoxProcedure.Location = new System.Drawing.Point(12, 38);
+            this.groupBoxProcedure.Name = "groupBoxProcedure";
+            this.groupBoxProcedure.Size = new System.Drawing.Size(265, 65);
+            this.groupBoxProcedure.TabIndex = 0;
+            this.groupBoxProcedure.TabStop = false;
+            this.groupBoxProcedure.Text = "Procedure options";
             // 
             // rbAfterSelProcedure
             // 
             this.rbAfterSelProcedure.AutoSize = true;
             this.rbAfterSelProcedure.Location = new System.Drawing.Point(141, 19);
             this.rbAfterSelProcedure.Name = "rbAfterSelProcedure";
-            this.rbAfterSelProcedure.Size = new System.Drawing.Size(118, 17);
+            this.rbAfterSelProcedure.Size = new System.Drawing.Size(129, 17);
             this.rbAfterSelProcedure.TabIndex = 2;
-            this.rbAfterSelProcedure.Text = "Insert after selected";
+            this.rbAfterSelProcedure.Text = "Insert at caret position";
             this.rbAfterSelProcedure.UseVisualStyleBackColor = true;
             // 
             // rbPasteAtEnd
@@ -121,7 +121,7 @@
             this.Controls.Add(this.Create);
             this.Controls.Add(this.Cancel);
             this.Controls.Add(this.tbName);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupBoxProcedure);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -132,8 +132,8 @@
             this.Text = "Create Procedure";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProcForm_FormClosing);
             this.Shown += new System.EventHandler(this.ProcForm_Shown);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxProcedure.ResumeLayout(false);
+            this.groupBoxProcedure.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,11 +142,11 @@
         #endregion
 
         private System.Windows.Forms.Button Cancel;
-        protected internal System.Windows.Forms.GroupBox groupBox1;
         protected internal System.Windows.Forms.Button Create;
         private System.Windows.Forms.RadioButton rbPasteAtEnd;
         private System.Windows.Forms.TextBox tbName;
         private System.Windows.Forms.RadioButton rbAfterSelProcedure;
         private System.Windows.Forms.CheckBox cbCopyBodyProc;
+        internal System.Windows.Forms.GroupBox groupBoxProcedure;
     }
 }

@@ -26,7 +26,7 @@ namespace ScriptEditor
         internal InsertAt PlaceAt
         {
             get {
-                if (!cbCopyBodyProc.Enabled) return InsertAt.Caret;
+                if (!groupBoxProcedure.Enabled) return InsertAt.Caret;
                 return (rbPasteAtEnd.Checked) ? InsertAt.End : InsertAt.After;
             }
         }
@@ -150,7 +150,7 @@ namespace ScriptEditor
         internal static bool CreateRenameForm(ref string name, string tile = "")
         {
             ProcForm RenameFrm = new ProcForm(name);
-            RenameFrm.groupBox1.Enabled = false;
+            RenameFrm.groupBoxProcedure.Enabled = false;
             RenameFrm.Text = "Rename " + tile;
             RenameFrm.Create.Text = "OK";
             if (RenameFrm.ShowDialog() == DialogResult.Cancel) {

@@ -228,7 +228,8 @@ namespace ScriptEditor.CodeTranslation
 
         public Procedure GetProcedureByName(string name)
         {
-            return GetProcedureByIndex(GetProcedureIndex(name));
+            var i = GetProcedureIndex(name);
+            return (i != -1) ? GetProcedureByIndex(i) : null;
         }
 
         /// <summary>

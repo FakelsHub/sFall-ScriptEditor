@@ -534,7 +534,7 @@ namespace ScriptEditor.TextEditorUtilities
 
             string sWord = TAC.SelectionManager.SelectedText.Trim();
             int wordLen = sWord.Length;
-            if (wordLen == 0 || (wordLen < 3 && !Char.IsLetterOrDigit(sWord[0])) || (wordLen == 1 && Char.IsLetter(sWord[0]))) return;
+            if (wordLen == 0 || (wordLen <= 2 && !Char.IsLetterOrDigit(sWord[0]) && wordLen == 2 && !Char.IsLetterOrDigit(sWord[1]))) return;
 
             string word = TAC.Document.LineSegmentCollection[TAC.Caret.Line].GetWord(TAC.SelectionManager.SelectionCollection[0].StartPosition.Column).Word;
             bool isWordHighlighting = (wordLen == word.Length && sWord == word);

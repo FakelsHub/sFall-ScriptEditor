@@ -315,7 +315,7 @@ namespace ScriptEditor.TextEditorUtilities
         internal static string RenameProcedure(string name, IDocument document, TabInfo cTab)
         {
             Procedure proc = cTab.parseInfo.GetProcedureByName(name);
-            return RenameProcedure(proc, document, cTab);
+            return (proc != null) ? RenameProcedure(proc, document, cTab) : null;
         }
 
         // Search and replace procedure name in script text

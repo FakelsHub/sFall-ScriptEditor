@@ -286,7 +286,7 @@ namespace ScriptEditor
         }
         #endregion
 
-        #region References/DeclerationDefinition & Include function
+        #region References/Decleration/Definition & Include function
         private void findReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TextLocation tl = currentActiveTextAreaCtrl.Caret.Position; //(TextLocation)editorMenuStrip.Tag;
@@ -342,7 +342,7 @@ namespace ScriptEditor
             string word, file = currentTab.filepath;
             int line;
             TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
-            if (((ToolStripDropDownItem)sender).Tag != null) { // "Button"
+            if (((ToolStripDropDownItem)sender).Tag != null) { // for "Button"
                 if (!currentTab.shouldParse)
                     return;
 
@@ -573,16 +573,14 @@ namespace ScriptEditor
                 MessageBox.Show("A procedure with this name has already been declared.", "Info");
                 return;
             }
-
-            byte inc = 0;
-            if (name == "look_at_p_proc" || name == "description_p_proc")
-                inc++;
+            byte line = (name == "look_at_p_proc" || name == "description_p_proc") ? (byte)1 : (byte)0;
 
             ProcForm CreateProcFrm = new ProcForm(name, true);
+
             if (ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure)
                 CreateProcFrm.CopyProcedure = false;
             else
-                CreateProcFrm.groupBox1.Enabled = false;
+                CreateProcFrm.groupBoxProcedure.Enabled = false;
 
             ProcTree.HideSelection = false;
 
@@ -591,15 +589,20 @@ namespace ScriptEditor
                 return;
             }
 
-            ProcedureBlock block = new ProcedureBlock();
-            if (CreateProcFrm.PlaceAt == InsertAt.After) {
-                var proc = (Procedure)ProcTree.SelectedNode.Tag;
-                block.begin = proc.d.start;
-                block.end = proc.d.end;
-                block.declar = proc.d.declared;
-            }
+            InsertAt placeAt = CreateProcFrm.PlaceAt;
 
-            PrepareInsertProcedure(CreateProcFrm.ProcedureName, block, CreateProcFrm.PlaceAt, inc);
+            ProcedureBlock block = new ProcedureBlock();
+            if (placeAt == InsertAt.After) {
+                var proc = currentHighlightProc ?? (Procedure)ProcTree.SelectedNode.Tag;
+                if (proc != null) {
+                    block.begin  = proc.d.start;
+                    block.end    = proc.d.end;
+                    block.declar = proc.d.declared;
+                } else {
+                    placeAt = InsertAt.Caret;
+                }
+            }
+            PrepareInsertProcedure(CreateProcFrm.ProcedureName, block, placeAt, line);
 
             CreateProcFrm.Dispose();
             ProcTree.HideSelection = true;
@@ -618,10 +621,10 @@ namespace ScriptEditor
 
             ProcForm CreateProcFrm = new ProcForm(word, false, true);
 
+            CreateProcFrm.SetInsertAtArter = true;
             if (!IsSelectProcedure && currentHighlightProc == null) {
-                CreateProcFrm.groupBox1.Enabled = false;
-            } else
-                CreateProcFrm.SetInsertAtArter = true;
+                CreateProcFrm.groupBoxProcedure.Enabled = false;
+            }
 
             ProcTree.HideSelection = false;
             if (CreateProcFrm.ShowDialog() == DialogResult.Cancel) {
@@ -635,17 +638,23 @@ namespace ScriptEditor
                 return;
             }
 
+            InsertAt placeAt = CreateProcFrm.PlaceAt;
+
             ProcedureBlock block = new ProcedureBlock();
-            if (CreateProcFrm.CopyProcedure || CreateProcFrm.PlaceAt == InsertAt.After) {
-                var proc = (currentHighlightProc != null) ? currentHighlightProc : (Procedure)ProcTree.SelectedNode.Tag;
-                block.begin = proc.d.start;
-                block.end = proc.d.end;
-                block.declar = proc.d.declared;
-                block.copy = CreateProcFrm.CopyProcedure;
+            if (CreateProcFrm.CopyProcedure || placeAt == InsertAt.After) {
+                var proc = (ProcTree.SelectedNode == null) ? currentHighlightProc : (Procedure)ProcTree.SelectedNode.Tag;
+                if (proc != null) {
+                    block.begin  = proc.d.start;
+                    block.end    = proc.d.end;
+                    block.declar = proc.d.declared;
+                    block.copy   = CreateProcFrm.CopyProcedure;
+                } else {
+                    placeAt = InsertAt.Caret;
+                }
             }
 
             name = CreateProcFrm.ProcedureName;
-            PrepareInsertProcedure(name, block, CreateProcFrm.PlaceAt);
+            PrepareInsertProcedure(name, block, placeAt);
 
             CreateProcFrm.Dispose();
             ProcTree.HideSelection = true;
