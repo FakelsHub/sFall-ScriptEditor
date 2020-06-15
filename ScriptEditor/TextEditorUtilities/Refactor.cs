@@ -312,10 +312,9 @@ namespace ScriptEditor.TextEditorUtilities
         }
 
         // вызывается из редактора нодов диалога
-        internal static string RenameProcedure(string oldName, IDocument document, TabInfo cTab)
+        internal static string RenameProcedure(string name, IDocument document, TabInfo cTab)
         {
-            Procedure proc = new Procedure();
-            proc.name = oldName;
+            Procedure proc = cTab.parseInfo.GetProcedureByName(name);
             return RenameProcedure(proc, document, cTab);
         }
 

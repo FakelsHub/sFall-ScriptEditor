@@ -226,6 +226,11 @@ namespace ScriptEditor.CodeTranslation
             return (proc == null) ? procs[index] : proc[index];
         }
 
+        public Procedure GetProcedureByName(string name)
+        {
+            return GetProcedureByIndex(GetProcedureIndex(name));
+        }
+
         /// <summary>
         /// Получить процедуру по номеру строки из скрипта.
         /// </summary>
