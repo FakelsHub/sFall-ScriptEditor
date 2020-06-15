@@ -789,6 +789,11 @@ namespace ScriptEditor
             return success;
         }
 
+        private void SwitchToTab(int index)
+        {
+            if (tabControl1.TabPages.Count > 1) tabControl1.SelectTab(index);
+        }
+
         // Called when creating a new document and when switching tabs
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {

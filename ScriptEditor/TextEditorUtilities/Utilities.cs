@@ -320,14 +320,9 @@ namespace ScriptEditor.TextEditorUtilities
 
         public static bool Search(string text, string str, Regex regex, bool mcase)
         {
-            if (regex != null) {
-                if (regex.IsMatch(text))
-                    return true;
-            } else {
-                if (text.IndexOf(str, (mcase) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) != -1)
-                    return true;
-            }
-            return false;
+            return (regex == null)
+                    ? (text.IndexOf(str, (mcase) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) != -1)
+                    : regex.IsMatch(text);
         }
 
         public static bool SearchAndScroll(TextAreaControl TAC, Regex regex, string searchText, bool mcase, ref ScriptEditor.TextEditor.PositionType type, bool searchContinue = true)

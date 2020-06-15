@@ -124,15 +124,27 @@ namespace ScriptEditor
             if (sf == null) {
                 sf = new SearchForm();
                 sf.Owner = this;
+
                 sf.FormClosed += delegate(object a1, FormClosedEventArgs a2) {
                     lastSearchText = sf.cbSearch.Text;
                     sf = null;
                 };
+
                 sf.lbFindFiles.MouseDoubleClick += delegate (object a1, MouseEventArgs a2) {
+                    if (sf.lbFindFiles.Items.Count == 0) return;
+
                     string file = sf.lbFindFiles.SelectedItem.ToString();
-                    Utilities.SearchAndScroll(Open(file, OpenType.File, false).textEditor.ActiveTextAreaControl,
-                                             (Regex)sf.lbFindFiles.Tag, sf.cbSearch.Text, sf.cbCase.Checked, ref PosChangeType, false);
+
+                    TabInfo tab = CheckTabs(tabs, file); // проверить открыт ли уже этот файл
+                    bool isOpen = (tab != null);
+                    if (!isOpen) tab = Open(file, OpenType.File, false);
+
+                    Utilities.SearchAndScroll(tab.textEditor.ActiveTextAreaControl, (Regex)sf.lbFindFiles.Tag,
+                                              sf.cbSearch.Text, sf.cbCase.Checked, ref PosChangeType, false);
+
+                    if (isOpen) SwitchToTab(tab.index);
                 };
+
                 sf.bSearch.Click += new EventHandler(bSearch_Click);
                 sf.bReplace.Click += new EventHandler(bReplace_Click);
 
