@@ -62,6 +62,7 @@ namespace ScriptEditor
             }
             
             MessagesData = File.ReadAllLines(sourceTab.msgFilePath, Settings.EncCodePage);
+            if (sourceTab.messages.Count == 0) MessageFile.ParseMessages(sourceTab, MessagesData);
 
             NodesComboBox.Text = curProc.name;
             nodesNavigation.Add(curProc.name);
@@ -83,16 +84,16 @@ namespace ScriptEditor
       
         private void BuildMessageDialog()
         {
-            int number = 0;
+            int addFemale = 0;
             if (femaleToolStripMenuItem.Checked)
-                int.TryParse(toolStripTextBox.Text, out number);
+                int.TryParse(toolStripTextBox.Text, out addFemale);
 
             string msg, msgPath = null;
 
             foreach (DialogueParser line in Arguments)
             {
                 if (line.opcode == OpcodeType.None) continue;
-                int n = number;
+                int n = addFemale;
                 bool error = false;
                 if (line.numberMsgLine > 0) {
                     
@@ -110,11 +111,11 @@ namespace ScriptEditor
                             msgPath = sourceTab.msgFilePath;
 
                         readMsgNum = line.numberMsgFile;
-                        MessagesData = File.ReadAllLines(msgPath, Settings.EncCodePage);
+                        MessagesData = File.ReadAllLines(msgPath, Settings.EncCodePage); // загрузить другой файл сообщений
                     }
 
-                    msg = MessageFile.GetMessages(MessagesData, number + line.numberMsgLine);
-                    if (msg == null && number > 0) {
+                    msg = MessageFile.GetMessages(MessagesData, addFemale + line.numberMsgLine);
+                    if (msg == null && addFemale > 0) {
                         msg = MessageFile.GetMessages(MessagesData, line.numberMsgLine);
                         n = 0;
                     }

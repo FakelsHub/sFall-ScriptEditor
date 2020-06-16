@@ -546,7 +546,7 @@ namespace ScriptEditor.CodeTranslation
                     {
                         if (op.Value.isDefault || op.Value.opcode != OpcodeType.Reply) continue;
 
-                        n = incode.IndexOf(op.Value.opcodeName, m, StringComparison.OrdinalIgnoreCase);
+                        n = incode.IndexOf(op.Value.opcodeName, m, StringComparison.Ordinal);
                         if (n != -1) break;
                     }
                 }
@@ -575,11 +575,11 @@ namespace ScriptEditor.CodeTranslation
                 m = n;
                 n = incode.IndexOf(opcode.ToString(), m, StringComparison.OrdinalIgnoreCase);
                 if (n == -1) {
-                    foreach (var op in  DialogFunctionsRules.opcodeTemplates)
+                    foreach (var op in DialogFunctionsRules.opcodeTemplates)
                     {
                         if (op.Value.isDefault || op.Value.opcode != OpcodeType.Option) continue;
 
-                        n = incode.IndexOf(op.Value.opcodeName, m, StringComparison.OrdinalIgnoreCase);
+                        n = incode.IndexOf(op.Value.opcodeName, m, StringComparison.Ordinal);
                         if (n != -1) break;
                     }
                 }
@@ -606,7 +606,7 @@ namespace ScriptEditor.CodeTranslation
                 {
                     if (op.Value.opcode != OpcodeType.Call) continue;
 
-                    n = incode.IndexOf(op.Value.opcodeName, m, StringComparison.OrdinalIgnoreCase);
+                    n = incode.IndexOf(op.Value.opcodeName, m, StringComparison.Ordinal);
                     if (n != -1) break;
                 }
                 if (n > -1) {
@@ -617,36 +617,6 @@ namespace ScriptEditor.CodeTranslation
                     n = nextPosition;
                 }
             } while (n > -1 && n < incode.Length);
-        }
-
-        private static string GetOpcodeName(string incode, ref int index)
-        {
-            string name = null;
-            // forward
-            int end = -1;
-            for (int i = index; i < incode.Length; i++) {
-                char c = incode[i];
-                if (c != '_' && !char.IsLetterOrDigit(c)) {
-                    if (c == '(') end = i;
-                    break;
-                }
-            }
-            if (end == -1) return null;
-            int start = -1;
-            // backward
-            for (int i = index - 1; i >= 0; i--) {
-                char c = incode[i];
-                if (c != '_' && !char.IsLetterOrDigit(c)) {
-                    if (char.IsWhiteSpace(c)) start = i + 1;
-                    break;
-                }
-                if (i == 0) start = 0;
-            }
-            if (end != -1) {
-                index = end;
-                if (start != -1) name = incode.Substring(start, end - start).TrimEnd().ToLowerInvariant();
-            }
-            return name;
         }
 
         public static OpcodeType GetOpcodeType(string name)
@@ -679,11 +649,47 @@ namespace ScriptEditor.CodeTranslation
         #region Помощники для парсинга кода
 
         /// <summary>
+        /// Возвращает opcode в нижнем регистре в строке кода расположенный в указазной позиции
+        /// </summary>
+        /// <param name="index"> Возвращает позицию указываемую на открываемум скобку опкода</param>
+        private static string GetOpcodeName(string incode, ref int index)
+        {
+            string name = null;
+            // forward
+            int end = -1;
+            for (int i = index + 1; i < incode.Length; i++)
+            {
+                char c = incode[i];
+                if (c != '_' && !char.IsLetterOrDigit(c)) {
+                    while (char.IsWhiteSpace(c) && ++i < incode.Length) { c = incode[i]; }
+                    if (c == '(') end = i;
+                    break;
+                }
+            }
+            if (end == -1) return null;
+
+            // backward
+            int start = -1;
+            for (int i = index - 1; i >= 0; i--)
+            {
+                char c = incode[i];
+                if (c != '_' && !char.IsLetterOrDigit(c)) {
+                    if (char.IsWhiteSpace(c)) start = i + 1;
+                    break;
+                }
+                if (i == 0) start = 0;
+            }
+            if (end != -1) {
+                index = end;
+                if (start != -1) name = incode.Substring(start, end - start).TrimEnd().ToLowerInvariant();
+            }
+            return name;
+        }
+
+        /// <summary>
         /// Возвращает позицию указываемую на знак ';' или за последним знаком ')' в переданном строки кода
         /// </summary>
-        /// <param name="code"> Строка кода </param>
         /// <param name="offset"> Указввает на позицию после ключевого слова опкода</param>
-        /// <returns></returns>
         private static int GetOpcodeEndPosition(string code, int offset)
         {
             int x = code.IndexOf(";", offset);
@@ -718,6 +724,9 @@ namespace ScriptEditor.CodeTranslation
             return -1; // потенциальная ошибка
         }
 
+        /// <summary>
+        /// Возвращает слово в строке кода расположенное в указазной позиции
+        /// </summary>
         private static string GetWordAt(string code, int position)
         {
             // forward

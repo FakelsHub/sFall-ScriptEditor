@@ -71,6 +71,9 @@ namespace ScriptEditor.TextEditorUI
         /// </summary>
         public TabInfo msgFileTab;
 
+        /// <summary>
+        /// Ассоциированные сообщения с данным скриптом, содержит номер строки и его aссоциированный текст
+        /// </summary>
         public readonly Dictionary<int, string> messages = new Dictionary<int, string>();
 
         /// <summary>

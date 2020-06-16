@@ -34,7 +34,7 @@ namespace ScriptEditor
         private Dictionary<string, List<DialogueParser>> NodesData = new Dictionary<string, List<DialogueParser>>();
         
         private List<ContentBody> NodeBody;
-        private List<string> linkfrom;
+        private List<string> linkFrom;
         private List<LinkTo> linkToList;
 
         private string[] MessagesData;
@@ -47,7 +47,7 @@ namespace ScriptEditor
 
         private string scriptName;
         private bool shiftDown;
-        private bool needupdate;
+        private bool needUpdate;
         private bool autoUpdate;        // save setting
         private bool woExitNode;        // save setting
         private bool fсClosed;          // закрытие основной формы диаграмм
@@ -56,10 +56,9 @@ namespace ScriptEditor
 
         public bool NeedUpdate
         {   
-            private get { return needupdate; }
+            private get { return needUpdate; }
             set {
-                    if (shouldUpdate)
-                        needupdate = value;
+                    if (shouldUpdate) needUpdate = value;
                     shouldUpdate = true;
                     UpdateProceduresInfo();
                 }
@@ -88,7 +87,7 @@ namespace ScriptEditor
 
             this.Controls.Add(nodesCanvas);
             toolStrip.SendToBack();
-			nodesCanvas.Dock = DockStyle.Fill;
+            nodesCanvas.Dock = DockStyle.Fill;
             nodesCanvas.ContextMenuStrip = contextMenuStrip;
 
             // Canvas Events
@@ -236,11 +235,18 @@ namespace ScriptEditor
 
             // node link to node, and message text
             linkToList = new List<LinkTo>();
+
             for (int n = 0; n < value.Count; n++) 
             {
-                if (value[n].opcode == OpcodeType.Option || value[n].opcode == OpcodeType.giq_option || value[n].opcode == OpcodeType.gsay_option || value[n].opcode == OpcodeType.call)
+                if (value[n].opcode == OpcodeType.Option || value[n].opcode == OpcodeType.giq_option ||
+                    value[n].opcode == OpcodeType.gsay_option || value[n].opcode == OpcodeType.call)
+                {
                     linkToList.Add(new LinkTo(value[n].toNode, n + 1));
-                string msgText = GetMessageText(value[n].numberMsgFile, value[n].numberMsgLine);
+                }
+
+                string msgText = (value[n].opcode != OpcodeType.None && value[n].opcode != OpcodeType.call)
+                               ? GetMessageText(value[n].numberMsgFile, value[n].numberMsgLine) 
+                               : null;
 
                 //поместить распарсенные данные из Node процедуры в List<ContentBody>  
                 NodeBody.Add(new ContentBody(value[n].code, msgText, value[n].opcode, value[n].numberMsgLine, value[n].numberMsgFile, n));
@@ -248,22 +254,23 @@ namespace ScriptEditor
                 
             // получить список имен: link from nodes
             List<string> linklist = new List<string>();
+
             foreach (var data in NodesData)
             {
                 foreach (var nd in data.Value)
                 {
-                    if (nd.toNode == null || linklist.Contains(data.Key))
-                        continue;
-                    if (nd.toNode.Equals(node.Key, StringComparison.OrdinalIgnoreCase))
-                        linklist.Add(data.Key);
+                    if (nd.toNode == null || linklist.Contains(data.Key)) continue;
+
+                    if (nd.toNode.Equals(node.Key, StringComparison.OrdinalIgnoreCase)) linklist.Add(data.Key);
                 }
             }
+
             int i = 0;
-            linkfrom = new List<string>() { String.Empty, String.Empty };
+            linkFrom = new List<string>() { String.Empty, String.Empty };
             foreach (var link in linklist)
             {
-                linkfrom[i] += ((linkfrom[i].Length > 0) ? " : " : String.Empty) + link;
-                i = (i == 0) ? 1 : 0;
+                linkFrom[i] += ((linkFrom[i].Length > 0) ? " : " : String.Empty) + link;
+                i = 1 - i;
             }
 
             NodesType type = NodesType.Default;
@@ -276,7 +283,7 @@ namespace ScriptEditor
             else if (linkToList.Count == 0 && linklist.Count == 0)
                 type = NodesType.Unused;
 
-            return new DataNode(node.Key, linkToList, linkfrom, NodeBody, type);
+            return new DataNode(node.Key, linkToList, linkFrom, NodeBody, type);
         }
 
         /// <summary>
@@ -369,7 +376,7 @@ namespace ScriptEditor
             if (existNodeItem != null) {
                 // установить расположение и размеры ноды на холсте
                 newNodeItem.X = existNodeItem.X;
-			    newNodeItem.Y = existNodeItem.Y;
+                newNodeItem.Y = existNodeItem.Y;
                 newNodeItem.Width = existNodeItem.Width;
                 // установить 
                 newNodeItem.Collapsed = ((NodeCanvasItem)existNodeItem).Collapsed;
@@ -511,12 +518,11 @@ namespace ScriptEditor
                         msg = MessageFile.GetMessages(MsgData, msgLineNum);
                     } else
                         msg = String.Format(MessageFile.msgfileError, msgNum);
-                } else {
-                    if (sourceTab.messages.ContainsKey(msgLineNum))
+                }
+                else if (sourceTab.messages.ContainsKey(msgLineNum)) {
                         msg = sourceTab.messages[msgLineNum];   
                 }
-                if (msg == null) 
-                    msg = MessageFile.messageError;
+                if (msg == null) msg = MessageFile.messageError;
             } else
                 msg = "ParseCode: <Could not get line number of this code>";
 
@@ -525,13 +531,11 @@ namespace ScriptEditor
         
         private bool NodeIsEditing(NodeCanvasItem node)
         {
-            if (node.IsEditing)
-                return true;
+            if (node.IsEditing) return true;
             
             foreach (var fcTE in sourceTab.nodeFlowchartTE)
             {
-                if (fcTE.NodeName == node.GetNodeData.Name)
-                    return true;
+                if (fcTE.NodeName == node.GetNodeData.Name) return true;
             }
             return false;
         }
@@ -890,11 +894,11 @@ namespace ScriptEditor
         private void addNoteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NoteCanvasItem note = new NoteCanvasItem();
-			note.X = (40 + nodesCanvas.HorizontalScroll.Value) / nodesCanvas.Zoom;
-			note.Y = (40 + nodesCanvas.VerticalScroll.Value) / nodesCanvas.Zoom;
-			note.Width = 200;
-			note.Height = 50;
-			nodesCanvas.AddCanvasItem(note);
+            note.X = (40 + nodesCanvas.HorizontalScroll.Value) / nodesCanvas.Zoom;
+            note.Y = (40 + nodesCanvas.VerticalScroll.Value) / nodesCanvas.Zoom;
+            note.Width = 200;
+            note.Height = 50;
+            nodesCanvas.AddCanvasItem(note);
             
             nodesCanvas.Refresh();
         }
@@ -1236,38 +1240,38 @@ namespace ScriptEditor
                 nodesCanvas.SaveToImage(sfd.FileName);
         }
         
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
-		private XmlDocument WriteToXml ()
-		{
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml("<NodesDiagram/>");
-			
-			XmlDeclaration decl = doc.CreateXmlDeclaration("1.0", "utf-8", "yes");
-			doc.InsertBefore(decl, doc.FirstChild);
-			
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
+        private XmlDocument WriteToXml ()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml("<NodesDiagram/>");
+            
+            XmlDeclaration decl = doc.CreateXmlDeclaration("1.0", "utf-8", "yes");
+            doc.InsertBefore(decl, doc.FirstChild);
+            
             XmlAttribute script = doc.CreateAttribute("ScriptName");
             script.Value = scriptName;
-			doc.DocumentElement.Attributes.Append(script);
-			
-			XmlAttribute zoom = doc.CreateAttribute("Zoom");
-			zoom.Value = nodesCanvas.Zoom.ToString(System.Globalization.CultureInfo.InvariantCulture);
-			doc.DocumentElement.Attributes.Append(zoom);
-			
+            doc.DocumentElement.Attributes.Append(script);
+            
+            XmlAttribute zoom = doc.CreateAttribute("Zoom");
+            zoom.Value = nodesCanvas.Zoom.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            doc.DocumentElement.Attributes.Append(zoom);
+            
             XmlAttribute positionX = doc.CreateAttribute("PositionX");
-			positionX.Value = nodesCanvas.HorizontalScroll.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
-			doc.DocumentElement.Attributes.Append(positionX);
-			
+            positionX.Value = nodesCanvas.HorizontalScroll.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            doc.DocumentElement.Attributes.Append(positionX);
+            
             XmlAttribute positionY = doc.CreateAttribute("PositionY");
-			positionY.Value = nodesCanvas.VerticalScroll.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
-			doc.DocumentElement.Attributes.Append(positionY);
-			
+            positionY.Value = nodesCanvas.VerticalScroll.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            doc.DocumentElement.Attributes.Append(positionY);
+            
             //Save hidden nodes
             foreach (var item in HideNodes)
-		        item.Value.WriteToXml(doc);
+                item.Value.WriteToXml(doc);
 
-			return nodesCanvas.WriteToXml(doc);;
-		}
-				
+            return nodesCanvas.WriteToXml(doc);;
+        }
+                
         private void LoadFlowchartDiagram()
         {
             XmlDocument doc = new XmlDocument();
@@ -1291,9 +1295,9 @@ namespace ScriptEditor
             nodesCanvas.Select();
         }
 
-		private void LoadFromXml (IXPathNavigable doc)
-		{
-			XPathNavigator nav = doc.CreateNavigator();
+        private void LoadFromXml (IXPathNavigable doc)
+        {
+            XPathNavigator nav = doc.CreateNavigator();
             
             XPathNodeIterator ni = nav.Select(@"/NodesDiagram");
             ni.MoveNext();
@@ -1312,8 +1316,8 @@ namespace ScriptEditor
 
             ni = nav.Select(@"/NodesDiagram/Node");
             while (ni.MoveNext())
-			{
-				string nodeName = ni.Current.GetAttribute("Name", "");
+            {
+                string nodeName = ni.Current.GetAttribute("Name", "");
                 INode nd = GetNodeData(nodeName);
                 NodeCanvasItem canvasitem = ClassCanvas.CreateItemFromType(nd);
                 if (canvasitem != null) {
@@ -1325,20 +1329,20 @@ namespace ScriptEditor
                         HideNodes.Add(nodeName, canvasitem);
                 } else
                     MessageBox.Show("Deleted existing dialog node: " + nodeName + ", that does not exist in the script code.", "Loading...");
-			}
+            }
 
-			ni = nav.Select(@"/NodesDiagram/Note");
-			while (ni.MoveNext())
-			{
-				NoteCanvasItem note = new NoteCanvasItem();
-				note.LoadFromXml(ni.Current);
-				nodesCanvas.AddCanvasItem(note);
-			}
+            ni = nav.Select(@"/NodesDiagram/Note");
+            while (ni.MoveNext())
+            {
+                NoteCanvasItem note = new NoteCanvasItem();
+                note.LoadFromXml(ni.Current);
+                nodesCanvas.AddCanvasItem(note);
+            }
 
             nodesCanvas.Zoom = zoom;
             nodesCanvas.SetCanvasScrollPosition = new Point(positionX, positionY); 
-		}
-		#endregion
+        }
+        #endregion
 
         #region Handles drawing for ToolTip
         private void toolTip_Draw(object sender, DrawToolTipEventArgs e)

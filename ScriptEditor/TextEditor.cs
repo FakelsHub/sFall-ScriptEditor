@@ -1694,10 +1694,10 @@ namespace ScriptEditor
                 MessageBox.Show(MessageFile.MissingFile, "Dialog Preview");
                 return;
             }
+            currentTab.msgFilePath = msgPath;
 
             ScriptEditor.TextEditorUI.Function.DialogFunctionsRules.BuildOpcodesDictionary();
 
-            currentTab.msgFilePath = msgPath;
             DialogPreview DialogView = new DialogPreview(currentTab);
             if (!DialogView.InitReady) {
                 DialogView.Dispose();
@@ -1733,6 +1733,8 @@ namespace ScriptEditor
                     return;
                 }
             }
+
+            ScriptEditor.TextEditorUI.Function.DialogFunctionsRules.BuildOpcodesDictionary();
 
             FlowchartTE nodeEditor = new FlowchartTE(proc, currentTab);
             nodeEditor.Disposed += delegate(object s, EventArgs e1) { currentTab.nodeFlowchartTE.Remove((FlowchartTE)s); };

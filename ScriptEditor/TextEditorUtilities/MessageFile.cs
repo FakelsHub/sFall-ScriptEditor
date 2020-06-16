@@ -20,6 +20,7 @@ namespace ScriptEditor.TextEditorUtilities
         static bool onlyOnce = false;
 
         static List<string> missingFile = new List<string>();
+
         public static void ShowMissingFiles()
         {
             foreach (string file in missingFile)
@@ -216,7 +217,10 @@ namespace ScriptEditor.TextEditorUtilities
             return text;
         }
 
-        //Должно использоваться для получения строки текста из не ассоциированого Msg-файла
+        /// <summary>
+        /// Возвращает строку текста с указаным номером из переданного буфера.
+        /// Должно использоваться для получения строки текста из не ассоциированого Msg-файла.
+        /// </summary>
         public static string GetMessages(string[] linesMsg, int messageNum)
         {
             char[] split = new char[] { '}' };
@@ -233,7 +237,7 @@ namespace ScriptEditor.TextEditorUtilities
             return null;
         }
 
-        public static bool PutMessages(ref string[] MsgData, string text, int messageNum)
+        private static bool PutMessages(ref string[] MsgData, string text, int messageNum)
         {
             List<string> linesMsg = MsgData.ToList();
 
@@ -275,13 +279,19 @@ namespace ScriptEditor.TextEditorUtilities
             return false;
         }
 
+        /// <summary>
+        /// Сохраняет текстовую строку с номеров в указанный файл сообщения
+        /// </summary>
         public static bool SaveToMessageFile(string msgFilePath, string text, int msgNum)
         {
             string[] MessagesData = File.ReadAllLines(msgFilePath, Settings.EncCodePage);
             return SaveToMessageFile(ref MessagesData, msgFilePath, text, msgNum);
         }
         
-        public static bool SaveToMessageFile(ref string[] MessagesData, string msgFilePath, string text, int msgNum)
+        /// <summary>
+        /// Записывает в буфер текстовую строку с указанным номеров и сохранияет буфер в указанный файл сообщения
+        /// </summary>
+        public static bool SaveToMessageFile(ref string[] MessagesData, string msgFilePath, string text, int msgNum) 
         {
             bool result = PutMessages(ref MessagesData, text, msgNum);
             if (result)
