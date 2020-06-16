@@ -22,7 +22,7 @@ namespace ScriptEditor
         #region Search Function
         private bool SubSearchInternal(List<int> offsets, List<int> lengths)
         {
-            addSearchTextComboBox(sf.cbSearch.Text);
+            AddSearchTextComboBox(sf.cbSearch.Text);
 
             RegexOptions option = RegexOptions.None;
             Regex regex = null;
@@ -214,7 +214,7 @@ namespace ScriptEditor
                 Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType);
             else
                 DontFind.Play();
-            addSearchTextComboBox(find);
+            AddSearchTextComboBox(find);
         }
 
         private void FindBackButton_Click(object sender, EventArgs e)
@@ -229,7 +229,7 @@ namespace ScriptEditor
                 Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType);
             else
                 DontFind.Play();
-            addSearchTextComboBox(find);
+            AddSearchTextComboBox(find);
         }
 
         private void ReplaceButton_Click(object sender, EventArgs e)
@@ -244,7 +244,7 @@ namespace ScriptEditor
                 Utilities.FindSelected(currentActiveTextAreaCtrl, z, find.Length, ref PosChangeType, replace);
             else
                 DontFind.Play();
-            addSearchTextComboBox(find);
+            AddSearchTextComboBox(find);
         }
 
         private void ReplaceAllButton_Click(object sender, EventArgs e)
@@ -262,7 +262,7 @@ namespace ScriptEditor
                     currentActiveTextAreaCtrl.Document.Replace(z, find.Length, replace);
                 offset = z + 1;
             } while (z != -1);
-            addSearchTextComboBox(find);
+            AddSearchTextComboBox(find);
         }
 
         private void SendtoolStripButton_Click(object sender, EventArgs e)
@@ -476,6 +476,123 @@ namespace ScriptEditor
                 Caret caret = currentActiveTextAreaCtrl.Caret;
                 if (!ColorTheme.CheckColorPosition(currentDocument, caret.Position))
                     autoComplete.GenerateList(String.Empty, currentTab, caret.Offset, null);
+            }
+        }
+
+        //
+        private void ShowCodeTips(string tipText, Caret caret, int duration, bool tag = false)
+        {
+            int offset = TextUtilities.FindWordStart(currentDocument, caret.Offset - 1);
+            offset = caret.Offset - offset;
+            Point pos = caret.GetScreenPosition(caret.Line, caret.Column - offset);
+            pos.Offset(currentActiveTextAreaCtrl.FindForm().PointToClient(
+                       currentActiveTextAreaCtrl.Parent.PointToScreen(currentActiveTextAreaCtrl.Location)));
+            offset = (autoComplete.IsVisible) ? -25 : 20;
+            pos.Offset(0, offset);
+
+            if (tag) showTipsColumn = caret.Offset;
+
+            toolTips.Active = true;
+            toolTips.Tag = tag;
+            toolTips.Show(tipText, panel1, pos, duration);
+        }
+
+        private void TextArea_KeyPressed(object sender, KeyPressEventArgs e)
+        {
+            keyPressChar = e.KeyChar;
+            var caret = currentActiveTextAreaCtrl.Caret;
+
+            if (Settings.autoInputPaired && e.KeyChar == '"') {
+                List<Utilities.Quote> quotes = new  List<Utilities.Quote>();
+                Utilities.GetQuotesPosition(TextUtilities.GetLineAsString(currentDocument, caret.Line), quotes);
+                // skiping quotes "..." region
+                bool inQuotes = false;
+                foreach (Utilities.Quote q in quotes)
+                {
+                    if (caret.Column > q.Open && caret.Column < q.Close) {
+                        inQuotes = true;
+                        break;
+                    }
+                }
+                if (!inQuotes) {
+                    char chR = currentDocument.GetCharAt(caret.Offset);
+                    char chL = currentDocument.GetCharAt(caret.Offset - 1);
+                    if ((chL == '(' && chR == ')') || (chL != '"' && (chR == ' ' || chR == '\r') && !Char.IsLetterOrDigit(chL)))
+                        currentDocument.Insert(caret.Offset, "\"");
+                    else if (chL == '"' && chR == '"')
+                        currentDocument.Remove(caret.Offset, 1);
+                }
+            }
+            else if (e.KeyChar == '(' || e.KeyChar == '[' || e.KeyChar == '{') {
+                if (autoComplete.IsVisible) autoComplete.Close();
+                if (e.KeyChar == '{') return;
+
+                if (Settings.showTips && currentTab.parseInfo != null && e.KeyChar == '(') {
+                    string word = TextUtilities.GetWordAt(currentDocument, caret.Offset - 1);
+                    if (word != String.Empty) {
+                        string item = ProgramInfo.LookupOpcodesToken(word);
+                        if (item != null) {
+                            int z = item.IndexOf('\n');
+                            if (z > 0)
+                                item = item.Remove(z);
+                        }
+                        if (item == null)
+                            item = currentTab.parseInfo.LookupToken(word, null, 0, true);
+                        if (item != null)
+                            ShowCodeTips(item, caret, 50000, true);
+                    }
+                }
+
+                if (Settings.autoInputPaired && Char.IsWhiteSpace(currentDocument.GetCharAt(caret.Offset))) {
+                    inputPairedBrackets = 2;
+                    string bracket = (e.KeyChar == '[') ? "]" : ")";
+                    currentDocument.Insert(caret.Offset, bracket);
+                }
+            } else if (e.KeyChar == ')' || e.KeyChar == ']' || e.KeyChar == '}') {
+                if (toolTips.Active) ToolTipsHide();
+                if (e.KeyChar == '}') return;
+
+                if (Settings.autoInputPaired && inputPairedBrackets > 0) {
+                    char bracket = (e.KeyChar == ']') ? '[' : '(';
+                    if (currentDocument.GetCharAt(caret.Offset -1) == bracket && currentDocument.GetCharAt(caret.Offset) == e.KeyChar) {
+                        currentDocument.Remove(caret.Offset, 1);
+                        // TODO BUG: В контроле баг при использовании TextBuffer - стирается строка символов.
+                        //currentDocument.TextBufferStrategy.Remove(caret.Offset, 1);
+                        //currentActiveTextAreaCtrl.TextArea.Refresh();
+                    }
+                }
+            } else {
+                if (Settings.autocomplete) {
+                    if (!ColorTheme.CheckColorPosition(currentDocument, caret.Position))
+                        autoComplete.GenerateList(e.KeyChar.ToString(), currentTab, caret.Offset - 1, toolTips.Tag);
+                }
+            }
+            if (inputPairedBrackets > 0) inputPairedBrackets--;
+        }
+
+        void TextArea_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (!currentTab.shouldParse) return;
+            updateHighlightPocedure = true;
+
+            if (e.KeyCode == Keys.OemSemicolon && keyPressChar == ';') Utilities.FormattingCodeSmart(currentActiveTextAreaCtrl);
+
+            if (!Settings.showTips || toolTips.Active || !Char.IsLetter(Convert.ToChar(e.KeyValue))) return;
+
+            var caret = currentActiveTextAreaCtrl.Caret;
+            string word = TextUtilities.GetWordAt(currentDocument, caret.Offset - 1);
+            if (word != String.Empty) {
+                switch (word) {
+                    case "for":
+                    case "foreach":
+                    case "while":
+                    case "switch":
+                    case "if":
+                    case "ifel":
+                    case "elif":
+                        ShowCodeTips("Press the TAB key to insert the autocode.", caret, 5000);
+                        break;
+                }
             }
         }
         #endregion

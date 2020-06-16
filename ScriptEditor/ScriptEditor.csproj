@@ -121,7 +121,7 @@
       <DependentUpon>ProcForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SyntaxRules\HighlightProcedures.cs" />
-    <Compile Include="TextEditor.MenuControl.cs">
+    <Compile Include="TextEditor.FunctionsControl.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TextEditor.Utils.cs">
