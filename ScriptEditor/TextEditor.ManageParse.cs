@@ -243,7 +243,9 @@ namespace ScriptEditor
                 }
             }
             tab.parserLog = Error.ParserLog(log, tab);
-            OutputErrorLog(tab);
+
+            // Когда установлена опция и происходит первый парсинг - не обновлять лог ошибок
+            if (!firstParse || !autoRefreshToolStripMenuItem.Checked) OutputErrorLog(tab);
         }
 
         private void OutputErrorLog(TabInfo tab)

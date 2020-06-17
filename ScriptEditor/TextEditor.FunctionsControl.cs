@@ -362,57 +362,31 @@ namespace ScriptEditor
                         return;
                 }
             }
-
             KeepScriptSetting(tab, skip);
 
-            if (tabControl1.TabPages.Count > 2 && i == tabControl1.SelectedIndex) {
+            if (i == tabControl1.SelectedIndex && tabControl1.TabPages.Count >= 3) {
                 if (previousTabIndex != -1) {
-                    tabControl1.SelectedIndex = previousTabIndex;
+                    tabControl1.SelectedIndex = previousTabIndex; // переход к предыдущей выбранной вкладке
+                }
+                else if (tabControl1.SelectedIndex < tabControl1.TabPages.Count - 1) {
+                    if (i > 0) tabControl1.SelectedIndex++; // переход к следущей по номеру вкладки
                 } else {
-                    tabControl1.SelectedIndex = tabControl1.TabCount - 2;
+                    tabControl1.SelectedIndex--;
                 }
             }
             tabControl1.TabPages.RemoveAt(i);
             tabs.RemoveAt(i);
-            for (int j = i; j < tabs.Count; j++)
-                tabs[j].index--;
-            for (int j = 0; j < tabs.Count; j++) {
+
+            for (int j = i; j < tabs.Count; j++) tabs[j].index--;
+
+            for (int j = 0; j < tabs.Count; j++)
+            {
                 if (tabs[j].msgFileTab == tab) {
                     tabs[j].msgFileTab = null;
                     tabs[j].messages.Clear();
                 }
             }
-            tab.index = -1;
-            if (tabControl1.TabPages.Count == 1) {
-                tabControl1_Selected(null, null);
-            }
-        }
-
-        private void KeepScriptSetting(TabInfo tab, bool skip)
-        {
-            if (!skip && tab.filepath != null && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
-                CodeFolder.SetProceduresCollapsed(tab.textEditor.Document, tab.filename);
-            }
-            // store last script position
-            if (Path.GetExtension(tab.filepath).ToLowerInvariant() == ".ssl" && tab.filename != unsaved)
-                Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
-        }
-
-        private void AssociateMsg(TabInfo tab, bool create)
-        {
-            if (tab.filepath == null || tab.msgFileTab != null)
-                return;
-
-            if (Settings.autoOpenMsgs && msgAutoOpenEditorStripMenuItem.Checked && !create) {
-                MessageEditor.MessageEditorInit(tab, this);
-                Focus();
-            } else {
-                string path;
-                if (MessageFile.GetAssociatePath(tab, create, out path)) {
-                    tab.msgFilePath = path;
-                    tab.msgFileTab = Open(tab.msgFilePath, OpenType.File, false);
-                }
-            }
+            previousTabIndex = -1; // сбросить после удаления вкладки
         }
 
         private bool Compile(TabInfo tab, out string msg, bool showMessages = true, bool preprocess = false, bool showIcon = true)
@@ -1065,6 +1039,30 @@ namespace ScriptEditor
         }
         #endregion
 
+        private void AssociateMsg(TabInfo tab, bool create)
+        {
+            if (tab.filepath == null || tab.msgFileTab != null)
+                return;
+
+            if (Settings.autoOpenMsgs && msgAutoOpenEditorStripMenuItem.Checked && !create) {
+                MessageEditor.MessageEditorInit(tab, this);
+                Focus();
+            } else {
+                string path;
+                if (MessageFile.GetAssociatePath(tab, create, out path)) {
+                    tab.msgFilePath = path;
+                    tab.msgFileTab = Open(tab.msgFilePath, OpenType.File, false);
+                }
+            }
+        }
+
+        public void AcceptMsgLine(string line)
+        {
+            if (currentTab != null) {
+                Utilities.InsertText(line, currentActiveTextAreaCtrl);
+                this.Focus();
+            }
+        }
 
         private void UpdateRecentList()
         {
@@ -1096,12 +1094,14 @@ namespace ScriptEditor
             }
         }
 
-        public void AcceptMsgLine(string line)
+        private void KeepScriptSetting(TabInfo tab, bool skip)
         {
-            if (currentTab != null) {
-                Utilities.InsertText(line, currentActiveTextAreaCtrl);
-                this.Focus();
+            if (!skip && tab.filepath != null && tab.textEditor.Document.FoldingManager.FoldMarker.Count > 0) {
+                CodeFolder.SetProceduresCollapsed(tab.textEditor.Document, tab.filename);
             }
+            // store last script position
+            if (Path.GetExtension(tab.filepath).ToLowerInvariant() == ".ssl" && tab.filename != unsaved)
+                Settings.SetLastScriptPosition(tab.filename.ToLowerInvariant(), tab.textEditor.ActiveTextAreaControl.Caret.Line);
         }
 
         #region Dialog System
@@ -1292,9 +1292,11 @@ namespace ScriptEditor
 
         private void UpdateLog()
         {
-            if (autoRefreshToolStripMenuItem.Checked)
+            if (autoRefreshToolStripMenuItem.Checked &&
+               (currentTab.parserErrors.Count > 0 || currentTab.buildErrors.Count > 0))
+            {
                 OutputErrorLog(currentTab);
-            else {
+            } else {
                 if (Settings.enableParser)
                     tbOutputParse.Text = currentTab.parserLog;
 
