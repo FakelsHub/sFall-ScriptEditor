@@ -61,9 +61,10 @@ namespace ICSharpCode.TextEditor
 		{
 			if (e.Data.GetDataPresent(typeof(string))) {
 				e.Effect = GetDragDropEffect(e);
+			} else if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+				e.Effect = DragDropEffects.Link; // for Drag & Drop file
 			}
 		}
-		
 		
 		void InsertString(int offset, string str)
 		{
@@ -78,7 +79,7 @@ namespace ICSharpCode.TextEditor
 		
 		protected void OnDragDrop(object sender, DragEventArgs e)
 		{
-			Point p = textArea.PointToClient(new Point(e.X, e.Y));
+			//Point p = textArea.PointToClient(new Point(e.X, e.Y));
 			
 			if (e.Data.GetDataPresent(typeof(string))) {
 				textArea.BeginUpdate();
@@ -134,9 +135,9 @@ namespace ICSharpCode.TextEditor
 				if (e.Data.GetDataPresent(typeof(string)) && !textArea.IsReadOnly(textArea.Caret.Offset)) {
 					e.Effect = GetDragDropEffect(e);
 				} else {
-					e.Effect = DragDropEffects.None;
+					e.Effect = DragDropEffects.Link; // for Drag & Drop file
 				}
-			} else {
+			} else if (e.Effect != DragDropEffects.Link) {
 				e.Effect = DragDropEffects.None;
 			}
 		}

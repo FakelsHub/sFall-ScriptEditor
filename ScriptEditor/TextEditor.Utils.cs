@@ -497,6 +497,9 @@ namespace ScriptEditor
             toolTips.Show(tipText, panel1, pos, duration);
         }
 
+        private int  inputPairedBrackets = 0;
+        private char keyPressChar;
+
         private void TextArea_KeyPressed(object sender, KeyPressEventArgs e)
         {
             keyPressChar = e.KeyChar;

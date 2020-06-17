@@ -2725,6 +2725,8 @@ namespace ScriptEditor {
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TextEditor_FormClosing);
             this.Load += new System.EventHandler(this.TextEditor_Load);
             this.Shown += new System.EventHandler(this.TextEditor_Shown);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextEditorDragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.TextEditorDragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextEditor_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextEditor_KeyUp);
             this.Resize += new System.EventHandler(this.TextEditor_Resize);

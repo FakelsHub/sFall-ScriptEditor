@@ -61,9 +61,6 @@ namespace ScriptEditor
 
         private AutoComplete autoComplete;
 
-        private int inputPairedBrackets = 0;
-        private char keyPressChar;
-
         /// <summary>
         /// Сокращенное свойство.
         /// Return: currentTab.textEditor.Document
@@ -386,6 +383,7 @@ namespace ScriptEditor
             te.ActiveTextAreaControl.TextArea.KeyPress += TextArea_KeyPressed;
             te.ActiveTextAreaControl.TextArea.MouseEnter += TextArea_SetFocus;
             te.ActiveTextAreaControl.TextArea.PreviewKeyDown += TextArea_PreviewKeyDown;
+            te.ActiveTextAreaControl.TextArea.DragDrop += TextEditorDragDrop;
 
             te.ActiveTextAreaControl.VScrollBar.ValueChanged += VScrollBar_ValueChanged;
             //te.ActiveTextAreaControl.TextArea.MouseWheel += TextArea_MouseWheel;
@@ -528,6 +526,7 @@ namespace ScriptEditor
         }
 
         #region Menu control events
+
         private void recentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int count = Open_toolStripSplitButton.DropDownItems.Count;
@@ -1041,23 +1040,20 @@ namespace ScriptEditor
 
         void TextEditorDragDrop(object sender, DragEventArgs e)
         {
+            if (e.Effect != DragDropEffects.Link) return;
+
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             foreach (string file in files)
             {
                 Open(file, OpenType.File);
             }
-
             Activate();
-            if (currentTab != null)
-                currentActiveTextAreaCtrl.TextArea.AllowDrop = true;
         }
 
         void TextEditorDragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
-                e.Effect = DragDropEffects.Copy;
-            if (currentTab != null)
-                currentActiveTextAreaCtrl.TextArea.AllowDrop = false;
+                e.Effect = DragDropEffects.Link;
         }
 
         private void minimize_log_button_Click(object sender, EventArgs e)
