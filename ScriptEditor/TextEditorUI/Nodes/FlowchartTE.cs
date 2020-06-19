@@ -28,7 +28,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
             public string Code { get; private set; }
             public bool Change { get; set; }
             public bool Close  { get; set; }
-            
+
             public CodeArgs (string name, string code, bool change)
             {
                 Name = name;
@@ -36,9 +36,9 @@ namespace ScriptEditor.TextEditorUI.Nodes
                 Change = change;
             }
         }
-        
+
         private readonly string customFile = Settings.SettingsFolder + @"\CustomCode.ini";
-        
+
         private bool changeCode;
         private bool forceClose;
 
@@ -60,7 +60,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
         public string NodeName
         {
             get { return nodeName; }
-            private set {    
+            private set {
                 nodeName = value;
                 cForm.Text = "Сode: " + value;
             }
@@ -71,14 +71,14 @@ namespace ScriptEditor.TextEditorUI.Nodes
         public FlowchartTE(Procedure cProc, TabInfo ti, List<string> allNodes = null, bool fromDiagram = false)
         {
             InitializeComponent();
-            
+
             this.sourceTab = ti;
-            
+
             OpenFromDiagram = fromDiagram;
 
             //Create the text editor
             TextEditorControl te = new TextEditorControl();
-            
+
             //te.TextEditorProperties.NativeDrawText = Settings.winAPITextRender;
             te.TextEditorProperties.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             Settings.SetTextAreaFont(te);
@@ -97,7 +97,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
             te.TextEditorProperties.DarkScheme = ColorTheme.IsDarkTheme;
             te.SetHighlighting(ColorTheme.HighlightingScheme);
             te.OptionsChanged();
-            
+
             te.Text = GetProcedureCode(ti.textEditor.Document, cProc);
             textEditor = te;
 
@@ -144,14 +144,14 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
             cmbNodesName.Items.AddRange(allNodes.ToArray());
             cmbNodesName.SelectedIndex = 0;
-            
+
             LoadCustomCode();
 
-            parseCode();
-            
+            ParseCode();
+
             dgvMessages.ClearSelection();
         }
-                
+
         private string GetProcedureCode(IDocument document, Procedure p)
         {
             string nodeProcedureText = Utilities.GetProcedureCode(document, p);
@@ -171,11 +171,11 @@ namespace ScriptEditor.TextEditorUI.Nodes
         }
 
         private void StopEditingNode()
-        { 
+        {
             if (nodeEditLink != null)
                 nodeEditLink.StopEditingNode(); //node edit off status
         }
-        
+
         private bool SaveClosing(EventArgs e)
         {
             MessageBoxButtons buttons = MessageBoxButtons.YesNoCancel;
@@ -193,24 +193,24 @@ namespace ScriptEditor.TextEditorUI.Nodes
             }
             return false;
         }
-        
+
         private void CodeChangedTimer(object sender, EventArgs e)
         {
             changeCode = true;
-            
+
             if (((DocumentEventArgs)e).Text == "\r\n")
                 return;
-            
+
             timer.Stop();
             timer.Start();
         }
-        
+
         private void CodeChanged(object sender, EventArgs e)
         {
             timer.Stop();
 
             if (dgvMessages.CurrentRow == null) {
-                parseCode();
+                ParseCode();
                 if (dgvMessages.Rows.Count != 0)
                     dgvMessages.Rows[0].Selected = false;
                 return;
@@ -222,9 +222,9 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
             DataGridViewRow[] rows = new DataGridViewRow[dgvMessages.Rows.Count];
             dgvMessages.Rows.CopyTo(rows, 0);
-            
+
              try {
-                parseCode(); 
+                ParseCode();
             } catch {
                 dgvMessages.Rows.AddRange(rows);
                 dgvMessages.CurrentCell = dgvMessages.Rows[selRow].Cells[0];
@@ -247,8 +247,8 @@ namespace ScriptEditor.TextEditorUI.Nodes
                     dgvMessages.Rows[0].Selected = false;
             }
         }
-        
-        private void parseCode()
+
+        private void ParseCode()
         {
             nodeParseData.Clear();
             dgvMessages.Rows.Clear();
@@ -271,7 +271,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
                             error = true;
                         }
                     } else if (sourceTab.messages.ContainsKey(data.numberMsgLine))
-                        msg = sourceTab.messages[data.numberMsgLine];   
+                        msg = sourceTab.messages[data.numberMsgLine];
                     if (msg == null) {
                         msg = MessageFile.messageError;
                         error = true;
@@ -280,7 +280,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
                     continue;
 
                 string msgFile = (data.numberMsgFile == -1) ? sourceTab.msgFilePath : path; //MessageFile.GetMessageFilePath(data.numberMsgFile, curTab);
-                
+
                 dgvMessages.Rows.Add(data.numberMsgLine, msg, Path.GetFileName(msgFile));
                 dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[0].Tag = data;
                 dgvMessages.Rows[dgvMessages.Rows.Count - 1].Cells[2].Tag = msgFile;
@@ -309,13 +309,13 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
             cForm.Show();
         }
-        
+
         public void CloseEditor(bool forceClose = false)
         {
             this.forceClose = forceClose;
             cForm.Close();
         }
-        
+
         public void Activate()
         {
             if (cForm.WindowState == FormWindowState.Minimized)
@@ -369,19 +369,19 @@ namespace ScriptEditor.TextEditorUI.Nodes
         private void ApplytoolStripButton_Click(object sender, EventArgs e)
         {
             var codeArgs = new CodeArgs(NodeName, textEditor.Document.TextContent, changeCode);
-            
+
             ApplyCode(this, codeArgs);
-            
+
             changeCode = codeArgs.Change;
             if (codeArgs.Close && e != null)
                 cForm.Close();
         }
-        
+
         private void dgvMessages_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex == -1)
                 return;
-            
+
             DialogueParser data = (DialogueParser)dgvMessages.Rows[e.RowIndex].Cells[0].Tag;
 
             List<TextMarker> marker = textEditor.Document.MarkerStrategy.GetMarkers(0, textEditor.Document.TextLength);
@@ -404,33 +404,33 @@ namespace ScriptEditor.TextEditorUI.Nodes
             textEditor.Document.MarkerStrategy.AddMarker(tm);
             textEditor.Refresh();
         }
-        
+
         private void dgvMessages_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == 0) {
                 string path = (string)dgvMessages.Rows[e.RowIndex].Cells[2].Tag;
                 if (File.Exists(path))
-                    OpenMessageFile(path, (int)dgvMessages.Rows[e.RowIndex].Cells[0].Value); //MessageEditor.MessageEditorInit(msgPath, nLine).ShowDialog();
+                    OpenMessageFile(path, (int)dgvMessages.Rows[e.RowIndex].Cells[0].Value, sourceTab);
                 else
                     MessageBox.Show("The requested message file: " + path + "\ncould not be found.", "Missing messages file");
             }
-        }   
+        }
 
         private void msgEdit_SendMsgLine(string msgLine)
         {
             int iRow = dgvMessages.CurrentRow.Index;
 
             DialogueParser data = (DialogueParser)dgvMessages.Rows[iRow].Cells[0].Tag;
-            
+
             LineSegment ls = textEditor.Document.GetLineSegment(data.codeNumLine);
             string codeline = TextUtilities.GetLineAsString(textEditor.Document, data.codeNumLine);
             int offset = codeline.IndexOf(data.shortcode);
             string msgNum = Convert.ToString(data.numberMsgLine);
             offset = codeline.IndexOf(msgNum, offset);
             textEditor.Document.Replace(ls.Offset + offset, msgNum.Length, msgLine);
-            
+
             // update
-            parseCode();
+            ParseCode();
 
             dgvMessages.Rows[iRow].Cells[0].Selected = true;
             cForm.TopMost = onToptoolStripButton.Checked;
@@ -443,10 +443,10 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
             DataGridViewCell cell = dgvMessages.Rows[e.RowIndex].Cells[1];
             DialogueParser data = (DialogueParser)dgvMessages.Rows[e.RowIndex].Cells[0].Tag;
-            
+
             string text = (string)cell.Value;
             string msgfilePath = (string)dgvMessages.Rows[e.RowIndex].Cells[2].Tag;
-            if (MessageFile.SaveToMessageFile(msgfilePath, text, data.numberMsgLine) && data.numberMsgFile == -1) 
+            if (MessageFile.SaveToMessageFile(msgfilePath, text, data.numberMsgLine) && data.numberMsgFile == -1)
                 sourceTab.messages[data.numberMsgLine] = text;
         }
 
@@ -461,20 +461,24 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
         private void insertMsgLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenMessageFile(sourceTab.msgFilePath, 0, true);
-        }  
- 
+            OpenMessageFile(sourceTab.msgFilePath, 0, sourceTab, true);
+        }
+
         // Open msg file
-        private void OpenMessageFile(string msgFile, int msgNum, bool context = false)
+        private void OpenMessageFile(string msgFile, int msgNum, TabInfo tab, bool context = false)
         {
-            MessageEditor msgEdit = MessageEditor.MessageEditorInit(msgFile, msgNum, true);
+            MessageEditor msgEdit = MessageEditor.MessageEditorInit(msgFile, msgNum, tab, true);
             if (context) {
                 msgEdit.SendMsgLine += delegate(string msgLine) {Utilities.InsertText(msgLine, textEditor.ActiveTextAreaControl); };
             } else
                 msgEdit.SendMsgLine += msgEdit_SendMsgLine;
+
             msgEdit.closeOnSend = true;
             cForm.TopMost = false;
-            msgEdit.ShowDialog();
+            msgEdit.ShowDialog(); // modal
+
+            // update
+            ParseCode();
         }
 
         private void LoadCustomCode()
@@ -541,19 +545,19 @@ namespace ScriptEditor.TextEditorUI.Nodes
                 if (_goto) {
                     StopEditingNode();
                     nodeEditLink = null;
-                    
+
                     NodeName = cmbNodesName.Text;
 
                     int index = PI.GetProcedureIndex(NodeName);
                     textEditor.Text = GetProcedureCode(sourceTab.textEditor.Document, PI.procs[index]);
                     timer.Stop();
                     changeCode = false;
-                    
-                    parseCode();
+
+                    ParseCode();
 
                     textEditor.Refresh();
-                } 
+                }
             }
-        } 
+        }
     }
 }

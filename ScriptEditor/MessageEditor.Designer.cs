@@ -30,11 +30,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageEditor));
-            this.dgvMessage = new TextEditorUI.DataGridViewEx();
-            this.EntryCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cLip = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.sendLineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
@@ -45,6 +40,10 @@
             this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.addDescriptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox = new System.Windows.Forms.GroupBox();
+            this.dgvMessage = new ScriptEditor.TextEditorUI.DataGridViewEx();
+            this.cLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cLip = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.NewStripButton = new System.Windows.Forms.ToolStripButton();
@@ -67,7 +66,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.StripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.OpenNotepadtoolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.OpenNotepadtoolStripButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.openAsTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,31 +90,113 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).BeginInit();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sendLineToolStripMenuItem,
+            this.toolStripSeparator12,
+            this.playerMarkerToolStripMenuItem,
+            this.toolStripSeparator11,
+            this.moveUpToolStripMenuItem,
+            this.moveDownToolStripMenuItem,
+            this.toolStripSeparator14,
+            this.addDescriptionToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.ShowImageMargin = false;
+            this.contextMenuStrip1.Size = new System.Drawing.Size(188, 132);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // sendLineToolStripMenuItem
+            // 
+            this.sendLineToolStripMenuItem.Name = "sendLineToolStripMenuItem";
+            this.sendLineToolStripMenuItem.ShortcutKeyDisplayString = "MMB / Alt+S";
+            this.sendLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.sendLineToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.sendLineToolStripMenuItem.Text = "Send Line";
+            this.sendLineToolStripMenuItem.ToolTipText = "Send current line number to an open script.";
+            this.sendLineToolStripMenuItem.Click += new System.EventHandler(this.SendStripButton_Click);
+            // 
+            // toolStripSeparator12
+            // 
+            this.toolStripSeparator12.Name = "toolStripSeparator12";
+            this.toolStripSeparator12.Size = new System.Drawing.Size(184, 6);
+            // 
+            // playerMarkerToolStripMenuItem
+            // 
+            this.playerMarkerToolStripMenuItem.Name = "playerMarkerToolStripMenuItem";
+            this.playerMarkerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this.playerMarkerToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.playerMarkerToolStripMenuItem.Text = "Set Player Marker";
+            this.playerMarkerToolStripMenuItem.ToolTipText = "Set player options marker";
+            this.playerMarkerToolStripMenuItem.Click += new System.EventHandler(this.playerMarkerToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(184, 6);
+            // 
+            // moveUpToolStripMenuItem
+            // 
+            this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
+            this.moveUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.moveUpToolStripMenuItem.Text = "Move Up";
+            this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
+            // 
+            // moveDownToolStripMenuItem
+            // 
+            this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
+            this.moveDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.moveDownToolStripMenuItem.Text = "Move Down";
+            this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator14
+            // 
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(184, 6);
+            // 
+            // addDescriptionToolStripMenuItem
+            // 
+            this.addDescriptionToolStripMenuItem.Name = "addDescriptionToolStripMenuItem";
+            this.addDescriptionToolStripMenuItem.ShowShortcutKeys = false;
+            this.addDescriptionToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.addDescriptionToolStripMenuItem.Text = "Add/Edit comment for line";
+            this.addDescriptionToolStripMenuItem.Click += new System.EventHandler(this.addDescriptionToolStripMenuItem_Click);
+            // 
+            // groupBox
+            // 
+            this.groupBox.Controls.Add(this.dgvMessage);
+            this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox.Location = new System.Drawing.Point(0, 26);
+            this.groupBox.Name = "groupBox";
+            this.groupBox.Padding = new System.Windows.Forms.Padding(4);
+            this.groupBox.Size = new System.Drawing.Size(941, 562);
+            this.groupBox.TabIndex = 1;
+            this.groupBox.TabStop = false;
+            this.groupBox.Text = "Messages";
             // 
             // dgvMessage
             // 
             this.dgvMessage.AllowUserToAddRows = false;
             this.dgvMessage.AllowUserToOrderColumns = true;
+            this.dgvMessage.AllowUserToResizeRows = false;
             this.dgvMessage.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             this.dgvMessage.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvMessage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvMessage.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             this.dgvMessage.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvMessage.ColumnHeadersHeight = 22;
             this.dgvMessage.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvMessage.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.EntryCol,
             this.cLine,
             this.cDescription,
             this.cLip});
@@ -132,9 +214,11 @@
             dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             this.dgvMessage.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dgvMessage.RowHeadersVisible = false;
+            this.dgvMessage.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvMessage.RowTemplate.Height = 18;
             this.dgvMessage.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dgvMessage.ShowCellErrors = false;
             this.dgvMessage.ShowEditingIcon = false;
             this.dgvMessage.ShowRowErrors = false;
             this.dgvMessage.Size = new System.Drawing.Size(933, 541);
@@ -145,17 +229,10 @@
             this.dgvMessage.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellEndEdit);
             this.dgvMessage.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvMessage_CellMouseClick);
             this.dgvMessage.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMessage_CellValueChanged);
+            this.dgvMessage.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.dgvMessage_CellValueNeeded);
             this.dgvMessage.SelectionChanged += new System.EventHandler(this.dgvMessage_SelectionChanged);
             this.dgvMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvMessage_KeyDown);
             this.dgvMessage.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvMessage_KeyPress);
-            // 
-            // EntryCol
-            // 
-            this.EntryCol.HeaderText = "Entry";
-            this.EntryCol.Name = "EntryCol";
-            this.EntryCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.EntryCol.Visible = false;
-            this.EntryCol.Width = 5;
             // 
             // cLine
             // 
@@ -169,7 +246,7 @@
             this.cLine.Name = "cLine";
             this.cLine.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.cLine.ToolTipText = "Msg line number";
-            this.cLine.Width = 33;
+            this.cLine.Width = 50;
             // 
             // cDescription
             // 
@@ -195,91 +272,6 @@
             this.cLip.Name = "cLip";
             this.cLip.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.cLip.Width = 40;
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.sendLineToolStripMenuItem,
-            this.toolStripSeparator12,
-            this.playerMarkerToolStripMenuItem,
-            this.toolStripSeparator11,
-            this.moveUpToolStripMenuItem,
-            this.moveDownToolStripMenuItem,
-            this.toolStripSeparator14,
-            this.addDescriptionToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(182, 132);
-            // 
-            // sendLineToolStripMenuItem
-            // 
-            this.sendLineToolStripMenuItem.Name = "sendLineToolStripMenuItem";
-            this.sendLineToolStripMenuItem.ShortcutKeyDisplayString = "MMB / Alt+S";
-            this.sendLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.sendLineToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.sendLineToolStripMenuItem.Text = "Send Line";
-            this.sendLineToolStripMenuItem.ToolTipText = "Send current line number to an open script.";
-            this.sendLineToolStripMenuItem.Click += new System.EventHandler(this.SendStripButton_Click);
-            // 
-            // toolStripSeparator12
-            // 
-            this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(178, 6);
-            // 
-            // playerMarkerToolStripMenuItem
-            // 
-            this.playerMarkerToolStripMenuItem.Name = "playerMarkerToolStripMenuItem";
-            this.playerMarkerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.playerMarkerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.playerMarkerToolStripMenuItem.Text = "Set Player Marker";
-            this.playerMarkerToolStripMenuItem.ToolTipText = "Set player options marker";
-            this.playerMarkerToolStripMenuItem.Click += new System.EventHandler(this.playerMarkerToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator11
-            // 
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(178, 6);
-            // 
-            // moveUpToolStripMenuItem
-            // 
-            this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
-            this.moveUpToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.moveUpToolStripMenuItem.Text = "Move Up";
-            this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.moveUpToolStripMenuItem_Click);
-            // 
-            // moveDownToolStripMenuItem
-            // 
-            this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
-            this.moveDownToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.moveDownToolStripMenuItem.Text = "Move Down";
-            this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.moveDownToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator14
-            // 
-            this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(178, 6);
-            // 
-            // addDescriptionToolStripMenuItem
-            // 
-            this.addDescriptionToolStripMenuItem.Name = "addDescriptionToolStripMenuItem";
-            this.addDescriptionToolStripMenuItem.ShowShortcutKeys = false;
-            this.addDescriptionToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.addDescriptionToolStripMenuItem.Text = "Add/Edit comment for line";
-            this.addDescriptionToolStripMenuItem.Click += new System.EventHandler(this.addDescriptionToolStripMenuItem_Click);
-            // 
-            // groupBox
-            // 
-            this.groupBox.Controls.Add(this.dgvMessage);
-            this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox.Location = new System.Drawing.Point(0, 26);
-            this.groupBox.Name = "groupBox";
-            this.groupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox.Size = new System.Drawing.Size(941, 562);
-            this.groupBox.TabIndex = 1;
-            this.groupBox.TabStop = false;
-            this.groupBox.Text = "Messages";
             // 
             // toolStrip
             // 
@@ -339,7 +331,7 @@
             this.msgOpenButton.Image = ((System.Drawing.Image)(resources.GetObject("msgOpenButton.Image")));
             this.msgOpenButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.msgOpenButton.Name = "msgOpenButton";
-            this.msgOpenButton.Size = new System.Drawing.Size(65, 23);
+            this.msgOpenButton.Size = new System.Drawing.Size(69, 23);
             this.msgOpenButton.Text = "Open";
             this.msgOpenButton.ToolTipText = "Open message file";
             this.msgOpenButton.ButtonClick += new System.EventHandler(this.msgOpenButton_ButtonClick);
@@ -355,7 +347,7 @@
             this.msgSaveButton.Image = ((System.Drawing.Image)(resources.GetObject("msgSaveButton.Image")));
             this.msgSaveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.msgSaveButton.Name = "msgSaveButton";
-            this.msgSaveButton.Size = new System.Drawing.Size(51, 23);
+            this.msgSaveButton.Size = new System.Drawing.Size(53, 23);
             this.msgSaveButton.Text = "Save";
             this.msgSaveButton.ToolTipText = "Save messageg file. [Ctrl+S]";
             this.msgSaveButton.Click += new System.EventHandler(this.msgSaveButton_ButtonClick);
@@ -434,8 +426,7 @@
             this.InsertEmptyStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.InsertEmptyStripButton.Name = "InsertEmptyStripButton";
             this.InsertEmptyStripButton.Size = new System.Drawing.Size(23, 23);
-            this.InsertEmptyStripButton.ToolTipText = "Insert an empty line below the current line. [Ctrl+Enter] \r\nor [Shift+Enter] - In" +
-                "sert an empty line above the current line.";
+            this.InsertEmptyStripButton.ToolTipText = "Insert an empty line below the current line. [Ctrl+Enter] \r\nor [Shift+Enter] - Insert an empty line above the current line.";
             this.InsertEmptyStripButton.Click += new System.EventHandler(this.InsertEmptyStripButton_Click);
             // 
             // InsertCommentStripButton
@@ -487,7 +478,7 @@
             "40",
             "50"});
             this.StripComboBox.Name = "StripComboBox";
-            this.StripComboBox.Size = new System.Drawing.Size(40, 21);
+            this.StripComboBox.Size = new System.Drawing.Size(40, 22);
             this.StripComboBox.ToolTipText = "The line number after the comment is increased by this number.";
             // 
             // toolStripSeparator10
@@ -499,12 +490,22 @@
             // OpenNotepadtoolStripButton
             // 
             this.OpenNotepadtoolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.OpenNotepadtoolStripButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openAsTextToolStripMenuItem});
             this.OpenNotepadtoolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("OpenNotepadtoolStripButton.Image")));
             this.OpenNotepadtoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OpenNotepadtoolStripButton.Name = "OpenNotepadtoolStripButton";
-            this.OpenNotepadtoolStripButton.Size = new System.Drawing.Size(23, 23);
+            this.OpenNotepadtoolStripButton.Size = new System.Drawing.Size(32, 23);
             this.OpenNotepadtoolStripButton.ToolTipText = "Open this message file in external editor.";
-            this.OpenNotepadtoolStripButton.Click += new System.EventHandler(this.OpenNotepadtoolStripButton_Click);
+            this.OpenNotepadtoolStripButton.ButtonClick += new System.EventHandler(this.OpenNotepadtoolStripButton_Click);
+            // 
+            // openAsTextToolStripMenuItem
+            // 
+            this.openAsTextToolStripMenuItem.Name = "openAsTextToolStripMenuItem";
+            this.openAsTextToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.openAsTextToolStripMenuItem.Text = "Open as Text";
+            this.openAsTextToolStripMenuItem.ToolTipText = "Closes the message editor window and opens the file for editing in text format.";
+            this.openAsTextToolStripMenuItem.Click += new System.EventHandler(this.openAsTextToolStripMenuItem_Click);
             // 
             // toolStripSeparator15
             // 
@@ -526,21 +527,21 @@
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(57, 23);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(62, 23);
             this.toolStripDropDownButton1.Text = "Options";
             // 
             // alwaysOnTopToolStripMenuItem
             // 
             this.alwaysOnTopToolStripMenuItem.CheckOnClick = true;
             this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
-            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.alwaysOnTopToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.alwaysOnTopToolStripMenuItem.Text = "Window On Top";
             this.alwaysOnTopToolStripMenuItem.CheckedChanged += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_CheckedChanged);
             // 
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(175, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(179, 6);
             // 
             // HighlightingCommToolStripMenuItem
             // 
@@ -549,9 +550,9 @@
             this.ColorComboBox});
             this.HighlightingCommToolStripMenuItem.Name = "HighlightingCommToolStripMenuItem";
             this.HighlightingCommToolStripMenuItem.ShortcutKeyDisplayString = "";
-            this.HighlightingCommToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.HighlightingCommToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.HighlightingCommToolStripMenuItem.Text = "Highlighting";
-            this.HighlightingCommToolStripMenuItem.ToolTipText = "Highlighting the color of the comment line.";
+            this.HighlightingCommToolStripMenuItem.ToolTipText = "Highlighting the color of the comment lines.";
             this.HighlightingCommToolStripMenuItem.Click += new System.EventHandler(this.HighlightingCheck);
             // 
             // ColorComboBox
@@ -563,28 +564,28 @@
             "PaleGreen",
             "Lavender"});
             this.ColorComboBox.Name = "ColorComboBox";
-            this.ColorComboBox.Size = new System.Drawing.Size(75, 21);
+            this.ColorComboBox.Size = new System.Drawing.Size(75, 22);
             this.ColorComboBox.SelectedIndexChanged += new System.EventHandler(this.ColorComboBox_SelectedIndexChanged);
             // 
             // showLIPColumnToolStripMenuItem
             // 
             this.showLIPColumnToolStripMenuItem.CheckOnClick = true;
             this.showLIPColumnToolStripMenuItem.Name = "showLIPColumnToolStripMenuItem";
-            this.showLIPColumnToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.showLIPColumnToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.showLIPColumnToolStripMenuItem.Text = "Show LIP Column";
             this.showLIPColumnToolStripMenuItem.Click += new System.EventHandler(this.showLIPColumnToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(175, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(179, 6);
             // 
             // fontSizeToolStripMenuItem
             // 
             this.fontSizeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FontSizeComboBox});
             this.fontSizeToolStripMenuItem.Name = "fontSizeToolStripMenuItem";
-            this.fontSizeToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.fontSizeToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.fontSizeToolStripMenuItem.Text = "Font Size";
             // 
             // FontSizeComboBox
@@ -601,14 +602,14 @@
             "20",
             "24"});
             this.FontSizeComboBox.Name = "FontSizeComboBox";
-            this.FontSizeComboBox.Size = new System.Drawing.Size(75, 21);
+            this.FontSizeComboBox.Size = new System.Drawing.Size(75, 22);
             this.FontSizeComboBox.ToolTipText = "Hotkey change size [Ctlr + NumPlus] and [Ctlr + NumMinus]";
             // 
             // encodingTextDOSToolStripMenuItem
             // 
             this.encodingTextDOSToolStripMenuItem.CheckOnClick = true;
             this.encodingTextDOSToolStripMenuItem.Name = "encodingTextDOSToolStripMenuItem";
-            this.encodingTextDOSToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.encodingTextDOSToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.encodingTextDOSToolStripMenuItem.Text = "Encoding: OEM 866";
             this.encodingTextDOSToolStripMenuItem.ToolTipText = "Read and write Msg files in cyrillic encoding OEM 866.";
             this.encodingTextDOSToolStripMenuItem.Click += new System.EventHandler(this.encodingTextDOSToolStripMenuItem_Click);
@@ -620,7 +621,7 @@
             this.SearchStripTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(250)))), ((int)(((byte)(255)))));
             this.SearchStripTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.SearchStripTextBox.Name = "SearchStripTextBox";
-            this.SearchStripTextBox.Size = new System.Drawing.Size(300, 21);
+            this.SearchStripTextBox.Size = new System.Drawing.Size(300, 22);
             this.SearchStripTextBox.ToolTipText = "Search text";
             // 
             // toolStripDropDownButton2
@@ -643,7 +644,7 @@
             // 
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.addToolStripMenuItem.Text = "add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.IncAddStripButton_Click);
             // 
@@ -651,7 +652,7 @@
             // 
             this.comentToolStripMenuItem.Name = "comentToolStripMenuItem";
             this.comentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-            this.comentToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.comentToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.comentToolStripMenuItem.Text = "coment";
             this.comentToolStripMenuItem.Click += new System.EventHandler(this.InsertCommentStripButton_Click);
             // 
@@ -659,7 +660,7 @@
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.saveToolStripMenuItem.Text = "save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.msgSaveButton_ButtonClick);
             // 
@@ -667,7 +668,7 @@
             // 
             this.findFToolStripMenuItem.Name = "findFToolStripMenuItem";
             this.findFToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.findFToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.findFToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.findFToolStripMenuItem.Text = "findF";
             this.findFToolStripMenuItem.Click += new System.EventHandler(this.Downbutton_Click);
             // 
@@ -724,13 +725,13 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Tag = " - Message Editor";
             this.Text = " - Message Editor";
-            this.Deactivate += new System.EventHandler(this.MessageEditor_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessageEditor_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MessageEditor_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MessageEditor_KeyUp);
             this.Resize += new System.EventHandler(this.MessageEditor_Resize);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).EndInit();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -790,15 +791,15 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
         private System.Windows.Forms.ToolStripMenuItem addDescriptionToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EntryCol;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cLine;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cDescription;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cLip;
         private System.Windows.Forms.ToolStripMenuItem comentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
-        private System.Windows.Forms.ToolStripButton OpenNotepadtoolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripMenuItem findFToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSplitButton OpenNotepadtoolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem openAsTextToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cLine;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cDescription;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cLip;
     }
 }
