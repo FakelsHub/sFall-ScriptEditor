@@ -386,6 +386,7 @@ namespace ScriptEditor
                     tabs[j].messages.Clear();
                 }
             }
+            tab.index = -1;
             previousTabIndex = -1; // сбросить после удаления вкладки
         }
 
@@ -1108,7 +1109,12 @@ namespace ScriptEditor
 
         private void dialogNodesDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null) return;
+            if (currentTab == null || currentTab.parseInfo == null) return;
+
+            if (!Path.GetExtension(currentTab.filename).Equals(".ssl", StringComparison.OrdinalIgnoreCase)) {
+                MessageBox.Show(MessageFile.WrongTypeFile, currentTab.filename);
+                return;
+            }
 
             var tag = tabControl1.TabPages[currentTab.index].Tag;
             if (tag != null) {
@@ -1144,7 +1150,12 @@ namespace ScriptEditor
 
         private void previewDialogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null) return;
+            if (currentTab == null || currentTab.parseInfo == null) return;
+
+            if (!Path.GetExtension(currentTab.filename).Equals(".ssl", StringComparison.OrdinalIgnoreCase)) {
+                MessageBox.Show(MessageFile.WrongTypeFile, currentTab.filename) ;
+                return;
+            }
 
             string msgPath;
             if (!MessageFile.GetAssociatePath(currentTab, false, out msgPath)) {

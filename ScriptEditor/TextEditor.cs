@@ -928,8 +928,12 @@ namespace ScriptEditor
 
         private void associateMsgToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (currentTab == null)
+            if (currentTab == null) return;
+
+            if (!Path.GetExtension(currentTab.filename).Equals(".ssl", StringComparison.OrdinalIgnoreCase)) {
+                MessageBox.Show(MessageFile.WrongTypeFile, currentTab.filename) ;
                 return;
+            }
 
             if (msgAutoOpenEditorStripMenuItem.Checked) {
                 MessageEditor msgForm = MessageEditor.MessageEditorInit(currentTab, this);

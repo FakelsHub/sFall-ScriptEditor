@@ -13,7 +13,8 @@ namespace ScriptEditor.TextEditorUtilities
         public const string messageError = "[Error] <Text was not found in msg file>";
         public const string msgfileError = "[Error] MsgID:{0} <Not found message file>";
 
-        public const string MissingFile = "The associated message file this script could not be found.";
+        public const string MissingFile = "The associated message file of the script could not be found.";
+        public const string WrongTypeFile = "This file type can't have an associated message file.";
 
         public static readonly string MessageTextSubPath = "..\\text\\" + Settings.language + "\\dialog\\";
 
@@ -26,7 +27,7 @@ namespace ScriptEditor.TextEditorUtilities
             foreach (string file in missingFile)
                 MessageBox.Show("The message file for the dialog was not found.\n" + file, "File Missing");
             missingFile.Clear();
-        }        
+        }
 
         public static bool GetAssociatePath(TabInfo tab, bool create, out string path)
         {
@@ -43,17 +44,17 @@ namespace ScriptEditor.TextEditorUtilities
                     {
                         case -1:
                             MessageBox.Show("Scripts.lst does not exist in scripts output directory.", "Error");
-                            break; 
+                            break;
                         case 1:
                             MessageBox.Show("Failed get associated name from the Scripts.lst file.", "Scripts.lst error");
-                            return false;      
-                    }       
+                            return false;
+                    }
                 } else
                     MessageBox.Show("The macro NAME was not found in this script or does not contain the script number.\nIf necessary, association with the message file will be carried out by name of script.",
                                     "Warning: Define NAME", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            
-            if (fileName == null)    
+
+            if (fileName == null)
                 fileName = Path.ChangeExtension(tab.filename, ".msg");
 
             bool found = CheckPath(tab.filepath, fileName, out path, out defaultDir);
@@ -67,7 +68,7 @@ namespace ScriptEditor.TextEditorUtilities
                     } else if (MessageBox.Show("The associated message file this script could not be found.\nDo you want to create a new file?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes) {
                         File.WriteAllText(path, "{100}{}{}");
                     } else return false;
-                }       
+                }
             }
             path = Path.GetFullPath(path);
             return true;
@@ -83,7 +84,7 @@ namespace ScriptEditor.TextEditorUtilities
             if (outputDir == null) {
                 outputDir = Path.GetDirectoryName(tab.filepath);
                 if (!onlyOnce)
-                    MessageBox.Show("The output script path for the required Scripts.lst file is not specified,\n" 
+                    MessageBox.Show("The output script path for the required Scripts.lst file is not specified,\n"
                         + "so by default the current script folder is used.", "Path missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 onlyOnce = true;
             }
@@ -106,7 +107,7 @@ namespace ScriptEditor.TextEditorUtilities
             string name = null;
 
             string lstPath = Path.Combine(path, "scripts.lst");
-            
+
             if (File.Exists(lstPath)) {
                 List<string> scriptsLST = new List<string>(File.ReadAllLines(lstPath));
                 try
@@ -123,7 +124,7 @@ namespace ScriptEditor.TextEditorUtilities
 
             return name;
         }
-        
+
         private static bool CheckPath(string filePath, string fileName, out string path, out string defaultDir)
         {
             bool found = true;
@@ -132,7 +133,7 @@ namespace ScriptEditor.TextEditorUtilities
                 defaultDir = Path.GetDirectoryName(filePath);
             else
                 defaultDir = Path.Combine(Settings.outputDir, MessageTextSubPath);
-            
+
             // primary check in output dir
             path = Path.Combine(defaultDir, fileName);
             if (!File.Exists(path)) {
@@ -171,7 +172,7 @@ namespace ScriptEditor.TextEditorUtilities
             {
                 string[] line = linesMsg[i].Split(split, StringSplitOptions.RemoveEmptyEntries);
                 if (subParse(line))
-                    continue; 
+                    continue;
                 int index;
                 if (!int.TryParse(line[0], out index))
                     continue;
@@ -195,17 +196,17 @@ namespace ScriptEditor.TextEditorUtilities
 
         private static string getText(string[] linesMsg, int i, string text)
         {
-            int z = linesMsg[i].LastIndexOf('{') + 1;           
+            int z = linesMsg[i].LastIndexOf('{') + 1;
             int y = -1;
             do {
                 y = linesMsg[i].IndexOf("}", z);
                 if (z == 0){
                     text += Environment.NewLine + linesMsg[i].TrimEnd('}');
-                    z = -1; // Z используем в качестве флага 
+                    z = -1; // Z используем в качестве флага
                 }
-                if (y == -1) { // если Y равен -1, значит строка переходит на новую строку 
+                if (y == -1) { // если Y равен -1, значит строка переходит на новую строку
                     i++;
-                    z = 0; // Z используем в качестве флага 
+                    z = 0; // Z используем в качестве флага
                     if (i == linesMsg.Length)
                         return text; // выходим, достигнут конец строк
                 }
@@ -256,10 +257,10 @@ namespace ScriptEditor.TextEditorUtilities
 
                         int y = -1;
                         do {
-                            y = linesMsg[i].IndexOf("}", z); 
-                            if (y == -1) { // если Y равен -1, значит строка переходит на новую строку 
+                            y = linesMsg[i].IndexOf("}", z);
+                            if (y == -1) { // если Y равен -1, значит строка переходит на новую строку
                                 linesMsg.RemoveAt(i); // удаляем строку
-                                z = 0; // Z используем в качестве флага 
+                                z = 0; // Z используем в качестве флага
                             }
                         } while (y == -1);
 
@@ -287,11 +288,11 @@ namespace ScriptEditor.TextEditorUtilities
             string[] MessagesData = File.ReadAllLines(msgFilePath, Settings.EncCodePage);
             return SaveToMessageFile(ref MessagesData, msgFilePath, text, msgNum);
         }
-        
+
         /// <summary>
         /// Записывает в буфер текстовую строку с указанным номеров и сохранияет буфер в указанный файл сообщения
         /// </summary>
-        public static bool SaveToMessageFile(ref string[] MessagesData, string msgFilePath, string text, int msgNum) 
+        public static bool SaveToMessageFile(ref string[] MessagesData, string msgFilePath, string text, int msgNum)
         {
             bool result = PutMessages(ref MessagesData, text, msgNum);
             if (result)
