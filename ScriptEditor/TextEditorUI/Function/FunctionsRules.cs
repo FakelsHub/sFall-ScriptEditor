@@ -119,17 +119,28 @@ namespace ScriptEditor.TextEditorUI.Function {
 
         }
 
+        private readonly string[] helpDesc =
+        {
+            "Args:\tThe total number of arguments used in the function.\n" +
+            "Message:\tArgument number of the function that specifies the number of the text message.\n" +
+            "Node:\tNumber of the argument of the function that specifies the node procedure. Set the value to 0 if the argument is not used.\n" +
+            "IQ:\tThe argument number of the function that specifies the IQ parameter. Set the value to 0 if the argument is not used.\n" +
+            "File:\tArgument number of the function that specifies the number of the message file. Set the value to 0 if the argument is not used.\n\n" +
+            "Example of setting parameters for a macro: NOption(Message, Node, IQ);\n" +
+            "Args=3, Message=1, Node=2, IQ=3, File=0",
+
+            "Args:\tОбщее число аргументов используемых в функции.\n" +
+            "Message:\tПозиция, указывающая на аргумент функции с номером текстового сообщения.\n" +
+            "Node:\tПозиция, указывающая на аргумент функции к процедуре перехода. Значение 0, аргумент не используется.\n" +
+            "IQ:\tПозиция, указывающая на аргумент функции с IQ. Значение 0, если аргумент не используется.\n" +
+            "File:\tПозиция, указывающая на аргумент с номером файла сообщения. Значение 0, если агрумент не используется.\n\n" +
+            "Пример настройки параметров для марокса: NOption(Message, Node, IQ);\n" +
+            "Args=3, Message=1, Node=2, IQ=3, File=0"
+        };
+
         private void bHelp_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Args:\tОбщее число аргументов используемых в функции.\n" +
-                            "Message:\tПозиция, указывающая на аргумент функции с номером текстового сообщения.\n" +
-                            "Node:\tПозиция, указывающая на аргумент функции к процедуре перехода. Значение 0, аргумент не используется.\n" +
-                            "IQ:\tПозиция, указывающая на аргумент функции с IQ. Значение 0, если аргумент не используется.\n" +
-                            "File:\tПозиция, указывающая на аргумент с номером файла сообщения. Значение 0, если агрумент не используется.\n\n" +
-                            "Example sets for macro: NOption(Message, Node, IQ);\n" +
-                            "Args=3, Message=1, Node=2, IQ=3, File=0",
-                            "Help"
-            );
+            MessageBox.Show(helpDesc[Settings.hintsLang], "Help");
         }
     }
 }

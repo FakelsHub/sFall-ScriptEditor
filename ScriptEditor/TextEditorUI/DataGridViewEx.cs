@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Reflection;
+using System.Windows.Forms;
 
 namespace ScriptEditor.TextEditorUI
 {
@@ -21,6 +22,17 @@ namespace ScriptEditor.TextEditorUI
         public DataGridViewEx()
         {
             DoubleBuffered = true;
+        }
+    }
+
+    public static class MethodExtensions
+    {
+        public static void DoubleBuffered(this DataGridViewEx dgv, bool setting)
+        {
+            var dgvType = dgv.GetType();
+            var pi = dgvType.GetProperty("DoubleBuffered",
+                  BindingFlags.Instance | BindingFlags.NonPublic);
+            pi.SetValue(dgv, setting, null);
         }
     }
 }

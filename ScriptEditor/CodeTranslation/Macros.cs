@@ -81,7 +81,8 @@ namespace ScriptEditor.CodeTranslation
                         continue;
                     ParserInternal.GetIncludePath(ref text[1], dir);
                     new GetMacros(text[1], null, macros);
-                } else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
+                }
+                else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
                     //lines[i] = lines[i].TrimEnd();
                     if (lines[i].EndsWith(@"\")) {
                         var sb = new StringBuilder();

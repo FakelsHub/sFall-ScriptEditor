@@ -351,8 +351,12 @@ namespace ScriptEditor
                 File.Create(SearchHistoryPath).Close();
             if (!File.Exists(PreprocDefPath))
                 File.Create(PreprocDefPath).Close();
-            if (!firstRun)
+
+            if (!firstRun) {
+                var culture = System.Globalization.CultureInfo.CurrentCulture;
+                Settings.hintsLang = (byte)((culture.ToString() == "ru-RU") ? 1 : 0);
                 FileAssociation.Associate();
+            }
 
             EncCodePage = (encoding == (byte)EncodingType.OEM866) ? Encoding.GetEncoding("cp866") : Encoding.Default;
 
