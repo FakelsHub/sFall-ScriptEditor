@@ -519,7 +519,8 @@ namespace ScriptEditor
         {
             string path = msgPath;
             if (path == null && Settings.outputDir != null)
-                path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
+                path = Path.GetFullPath(Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath));
+
             openFileDialog.InitialDirectory = path;
             if (openFileDialog.ShowDialog() == DialogResult.OK) {
                 msgPath = openFileDialog.FileName;
@@ -543,8 +544,10 @@ namespace ScriptEditor
         private void SaveAsStripButton_Click(object sender, EventArgs e)
         {
             string path = msgPath;
+
             if (path == null && Settings.outputDir != null)
-                path = Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath);
+                path = Path.GetFullPath(Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath));
+
             saveFileDialog.InitialDirectory = path;
             saveFileDialog.FileName = Path.GetFileName(msgPath);
             if (saveFileDialog.ShowDialog() == DialogResult.OK) {

@@ -50,7 +50,8 @@ namespace ScriptEditor.TextEditorUtilities
                             return false;
                     }
                 } else
-                    MessageBox.Show("The macro NAME was not found in this script or does not contain the script number.\nIf necessary, association with the message file will be carried out by name of script.",
+                    MessageBox.Show("The macro NAME was not found in this script or does not contain the script number.\n" +
+                                    "If necessary, association with the message file will be carried out by name of script.",
                                     "Warning: Define NAME", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
@@ -70,7 +71,6 @@ namespace ScriptEditor.TextEditorUtilities
                     } else return false;
                 }
             }
-            path = Path.GetFullPath(path);
             return true;
         }
 
@@ -84,8 +84,8 @@ namespace ScriptEditor.TextEditorUtilities
             if (outputDir == null) {
                 outputDir = Path.GetDirectoryName(tab.filepath);
                 if (!onlyOnce)
-                    MessageBox.Show("The output script path for the required Scripts.lst file is not specified,\n"
-                        + "so by default the current script folder is used.", "Path missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("The output script path for the required Scripts.lst file is not specified,\n" +
+                                    "so by default the current script folder is used.", "Path missing", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 onlyOnce = true;
             }
 
@@ -132,7 +132,7 @@ namespace ScriptEditor.TextEditorUtilities
             if (Settings.outputDir == null)
                 defaultDir = Path.GetDirectoryName(filePath);
             else
-                defaultDir = Path.Combine(Settings.outputDir, MessageTextSubPath);
+                defaultDir = Path.GetFullPath(Path.Combine(Settings.outputDir, MessageTextSubPath));
 
             // primary check in output dir
             path = Path.Combine(defaultDir, fileName);
@@ -146,6 +146,16 @@ namespace ScriptEditor.TextEditorUtilities
                         path = pth;
                         found = true;
                         break;
+                    }
+                    // проверить файлы в под папках
+                    foreach (var subFolder in Directory.GetDirectories(Settings.msgListPath[i]))
+                    {
+                        pth = Path.Combine(subFolder, fileName);
+                        if (File.Exists(pth)) {
+                            path = pth;
+                            found = true;
+                            break;
+                        }
                     }
                 }
                 // проверить текущую папку скрипта
