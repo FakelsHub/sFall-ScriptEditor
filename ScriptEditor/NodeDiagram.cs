@@ -23,22 +23,22 @@ namespace ScriptEditor
     public partial class NodeDiagram : Form
     {
         public event EventHandler ChangeNodes; // event for parse script editor
-        
+
         private ClassCanvas nodesCanvas = new ClassCanvas();
-        
-        // List of names of all used nodes in script 
+
+        // List of names of all used nodes in script
         private List<string> nodesProcedureName = new List<string>();
         // List of hidden nodes
-        private Dictionary<string, NodeCanvasItem> HideNodes = new Dictionary<string, NodeCanvasItem>();  
+        private Dictionary<string, NodeCanvasItem> HideNodes = new Dictionary<string, NodeCanvasItem>();
         // List of all used nodes with parser data
         private Dictionary<string, List<DialogueParser>> NodesData = new Dictionary<string, List<DialogueParser>>();
-        
+
         private List<ContentBody> NodeBody;
         private List<string> linkFrom;
         private List<LinkTo> linkToList;
 
         private string[] MessagesData;
-        
+
         private TabInfo sourceTab;
         private IDocument scriptText;
         private Procedure[] scriptProc;
@@ -55,7 +55,7 @@ namespace ScriptEditor
         private bool shouldUpdate = true; // нужно ли обновление холста после изменения в коде скрипта, используетя для предотвращения не нужного обновления.
 
         public bool NeedUpdate
-        {   
+        {
             private get { return needUpdate; }
             set {
                     if (shouldUpdate) needUpdate = value;
@@ -65,10 +65,20 @@ namespace ScriptEditor
         }
 
         #region Form Initialize
+
+        private const string help = "Управление:\n" +
+                                    "Shift + Левый Щелчек на строке текта сообщения - Быстрое редактирования сообщения.\n" +
+                                    "Ctrl + Левый Щелчек - Добавляет или снимает выделение ноды.\n" +
+                                    "Средняя кнопка Мыши - Премещение хоста.\n" +
+                                    "Колесеко Мышки - Увеличить/Уменьшить маштаб.\n" +
+                                    "Правая кнопка Мышки - Вызвать контекстное меню.";
+
         public NodeDiagram(TabInfo tabInfo)
         {
             InitializeComponent();
-            
+
+            if (Settings.hintsLang != 0) HelptoolStripButton.ToolTipText = help;
+
             // set settings
             autoUpdate = autoUpdateNodesToolStripMenuItem.Checked = Settings.autoUpdate;
             woExitNode =  ShowExitNodeToolStripMenuItem.Checked = Settings.woExitNode;
@@ -102,13 +112,13 @@ namespace ScriptEditor
 
             scriptName = scriptProc[tabInfo.parseInfo.GetProcedureIndex("talk_p_proc")].filename;
 
-            InitData();       
+            InitData();
         }
 
         private void NodeDiagram_Shown(object sender, EventArgs e)
         {
             nodesCanvas.Visible = false;
-            
+
             string ext = "." + saveFileDialog.DefaultExt;
             string fcd = Path.ChangeExtension(sourceTab.filepath, ext);
             if (File.Exists(fcd)) {
@@ -135,7 +145,7 @@ namespace ScriptEditor
         /// </summary>
         private void InitData()
         {
-            // получить имена всех Node процедур из скрипта 
+            // получить имена всех Node процедур из скрипта
             nodesProcedureName = DialogueParser.GetAllNodesName(scriptProc);
             if (nodesProcedureName.Count == 0)
                 return;
@@ -147,7 +157,7 @@ namespace ScriptEditor
             {
                 if (woExitNode && name.Equals("node999", StringComparison.OrdinalIgnoreCase))
                     continue;
-                
+
                 int index = sourceTab.parseInfo.GetProcedureIndex(name, scriptProc);
                 string nodeCode = Utilities.GetProcedureCode(scriptText, scriptProc[index]);
                 if (nodeCode == null)
@@ -186,8 +196,8 @@ namespace ScriptEditor
 
         private void AddNodeToCanvas(KeyValuePair<string, List<DialogueParser>> node, ref int shiftY, ref int shiftX)
         {
-            INode empty; // this not used
-            NodeCanvasItem nodeItem = CreateNodeItem(node, out empty);
+            INode nodeData; // this not used
+            NodeCanvasItem nodeItem = CreateNodeItem(node, out nodeData);
             if (Settings.autoHideNodes && nodeItem.GetNodeData.NodeType == NodesType.Unused) {
                 nodeItem.Hidden = true;
                 HideNodes.Add(node.Key, nodeItem);
@@ -204,8 +214,9 @@ namespace ScriptEditor
                     shiftX += 25 + ((int)nodeItem.Width / 2);
                 }
             }
+            if (!nodeData.ShowCodeNodeButton) nodeItem.RemoveItemContex(); // удаляет строки с кодом
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -215,12 +226,21 @@ namespace ScriptEditor
         private NodeCanvasItem CreateNodeItem(KeyValuePair<string, List<DialogueParser>> node, out INode nodeData)
         {
             nodeData = GetNodeData(node);
-            
+
+            nodeData.ShowCodeNodeButton = tsbShowAllCode.Checked;
+
             // создать ноду для отображения из сформированных данных DataNode
             NodeCanvasItem nodeItem = ClassCanvas.CreateItemFromType(nodeData);
+
             nodeItem.ContentClick += ClickContentText;
+            nodeItem.ShowCodeButtonClick += nodeItem_ShowCodeButtonClick;
 
             return nodeItem;
+        }
+
+        void nodeItem_ShowCodeButtonClick(NodeCanvasItem item)
+        {
+            UpdateAllNodes();
         }
 
         /// <summary>
@@ -236,7 +256,7 @@ namespace ScriptEditor
             // node link to node, and message text
             linkToList = new List<LinkTo>();
 
-            for (int n = 0; n < value.Count; n++) 
+            for (int n = 0; n < value.Count; n++)
             {
                 if (value[n].opcode == OpcodeType.Option || value[n].opcode == OpcodeType.giq_option ||
                     value[n].opcode == OpcodeType.gsay_option || value[n].opcode == OpcodeType.call)
@@ -245,13 +265,14 @@ namespace ScriptEditor
                 }
 
                 string msgText = (value[n].opcode != OpcodeType.None && value[n].opcode != OpcodeType.call)
-                               ? GetMessageText(value[n].numberMsgFile, value[n].numberMsgLine) 
+                               ? GetMessageText(value[n].numberMsgFile, value[n].numberMsgLine)
                                : null;
 
-                //поместить распарсенные данные из Node процедуры в List<ContentBody>  
-                NodeBody.Add(new ContentBody(value[n].code, msgText, value[n].opcode, value[n].numberMsgLine, value[n].numberMsgFile, n));
+                //поместить распарсенные данные из Node процедуры в List<ContentBody>
+                NodeBody.Add(new ContentBody((value[n].code.StartsWith(new string(' ', Settings.tabSize))) ? value[n].code.Remove(0, Settings.tabSize): value[n].code,
+                                             msgText, value[n].opcode, value[n].numberMsgLine, value[n].numberMsgFile, n));
             }
-                
+
             // получить список имен: link from nodes
             List<string> linklist = new List<string>();
 
@@ -306,7 +327,7 @@ namespace ScriptEditor
                 return;
 
             //UpdateProceduresInfo();
-            
+
             ///
             int index = sourceTab.parseInfo.GetProcedureIndex(name, scriptProc);
             string nodeProcedureText = Utilities.GetProcedureCode(scriptText, scriptProc[index]);
@@ -316,7 +337,7 @@ namespace ScriptEditor
             List<DialogueParser> DialogNode = new List<DialogueParser>();
             DialogueParser.PrepareNodeCode(nodeProcedureText, DialogNode, sourceTab.parseInfo, !tsbShowCommentCode.Checked);
             //
-            
+
             NodesData.Remove(name); // удалить данные существующей ноды
 
             // Имя ноды и данные
@@ -334,7 +355,7 @@ namespace ScriptEditor
         {
             NodesData.Clear();
             nodesProcedureName.Clear();
-            
+
             UpdateProceduresInfo();
 
             InitData();
@@ -345,7 +366,7 @@ namespace ScriptEditor
             List<INode> Nodes = new List<INode>();
             foreach (var node in NodesData)
                 Nodes.Add(ReCreateNodeCanvas(node, ref shift));
-            
+
             //
             nodesCanvas.RemoveUnusedNodes(Nodes);
 
@@ -361,11 +382,11 @@ namespace ScriptEditor
         private INode ReCreateNodeCanvas(KeyValuePair<string, List<DialogueParser>> node, ref int shift)
         {
             // проверить не скрыта ли нода стаким именем
-            bool IsHide = HideNodes.ContainsKey(node.Key);           
-            
+            bool IsHide = HideNodes.ContainsKey(node.Key);
+
             INode nodeData;
             NodeCanvasItem newNodeItem = CreateNodeItem(node, out nodeData);
-            
+
             CanvasItem existNodeItem;
             //получить данные из уже созданной ноды
             if (IsHide)
@@ -378,16 +399,25 @@ namespace ScriptEditor
                 newNodeItem.X = existNodeItem.X;
                 newNodeItem.Y = existNodeItem.Y;
                 newNodeItem.Width = existNodeItem.Width;
-                // установить 
+
+                // установить cостояния
                 newNodeItem.Collapsed = ((NodeCanvasItem)existNodeItem).Collapsed;
+
+                INode _nodeData = ((NodeCanvasItem)existNodeItem).GetNodeData;
+                if (_nodeData.GetStateShowNodeCodeButton()) {
+                    nodeData.SetStateShowNodeCodeButton();
+                    nodeData.ShowCodeNodeButton = _nodeData.ShowCodeNodeButton;
+                    newNodeItem.ViewAllNodeCode = _nodeData.ShowCodeNodeButton;
+                }
+
                 for (int l = 0; l < newNodeItem.NodeContentsCount; l++)
                     newNodeItem.SetContentCollapsed(l.ToString(), ((NodeCanvasItem)existNodeItem).ContentIsCollapsed(l.ToString()));
 
             } else if (!IsHide) {
-                //уст. позицию вслучае если ноды на холсте несуществует 
+                //уст. позицию вслучае если ноды на холсте несуществует
                 newNodeItem.X = 100 + shift;
                 newNodeItem.Y = 100;
-                    
+
                 shift += 350;
             }
 
@@ -401,6 +431,12 @@ namespace ScriptEditor
                 nodesCanvas.RemoveCanvasItem(existNodeItem);
             }
 
+            if (nodeData.GetStateShowNodeCodeButton()) {
+                if (!nodeData.ShowCodeNodeButton)
+                    newNodeItem.RemoveItemContex();
+            } else if (!tsbShowAllCode.Checked) {
+                newNodeItem.RemoveItemContex();
+            }
             return nodeData;
         }
 
@@ -413,9 +449,9 @@ namespace ScriptEditor
         {
             nodesProcedureName.Add(nodeName);
 
-            INode empty;
+            INode nodeData;
             List<DialogueParser> DialogNode = ParseNodeCode(nodeName, nodeCode);
-            NodeCanvasItem nodeItem = CreateNodeItem(new KeyValuePair<string, List<DialogueParser>>(nodeName, DialogNode), out empty);
+            NodeCanvasItem nodeItem = CreateNodeItem(new KeyValuePair<string, List<DialogueParser>>(nodeName, DialogNode), out nodeData);
 
             // Установить позицию для новой ноды
             int x = nodesCanvas.HorizontalScroll.Value + (nodesCanvas.Width / 2);
@@ -427,6 +463,8 @@ namespace ScriptEditor
 
             nodesCanvas.AddCanvasItem(nodeItem);
             nodesCanvas.SetFocusedCanvasItem(nodeItem);
+
+            if (!nodeData.ShowCodeNodeButton) nodeItem.RemoveItemContex(); // удаляет строки с кодом
 
             #region Simple example add new node
             /*
@@ -449,7 +487,7 @@ namespace ScriptEditor
             * ProcedureBody.Add(new ContentBody("options", "Проваливай!", OpcodeType.Option));
             * NodeCanvasItem item = ClassCanvas.CreateItemFromType(new DataNode(nodeName, linkList, linkfrom, ProcedureBody, NodesType.Unused));
             */
-            #endregion 
+            #endregion
         }
         #endregion
 
@@ -461,7 +499,7 @@ namespace ScriptEditor
             HideNodes.Add(key, node);
             nodesCanvas.RemoveCanvasItem(node);
         }
-        
+
         private void UnHideNode(string key)
         {
             NodeCanvasItem item = HideNodes[key];
@@ -499,16 +537,16 @@ namespace ScriptEditor
         {
             scriptProc = ParserInternal.GetProcsData(scriptText.TextContent, sourceTab.filepath);
         }
-        
+
         private void ReadMessageData(string msgfilePath)
         {
             MessagesData = File.ReadAllLines(msgfilePath, Settings.EncCodePage);
             if (msgfilePath == sourceTab.msgFilePath)
-                MessageFile.ParseMessages(sourceTab, MessagesData); 
+                MessageFile.ParseMessages(sourceTab, MessagesData);
         }
 
         private string GetMessageText(int msgNum, int msgLineNum)
-        {       
+        {
             string msg = null;
             if (msgLineNum > 0) {
                 if (msgNum > 0) {
@@ -520,7 +558,7 @@ namespace ScriptEditor
                         msg = String.Format(MessageFile.msgfileError, msgNum);
                 }
                 else if (sourceTab.messages.ContainsKey(msgLineNum)) {
-                        msg = sourceTab.messages[msgLineNum];   
+                        msg = sourceTab.messages[msgLineNum];
                 }
                 if (msg == null) msg = MessageFile.messageError;
             } else
@@ -528,11 +566,11 @@ namespace ScriptEditor
 
             return msg;
         }
-        
+
         private bool NodeIsEditing(NodeCanvasItem node)
         {
             if (node.IsEditing) return true;
-            
+
             foreach (var fcTE in sourceTab.nodeFlowchartTE)
             {
                 if (fcTE.NodeName == node.GetNodeData.Name) return true;
@@ -585,21 +623,21 @@ namespace ScriptEditor
                 }
                 else if (JumpNodeToolStripMenuItem.Tag != null)
                          return;
-                
+
                 JumpNodeToolStripMenuItem.Tag = e.CanvasItem;
-                
+
                 foreach (var linkTo in NodeItem.GetNodeData.LinkedToNodes)
                 {
                     JumpNodeToolStripMenuItem.DropDownItems.Add(linkTo.NameTo, null, new EventHandler(JumpClick));
                     int count = JumpNodeToolStripMenuItem.DropDownItems.Count - 1;
 
-                    JumpNodeToolStripMenuItem.DropDownItems[count].ForeColor = (HideNodes.ContainsKey(linkTo.NameTo)) 
+                    JumpNodeToolStripMenuItem.DropDownItems[count].ForeColor = (HideNodes.ContainsKey(linkTo.NameTo))
                                                                              ? Color.Gray : Color.OrangeRed;
                 }
 
                 string linkLine = String.Join(":", NodeItem.GetNodeData.LinkedFromNodes);
                 string[] linkFrom = linkLine.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
-                if (linkFrom.Length > 0) { 
+                if (linkFrom.Length > 0) {
                     JumpNodeToolStripMenuItem.DropDownItems.Add("-- Link From --");
                     JumpNodeToolStripMenuItem.DropDownItems[
                         JumpNodeToolStripMenuItem.DropDownItems.Count - 1].Enabled = false;
@@ -608,12 +646,12 @@ namespace ScriptEditor
                     {
                         JumpNodeToolStripMenuItem.DropDownItems.Add(link.Trim(), null, new EventHandler(JumpClick));
                         int count = JumpNodeToolStripMenuItem.DropDownItems.Count - 1;
-                        JumpNodeToolStripMenuItem.DropDownItems[count].ForeColor = (HideNodes.ContainsKey(link.Trim())) 
+                        JumpNodeToolStripMenuItem.DropDownItems[count].ForeColor = (HideNodes.ContainsKey(link.Trim()))
                                                                                     ? Color.Gray : Color.Blue;
                     }
                 }
             } else {
-                CanvasItemUnSelected(null, e);           
+                CanvasItemUnSelected(null, e);
                 if (e.CanvasItem is NoteCanvasItem)
                     deleteNoteToolStripMenuItem.Enabled = true;
             }
@@ -631,15 +669,15 @@ namespace ScriptEditor
             hideNodeToolStripMenuItem.Enabled = false;
             deleteNoteToolStripMenuItem.Enabled = false;
         }
-        
+
         private void JumpClick(object sender, EventArgs e)
         {
             string name = ((ToolStripItem)sender).Text;
 
             if (HideNodes.ContainsKey(name))
                 UnHideNode(name);
-            
-            NodeCanvasItem NodeItem = (NodeCanvasItem)nodesCanvas.GetNodeCanvasItem(name);         
+
+            NodeCanvasItem NodeItem = (NodeCanvasItem)nodesCanvas.GetNodeCanvasItem(name);
             if (NodeItem == null)
                 return;
 
@@ -651,7 +689,7 @@ namespace ScriptEditor
         {
             float zoom = nodesCanvas.Zoom;
             Point position = new Point((int)(NodeItem.X * zoom), (int)(NodeItem.Y * zoom));
-            
+
             // центрируем положение
             int w = ((int)(NodeItem.Width * zoom)) / 2;
             int h = ((int)(NodeItem.Height * zoom)) / 2;
@@ -663,9 +701,8 @@ namespace ScriptEditor
 
         private void ClickContentText(object sender, TextSegment ts)
         {
-            if (ts.IndexContent == -1)
-                return;
-            
+            if (ts.IndexContent == -1) return;
+
             if (shiftDown) {
                 ContentBody cbData = ((NodeCanvasItem)sender).GetNodeData.NodeContent[ts.IndexContent];
                 if (cbData.msgNum == -1)
@@ -694,8 +731,8 @@ namespace ScriptEditor
             if (msgFileNum != -1)
                 message = MessageFile.GetMessages(MessagesData, msgNum);
             else if (sourceTab.messages.ContainsKey(msgNum))
-                message = sourceTab.messages[msgNum]; 
-            
+                message = sourceTab.messages[msgNum];
+
             if (message == null) {
                 MessageBox.Show("The requested message line number in: " + msgfile + "\nfile, could not be found.", "Message missing");
                 return;
@@ -715,44 +752,60 @@ namespace ScriptEditor
             int x = (int)(ts.AbsoluteX * nodesCanvas.Zoom) - nodesCanvas.HorizontalScroll.Value;
             int y = (int)(ts.AbsoluteY * nodesCanvas.Zoom) - nodesCanvas.VerticalScroll.Value;
 
+            int lines = ts.GetTextLines();
+            switch (lines) {
+                case 3:
+                    y += 2;
+                    break;
+                case 2:
+                    y += (int)(ts.TextHeight * nodesCanvas.Zoom) - 5;
+                    break;
+                case 1:
+                    y += (int)(ts.TextHeight * nodesCanvas.Zoom);
+                    break;
+                default:
+                    y -= 2;
+                    break;
+            }
+
             string message = ts.Text;
             int len = message.Length;
-            if (len > 100)
-            {
-                int posChar, i, j;
+            if ((lines > 0 && ts.TextWidth > ts.ActualWidth) ||
+                (lines == 0 && len > 100 && (ts.TextWidth > ts.ActualWidth))) {
+                int loop = 1;         // количество частей: 1 - строка поделена на две части
+                int divPos = len / 2; // делим строку пополам
 
-                int loop = 1;
-                int divPos = len / 2;
-                if (divPos > 100)
-                {
+                if (divPos > 75) {
                     loop++;
                     divPos = len / 3;
-                    if (divPos > 100)
-                    {
+                    if (divPos > 75) {
                         loop++;
                         divPos = len / 4;
                     }
                 }
 
                 int incPos = divPos;
+                int i, j;
+
                 for (int l = loop; l > 0; l--)
                 {
-                    posChar = i = j = divPos;
-                    while (i < len && j > 0)
+                    int insertPos = i = j = divPos;
+                    while (j > 0 && i < len)
                     {
-                        if (Char.IsWhiteSpace(message[i]))
-                        {
-                            posChar = i;
+                        if (Char.IsWhiteSpace(message[--j])) { // назад
+                            insertPos = j;
+                            divPos -= (divPos - j);
                             break;
-                        } else if (Char.IsWhiteSpace(message[--j]))
-                        {
-                            posChar = j;
+                        }
+                        else if (Char.IsWhiteSpace(message[i])) { // вперед
+                            insertPos = i;
+                            divPos += (i - divPos);
                             break;
                         }
                         i++;
                     }
-                    message = message.Insert(posChar, Environment.NewLine);
-                    divPos += incPos;
+                    message = message.Insert(insertPos, Environment.NewLine);
+                    divPos += incPos; // следующая позиция вставки
                 }
             }
             // popup show
@@ -767,7 +820,7 @@ namespace ScriptEditor
                 if (MessageBox.Show("Do you want to clean up the existing flowchart and create a new one?", "Create New",
                     MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
-            
+
             nodesCanvas.ClearCanvas();
             HideNodes.Clear();
             CreateCanvasNodes();
@@ -777,7 +830,7 @@ namespace ScriptEditor
             else
                 nodesCanvas.Refresh();
 
-            HelpTip.Show("NOTE: Save the flowchart file to the subfolder 'fcd' of the source script, so that the editor next time automatically opens the flowchart file.", nodesCanvas, 10, 10, 10000);
+            HelpTip.Show(@"NOTE: Save the flowchart file to the folder (or subfolder \fcd) of the source script, so that the editor next time automatically opens the flowchart file.", nodesCanvas, 10, 10, 10000);
 
             nodesCanvas.Select();
         }
@@ -793,27 +846,27 @@ namespace ScriptEditor
                     scriptText.UndoStack.ClearRedoStack();
                     return;
                 }
-                ((NodeCanvasItem)(renameNodeToolStripMenuItem.Tag)).GetNodeData.Name = nName; 
+                ((NodeCanvasItem)(renameNodeToolStripMenuItem.Tag)).GetNodeData.Name = nName;
                 UpdateAllNodes();
             }
         }
 
         private void deleteNoteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (nodesCanvas.ActiveControl is TextBox) 
+            if (nodesCanvas.ActiveControl is TextBox)
                 return;
 
             if (MessageBox.Show("Are you sure you want to delete the all selected nodes/notes?\n(When delete a node, the corresponding procedure in the script will be deleted).", "Deleting",
                 MessageBoxButtons.YesNo) == DialogResult.No)
                 return;
-            
+
             List<string> removeProcName = new List<string>();
 
             do {
                 CanvasItem item = nodesCanvas.GetLastFocusItem();
                 if (item == null)
                     break;
-                 
+
                 if (item is NoteCanvasItem) {
                     nodesCanvas.RemoveCanvasItem(item);
                     continue;
@@ -824,26 +877,26 @@ namespace ScriptEditor
                     MessageBox.Show("You cannot delete the procedural handler 'talk_p_proc' from the flowchart editor.");
                     break; //don't delete talk_p_proc
                 }
-                
+
                 if (NodeIsEditing((NodeCanvasItem)item)) {
                     MessageBox.Show("You cannot delete a node procedure: " + name + " that is edited at the current time.");
                     break;
                 }
-                
+
                 nodesCanvas.RemoveCanvasItem(item);
                 NodesData.Remove(name);
                 nodesProcedureName.Remove(name);
                 removeProcName.Add(name);
-            
+
             } while (true);
-            
+
             if (removeProcName.Count > 0) {
                 Utilities.DeleteProcedure(removeProcName, scriptText);
 
                 if (ChangeNodes != null)
                     ChangeNodes(this, EventArgs.Empty); //event
             }
-            
+
             nodesCanvas.ClearDragItems();
 
             CanvasItemUnSelected(null, EventArgs.Empty);
@@ -856,7 +909,7 @@ namespace ScriptEditor
         {
             TemplateNode tNode = new TemplateNode();
             tNode.CreateClick += new TemplateNode.CreateClickHandler(CreateClick);
-            tNode.ShowForm(); 
+            tNode.ShowForm();
         }
 
         private bool CreateClick(object sender, string nodeName, string nodeCode)
@@ -864,25 +917,25 @@ namespace ScriptEditor
             string defName = "Node";
             if (nodeName.IndexOf(defName, StringComparison.OrdinalIgnoreCase) < 0)
                 nodeName = defName + nodeName;
-            
+
             if (sourceTab.parseInfo.CheckExistsName(nodeName, NameType.Proc)) {
                 MessageBox.Show("The procedure/variable or declared macro with this name already exists.", "Unable to rename");
                 return false;
             }
 
             CreateNewNode(nodeName, nodeCode);
-            
+
             shouldUpdate = false; // не обновлять другие ноды на холсте
-            
+
             //Создать процедуру в скрипте
             int dummy = 0;
             ParserInternal.UpdateParseBuffer(scriptText.TextContent);
             int declrLine = ParserInternal.GetEndLineProcDeclaration();
             int procLine = scriptText.TotalNumberOfLines - 1;
             string procblock = "\r\nprocedure " + nodeName + " begin\r\n" + nodeCode + "\r\nend\r\n";
-            Utilities.InsertProcedure(sourceTab.textEditor.ActiveTextAreaControl, 
+            Utilities.InsertProcedure(sourceTab.textEditor.ActiveTextAreaControl,
                                       nodeName, procblock, declrLine, procLine, ref dummy);
-            
+
             nodesCanvas.Refresh();
 
             if (ChangeNodes != null)
@@ -899,10 +952,10 @@ namespace ScriptEditor
             note.Width = 200;
             note.Height = 50;
             nodesCanvas.AddCanvasItem(note);
-            
+
             nodesCanvas.Refresh();
         }
-                
+
         private void CanvasZoomChanged(object sender, EventArgs e)
         {
             int zoom = (int)Math.Round(nodesCanvas.Zoom * 100f);
@@ -923,7 +976,7 @@ namespace ScriptEditor
             int zm = Zoom.Value;
 
             if (e.Delta > 0)
-                zm += value; 
+                zm += value;
             else
                 zm -= value;
 
@@ -938,14 +991,14 @@ namespace ScriptEditor
                 //ZoomLabel.Text = string.Format("X:{0}% : Y:{1}%", nodesCanvas.Percent.X, nodesCanvas.Percent.Y);
             #endif
         }
-   
+
         private void editNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NodeCanvasItem node = (CanvasItem)editNodeToolStripMenuItem.Tag as NodeCanvasItem;
             if (node == null)
                 return;
 
-            foreach (var fcTE in sourceTab.nodeFlowchartTE) 
+            foreach (var fcTE in sourceTab.nodeFlowchartTE)
             {
                 if (fcTE.NodeName.Equals(node.GetNodeData.Name, StringComparison.OrdinalIgnoreCase)) {
                     fcTE.Activate();
@@ -960,7 +1013,7 @@ namespace ScriptEditor
                 return;
             FlowchartTE nodeEditor = new FlowchartTE(scriptProc[index], sourceTab, nodesProcedureName, true);
             sourceTab.nodeFlowchartTE.Add(nodeEditor);
-            
+
             nodeEditor.ApplyCode += nodeEditor_ApplyCode;
             nodeEditor.Disposed += new EventHandler(nodeEditor_Disposed);
             nodeEditor.ShowEditor(this, nodeEditLink: (NodeCanvasItem)editNodeToolStripMenuItem.Tag);
@@ -978,7 +1031,7 @@ namespace ScriptEditor
                 if (fcTE.NodeName.Equals(((FlowchartTE)sender).NodeName, StringComparison.OrdinalIgnoreCase)) {
                     sourceTab.nodeFlowchartTE.Remove(fcTE);
                     break;
-                }    
+                }
             }
         }
 
@@ -989,16 +1042,16 @@ namespace ScriptEditor
                     MessageBox.Show("In the source script, there is no dialog node with this name.", "Apply error");
                     return;
                 }
-                
+
                 if (ChangeNodes != null)
                     ChangeNodes(this, EventArgs.Empty); //event
 
-                if (!fсClosed) 
+                if (!fсClosed)
                     UpdateAllNodes();
                 //else
                 //    UpdateProceduresInfo();
-                
-                e.Change = false; 
+
+                e.Change = false;
             }
             if (!fсClosed)
                 e.Close = true;
@@ -1023,7 +1076,7 @@ namespace ScriptEditor
         {
             nodesCanvas.MatchAllWidths();
         }
-                
+
         private void HidePopUp()
         {
             msgPopup.Hide(nodesCanvas);
@@ -1039,7 +1092,7 @@ namespace ScriptEditor
         {
             HidePopUp();
         }
-        
+
         void NodeDiagram_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ShiftKey)
@@ -1057,7 +1110,7 @@ namespace ScriptEditor
             nodesCanvas.HighQuality = highQualityToolStripMenuItem.Checked;
             nodesCanvas.Refresh();
         }
-                
+
         private void ArrangetoolStripButton_Click(object sender, EventArgs e)
         {
            nodesCanvas.AutoArrange();
@@ -1065,11 +1118,16 @@ namespace ScriptEditor
 
         private void UpdatetoolStripButton_Click(object sender, EventArgs e)
         {
+            UpdateNodes();
+        }
+
+        private void UpdateNodes()
+        {
             NeedUpdate = false;
             UpdateAllNodes();
             nodesCanvas.Refresh();
         }
-        
+
         private void NodeDiagram_FormClosing(object sender, FormClosingEventArgs e)
         {
             fсClosed = true;
@@ -1082,7 +1140,7 @@ namespace ScriptEditor
             if (autoSaveOnExitToolStripMenuItem.Checked && fcdFilePath != null)
                 WriteToXml().Save(fcdFilePath);
         }
-        
+
         private void NodeDiagram_Activated(object sender, EventArgs e)
         {
             if (autoUpdate && NeedUpdate) {
@@ -1092,13 +1150,13 @@ namespace ScriptEditor
                 HelpTip.Show("You need to update the nodes. The script source code has been changed.", nodesCanvas, 10, 10, 5000);
             }
         }
-        
+
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             nodesCanvas.WireOnlySelect = toolStripButton1.Checked;
             nodesCanvas.Refresh();
         }
-                
+
         private void autoUpdateNodesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             autoUpdate = Settings.autoUpdate = autoUpdateNodesToolStripMenuItem.Checked;
@@ -1120,12 +1178,12 @@ namespace ScriptEditor
             if (nodesCanvas.Focused && !Zoom.Focused)
                 Zoom.Focus();
         }
-                
+
         private void autoArrangeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings.autoArrange = autoArrangeToolStripMenuItem.Checked;
         }
-        
+
         private void autoSaveOnExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings.autoSaveChart = autoSaveOnExitToolStripMenuItem.Checked;
@@ -1135,7 +1193,7 @@ namespace ScriptEditor
         {
             ClassCanvas.NodeLowDetails = lowDetailsToolStripMenuItem.Checked;
         }
-        
+
         private void tsbShowCommentCode_Click(object sender, EventArgs e)
         {
             if (tsbShowCommentCode.Checked)
@@ -1145,18 +1203,18 @@ namespace ScriptEditor
             UpdateAllNodes();
             nodesCanvas.Refresh();
         }
-        
+
         private void HelptoolStripButton_Click(object sender, EventArgs e)
         {
             HelpTip.Show(HelptoolStripButton.ToolTipText, nodesCanvas, nodesCanvas.Width - 300, 10, 10000);
         }
-            
+
         private void contextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
         {
             if (!Program.KeyHook(Keys.ControlKey))
                 nodesCanvas.CtrlDown = false;
         }
-        
+
         private void autoHideNodesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings.autoHideNodes = autoHideNodesToolStripMenuItem.Checked;
@@ -1206,11 +1264,17 @@ namespace ScriptEditor
             new ScriptEditor.TextEditorUI.Function.FunctionsRules().ShowDialog(this);
         }
 
+        private void showAllCode_Click(object sender, EventArgs e)
+        {
+            tsbShowAllCode.Checked = !tsbShowAllCode.Checked;
+            UpdateNodes();
+        }
+
         #region Save/Load Diagram
         private void openDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog.InitialDirectory = fcdFilePath ?? sourceTab.filepath;
-            
+
             if (openFileDialog.ShowDialog() == DialogResult.OK) {
                 fcdFilePath = openFileDialog.FileName;
                 LoadFlowchartDiagram();
@@ -1224,60 +1288,60 @@ namespace ScriptEditor
                 saveFileDialog.FileName = Path.ChangeExtension(scriptName, saveFileDialog.DefaultExt);
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     fcdFilePath = saveFileDialog.FileName;
-                else 
+                else
                     return;
             }
             WriteToXml().Save(fcdFilePath);
         }
-                
+
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.DefaultExt = "png";
             sfd.AddExtension = true;
             sfd.Filter = "PNG Image (.png)|*.png";
-            if (sfd.ShowDialog() == DialogResult.OK)  
+            if (sfd.ShowDialog() == DialogResult.OK)
                 nodesCanvas.SaveToImage(sfd.FileName);
         }
-        
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1059:MembersShouldNotExposeCertainConcreteTypes", MessageId = "System.Xml.XmlNode")]
         private XmlDocument WriteToXml ()
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml("<NodesDiagram/>");
-            
+
             XmlDeclaration decl = doc.CreateXmlDeclaration("1.0", "utf-8", "yes");
             doc.InsertBefore(decl, doc.FirstChild);
-            
+
             XmlAttribute script = doc.CreateAttribute("ScriptName");
             script.Value = scriptName;
             doc.DocumentElement.Attributes.Append(script);
-            
+
             XmlAttribute zoom = doc.CreateAttribute("Zoom");
             zoom.Value = nodesCanvas.Zoom.ToString(System.Globalization.CultureInfo.InvariantCulture);
             doc.DocumentElement.Attributes.Append(zoom);
-            
+
             XmlAttribute positionX = doc.CreateAttribute("PositionX");
             positionX.Value = nodesCanvas.HorizontalScroll.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
             doc.DocumentElement.Attributes.Append(positionX);
-            
+
             XmlAttribute positionY = doc.CreateAttribute("PositionY");
             positionY.Value = nodesCanvas.VerticalScroll.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
             doc.DocumentElement.Attributes.Append(positionY);
-            
+
             //Save hidden nodes
             foreach (var item in HideNodes)
                 item.Value.WriteToXml(doc);
 
-            return nodesCanvas.WriteToXml(doc);;
+            return nodesCanvas.WriteToXml(doc);
         }
-                
+
         private void LoadFlowchartDiagram()
         {
             XmlDocument doc = new XmlDocument();
             doc.Load(fcdFilePath);
             LoadFromXml(doc);
-            
+
             // Check and create new node
             int shiftX = 0;
             foreach (var item in NodesData)
@@ -1287,7 +1351,7 @@ namespace ScriptEditor
                     MessageBox.Show("Added new node from the script: " + item.Key, "Loading...");
                     AddNodeToCanvas(item, ref shiftY, ref shiftX);
                 }
-            } 
+            }
 
             nodesCanvas.Visible = true;
             nodesCanvas.Refresh();
@@ -1298,7 +1362,7 @@ namespace ScriptEditor
         private void LoadFromXml (IXPathNavigable doc)
         {
             XPathNavigator nav = doc.CreateNavigator();
-            
+
             XPathNodeIterator ni = nav.Select(@"/NodesDiagram");
             ni.MoveNext();
             string nameScript = ni.Current.GetAttribute("ScriptName", "");
@@ -1306,11 +1370,11 @@ namespace ScriptEditor
                 MessageBox.Show("This flowchart file was saved for another script file.", "Wrong Flowchart: " + nameScript);
                 return;
             }
-            
+
             float zoom = float.Parse(ni.Current.GetAttribute("Zoom", ""), System.Globalization.CultureInfo.InvariantCulture);
             int positionX = int.Parse(ni.Current.GetAttribute("PositionX", ""), System.Globalization.CultureInfo.InvariantCulture);
             int positionY = int.Parse(ni.Current.GetAttribute("PositionY", ""), System.Globalization.CultureInfo.InvariantCulture);
-            
+
             nodesCanvas.ClearCanvas();
             HideNodes.Clear();
 
@@ -1319,14 +1383,28 @@ namespace ScriptEditor
             {
                 string nodeName = ni.Current.GetAttribute("Name", "");
                 INode nd = GetNodeData(nodeName);
+
                 NodeCanvasItem canvasitem = ClassCanvas.CreateItemFromType(nd);
                 if (canvasitem != null) {
                     canvasitem.LoadFromXml(ni.Current);
                     canvasitem.ContentClick += ClickContentText;
+                    canvasitem.ShowCodeButtonClick += nodeItem_ShowCodeButtonClick;
                     if (!canvasitem.Hidden)
                         nodesCanvas.AddCanvasItem(canvasitem);
                     else
                         HideNodes.Add(nodeName, canvasitem);
+
+                    // установить сохраненное значение кнопки ShowCode для ноды
+                    if (NodeCanvasItem.showCode != -1) {
+                        nd.SetStateShowNodeCodeButton();
+                        nd.ShowCodeNodeButton = (NodeCanvasItem.showCode != 0);
+                    } else {
+                        nd.ShowCodeNodeButton = tsbShowAllCode.Checked;
+                    }
+                    canvasitem.ViewAllNodeCode = nd.ShowCodeNodeButton;
+                    if (!nd.ShowCodeNodeButton) {
+                        canvasitem.RemoveItemContex();
+                    }
                 } else
                     MessageBox.Show("Deleted existing dialog node: " + nodeName + ", that does not exist in the script code.", "Loading...");
             }
@@ -1340,7 +1418,7 @@ namespace ScriptEditor
             }
 
             nodesCanvas.Zoom = zoom;
-            nodesCanvas.SetCanvasScrollPosition = new Point(positionX, positionY); 
+            nodesCanvas.SetCanvasScrollPosition = new Point(positionX, positionY);
         }
         #endregion
 
