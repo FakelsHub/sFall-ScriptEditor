@@ -710,6 +710,7 @@
             // saveFileDialog
             // 
             this.saveFileDialog.Filter = "Message files|*.msg";
+            this.saveFileDialog.RestoreDirectory = true;
             // 
             // MessageEditor
             // 

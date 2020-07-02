@@ -122,6 +122,8 @@ namespace ScriptEditor
             oldDecompileToolStripMenuItem.Checked = Settings.oldDecompile;
             SizeFontToString();
 
+            ofdScripts.InitialDirectory = Settings.solutionProjectFolder;
+
             toolTips.Active = false;
             toolTips.Draw += delegate(object sender, DrawToolTipEventArgs e) { TipPainter.DrawInfo(e); };
 

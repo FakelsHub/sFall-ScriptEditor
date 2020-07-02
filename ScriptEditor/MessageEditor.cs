@@ -521,7 +521,7 @@ namespace ScriptEditor
             if (path == null && Settings.outputDir != null)
                 path = Path.GetFullPath(Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath));
 
-            openFileDialog.InitialDirectory = path;
+            openFileDialog.InitialDirectory = Path.GetDirectoryName(path);
             if (openFileDialog.ShowDialog() == DialogResult.OK) {
                 msgPath = openFileDialog.FileName;
                 RowsClear();
@@ -548,7 +548,7 @@ namespace ScriptEditor
             if (path == null && Settings.outputDir != null)
                 path = Path.GetFullPath(Path.Combine(Settings.outputDir, MessageFile.MessageTextSubPath));
 
-            saveFileDialog.InitialDirectory = path;
+            saveFileDialog.InitialDirectory = Path.GetDirectoryName(path);
             saveFileDialog.FileName = Path.GetFileName(msgPath);
             if (saveFileDialog.ShowDialog() == DialogResult.OK) {
                 msgPath = saveFileDialog.FileName;
