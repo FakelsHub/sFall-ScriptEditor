@@ -279,7 +279,7 @@ namespace ICSharpCode.ClassDiagram
 		
 		public SizeF GetDiagramLogicalSize ()
 		{
-			float w=1, h=1;
+			float w = 1, h = 1;
 			foreach (CanvasItemData item in itemsList)
 			{
 				w = Math.Max(w, item.Item.X + item.Item.ActualWidth + item.Item.Border);
@@ -922,6 +922,7 @@ namespace ICSharpCode.ClassDiagram
 		public static NodeCanvasItem CreateItemFromType (INode ct)
 		{
 			if (ct == null) return null;
+
 			NodeCanvasItem item = new NodeCanvasItem(ct, NodeLowDetails);
 			item.Initialize();
 			return item;

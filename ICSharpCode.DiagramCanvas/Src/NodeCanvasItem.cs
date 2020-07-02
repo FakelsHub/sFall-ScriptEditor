@@ -30,10 +30,20 @@ namespace ICSharpCode.ClassDiagram
 	{
 		public delegate void ContentClickHandler(object sender, TextSegment ts);
 		public event ContentClickHandler ContentClick;
-		
+
+		public delegate void ShowCodeClickHandler(NodeCanvasItem node);
+		public event ShowCodeClickHandler ShowCodeButtonClick;
+
+		///<summary>
+		/// состояние кнопки "ShowCode" при загрузки сохрененного значения
+		/// -1 неопределенное состояние
+		///</summary>
+		public static int showCode = -1;
+
 		INode dataNode;
 		
 		bool nodeLowDetails = false;
+
 		int lineHeaderContent = 0;
 
 		public bool IsEditing { get; private set; }
@@ -44,10 +54,13 @@ namespace ICSharpCode.ClassDiagram
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Font TitleFont = new Font (FontFamily.GenericSansSerif, 18, FontStyle.Bold, GraphicsUnit.Pixel);
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Font SubtextFont = new Font (FontFamily.GenericSansSerif, 12, FontStyle.Regular, GraphicsUnit.Pixel);
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Font GroupTitleFont = new Font (FontFamily.GenericMonospace, 14, FontStyle.Bold, GraphicsUnit.Pixel);
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Font LinkedFont = new Font (FontFamily.GenericSansSerif, 12, FontStyle.Bold, GraphicsUnit.Pixel);
 		public static readonly Font ScriptFont = new Font (FontFamily.GenericMonospace, 14, FontStyle.Regular, GraphicsUnit.Pixel);
@@ -62,6 +75,7 @@ namespace ICSharpCode.ClassDiagram
 		DrawableItemsStack classItemContainer = new DrawableItemsStack();
 
 		CollapseExpandShape collapseExpandShape = new CollapseExpandShape();
+		ViewCodeShape viewCodeShape;
 
 		DrawableItemsStack titles = new DrawableItemsStack();
 		DrawableItemsStack titlesCollapsed = new DrawableItemsStack();
@@ -76,7 +90,7 @@ namespace ICSharpCode.ClassDiagram
 		Dictionary<InteractiveHeaderedItem, string> nodeContentNames = new Dictionary<InteractiveHeaderedItem, string>(); 
 		Dictionary<string, InteractiveHeaderedItem> nodeContentsByName = new Dictionary<string, InteractiveHeaderedItem>();
 		
-		DrawableItemsStack<TextSegment> interfaces = new DrawableItemsStack<TextSegment>();
+		DrawableItemsStack<TextSegment> nodeDescription = new DrawableItemsStack<TextSegment>();
 		
 		#region Graphics related members
 		
@@ -218,7 +232,7 @@ namespace ICSharpCode.ClassDiagram
 					break;
 			}
 			grad = new LinearGradientBrush(new PointF(0, 0), new PointF(1, 0), titleBackground, Color.White);
-  			
+			
 			classItemHeaderedContent = new InteractiveHeaderedItem(titlesCollapsed, titlesExpanded, InitContentContainer(InitContent()));
 			classItemContainer.Container = this;
 			classItemContainer.Add(classItemHeaderedContent);
@@ -370,8 +384,11 @@ namespace ICSharpCode.ClassDiagram
 			
 			//Название
 			TextSegment titleString = new TextSegment(base.Graphics, dataNode.Name, TitleFont, true, StringAlignment.Center);
-			if (!nodeLowDetails) 
-				title.Add(new NodeCircleShape(dataNode.NodeType));
+
+			//title.Add(new NodeCircleShape(dataNode.NodeType));
+			viewCodeShape = new ViewCodeShape(dataNode.ShowCodeNodeButton);
+			title.Add(viewCodeShape);
+
 			title.Add(titleString);
 			title.Add(collapseExpandShape);
 			
@@ -402,7 +419,7 @@ namespace ICSharpCode.ClassDiagram
 			}
 			titles.Add(linkedFrom);
 
-			//добавление интерфейса (неиспользуется)
+			//добавление интерфейса (можно это использовать для короткого описания к ноде)
 			//string type = null;
 			//if (dataNode.NodeType == NodesType.DialogStart)
 			//    type = "Start Dialog";
@@ -412,8 +429,40 @@ namespace ICSharpCode.ClassDiagram
 			//    interfaces.Add(new TextSegment(base.Graphics, "test", LinkedFont, true));
 		}
 
+		public void RemoveItemContex()
+		{
+			List<IDrawableRectangle> removeItems = new List<IDrawableRectangle>();
+			List<int> removeIndexLine = new List<int>();
+
+			int line = 0;
+			foreach (var item in items)
+			{
+				line++;
+				if (item is TextSegment) {
+					removeItems.Add(item);
+					removeIndexLine.Add(line);
+				}
+			}
+			// Корректировака для правильного позиционирования исходящих линий ноды
+			for (int i = 0; i < removeItems.Count; i++)
+			{
+				for (int j = 0; j < dataNode.LinkedToNodes.Count; j++)
+				{
+					var link = dataNode.LinkedToNodes[j];
+					if (removeIndexLine[i] > link.ContentLine) continue;
+
+					link.SetLine = link.SetLine - 1;
+				}
+				items.Remove(removeItems[i]);
+			}
+			foreach (var item in dataNode.LinkedToNodes) item.CommitLine();
+
+			HandleRedraw(null, null);
+			OffsetPointTo();
+		}
+
 		// создание заголовка раскрывающихся полей, и кнопки +/- для раскрытия Reply/Option
-		protected InteractiveHeaderedItem PrepareMessagesHeader (string title, IDrawableRectangle content, bool reply)
+		protected InteractiveHeaderedItem PrepareMessagesHeader (ContentBody content, IDrawableRectangle item, bool reply)
 		{
 			#region Prepare Container
 			DrawableItemsStack headerPlus = new DrawableItemsStack();
@@ -424,34 +473,40 @@ namespace ICSharpCode.ClassDiagram
 			#endregion
 			
 			#region Create Header
-			TextSegment titleSegment = new TextSegment(Graphics, title, GroupTitleFont, true);
-			titleSegment.Brush = (reply)? Brushes.DarkBlue : Brushes.Crimson;
-			
+
+			TextSegment titleSegment = new TextSegment(Graphics, (reply) ? @"""" + content.msgText + @""""
+			                                                     : (nodeLowDetails) ? "\u25CF " + content.msgText : content.msgText,
+			                                                     content.index, MessagesFont, true, reply); // GroupTitleFont
+
 			if (!nodeLowDetails) { 
 				PlusShape plus = new PlusShape();
-				plus.Border = 3;
+				plus.Border = 4;
+				plus.ScaleShape = false;
+				plus.Width = plus.ShapeWidth;
+				plus.Height = plus.ShapeHeight;
 				headerPlus.Add(plus);
-			}
-			headerPlus.Add(titleSegment);
 
-			if (!nodeLowDetails) { 
 				MinusShape minus = new MinusShape();
-				minus.Border = 3;
+				minus.Border = 4;
+				minus.ScaleShape = false;
+				minus.Width = minus.ShapeWidth;
+				minus.Height = minus.ShapeHeight;
 				headerMinus.Add(minus);
 			}
+			headerPlus.Add(titleSegment);
 			headerMinus.Add(titleSegment);
 			
-            //пиктограмма
-            //if (!reply) {
-            //    DrawableItemsStack<VectorShape> image = new DrawableItemsStack<VectorShape>();
-            //    image.OrientationAxis = Axis.X;
-            //    image.KeepAspectRatio = true;
-            //    image.Border = -3.0f;
-            //    image.Add(new OptionsCircleShape()); 
+			//пиктограмма
+			//if (!reply) {
+			//    DrawableItemsStack<VectorShape> image = new DrawableItemsStack<VectorShape>();
+			//    image.OrientationAxis = Axis.X;
+			//    image.KeepAspectRatio = true;
+			//    image.Border = -3.0f;
+			//    image.Add(new OptionsCircleShape()); 
 
-            //    headerPlus.Add(image);
-            //    headerMinus.Add(image);
-            //}
+			//    headerPlus.Add(image);
+			//    headerMinus.Add(image);
+			//}
 
 			DrawableItemsStack headerCollapsed = new DrawableItemsStack();
 			DrawableItemsStack headerExpanded = new DrawableItemsStack();
@@ -467,31 +522,39 @@ namespace ICSharpCode.ClassDiagram
 			
 			#endregion
 
-			InteractiveHeaderedItem tg = new InteractiveHeaderedItem(headerCollapsed, headerExpanded, content);
+			InteractiveHeaderedItem tg = new InteractiveHeaderedItem(headerCollapsed, headerExpanded, item);
 
 			tg.Collapsed = true;
 
-			//события, клик мышкой по элементу строки кода 
-			tg.HeaderClicked += delegate { tg.Collapsed = !tg.Collapsed; };
+			// событие, клик мышкой по элементу строки кода 
+			tg.HeaderClicked += delegate(object sender, PointF e)
+			{
+				if (Math.Abs(tg.AbsoluteX - e.X) < 20 && Math.Abs(tg.AbsoluteY - e.Y) < 20) {
+					tg.Collapsed = !tg.Collapsed;
+				} else {
+					ContentClick(this, titleSegment);
+				}
+			};
 
-			IMouseInteractable interactive = content as IMouseInteractable;
-			if (interactive != null) {
-				tg.ContentClicked += delegate { tgContentClicked(interactive, tg); }; 
-				//оригинальное событие
-				//tg.ContentClicked += delegate (object sender, PointF pos) {
-				//    interactive.HandleMouseClick(pos); 
-				//};
-			}
-			
+			// старый вариант
+			//IMouseInteractable interactive = content as IMouseInteractable;
+			//if (interactive != null) {
+			//    tg.ContentClicked += delegate { tgContentClicked(interactive, tg); }; 
+			//    //оригинальное событие
+			//    //tg.ContentClicked += delegate (object sender, PointF pos) {
+			//    //    interactive.HandleMouseClick(pos); 
+			//    //};
+			//}
+
 			tg.RedrawNeeded += HandleRedraw;
 
 			return tg;
 		}
 
+		/*
 		void tgContentClicked(IMouseInteractable interactive, InteractiveHeaderedItem tg)
 		{
-			if (ContentClick == null) 
-				return;
+			if (ContentClick == null) return;
 			
 			foreach (var i in (InteractiveItemsStack)interactive)
 			{
@@ -503,6 +566,7 @@ namespace ICSharpCode.ClassDiagram
 				}
 			}
 		}
+		*/
 
 		protected virtual void PrepareNodeContent ()
 		{
@@ -518,22 +582,20 @@ namespace ICSharpCode.ClassDiagram
 				{
 					case OpcodeType.Reply:
 					case OpcodeType.Message:
-						itemReply = new InteractiveItemsStack();
-						itemReply = PrepareMessageContent(content.msgText, content.index, true);
+						itemReply = PrepareMessageContent(content.scrText, true); 
 
 						tileHeader = new DrawableItemsStack<InteractiveHeaderedItem>();
-						tileHeader.Add(MessageToContent(content.scrText, itemReply, true));
+						tileHeader.Add(MessageToContent(content, itemReply, true));
 
 						items.Add(tileHeader);
 						break;
 					case OpcodeType.Option:
 					case OpcodeType.giq_option:
 					case OpcodeType.gsay_option:
-						itemOptions = new InteractiveItemsStack();
-						itemOptions = PrepareMessageContent(content.msgText, content.index, false);
+						itemOptions = PrepareMessageContent(content.scrText, false); 
 
 						tileHeader = new DrawableItemsStack<InteractiveHeaderedItem>();
-						tileHeader.Add(MessageToContent(content.scrText, itemOptions, false));
+						tileHeader.Add(MessageToContent(content, itemOptions, false));
 
 						items.Add(tileHeader);
 						break;
@@ -552,11 +614,11 @@ namespace ICSharpCode.ClassDiagram
 			}
 		}
 
-		protected virtual InteractiveItemsStack PrepareMessageContent(string message, int index, bool reply)
+		protected virtual InteractiveItemsStack PrepareMessageContent(string message, bool reply)
 		{
-			// пиктограмма
- 			DrawableItemsStack<VectorShape> image = new DrawableItemsStack<VectorShape>();
- 			image.OrientationAxis = Axis.X; // stack image components one on top of the other
+			// пиктограмма стрелки
+			DrawableItemsStack<VectorShape> image = new DrawableItemsStack<VectorShape>();
+			image.OrientationAxis = Axis.X; // stack image components one on top of the other
 			image.KeepAspectRatio = true;
 			image.Add(new ArrowShape()); //OptionsCircleShape
 			image.Border = 1;
@@ -565,10 +627,11 @@ namespace ICSharpCode.ClassDiagram
 			InteractiveItemsStack replyText = new InteractiveItemsStack();
 			replyText.OrientationAxis = Axis.X;
 			replyText.Border = 1;
-			if (!nodeLowDetails)
 			replyText.Add(image);
 			
-			replyText.Add(new TextSegment(Graphics, string.Format("\"{0}\"", message), index, MessagesFont, true));
+			TextSegment text = new TextSegment(Graphics, message, GroupTitleFont, true);
+			text.Brush = (reply) ? Brushes.DarkBlue : Brushes.Crimson;
+			replyText.Add(text);
 
 			// Background контейнер
 			InteractiveItemsStack content = new InteractiveItemsStack();
@@ -579,9 +642,9 @@ namespace ICSharpCode.ClassDiagram
 			return content;
 		}
 
-		private InteractiveHeaderedItem MessageToContent(string title, InteractiveItemsStack content, bool reply)
+		private InteractiveHeaderedItem MessageToContent(ContentBody content, InteractiveItemsStack item, bool reply)
 		{
-			InteractiveHeaderedItem headerContent = PrepareMessagesHeader(title, content, reply);
+			InteractiveHeaderedItem headerContent = PrepareMessagesHeader(content, item, reply);
 			
 			nodeContents.Add(headerContent);
 			nodeContentNames.Add(headerContent, lineHeaderContent.ToString());
@@ -610,20 +673,20 @@ namespace ICSharpCode.ClassDiagram
 			else
 			{
 				shadowpath.AddPolygon(new PointF[] {
-				                      	new PointF(ActualWidth, 3),
-				                      	new PointF(ActualWidth + 4, 3),
-				                      	new PointF(ActualWidth + 4, ActualHeight + 3),
-				                      	new PointF(4, ActualHeight + 3),
-				                      	new PointF(4, ActualHeight),
-				                      	new PointF(ActualWidth, ActualHeight)
-				                      });
+				                      new PointF(ActualWidth, 3),
+				                      new PointF(ActualWidth + 4, 3),
+				                      new PointF(ActualWidth + 4, ActualHeight + 3),
+				                      new PointF(4, ActualHeight + 3),
+				                      new PointF(4, ActualHeight),
+				                      new PointF(ActualWidth, ActualHeight)
+				});
 			}
 			shadowpath.CloseFigure();
 		}
 		#endregion
 
 		// вычисление положения точки для начала соединяющей линии
-		 public void OffsetPointTo()
+		public void OffsetPointTo()
 		{
 			if (dataNode.LinkedToNodes.Count == 0) return;
 			int line = 1;
@@ -669,11 +732,11 @@ namespace ICSharpCode.ClassDiagram
 			
 			#region Draw interfaces lollipops
 			//TODO - should be converted to an headered item.
-			if (interfaces.Count > 0)
+			if (nodeDescription.Count > 0)
 			{
-				interfaces.X = AbsoluteX + 15;
-				interfaces.Y = AbsoluteY - interfaces.ActualHeight - 3;
-				interfaces.DrawToGraphics(graphics);
+				nodeDescription.X = AbsoluteX + 15;
+				nodeDescription.Y = AbsoluteY - nodeDescription.ActualHeight - 3;
+				nodeDescription.DrawToGraphics(graphics);
 				
 				//graphics.DrawEllipse(Pens.Black, AbsoluteX + 9, AbsoluteY - interfaces.ActualHeight - 11, 10, 10);
 				//graphics.DrawLine(Pens.Black, AbsoluteX + 14, AbsoluteY - interfaces.ActualHeight - 1, AbsoluteX + 14, AbsoluteY);
@@ -700,6 +763,12 @@ namespace ICSharpCode.ClassDiagram
 			}
 		}
 		
+		public bool ViewAllNodeCode
+		{
+			get { return viewCodeShape.IsPressed; }
+			set	{ viewCodeShape.IsPressed = value; }
+		}
+
 		private void HandleRedraw (object sender, EventArgs args)
 		{
 			PrepareFrame();
@@ -712,6 +781,13 @@ namespace ICSharpCode.ClassDiagram
 
 			if (collapseExpandShape.IsInside(pos.X, pos.Y)) {
 				Collapsed = !Collapsed;
+			}
+			else if (viewCodeShape.IsInside(pos.X, pos.Y)) {
+				ViewAllNodeCode = !ViewAllNodeCode;
+				dataNode.SetStateShowNodeCodeButton();
+				dataNode.ShowCodeNodeButton = ViewAllNodeCode;
+
+				ShowCodeButtonClick(this);
 			} else {
 				foreach (var item in items)
 				{
@@ -741,6 +817,7 @@ namespace ICSharpCode.ClassDiagram
 			element.SetAttribute("Name", dataNode.Name);
 			element.SetAttribute("Collapsed", Collapsed.ToString());
 			element.SetAttribute("Hidden", Hidden.ToString());
+			if (dataNode.GetStateShowNodeCodeButton()) element.SetAttribute("ShowCode", dataNode.ShowCodeNodeButton.ToString());
 
 			//<Contents>
 			if (nodeContents.Count == 0)
@@ -764,7 +841,13 @@ namespace ICSharpCode.ClassDiagram
 			
 			Collapsed = bool.Parse(navigator.GetAttribute("Collapsed", ""));
 			Hidden = bool.Parse(navigator.GetAttribute("Hidden", ""));
-			
+
+			showCode = -1;
+			string sc = navigator.GetAttribute("ShowCode", "");
+			if (!String.IsNullOrEmpty(sc)) {
+				showCode = bool.Parse(sc) ? 1 : 0;
+			}
+
 			XPathNodeIterator contentNI = navigator.Select("Contents/Content");
 			
 			while (contentNI.MoveNext())

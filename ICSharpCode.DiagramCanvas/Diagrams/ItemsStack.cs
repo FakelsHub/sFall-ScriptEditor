@@ -76,8 +76,10 @@ namespace ICSharpCode.Diagrams
 			if (!float.IsNaN(base.ActualHeight) || base.ActualHeight < 0) return base.ActualHeight;
 			float h = 0;
 			foreach (IRectangle r in items)
+			{
 				if (!float.IsNaN(r.ActualHeight) && r.ActualHeight >= 0)
 					h = Math.Max(h, r.ActualHeight);
+			}
 			return h;
 		}
 		
@@ -139,8 +141,11 @@ namespace ICSharpCode.Diagrams
 			{
 				r.X = x + r.Border;
 				r.Y = r.Border + Padding;
-				
-				if (!IsItemWidthValid(r))
+
+				if (r is ICSharpCode.ClassDiagram.VectorShape && (((ICSharpCode.ClassDiagram.VectorShape)r).ScaleShape) == false) {
+					r.ActualWidth = r.Width;
+				}
+				else if (!IsItemWidthValid(r))
 					r.ActualWidth = Math.Max(spacePerUndefined - r.Border * 2, 0);
 				else if (float.IsNaN(r.ActualWidth) || r.ActualWidth < 0)
 					r.ActualWidth = r.Width;
@@ -165,8 +170,10 @@ namespace ICSharpCode.Diagrams
 			if (!float.IsNaN(base.ActualWidth) || base.ActualWidth < 0) return base.ActualWidth;
 			float w = 0;
 			foreach (IRectangle r in items)
+			{
 				if (!float.IsNaN(r.ActualWidth) && r.ActualWidth >= 0)
 					w = Math.Max(w, r.ActualWidth);
+			}
 			return w;
 		}
 				
@@ -220,16 +227,20 @@ namespace ICSharpCode.Diagrams
 			float w = Math.Max(FindWidth(), minWidth);
 
 			foreach (IRectangle r in items)
+			{
 				r.ActualWidth = w - (r.Border + Padding) * 2;
-
+			}
 			float spacePerUndefined = CalcHeightPerUndefined();
 
 			foreach (IRectangle r in items)
 			{
 				r.X = r.Border + Padding;
 				r.Y = y + r.Border;
-				
-				if (!IsItemHeightValid(r))
+
+				if (r is ICSharpCode.ClassDiagram.VectorShape && (((ICSharpCode.ClassDiagram.VectorShape)r).ScaleShape) == false) {
+					r.ActualWidth = r.Height;
+				}
+				else if (!IsItemHeightValid(r))
 					r.ActualHeight = Math.Max (spacePerUndefined - r.Border * 2, 0);
 				else if (float.IsNaN(r.ActualHeight) || r.ActualHeight < 0)
 					r.ActualHeight = r.Height;

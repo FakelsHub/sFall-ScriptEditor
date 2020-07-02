@@ -27,12 +27,12 @@ namespace ICSharpCode.ClassDiagram
 			this.recursive = recursive;
 		}
 		
-		bool recursive = true;
+		private bool recursive = true;
 		
-        public bool Recursive {
-            get { return recursive; }
-            set { recursive = value; }
-        }
+		public bool Recursive {
+			get { return recursive; }
+			set { recursive = value; }
+		}
 		
 		public void HandleMouseClick(PointF pos)
 		{

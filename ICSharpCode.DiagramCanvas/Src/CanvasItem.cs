@@ -245,6 +245,7 @@ namespace ICSharpCode.ClassDiagram
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Brush ShadowBrush = new SolidBrush(Color.FromArgb(64,0,0,0));
+
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
 		public static readonly Font MessagesFont = new Font (FontFamily.GenericSansSerif, 14, FontStyle.Regular, GraphicsUnit.Pixel);
 		

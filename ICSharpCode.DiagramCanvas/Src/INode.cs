@@ -13,7 +13,7 @@ namespace ICSharpCode.ClassDiagram
 			get;
 			set;
 		}
-		
+
 		List<string> LinkedFromNodes {
 			get;
 		}
@@ -25,5 +25,16 @@ namespace ICSharpCode.ClassDiagram
 		NodesType NodeType {
 			get;
 		}
+
+		bool ShowCodeNodeButton {
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Установить признак пользовательского состояния для кнопки
+		/// </summary>
+		void SetStateShowNodeCodeButton();
+		bool GetStateShowNodeCodeButton();
 	}
 }
