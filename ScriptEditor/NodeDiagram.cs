@@ -1273,7 +1273,8 @@ namespace ScriptEditor
         #region Save/Load Diagram
         private void openDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog.InitialDirectory = fcdFilePath ?? sourceTab.filepath;
+            string path = fcdFilePath ?? sourceTab.filepath;
+            openFileDialog.InitialDirectory = Path.GetDirectoryName(path);
 
             if (openFileDialog.ShowDialog() == DialogResult.OK) {
                 fcdFilePath = openFileDialog.FileName;
@@ -1284,7 +1285,7 @@ namespace ScriptEditor
         private void saveDiagramToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (fcdFilePath == null) {
-                saveFileDialog.InitialDirectory = sourceTab.filepath;
+                saveFileDialog.InitialDirectory = Path.GetDirectoryName(sourceTab.filepath);
                 saveFileDialog.FileName = Path.ChangeExtension(scriptName, saveFileDialog.DefaultExt);
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     fcdFilePath = saveFileDialog.FileName;

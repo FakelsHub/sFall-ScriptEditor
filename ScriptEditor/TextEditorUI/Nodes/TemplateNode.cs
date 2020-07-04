@@ -13,6 +13,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
     public class TemplateNode
     {
         private Form form;
+        private Button buttonOk;
 
         public delegate bool CreateClickHandler(object sender, string nodeName, string nodeCode);
         public event CreateClickHandler CreateClick;
@@ -32,14 +33,15 @@ namespace ScriptEditor.TextEditorUI.Nodes
             TextBox tbName = new TextBox();
             TextBox tbNodeCode = new TextBox();
             ComboBox cmbTemplate = new ComboBox();
-            Button buttonOk = new Button();
+            buttonOk = new Button();
             Button buttonCancel = new Button();
 
             tbNodeCode.Multiline = true;
             tbNodeCode.ScrollBars = ScrollBars.Vertical;
-            tbNodeCode.ReadOnly = true;
+            tbNodeCode.Enter += tbNodeCode_Enter;
+            tbNodeCode.Leave += tbNodeCode_Leave;
 
-            tbName.Text = "NodeXXX";
+            tbName.Text = "Node###";
             tbName.SelectionStart = 4;
             tbName.SelectionLength = 3;
 
@@ -58,6 +60,10 @@ namespace ScriptEditor.TextEditorUI.Nodes
             //buttonCancel.Click += delegate(object sender, EventArgs e) { form.Hide(); };
             buttonOk.Click += delegate(object sender, EventArgs e)
                                 {
+                                    if (tbName.Text.IndexOf('#') != -1) {
+                                        MessageBox.Show("Invalid node name.");
+                                        return;
+                                    }
                                     if (CreateClick(this, tbName.Text, tbNodeCode.Text))
                                         form.Hide();
                                 };
@@ -77,6 +83,16 @@ namespace ScriptEditor.TextEditorUI.Nodes
             form.MaximizeBox = false;
             form.AcceptButton = buttonOk;
             form.CancelButton = buttonCancel;
+        }
+
+        void tbNodeCode_Enter(object sender, EventArgs e)
+        {
+            form.AcceptButton = null;
+        }
+
+        void tbNodeCode_Leave(object sender, EventArgs e)
+        {
+            form.AcceptButton = buttonOk;
         }
 
         public void ShowForm()

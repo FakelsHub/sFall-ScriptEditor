@@ -471,8 +471,7 @@
             this.autoUpdateNodesToolStripMenuItem.Name = "autoUpdateNodesToolStripMenuItem";
             this.autoUpdateNodesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.autoUpdateNodesToolStripMenuItem.Text = "Auto Synchronization";
-            this.autoUpdateNodesToolStripMenuItem.ToolTipText = "Automatic updating of information dialog nodes from the script, when the window i" +
-                "s activated.";
+            this.autoUpdateNodesToolStripMenuItem.ToolTipText = "Automatic updating of information dialog nodes from the script, when the window is activated.";
             this.autoUpdateNodesToolStripMenuItem.Click += new System.EventHandler(this.autoUpdateNodesToolStripMenuItem_Click);
             // 
             // autoArrangeToolStripMenuItem
@@ -662,12 +661,14 @@
             this.openFileDialog.AutoUpgradeEnabled = false;
             this.openFileDialog.DefaultExt = "fcd";
             this.openFileDialog.Filter = "Flowchart Dialog (.fcd)|*.fcd";
+            this.openFileDialog.RestoreDirectory = true;
             this.openFileDialog.Title = "Open flowchart dialogue files";
             // 
             // saveFileDialog
             // 
             this.saveFileDialog.DefaultExt = "fcd";
             this.saveFileDialog.Filter = "Flowchart Dialog (.fcd)|*.fcd";
+            this.saveFileDialog.RestoreDirectory = true;
             this.saveFileDialog.Title = "Save flowchart dialogue files ";
             // 
             // HelpTip
