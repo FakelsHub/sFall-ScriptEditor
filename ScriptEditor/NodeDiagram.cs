@@ -198,6 +198,9 @@ namespace ScriptEditor
         {
             INode nodeData; // this not used
             NodeCanvasItem nodeItem = CreateNodeItem(node, out nodeData);
+
+            if (!nodeData.ShowCodeNodeButton) nodeItem.RemoveItemContex(); // удаляет строки с кодом
+
             if (Settings.autoHideNodes && nodeItem.GetNodeData.NodeType == NodesType.Unused) {
                 nodeItem.Hidden = true;
                 HideNodes.Add(node.Key, nodeItem);
@@ -214,7 +217,6 @@ namespace ScriptEditor
                     shiftX += 25 + ((int)nodeItem.Width / 2);
                 }
             }
-            if (!nodeData.ShowCodeNodeButton) nodeItem.RemoveItemContex(); // удаляет строки с кодом
         }
 
         /// <summary>
@@ -421,6 +423,13 @@ namespace ScriptEditor
                 shift += 350;
             }
 
+            if (nodeData.GetStateShowNodeCodeButton()) {
+                if (!nodeData.ShowCodeNodeButton)
+                    newNodeItem.RemoveItemContex();
+            } else if (!tsbShowAllCode.Checked) {
+                newNodeItem.RemoveItemContex();
+            }
+
             //добавляем обновленную и удаляем существующую ноду
             if (IsHide) {
                 HideNodes.Remove(node.Key);
@@ -429,13 +438,6 @@ namespace ScriptEditor
             } else {
                 nodesCanvas.AddCanvasItem(newNodeItem, existNodeItem);
                 nodesCanvas.RemoveCanvasItem(existNodeItem);
-            }
-
-            if (nodeData.GetStateShowNodeCodeButton()) {
-                if (!nodeData.ShowCodeNodeButton)
-                    newNodeItem.RemoveItemContex();
-            } else if (!tsbShowAllCode.Checked) {
-                newNodeItem.RemoveItemContex();
             }
             return nodeData;
         }
@@ -461,10 +463,10 @@ namespace ScriptEditor
 
             nodeItem.Collapsed = false;
 
+            if (!nodeData.ShowCodeNodeButton) nodeItem.RemoveItemContex(); // удаляет строки с кодом
+
             nodesCanvas.AddCanvasItem(nodeItem);
             nodesCanvas.SetFocusedCanvasItem(nodeItem);
-
-            if (!nodeData.ShowCodeNodeButton) nodeItem.RemoveItemContex(); // удаляет строки с кодом
 
             #region Simple example add new node
             /*
@@ -474,7 +476,7 @@ namespace ScriptEditor
             * linkList = new List<LinkTo>();
             * 
             * linkfrom.Add("Start");
-            * linkfrom.Add("End"); 
+            * linkfrom.Add("End");
             * linkList.Add(new LinkTo("Node001",4));
             * linkList.Add(new LinkTo("Node002",6));
             * 
@@ -853,9 +855,18 @@ namespace ScriptEditor
 
         private void deleteNoteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (nodesCanvas.ActiveControl is TextBox)
-                return;
+            if (nodesCanvas.ActiveControl is TextBox) {
+                // удаление текста в TextBox
+                TextBox editBox = nodesCanvas.ActiveControl as TextBox;
+                if (editBox.Text.Length > 0) {
+                    int posCaret = editBox.SelectionStart;
+                    if (posCaret >= editBox.Text.Length) return;
 
+                    editBox.Text = editBox.Text.Remove(posCaret, 1);
+                    editBox.SelectionStart = posCaret;
+                }
+                return;
+            }
             if (MessageBox.Show("Are you sure you want to delete the all selected nodes/notes?\n(When delete a node, the corresponding procedure in the script will be deleted).", "Deleting",
                 MessageBoxButtons.YesNo) == DialogResult.No)
                 return;
@@ -959,6 +970,10 @@ namespace ScriptEditor
         private void CanvasZoomChanged(object sender, EventArgs e)
         {
             int zoom = (int)Math.Round(nodesCanvas.Zoom * 100f);
+            if (e == null) {
+                Zoom.Value = zoom; // не изменять маштаб
+                return;
+            }
             PercentLabel.Text = zoom + "%";
             if (Zoom.Value != zoom)
                 Zoom.Value = zoom;
@@ -1192,6 +1207,7 @@ namespace ScriptEditor
         private void lowDetailsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ClassCanvas.NodeLowDetails = lowDetailsToolStripMenuItem.Checked;
+            UpdateNodes();
         }
 
         private void tsbShowCommentCode_Click(object sender, EventArgs e)
@@ -1390,10 +1406,6 @@ namespace ScriptEditor
                     canvasitem.LoadFromXml(ni.Current);
                     canvasitem.ContentClick += ClickContentText;
                     canvasitem.ShowCodeButtonClick += nodeItem_ShowCodeButtonClick;
-                    if (!canvasitem.Hidden)
-                        nodesCanvas.AddCanvasItem(canvasitem);
-                    else
-                        HideNodes.Add(nodeName, canvasitem);
 
                     // установить сохраненное значение кнопки ShowCode для ноды
                     if (NodeCanvasItem.showCode != -1) {
@@ -1406,6 +1418,11 @@ namespace ScriptEditor
                     if (!nd.ShowCodeNodeButton) {
                         canvasitem.RemoveItemContex();
                     }
+
+                    if (!canvasitem.Hidden)
+                        nodesCanvas.AddCanvasItem(canvasitem);
+                    else
+                        HideNodes.Add(nodeName, canvasitem);
                 } else
                     MessageBox.Show("Deleted existing dialog node: " + nodeName + ", that does not exist in the script code.", "Loading...");
             }

@@ -397,28 +397,28 @@ namespace ICSharpCode.ClassDiagram
 			titles.OrientationAxis = Axis.Y;
 			titles.Add(title);
 
-			//titles.Add(new TextSegment(base.Graphics, "Linked from:", LinkedFont, true));
-			//Список Нод которые ссылаются на эту ноду
-			DrawableItemsStack linkedFrom = new DrawableItemsStack();
-			linkedFrom.OrientationAxis = Axis.Y;
-			
-			if (dataNode.NodeType == NodesType.DialogStart) {
-				linkedFrom.Add(new TextSegment(base.Graphics, "Start Dialogue Procedure", LinkedFont, true));
-				linkedFrom.Border = 8;
-			} else if (dataNode.NodeType == NodesType.NoFromLink) {
-				linkedFrom.Add(new TextSegment(base.Graphics, "No Link Nodes", LinkedFont, true));
-				linkedFrom.Border = 8;
-			} else if (dataNode.NodeType == NodesType.Unused) {
-				linkedFrom.Add(new TextSegment(base.Graphics, "Unused Node", LinkedFont, true));
-				linkedFrom.Border = 8;
-			} else {
-				foreach (string linkF in dataNode.LinkedFromNodes)
-				{
-					linkedFrom.Add(new TextSegment(base.Graphics, linkF, SubtextFont, true));
-				}
-			}
-			titles.Add(linkedFrom);
+			if (!nodeLowDetails) {
+				//titles.Add(new TextSegment(base.Graphics, "Linked from:", LinkedFont, true));
+				//Список Нод которые ссылаются на эту ноду
+				DrawableItemsStack linkedFrom = new DrawableItemsStack();
+				linkedFrom.OrientationAxis = Axis.Y;
 
+				if (dataNode.NodeType == NodesType.DialogStart) {
+					linkedFrom.Add(new TextSegment(base.Graphics, "Start Dialogue Procedure", LinkedFont, true));
+					linkedFrom.Border = 8;
+				} else if (dataNode.NodeType == NodesType.NoFromLink) {
+					linkedFrom.Add(new TextSegment(base.Graphics, "No Link Nodes", LinkedFont, true));
+					linkedFrom.Border = 8;
+				} else if (dataNode.NodeType == NodesType.Unused) {
+					linkedFrom.Add(new TextSegment(base.Graphics, "Unused Node", LinkedFont, true));
+					linkedFrom.Border = 8;
+				} else {
+					foreach (string linkF in dataNode.LinkedFromNodes) {
+						linkedFrom.Add(new TextSegment(base.Graphics, linkF, SubtextFont, true));
+					}
+				}
+				titles.Add(linkedFrom);
+			}
 			//добавление интерфейса (можно это использовать для короткого описания к ноде)
 			//string type = null;
 			//if (dataNode.NodeType == NodesType.DialogStart)
@@ -457,8 +457,8 @@ namespace ICSharpCode.ClassDiagram
 			}
 			foreach (var item in dataNode.LinkedToNodes) item.CommitLine();
 
-			HandleRedraw(null, null);
 			OffsetPointTo();
+			HandleRedraw(null, null);
 		}
 
 		// создание заголовка раскрывающихся полей, и кнопки +/- для раскрытия Reply/Option
@@ -600,12 +600,28 @@ namespace ICSharpCode.ClassDiagram
 						items.Add(tileHeader);
 						break;
 					case OpcodeType.call:
-						InteractiveItemsStack callText = new InteractiveItemsStack();
-						callText.OrientationAxis = Axis.Z;
-						callText.Add(new DrawableRectangle(CallTextTitlesBackground, null, 8, 8, 8, 8));
+						//var callContent = new DrawableItemsStack(); //InteractiveItemsStack();
+						//callContent.OrientationAxis = Axis.Z;
+						
+						//callContent.Add(new DrawableRectangle(CallTextTitlesBackground, null, 8, 8, 8, 8));
+						//callContent.Add(new TextSegment(Graphics, content.scrText, GroupTitleFont, true));
+						/* 
+						 * Код метода выше вызывает некорректную отрисовку высоты для элемента DrawableRectangle
+						 * поэтому был использован нижний способ добавления элементов
+						 */
+						var callText = new DrawableItemsStack();
 						callText.Add(new TextSegment(Graphics, content.scrText, GroupTitleFont, true));
 
-						items.Add(callText);
+						var background = new DrawableItemsStack();
+						background.OrientationAxis = Axis.Z;
+						background.Add(new DrawableRectangle(CallTextTitlesBackground, null, 8, 8, 8, 8));
+						background.Add(callText);
+
+						var header = new InteractiveHeaderedItem(background, new DrawableItemsStack(), new DrawableItemsStack());
+						header.Collapsed = true;
+						//header.RedrawNeeded += HandleRedraw;
+
+						items.Add(header);
 						break;
 					default:
 						items.Add(new TextSegment(Graphics, content.scrText, ScriptFont, true));
@@ -689,12 +705,12 @@ namespace ICSharpCode.ClassDiagram
 		public void OffsetPointTo()
 		{
 			if (dataNode.LinkedToNodes.Count == 0) return;
-			int line = 1;
+			int line = 0;
 			float offsetY = (!classItemHeaderedContent.Collapsed) ? titles.GetAbsoluteContentHeight() + 5 : 0;
 			foreach (var item in items)
 			{
 				if (!classItemHeaderedContent.Collapsed) offsetY += item.GetAbsoluteContentHeight() + items.Spacing;
-				SetPointTo(line++, offsetY); 
+				SetPointTo(++line, offsetY); 
 			}
 		}
 
@@ -703,6 +719,7 @@ namespace ICSharpCode.ClassDiagram
 			List<LinkTo> pointList = dataNode.LinkedToNodes;
 			for (int i = 0; i < pointList.Count; i++)
 			{
+				if (pointList[i].ContentLine > line) return;
 				if (pointList[i].ContentLine == line) {
 					pointList[i].PointTo = offset;
 					return;

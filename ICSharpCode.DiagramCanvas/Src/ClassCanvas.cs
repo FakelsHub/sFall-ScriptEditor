@@ -83,7 +83,7 @@ namespace ICSharpCode.ClassDiagram
 
 		Dictionary<CanvasItem, CanvasItemData> itemsData = new Dictionary<CanvasItem, CanvasItemData>();
 		Dictionary<INode, CanvasItem> nodesToData = new Dictionary<INode, CanvasItem>();
-				
+
 		DiagramRouter diagramRouter = new DiagramRouter();
 		
 		public event EventHandler ZoomChanged = delegate { };
@@ -184,6 +184,10 @@ namespace ICSharpCode.ClassDiagram
 			get { return zoom; }
 			set
 			{
+				if (IsEditingNote()) {
+					ZoomChanged(this, null); // используется для предотвращения маштабирования во время редактирования
+					return;
+				}
 				float zoomDiff = value - zoom;
 				if (zoomDiff == 0)
 					return;
@@ -192,7 +196,7 @@ namespace ICSharpCode.ClassDiagram
 				bool ZoomIn = (zoomDiff > 0);
 				
 				this.Invalidate(); // предотвратить преждевременное перерисовку контрола
-				
+
 				/* рассчитать смещение на которое нужно изменить положение позунков при изменении зума
 				 * (взависимости от процентного расположения ползунков и значения фактора зума).
 				 * чем ближе расположение ползунков к 100%, тем больше нужно увеличивать значение для смещения 
@@ -205,7 +209,7 @@ namespace ICSharpCode.ClassDiagram
 				// учитываем текуший уровень зума в подсчете процента положения
 				Point pos = new Point(HorizontalScroll.Value, VerticalScroll.Value);
 				percent = new PointF(((pos.X * 100) / (HorizontalScroll.Maximum - Width)) / zoom,
-									 ((pos.Y * 100) / (VerticalScroll.Maximum - Height)) / zoom);
+				                     ((pos.Y * 100) / (VerticalScroll.Maximum - Height)) / zoom);
 
 				// высчитываем смещение с учетом значения фактора зума
 				zoomDiff = Math.Abs(zoomDiff * 100f);
@@ -467,12 +471,12 @@ namespace ICSharpCode.ClassDiagram
 							                   ecf.Size * (zoom * 1.25f),
 							                   ecf.Style, ec.Font.Unit,
 							                   ecf.GdiCharSet, ec.Font.GdiVerticalFont);
-							ec.Hide();
-							ec.VisibleChanged += delegate { if (!ec.Visible) ec.Font = ecf; };
+							//ec.Hide();
+							//ec.VisibleChanged += delegate { if (!ec.Visible) ec.Font = ecf; };
 							this.Controls.Add(ec); //canvasPanel
 							ec.Top -= this.VerticalScroll.Value;
 							ec.Left -= this.HorizontalScroll.Value;
-							ec.Show();
+							//ec.Show();
 							this.Controls.SetChildIndex(ec, 0); //canvasPanel
 							this.ActiveControl = ec;
 							ec.Focus();
@@ -565,7 +569,7 @@ namespace ICSharpCode.ClassDiagram
 				foreach (var drag in dragItemNode)
 					drag.Value.Item.HandleMouseMove(pos); // событие для перемещения выбраных нод
 			}/* else if (itemNode != null)
-			 		itemNode.Value.Item.HandleMouseMove(pos);
+					itemNode.Value.Item.HandleMouseMove(pos);
 			}*/
 
 			HoldRedraw = false;
@@ -712,14 +716,13 @@ namespace ICSharpCode.ClassDiagram
 		/// <param name="item"></param>
 		public void AddCanvasItem (CanvasItem item, CanvasItem itemAt = null)
 		{
-			if (item is NodeCanvasItem)
-				((NodeCanvasItem)item).OffsetPointTo();
+			NodeCanvasItem classItem = item as NodeCanvasItem;
+			if (classItem != null) classItem.OffsetPointTo();
 			
 			diagramRouter.AddItem(item);
 			CanvasItemData itemData = new CanvasItemData(item, SizeGripMouseEntered, SizeGripMouseLeft);
 			itemsData[item] = itemData;
 			
-			NodeCanvasItem classItem = item as NodeCanvasItem;
 			if (classItem != null)
 			{
 				nodesToData.Add(classItem.GetNodeData, item);
@@ -728,30 +731,27 @@ namespace ICSharpCode.ClassDiagram
 					NodeCanvasItem cci = ci.Item as NodeCanvasItem;
 					if (cci != null)
 					{
-						Route r = null;
+						//Route r = null;
 						foreach (LinkTo link in cci.GetNodeData.LinkedToNodes)
 						{
 							if (link.NameTo == classItem.GetNodeData.Name) {
 								//                  link: from  >>>  to
-								r = diagramRouter.AddRoute(cci, classItem, link.ContentLine);
+								Route r = diagramRouter.AddRoute(cci, classItem, link.ContentLine);
+								r.EndShape = new RouteInheritanceShape();
+								r.StartShape = new RouteStartShape();
 							}
 						}
-						if (r != null){
-							r.EndShape = new RouteInheritanceShape();
-							r.StartShape = new RouteStartShape();
-						}
-
+						//if (r != null) {}
 						foreach (LinkTo link in classItem.GetNodeData.LinkedToNodes)
 						{
 							if (link.NameTo == cci.GetNodeData.Name) {
 								//                  link: from  >>>  to
-								r = diagramRouter.AddRoute(classItem, cci, link.ContentLine);
+								Route r = diagramRouter.AddRoute(classItem, cci, link.ContentLine);
+								r.EndShape = new RouteInheritanceShape();
+								r.StartShape = new RouteStartShape();
 							}
 						}
-						if (r != null && r.EndShape == null) {
-							r.EndShape = new RouteInheritanceShape();
-							r.StartShape = new RouteStartShape();
-						}
+						//if (r != null && r.EndShape == null) {}
 					}
 				}
 			}
@@ -774,8 +774,7 @@ namespace ICSharpCode.ClassDiagram
 		
 		public void RemoveCanvasItem (CanvasItem item)
 		{
-			if (item == null)
-				return;
+			if (item == null) return;
 
 			itemsList.Remove(itemsData[item]);
 			Stack<Route> routesToRemove = new Stack<Route>();
@@ -852,6 +851,7 @@ namespace ICSharpCode.ClassDiagram
 		/// </summary>
 		public CanvasItem GetLastFocusItem()
 		{
+			if (itemsList.Count == 0) return null;
 			CanvasItemData item = itemsList.Last.Value;
 			if (item.Focused)
 				return item.Item;
@@ -874,6 +874,15 @@ namespace ICSharpCode.ClassDiagram
 			}
 			
 		return null;
+		}
+		
+		public bool IsEditingNote()
+		{
+			var item = GetLastFocusItem();
+			if (item != null && item is NoteCanvasItem) {
+				return ((NoteCanvasItem)item).IsEditing;
+			}
+			return false;
 		}
 		
 		/// <summary>
@@ -904,10 +913,15 @@ namespace ICSharpCode.ClassDiagram
 		
 		public void RemoveUnusedNodes(List<INode> iNode)
 		{
+			List<INode> unusedNodes = new List<INode>();
+			
 			foreach (INode node in nodesToData.Keys)
 			{
-				if (!iNode.Contains(node))
-					RemoveCanvasItem(nodesToData[node]);
+				if (!iNode.Contains(node)) unusedNodes.Add(node);
+			}
+			foreach (INode node in unusedNodes)
+			{
+				RemoveCanvasItem(nodesToData[node]);
 			}
 		}
 
