@@ -225,6 +225,7 @@ namespace ScriptEditor {
             this.decIndentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.funcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gotoProcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createProcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsbUpdateParserData = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator56 = new System.Windows.Forms.ToolStripSeparator();
             this.tslProject = new System.Windows.Forms.ToolStripLabel();
@@ -430,7 +431,7 @@ namespace ScriptEditor {
             this.splitContainer2.Panel2.Controls.Add(this.statusStrip);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer2.Size = new System.Drawing.Size(1258, 682);
-            this.splitContainer2.SplitterDistance = 984;
+            this.splitContainer2.SplitterDistance = 987;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 4;
             this.splitContainer2.TabStop = false;
@@ -456,7 +457,7 @@ namespace ScriptEditor {
             this.splitContainer1.Panel2.Controls.Add(this.minimizelog_button);
             this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Size = new System.Drawing.Size(984, 682);
+            this.splitContainer1.Size = new System.Drawing.Size(987, 682);
             this.splitContainer1.SplitterDistance = 626;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 3;
@@ -469,7 +470,7 @@ namespace ScriptEditor {
             this.TabClose_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TabClose_button.ForeColor = System.Drawing.Color.Black;
             this.TabClose_button.Image = ((System.Drawing.Image)(resources.GetObject("TabClose_button.Image")));
-            this.TabClose_button.Location = new System.Drawing.Point(962, 28);
+            this.TabClose_button.Location = new System.Drawing.Point(965, 28);
             this.TabClose_button.Name = "TabClose_button";
             this.TabClose_button.Size = new System.Drawing.Size(18, 18);
             this.TabClose_button.TabIndex = 0;
@@ -486,7 +487,7 @@ namespace ScriptEditor {
             this.Split_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Split_button.ForeColor = System.Drawing.Color.Black;
             this.Split_button.Image = ((System.Drawing.Image)(resources.GetObject("Split_button.Image")));
-            this.Split_button.Location = new System.Drawing.Point(963, 606);
+            this.Split_button.Location = new System.Drawing.Point(966, 606);
             this.Split_button.Name = "Split_button";
             this.Split_button.Size = new System.Drawing.Size(16, 16);
             this.Split_button.TabIndex = 2;
@@ -521,7 +522,7 @@ namespace ScriptEditor {
             this.SearchToolStrip.Location = new System.Drawing.Point(0, 0);
             this.SearchToolStrip.Name = "SearchToolStrip";
             this.SearchToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.SearchToolStrip.Size = new System.Drawing.Size(984, 25);
+            this.SearchToolStrip.Size = new System.Drawing.Size(987, 25);
             this.SearchToolStrip.TabIndex = 3;
             this.SearchToolStrip.Resize += new System.EventHandler(this.SearchToolStrip_Resize);
             // 
@@ -650,7 +651,7 @@ namespace ScriptEditor {
             this.minimizelog_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.minimizelog_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.minimizelog_button.Image = ((System.Drawing.Image)(resources.GetObject("minimizelog_button.Image")));
-            this.minimizelog_button.Location = new System.Drawing.Point(961, -1);
+            this.minimizelog_button.Location = new System.Drawing.Point(964, -1);
             this.minimizelog_button.Name = "minimizelog_button";
             this.minimizelog_button.Size = new System.Drawing.Size(20, 20);
             this.minimizelog_button.TabIndex = 6;
@@ -671,7 +672,7 @@ namespace ScriptEditor {
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
             this.tabControl2.ShowToolTips = true;
-            this.tabControl2.Size = new System.Drawing.Size(984, 54);
+            this.tabControl2.Size = new System.Drawing.Size(987, 54);
             this.tabControl2.TabIndex = 1;
             this.tabControl2.TabStop = false;
             this.tabControl2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabControl2_MouseClick);
@@ -681,7 +682,7 @@ namespace ScriptEditor {
             this.tabPageParse.Controls.Add(this.tbOutputParse);
             this.tabPageParse.Location = new System.Drawing.Point(4, 22);
             this.tabPageParse.Name = "tabPageParse";
-            this.tabPageParse.Size = new System.Drawing.Size(976, 28);
+            this.tabPageParse.Size = new System.Drawing.Size(979, 28);
             this.tabPageParse.TabIndex = 2;
             this.tabPageParse.Text = "Parser";
             this.tabPageParse.ToolTipText = "Parser output log";
@@ -701,7 +702,7 @@ namespace ScriptEditor {
             this.tbOutputParse.Name = "tbOutputParse";
             this.tbOutputParse.ReadOnly = true;
             this.tbOutputParse.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutputParse.Size = new System.Drawing.Size(976, 28);
+            this.tbOutputParse.Size = new System.Drawing.Size(979, 28);
             this.tbOutputParse.TabIndex = 1;
             this.tbOutputParse.TabStop = false;
             // 
@@ -710,7 +711,7 @@ namespace ScriptEditor {
             this.tabPageBuild.Controls.Add(this.tbOutput);
             this.tabPageBuild.Location = new System.Drawing.Point(4, 22);
             this.tabPageBuild.Name = "tabPageBuild";
-            this.tabPageBuild.Size = new System.Drawing.Size(976, 28);
+            this.tabPageBuild.Size = new System.Drawing.Size(979, 28);
             this.tabPageBuild.TabIndex = 0;
             this.tabPageBuild.Text = "Build";
             this.tabPageBuild.ToolTipText = "Build output log";
@@ -728,7 +729,7 @@ namespace ScriptEditor {
             this.tbOutput.Name = "tbOutput";
             this.tbOutput.ReadOnly = true;
             this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbOutput.Size = new System.Drawing.Size(976, 28);
+            this.tbOutput.Size = new System.Drawing.Size(979, 28);
             this.tbOutput.TabIndex = 0;
             this.tbOutput.TabStop = false;
             // 
@@ -738,7 +739,7 @@ namespace ScriptEditor {
             this.tabPageError.Controls.Add(this.dgvErrors);
             this.tabPageError.Location = new System.Drawing.Point(4, 22);
             this.tabPageError.Name = "tabPageError";
-            this.tabPageError.Size = new System.Drawing.Size(976, 28);
+            this.tabPageError.Size = new System.Drawing.Size(979, 28);
             this.tabPageError.TabIndex = 1;
             this.tabPageError.Text = "Errors";
             this.tabPageError.UseVisualStyleBackColor = true;
@@ -849,7 +850,7 @@ namespace ScriptEditor {
             this.dgvErrors.RowHeadersVisible = false;
             this.dgvErrors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvErrors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgvErrors.Size = new System.Drawing.Size(976, 28);
+            this.dgvErrors.Size = new System.Drawing.Size(979, 28);
             this.dgvErrors.TabIndex = 0;
             this.dgvErrors.TabStop = false;
             this.dgvErrors.DoubleClick += new System.EventHandler(this.dgvErrors_DoubleClick);
@@ -899,7 +900,7 @@ namespace ScriptEditor {
             this.tabControl3.Padding = new System.Drawing.Point(0, 0);
             this.tabControl3.SelectedIndex = 0;
             this.tabControl3.ShowToolTips = true;
-            this.tabControl3.Size = new System.Drawing.Size(271, 654);
+            this.tabControl3.Size = new System.Drawing.Size(268, 654);
             this.tabControl3.TabIndex = 1;
             this.tabControl3.TabStop = false;
             // 
@@ -913,7 +914,7 @@ namespace ScriptEditor {
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(0, 0, 2, 2);
-            this.tabPage4.Size = new System.Drawing.Size(263, 628);
+            this.tabPage4.Size = new System.Drawing.Size(260, 628);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
             this.tabPage4.ToolTipText = "List of script procedures";
@@ -932,7 +933,7 @@ namespace ScriptEditor {
             this.ProcTree.Name = "ProcTree";
             this.ProcTree.ShowNodeToolTips = true;
             this.ProcTree.ShowRootLines = false;
-            this.ProcTree.Size = new System.Drawing.Size(261, 601);
+            this.ProcTree.Size = new System.Drawing.Size(258, 601);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.TabStop = false;
             this.ProcTree.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.ProcTree_BeforeExpandCollapse);
@@ -959,47 +960,47 @@ namespace ScriptEditor {
             this.deleteProcedureToolStripMenuItem});
             this.ProcMnContext.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.ProcMnContext.Name = "ProcMnContext";
-            this.ProcMnContext.Size = new System.Drawing.Size(179, 126);
+            this.ProcMnContext.Size = new System.Drawing.Size(220, 126);
             this.ProcMnContext.Opening += new System.ComponentModel.CancelEventHandler(this.ProcMnContext_Opening);
             // 
             // editNodeCodeToolStripMenuItem
             // 
             this.editNodeCodeToolStripMenuItem.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.editNodeCodeToolStripMenuItem.Name = "editNodeCodeToolStripMenuItem";
-            this.editNodeCodeToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.editNodeCodeToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.editNodeCodeToolStripMenuItem.Text = "Edit Node code";
             this.editNodeCodeToolStripMenuItem.Click += new System.EventHandler(this.editNodeCodeToolStripMenuItem_Click);
             // 
             // toolStripSeparator38
             // 
             this.toolStripSeparator38.Name = "toolStripSeparator38";
-            this.toolStripSeparator38.Size = new System.Drawing.Size(175, 6);
+            this.toolStripSeparator38.Size = new System.Drawing.Size(216, 6);
             // 
             // createProcedureToolStripMenuItem
             // 
             this.createProcedureToolStripMenuItem.Name = "createProcedureToolStripMenuItem";
-            this.createProcedureToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-            this.createProcedureToolStripMenuItem.Text = "Create Procedure";
+            this.createProcedureToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.createProcedureToolStripMenuItem.Text = "Create Procedure    Ctrl+P";
             this.createProcedureToolStripMenuItem.Click += new System.EventHandler(this.createProcedureToolStripMenuItem_Click);
             // 
             // renameProcedureToolStripMenuItem
             // 
             this.renameProcedureToolStripMenuItem.Enabled = false;
             this.renameProcedureToolStripMenuItem.Name = "renameProcedureToolStripMenuItem";
-            this.renameProcedureToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.renameProcedureToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.renameProcedureToolStripMenuItem.Text = "Rename Procedure";
             this.renameProcedureToolStripMenuItem.Click += new System.EventHandler(this.renameProcedureToolStripMenuItem_Click);
             // 
             // toolStripSeparator20
             // 
             this.toolStripSeparator20.Name = "toolStripSeparator20";
-            this.toolStripSeparator20.Size = new System.Drawing.Size(175, 6);
+            this.toolStripSeparator20.Size = new System.Drawing.Size(216, 6);
             // 
             // moveProcedureToolStripMenuItem
             // 
             this.moveProcedureToolStripMenuItem.Enabled = false;
             this.moveProcedureToolStripMenuItem.Name = "moveProcedureToolStripMenuItem";
-            this.moveProcedureToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.moveProcedureToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.moveProcedureToolStripMenuItem.Text = "Move Procedure";
             this.moveProcedureToolStripMenuItem.Click += new System.EventHandler(this.moveProcedureToolStripMenuItem_Click);
             // 
@@ -1007,7 +1008,7 @@ namespace ScriptEditor {
             // 
             this.deleteProcedureToolStripMenuItem.Enabled = false;
             this.deleteProcedureToolStripMenuItem.Name = "deleteProcedureToolStripMenuItem";
-            this.deleteProcedureToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.deleteProcedureToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.deleteProcedureToolStripMenuItem.Text = "Delete Procedure";
             this.deleteProcedureToolStripMenuItem.Click += new System.EventHandler(this.deleteProcedureToolStripMenuItem_Click);
             // 
@@ -1027,7 +1028,7 @@ namespace ScriptEditor {
             this.toolStripProcedures.Location = new System.Drawing.Point(0, 0);
             this.toolStripProcedures.Name = "toolStripProcedures";
             this.toolStripProcedures.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStripProcedures.Size = new System.Drawing.Size(261, 25);
+            this.toolStripProcedures.Size = new System.Drawing.Size(258, 25);
             this.toolStripProcedures.TabIndex = 1;
             // 
             // GoBeginStripButton
@@ -1069,7 +1070,7 @@ namespace ScriptEditor {
             this.NewProcStripButton.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.NewProcStripButton.Size = new System.Drawing.Size(63, 22);
             this.NewProcStripButton.Text = "Create";
-            this.NewProcStripButton.ToolTipText = "Create new procedure.";
+            this.NewProcStripButton.ToolTipText = "Create new procedure [Ctrl+P]";
             this.NewProcStripButton.Click += new System.EventHandler(this.createProcedureToolStripMenuItem_Click);
             // 
             // toolStripSeparator31
@@ -1110,7 +1111,7 @@ namespace ScriptEditor {
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(0, 2, 2, 2);
-            this.tabPage6.Size = new System.Drawing.Size(263, 628);
+            this.tabPage6.Size = new System.Drawing.Size(260, 628);
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "Functions";
             this.tabPage6.ToolTipText = "All list of macros and opcodes";
@@ -1127,7 +1128,7 @@ namespace ScriptEditor {
             this.FunctionsTree.Location = new System.Drawing.Point(0, 2);
             this.FunctionsTree.Name = "FunctionsTree";
             this.FunctionsTree.ShowNodeToolTips = true;
-            this.FunctionsTree.Size = new System.Drawing.Size(261, 624);
+            this.FunctionsTree.Size = new System.Drawing.Size(258, 624);
             this.FunctionsTree.TabIndex = 0;
             this.FunctionsTree.TabStop = false;
             this.FunctionsTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.FunctionsTree_NodeMouseClick);
@@ -1141,7 +1142,7 @@ namespace ScriptEditor {
             this.tpExplorerFiles.Location = new System.Drawing.Point(4, 22);
             this.tpExplorerFiles.Name = "tpExplorerFiles";
             this.tpExplorerFiles.Padding = new System.Windows.Forms.Padding(1);
-            this.tpExplorerFiles.Size = new System.Drawing.Size(263, 628);
+            this.tpExplorerFiles.Size = new System.Drawing.Size(260, 628);
             this.tpExplorerFiles.TabIndex = 3;
             this.tpExplorerFiles.Text = "Solution";
             this.tpExplorerFiles.ToolTipText = "Folder of project files.";
@@ -1152,7 +1153,7 @@ namespace ScriptEditor {
             this.treeProjectFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeProjectFiles.Location = new System.Drawing.Point(1, 26);
             this.treeProjectFiles.Name = "treeProjectFiles";
-            this.treeProjectFiles.Size = new System.Drawing.Size(261, 601);
+            this.treeProjectFiles.Size = new System.Drawing.Size(258, 601);
             this.treeProjectFiles.TabIndex = 1;
             // 
             // toolStripSolution
@@ -1165,7 +1166,7 @@ namespace ScriptEditor {
             this.toolStripSolution.Location = new System.Drawing.Point(1, 1);
             this.toolStripSolution.Name = "toolStripSolution";
             this.toolStripSolution.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStripSolution.Size = new System.Drawing.Size(261, 25);
+            this.toolStripSolution.Size = new System.Drawing.Size(258, 25);
             this.toolStripSolution.TabIndex = 0;
             // 
             // tsbSetProjectFolder
@@ -1191,7 +1192,7 @@ namespace ScriptEditor {
             this.FontSizeStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 654);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(271, 28);
+            this.statusStrip.Size = new System.Drawing.Size(268, 28);
             this.statusStrip.SizingGrip = false;
             this.statusStrip.TabIndex = 2;
             // 
@@ -1210,7 +1211,7 @@ namespace ScriptEditor {
             this.LineStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.LineStripStatusLabel.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.LineStripStatusLabel.Name = "LineStripStatusLabel";
-            this.LineStripStatusLabel.Size = new System.Drawing.Size(100, 23);
+            this.LineStripStatusLabel.Size = new System.Drawing.Size(99, 23);
             this.LineStripStatusLabel.Spring = true;
             this.LineStripStatusLabel.Text = "Line:1";
             this.LineStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1224,7 +1225,7 @@ namespace ScriptEditor {
             this.ColStripStatusLabel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.ColStripStatusLabel.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ColStripStatusLabel.Name = "ColStripStatusLabel";
-            this.ColStripStatusLabel.Size = new System.Drawing.Size(100, 23);
+            this.ColStripStatusLabel.Size = new System.Drawing.Size(99, 23);
             this.ColStripStatusLabel.Spring = true;
             this.ColStripStatusLabel.Text = "Col:1";
             this.ColStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2134,7 +2135,7 @@ namespace ScriptEditor {
             this.About_toolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("About_toolStripButton.Image")));
             this.About_toolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.About_toolStripButton.Name = "About_toolStripButton";
-            this.About_toolStripButton.Size = new System.Drawing.Size(144, 22);
+            this.About_toolStripButton.Size = new System.Drawing.Size(152, 22);
             this.About_toolStripButton.Text = "About Editor";
             this.About_toolStripButton.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -2320,7 +2321,8 @@ namespace ScriptEditor {
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.decIndentToolStripMenuItem,
             this.funcToolStripMenuItem,
-            this.gotoProcToolStripMenuItem});
+            this.gotoProcToolStripMenuItem,
+            this.createProcToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -2334,7 +2336,7 @@ namespace ScriptEditor {
             // 
             this.decIndentToolStripMenuItem.Name = "decIndentToolStripMenuItem";
             this.decIndentToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Q)));
-            this.decIndentToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.decIndentToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.decIndentToolStripMenuItem.Text = "DecIndent";
             this.decIndentToolStripMenuItem.Click += new System.EventHandler(this.DecIndentStripButton_Click);
             // 
@@ -2342,7 +2344,7 @@ namespace ScriptEditor {
             // 
             this.funcToolStripMenuItem.Name = "funcToolStripMenuItem";
             this.funcToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.funcToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.funcToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.funcToolStripMenuItem.Text = "func";
             this.funcToolStripMenuItem.Click += new System.EventHandler(this.funcToolStripMenuItem_Click);
             // 
@@ -2350,10 +2352,18 @@ namespace ScriptEditor {
             // 
             this.gotoProcToolStripMenuItem.Name = "gotoProcToolStripMenuItem";
             this.gotoProcToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
-            this.gotoProcToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.gotoProcToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.gotoProcToolStripMenuItem.Tag = "Button";
             this.gotoProcToolStripMenuItem.Text = "gotoProc";
             this.gotoProcToolStripMenuItem.Click += new System.EventHandler(this.findDefinitionToolStripMenuItem_Click);
+            // 
+            // createProcToolStripMenuItem
+            // 
+            this.createProcToolStripMenuItem.Name = "createProcToolStripMenuItem";
+            this.createProcToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.createProcToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.createProcToolStripMenuItem.Text = "createProc";
+            this.createProcToolStripMenuItem.Click += new System.EventHandler(this.createProcedureToolStripMenuItem_Click);
             // 
             // tsbUpdateParserData
             // 
@@ -3017,5 +3027,6 @@ namespace ScriptEditor {
         private System.Windows.Forms.FolderBrowserDialog fbdProjectFolder;
         private System.Windows.Forms.ToolStripMenuItem tsmSetProjectFolder;
         private System.Windows.Forms.ToolStripLabel tslProject;
+        private System.Windows.Forms.ToolStripMenuItem createProcToolStripMenuItem;
     }
 }

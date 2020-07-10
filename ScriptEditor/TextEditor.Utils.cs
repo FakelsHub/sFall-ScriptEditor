@@ -351,6 +351,8 @@ namespace ScriptEditor
 
         private void findDefinitionToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentTab == null) return;
+
             string word, file = currentTab.filepath;
             int line;
             TextLocation tl = currentActiveTextAreaCtrl.Caret.Position;
@@ -743,6 +745,8 @@ namespace ScriptEditor
         // Create Procedures
         private void createProcedureToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentTab == null || !currentTab.shouldParse) return;
+
             string word = null;
 
             bool IsSelectProcedure = ProcTree.SelectedNode != null && ProcTree.SelectedNode.Tag is Procedure;
@@ -774,7 +778,11 @@ namespace ScriptEditor
 
             ProcedureBlock block = new ProcedureBlock();
             if (CreateProcFrm.CopyProcedure || placeAt == InsertAt.After) {
-                var proc = (ProcTree.SelectedNode == null) ? currentHighlightProc : (Procedure)ProcTree.SelectedNode.Tag;
+                Procedure proc = currentHighlightProc;
+                if (ProcTree.SelectedNode != null) {
+                    proc = ProcTree.SelectedNode.Tag  as Procedure;
+                    if (proc == null) proc = currentHighlightProc;
+                }
                 if (proc != null) {
                     block.begin  = proc.d.start;
                     block.end    = proc.d.end;
@@ -845,9 +853,10 @@ namespace ScriptEditor
                 procLine = block.end; // after current procedure
                 if (procLine > total)
                     procLine = block.end = total;
-                else
+                else if (block.end < total)
                     block.end++;
-                if (TextUtilities.GetLineAsString(currentDocument, block.end).Trim().Length > 0)
+
+                if (block.end == total || TextUtilities.GetLineAsString(currentDocument, block.end).Trim().Length > 0)
                     procblock += Environment.NewLine;
             }
             else if (placeAt == InsertAt.End) {

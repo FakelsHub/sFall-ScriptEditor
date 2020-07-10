@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.groupBoxProcedure = new System.Windows.Forms.GroupBox();
             this.rbAfterSelProcedure = new System.Windows.Forms.RadioButton();
             this.rbPasteAtEnd = new System.Windows.Forms.RadioButton();
@@ -35,6 +36,7 @@
             this.tbName = new System.Windows.Forms.TextBox();
             this.Cancel = new System.Windows.Forms.Button();
             this.Create = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBoxProcedure.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,6 +60,8 @@
             this.rbAfterSelProcedure.Size = new System.Drawing.Size(129, 17);
             this.rbAfterSelProcedure.TabIndex = 2;
             this.rbAfterSelProcedure.Text = "Insert at caret position";
+            this.toolTip.SetToolTip(this.rbAfterSelProcedure, "Inserts the created procedure to the current position of the carriage cursor or t" +
+        "o the position after the selected procedure.");
             this.rbAfterSelProcedure.UseVisualStyleBackColor = true;
             // 
             // rbPasteAtEnd
@@ -80,10 +84,13 @@
             this.cbCopyBodyProc.Size = new System.Drawing.Size(203, 17);
             this.cbCopyBodyProc.TabIndex = 0;
             this.cbCopyBodyProc.Text = "Copy from current selected procedure";
+            this.toolTip.SetToolTip(this.cbCopyBodyProc, "Copies the code of the currently selected procedure to the newly created procedur" +
+        "e.");
             this.cbCopyBodyProc.UseVisualStyleBackColor = true;
             // 
             // tbName
             // 
+            this.tbName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tbName.HideSelection = false;
             this.tbName.Location = new System.Drawing.Point(12, 12);
             this.tbName.Name = "tbName";
@@ -110,6 +117,10 @@
             this.Create.TabIndex = 2;
             this.Create.Text = "Create";
             this.Create.UseVisualStyleBackColor = true;
+            // 
+            // toolTip
+            // 
+            this.toolTip.ShowAlways = true;
             // 
             // ProcForm
             // 
@@ -148,5 +159,6 @@
         private System.Windows.Forms.RadioButton rbAfterSelProcedure;
         private System.Windows.Forms.CheckBox cbCopyBodyProc;
         internal System.Windows.Forms.GroupBox groupBoxProcedure;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

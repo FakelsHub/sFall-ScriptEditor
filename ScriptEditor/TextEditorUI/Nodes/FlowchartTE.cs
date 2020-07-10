@@ -407,7 +407,7 @@ namespace ScriptEditor.TextEditorUI.Nodes
 
         private void dgvMessages_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 0) {
+            if (e.ColumnIndex == 0 && e.RowIndex >= 0) {
                 string path = (string)dgvMessages.Rows[e.RowIndex].Cells[2].Tag;
                 if (File.Exists(path))
                     OpenMessageFile(path, (int)dgvMessages.Rows[e.RowIndex].Cells[0].Value, sourceTab);
