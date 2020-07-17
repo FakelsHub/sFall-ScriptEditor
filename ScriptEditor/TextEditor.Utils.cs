@@ -952,16 +952,15 @@ namespace ScriptEditor
 
             Utilities.DeleteProcedure(currentDocument, block, out copy_defproc);
 
-            string name = ProcTree.Nodes[root].Nodes[sIndex].Text;
+            string name = ((Procedure)ProcTree.Nodes[root].Nodes[sIndex].Tag).Name;
 
             ParserInternal.UpdateParseBuffer(currentDocument.TextContent);
             // insert declration
-            int offset;
+            int offset = 0;
             if (copy_defproc != null) {
                 int p_def = ParserInternal.GetDeclarationProcedureLine(name);
-                if (moveToEnd)
-                    p_def++;
-                offset = currentDocument.PositionToOffset(new TextLocation(0, p_def));
+                if (moveToEnd) p_def++;
+                if (p_def != -1) offset = currentDocument.PositionToOffset(new TextLocation(0, p_def));
                 currentDocument.Insert(offset, copy_defproc + Environment.NewLine);
             }
             //paste proc block

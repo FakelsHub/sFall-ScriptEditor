@@ -95,39 +95,63 @@ namespace ScriptEditor
             if (DialogResult != DialogResult.OK) return;
 
             tbName.Text = tbName.Text.Trim();
-
-            CheckName = tbName.Text;
-            if (proc) {
-                int z = tbName.Text.IndexOf('(');
-                if (z > -1)
-                    CheckName = tbName.Text.Remove(z);
+            string name = tbName.Text;
+            // удаление пробелов
+            int z = name.IndexOf(' ');
+            while (z != -1)
+            {
+                name = name.Remove(z, 1);
+                z = name.IndexOf(' ', z);
             }
 
+            CheckName = name;
+            z = CheckName.IndexOf('(');
+            if (z > -1) CheckName = CheckName.Remove(z);
+
+            // проверка корректности имени
             for (int i = 0; i < CheckName.Length; i++)
             {
                 char ch = CheckName[i];
-                if (!TextUtilities.IsLetterDigitOrUnderscore(ch) /*&& !(proc && (ch == '(' || ch == ')'))*/) {
+                if (!TextUtilities.IsLetterDigitOrUnderscore(ch)) {
                     e.Cancel = true;
                     break;
                 }
+            }
+
+            if (proc && z > 0) {
+                int pairCount = 0, pair = 0;
+                // проверка корректности аргументов
+                for (int i = z; i < name.Length; i++)
+                {
+                    char ch = name[i];
+                    if (ch == ',') continue;
+                    if (pair > 0 && ch == ')') pairCount++;
+                    if (ch == '(') pair++;
+                    if (ch == ')') pair--;
+                    if ( ch == '(' || ch == ')') continue;
+
+                    if (!TextUtilities.IsLetterDigitOrUnderscore(ch)) {
+                        e.Cancel = true;
+                        break;
+                    }
+                }
+                if (pair != 0 || pairCount > 1) e.Cancel = true;
             }
 
             if (e.Cancel)
                 MessageBox.Show("Was used incorrect name.\nThe name can only contain alphanumeric characters and the underscore character.", "Incorrect name");
             else {
                 // вставляем ключевые слова 'variable' для аргументов процедуры
-                int z = tbName.Text.IndexOf('(');
                 if (z != -1) {
                     z++;
-                    string text = tbName.Text;
-                    int y = text.LastIndexOf(')');
+                    int y = name.LastIndexOf(')');
                     if (z == y) return; // no args
 
-                    string pName = text.Substring(0, z - 1);
+                    string pName = name.Substring(0, z - 1);
 
                     List<byte> args = new List<byte>();
                     for (byte i = (byte)z; i < y; i++) {
-                        if (text[i] == ',') args.Add(i);
+                        if (name[i] == ',') args.Add(i);
                     }
                     args.Add((byte)y);
 
@@ -136,10 +160,13 @@ namespace ScriptEditor
                     for (byte i = 0; i < args.Count; i++)
                     {
                         int x = args[i];
-                        string argName = text.Substring(z, x - z).Trim();
+                        string argName = name.Substring(z, x - z).Trim();
                         z = x + 1;
+
+                        if (argName.Length == 0) continue;
+
                         if (!argName.StartsWith("variable ")) argName = argName.Insert(0, "variable ");
-                        if (i > 0) argNames += ", ";
+                        if (argNames != string.Empty) argNames += ", ";
                         argNames += argName;
                     }
                     tbName.Text = string.Format("{0}({1})", pName, argNames);
