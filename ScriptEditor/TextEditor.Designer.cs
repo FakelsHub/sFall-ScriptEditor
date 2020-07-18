@@ -2153,8 +2153,8 @@ namespace ScriptEditor {
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmSetProjectFolder,
             this.Settings_ToolStripMenuItem,
+            this.tsmSetProjectFolder,
             this.encodingMessagesToolStripMenuItem,
             this.toolStripSeparator5,
             this.win32RenderTextToolStripMenuItem,
@@ -2179,6 +2179,8 @@ namespace ScriptEditor {
             this.tsmSetProjectFolder.Name = "tsmSetProjectFolder";
             this.tsmSetProjectFolder.Size = new System.Drawing.Size(192, 22);
             this.tsmSetProjectFolder.Text = "Set Project folder";
+            this.tsmSetProjectFolder.ToolTipText = "Sets the path to your project folder with .ssl and .h files.\r\nУстанавливает путь " +
+    "к вашей папке проекта с .ssl и .h файлами.";
             this.tsmSetProjectFolder.Click += new System.EventHandler(this.tsmSetProjectFolder_Click);
             // 
             // Settings_ToolStripMenuItem
@@ -2396,7 +2398,8 @@ namespace ScriptEditor {
             this.tslProject.Name = "tslProject";
             this.tslProject.Size = new System.Drawing.Size(94, 22);
             this.tslProject.Text = "Project:  <unset>";
-            this.tslProject.ToolTipText = "Click to open the project folder in the Explorer window.";
+            this.tslProject.ToolTipText = "Click to open the project folder in the Explorer window.\r\nЩелкните, чтобы открыть" +
+    " папку проекта в окне Проводника.";
             this.tslProject.Click += new System.EventHandler(this.tslProject_Click);
             // 
             // cmsTabControls

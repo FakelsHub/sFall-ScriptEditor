@@ -141,6 +141,8 @@ namespace ScriptEditor.TextEditorUtilities
                 // second check in msg list path
                 for (int i = 0; i < Settings.msgListPath.Count; i++)
                 {
+                    if (!Directory.Exists(Settings.msgListPath[i])) continue;
+
                     string pth = Path.Combine(Settings.msgListPath[i], fileName);
                     if (File.Exists(pth)) {
                         path = pth;

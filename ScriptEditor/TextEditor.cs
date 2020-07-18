@@ -1554,7 +1554,11 @@ namespace ScriptEditor
 
         private void tslProject_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("explorer", Settings.solutionProjectFolder);
+            if (Directory.Exists(Settings.solutionProjectFolder)) {
+                System.Diagnostics.Process.Start("explorer", Settings.solutionProjectFolder);
+            } else {
+                MessageBox.Show("The project folder or path does not exist.", "Error",  MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void tsbUpdateParserData_Click(object sender, EventArgs e)
