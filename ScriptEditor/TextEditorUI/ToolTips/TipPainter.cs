@@ -57,8 +57,14 @@ namespace ScriptEditor.TextEditorUI.ToolTips
 
                 Point locationText = e.Bounds.Location;
                 locationText.Offset(3, 1);
-                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-                e.Graphics.DrawString(e.ToolTipText, e.Font, ColorTheme.TipText, locationText, sf);
+                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                Font font;
+                if (e.Font.Size > 11.5f) {
+                    font = new Font(e.Font.FontFamily, 11.5f, FontStyle.Regular, GraphicsUnit.Pixel);
+                } else {
+                    font = e.Font;
+                }
+                e.Graphics.DrawString(e.ToolTipText, font, ColorTheme.TipText, locationText, sf);
             } else {
                e.DrawBorder();
                // Draw the standard text with customized formatting options
