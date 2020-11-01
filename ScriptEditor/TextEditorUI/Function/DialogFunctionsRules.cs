@@ -46,7 +46,8 @@ namespace ScriptEditor.TextEditorUI.Function {
             // загружаем шаблоны из файла
             if (File.Exists(RulesFile)) {
                 string[] fileBuf = File.ReadAllLines(RulesFile);
-                foreach (string item in fileBuf) {
+                foreach (string item in fileBuf)
+                {
                     string line = item.TrimStart();
                     if (line.Length == 0 || line[0] == ';') continue;
                     string[] args = line.Split(',');
@@ -62,18 +63,20 @@ namespace ScriptEditor.TextEditorUI.Function {
                                         int.Parse(args[2])  // total func args
                     );
                     template.isDefault = false;
-                    opcodeTemplates.Add(template.opcodeName.ToLowerInvariant(), template);
+                    opcodeTemplates.Add(template.opcodeName, template);
                 }
             }
-            foreach (var item in templates) {
-                opcodeTemplates.Add(item.opcodeName.ToLowerInvariant(), item);
+            foreach (var item in templates)
+            {
+                opcodeTemplates.Add(item.opcodeName, item);
             }
         }
 
         public static void SaveTemplates()
         {
             List<string> templates = new List<string>() { format };
-            foreach (var item in opcodeTemplates) {
+            foreach (var item in opcodeTemplates)
+            {
                 if (item.Value.isDefault) continue;
                 string line = string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}",
                         item.Value.opcode.ToString(),

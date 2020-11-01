@@ -356,7 +356,7 @@ namespace ScriptEditor.CodeTranslation
 
                 if (i != -1) token = GetOpcodeName(scode, ref i);
                 if (token != null) {
-                    switch (token) {
+                    switch (token.ToLowerInvariant()) {
                     case "message_str":
                         isMsgStr = true;
                         break;
@@ -553,11 +553,14 @@ namespace ScriptEditor.CodeTranslation
                 if (n > -1) {
                     string name = GetOpcodeName(incode, ref n);
                     if (name == null) break; // bad code
+
+                    string nameLower = name.ToLowerInvariant();
                     if (opcode == OpcodeType.Message) {
-                        if (name == "message_str") break;
+                        if (nameLower == "message_str") break;
                     }
-                    if (name == "gsay_reply" || name == "gsay_message") {
+                    if (nameLower == "gsay_reply" || nameLower == "gsay_message") {
                         opcode = (opcode == OpcodeType.Reply) ? OpcodeType.gsay_reply : OpcodeType.gsay_message;
+                        //name = nameLower;
                     }
                     if ((n + 2) < incode.Length) {
                         Args.Add(new DialogueParser(opcode, name, incode, n));
@@ -586,10 +589,14 @@ namespace ScriptEditor.CodeTranslation
                 if (n > -1) {
                     string name = GetOpcodeName(incode, ref n);
                     if (name == null) break; // bad code
-                    if (name == "gsay_option") {
+
+                    string nameLower = name.ToLowerInvariant();
+                    if (nameLower == "gsay_option") {
                         opcode = OpcodeType.gsay_option;
-                    } else if (name == "giq_option") {
+                        //name = nameLower;
+                    } else if (nameLower == "giq_option") {
                         opcode = OpcodeType.giq_option;
+                        //name = nameLower;
                     }
                     Args.Add(new DialogueParser(opcode, name, incode, n)); // n+6
                     n = nextPosition;
@@ -649,7 +656,7 @@ namespace ScriptEditor.CodeTranslation
         #region Помощники для парсинга кода
 
         /// <summary>
-        /// Возвращает opcode в нижнем регистре в строке кода расположенный в указазной позиции
+        /// Возвращает имя opcode в строке кода расположенный в указазной позиции
         /// </summary>
         /// <param name="index"> Возвращает позицию указываемую на открываемум скобку опкода</param>
         private static string GetOpcodeName(string incode, ref int index)
@@ -669,19 +676,22 @@ namespace ScriptEditor.CodeTranslation
             if (end == -1) return null;
 
             // backward
-            int start = -1;
-            for (int i = index - 1; i >= 0; i--)
-            {
-                char c = incode[i];
-                if (c != '_' && !char.IsLetterOrDigit(c)) {
-                    if (char.IsWhiteSpace(c)) start = i + 1;
-                    break;
+            int start = (index > 0) ? -1 : 0;
+            if (start != 0) {
+                for (int i = index - 1; i >= 0; i--)
+                {
+                    char c = incode[i];
+                    if (c != '_' && !char.IsLetterOrDigit(c)) {
+                        if (char.IsWhiteSpace(c))
+                            start = i + 1;
+                        break;
+                    }
+                    if (i == 0) start = 0;
                 }
-                if (i == 0) start = 0;
             }
             if (end != -1) {
                 index = end;
-                if (start != -1) name = incode.Substring(start, end - start).TrimEnd().ToLowerInvariant();
+                if (start != -1) name = incode.Substring(start, end - start).TrimEnd(); //.ToLowerInvariant();
             }
             return name;
         }
