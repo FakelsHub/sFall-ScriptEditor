@@ -12,6 +12,9 @@ namespace ScriptEditor.CodeTranslation
         public readonly string code;
         public readonly int declared;
         public readonly string fdeclared;
+        public readonly string desc;
+
+        public string toString = null;
 
         public NameType Type() { return NameType.Macro; }
         public Reference[] References() { return null; }
@@ -22,23 +25,28 @@ namespace ScriptEditor.CodeTranslation
             line = declared;
         }
 
-        public Macro(string token, string defname, string code, string file, int line)
+        public Macro(string token, string defname, string code, string file, int line, string desc)
         {
             this.defname = defname;
             this.code = code;
             this.fdeclared = file;
             this.declared = line;
             this.token = token;
+            this.desc = desc;
         }
 
         public override string ToString()
         {
-            string declare = fdeclared.Substring(fdeclared.LastIndexOf('\\') + 1);
-            if (declare == "parser.ssl")
-                declare = string.Empty;
-            else
-                declare = "\n\nDeclare file: " + declare;
-            return "Define: " + defname + "\n" + code + declare;
+            if (toString == null) {
+                string declare = fdeclared.Substring(fdeclared.LastIndexOf('\\') + 1);
+                if (declare == "parser.ssl")
+                    declare = string.Empty;
+                else
+                    declare = "\n\nDeclare file: " + declare;
+
+                toString = "Define: " + defname + ((desc != null) ? "\n - " + desc.TrimEnd() + "\n\n" : "\n") + code + declare;
+            }
+            return toString;
         }
 
         public string ToString(bool a)

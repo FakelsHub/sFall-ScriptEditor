@@ -67,7 +67,7 @@ namespace ScriptEditor.CodeTranslation
                     commentBlock = false;
                     close += 2;
                     if (close == lines[i].Length) continue;
-                    lines[i] =  lines[i].Remove(0, close).TrimStart();
+                    lines[i] = lines[i].Remove(0, close).TrimStart();
                 }
                 if (lines[i].Length <= 8) continue; // минимальное необходимое значение для ключевого слова #define
 
@@ -83,7 +83,41 @@ namespace ScriptEditor.CodeTranslation
                     new GetMacros(text[1], null, macros);
                 }
                 else if (lines[i].StartsWith(ParserInternal.DEFINE)) {
-                    //lines[i] = lines[i].TrimEnd();
+                    // описание к макросу
+                    List<string> desc = new List<string>();
+                    int descBlock = 0;
+                    for (int j = i - 1; j >= 0; j--)
+                    {
+                        if (descBlock <= 0 && lines[j].Length == 0) break;
+
+                        string line = lines[j];
+                        int n = line.LastIndexOf(" **/");
+                        if (descBlock == 0 && n == -1) break;
+
+                        if (n != -1) {
+                            descBlock++;
+                            line = line.Remove(n);
+                        }
+
+                        n = line.IndexOf("/** ");
+                        if (n != -1) {
+                            descBlock--;
+                            if (descBlock < 0) break;
+                            line = line.Substring(n + 4);
+                        }
+                        desc.Add(line.Trim());
+                    }
+                    string description = null;
+                    if (desc.Count > 0) {
+                        var sbDesc = new StringBuilder();
+                        desc.Reverse();
+                        foreach (var item in desc)
+                        {
+                            sbDesc.AppendLine(item);
+                        }
+                        description = sbDesc.ToString();
+                    }
+
                     if (lines[i].EndsWith(@"\")) {
                         var sb = new StringBuilder();
                         int lineno = i;
@@ -95,14 +129,14 @@ namespace ScriptEditor.CodeTranslation
                             lines[i] = lines[i].TrimEnd();
                         } while (lines[i].EndsWith(@"\"));
                         sb.Append(lines[i]);
-                        AddMacro(sb.ToString(), macros, file, lineno);
+                        AddMacro(sb.ToString(), macros, file, lineno, description);
                     } else
-                        AddMacro(lines[i].Substring(8), macros, file, i);
+                        AddMacro(lines[i].Substring(8), macros, file, i, description);
                 }
             }
         }
 
-        private void AddMacro(string line, SortedDictionary<string, Macro> macros, string file, int lineno)
+        private void AddMacro(string line, SortedDictionary<string, Macro> macros, string file, int lineno, string description)
         {
             string token, macro, def;
             line = line.TrimStart();
@@ -124,7 +158,7 @@ namespace ScriptEditor.CodeTranslation
                 token = macro;
                 def = MacroFormat(line.Substring(firstspace), macro.Length);
             }
-            macros[token] = new Macro(token, macro, def, file, lineno + 1); // макросы записываются в том регистре в котором они объявлены
+            macros[token] = new Macro(token, macro, def, file, lineno + 1, description); // макросы записываются в том регистре в котором они объявлены
         }
 
         private string MacroFormat(string defmacro, int macrolen)
