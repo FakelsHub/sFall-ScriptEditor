@@ -14,7 +14,8 @@ namespace ScriptEditor
 
     public partial class ProcForm : Form
     {
-        private bool proc;
+        private bool isCreateProcedure;
+        private bool isSetName;
 
         public string CheckName { get; private set; }
 
@@ -50,7 +51,7 @@ namespace ScriptEditor
         {
             InitializeComponent();
 
-            this.proc = proc;
+            this.isCreateProcedure = proc;
 
             if (proc && name != null)
                 IncrementNumber(ref name);
@@ -77,32 +78,43 @@ namespace ScriptEditor
 
         private void ProcForm_Shown(object sender, EventArgs e)
         {
-            if (tbName.Text.IndexOf(' ') > -1
+            if (tbName.Text.Length == 0
+               || tbName.Text.IndexOf(' ') > -1
                || tbName.Text == "procedure"
                || tbName.Text == "begin"
                || tbName.Text == "end"
-               || tbName.Text == "variable"
-               || tbName.Text.Length == 0)
+               || tbName.Text == "variable")
             {
-               tbName.Text = "unnamed_proc()";
-               tbName.Select();
-               tbName.Select(0, 7);
+                tbName.Text = "Example(arg0, arg1)";
+                tbName.ForeColor = System.Drawing.Color.Gray;
+                tbName.SelectionStart = 0;
+            } else {
+                isSetName = true;
+                tbName.SelectionStart = tbName.Text.Length;
             }
+            tbName.Focus();
+            if (isCreateProcedure) tbName.Enter += tbName_Enter;
+
         }
 
         private void ProcForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (DialogResult != DialogResult.OK) return;
+            if (!isSetName || DialogResult != DialogResult.OK || tbName.Text.Length == 0) return;
 
             tbName.Text = tbName.Text.Trim();
             string name = tbName.Text;
-            // удаление пробелов
-            int z = name.IndexOf(' ');
-            while (z != -1)
-            {
-                name = name.Remove(z, 1);
-                z = name.IndexOf(' ', z);
+
+            int z = name.IndexOf('(');
+            if (z > 0) {
+                while (true)
+                {
+                    z = name.IndexOf("variable ", z, StringComparison.OrdinalIgnoreCase);
+                    if (z == -1) break;
+                    name = name.Remove(z, 9);
+                }
             }
+            // удаление пробелов
+            name = name.Replace(" ", "");
 
             CheckName = name;
             z = CheckName.IndexOf('(');
@@ -118,7 +130,7 @@ namespace ScriptEditor
                 }
             }
 
-            if (proc && z > 0) {
+            if (isCreateProcedure && z > 0) {
                 int pairCount = 0, pair = 0;
                 // проверка корректности аргументов
                 for (int i = z; i < name.Length; i++)
@@ -180,12 +192,47 @@ namespace ScriptEditor
             RenameFrm.groupBoxProcedure.Enabled = false;
             RenameFrm.Text = "Rename " + tile;
             RenameFrm.Create.Text = "OK";
-            if (RenameFrm.ShowDialog() == DialogResult.Cancel) {
+            if (RenameFrm.ShowDialog() == DialogResult.Cancel || RenameFrm.ProcedureName.Length == 0) {
                 return false;
             }
             name = RenameFrm.ProcedureName.Trim();
             RenameFrm.Dispose();
             return true;
+        }
+
+        private void tbName_Leave(object sender, EventArgs e)
+        {
+            if (isCreateProcedure && (!isSetName || tbName.Text.Length == 0)) {
+                tbName.Text = "Example(arg0, arg1)";
+                tbName.ForeColor = System.Drawing.Color.Gray;
+                isSetName = false;
+            }
+        }
+
+        private void tbName_Enter(object sender, EventArgs e)
+        {
+            if (!isSetName && tbName.Text.Length > 0) {
+                tbName.ResetText();
+                tbName.ForeColor = System.Drawing.SystemColors.ControlText;
+            }
+        }
+
+        private void tbName_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (!isSetName) {
+                tbName.ResetText();
+                tbName.ForeColor = System.Drawing.SystemColors.ControlText;
+                isSetName = true;
+            }
+        }
+
+        private void tbName_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (!isSetName) {
+                tbName.ResetText();
+                tbName.ForeColor = System.Drawing.SystemColors.ControlText;
+                isSetName = true;
+            }
         }
     }
 }

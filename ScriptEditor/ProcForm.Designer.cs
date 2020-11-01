@@ -90,13 +90,16 @@
             // 
             // tbName
             // 
-            this.tbName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tbName.HideSelection = false;
-            this.tbName.Location = new System.Drawing.Point(12, 12);
+            this.tbName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbName.Location = new System.Drawing.Point(12, 8);
+            this.tbName.MaxLength = 200;
+            this.tbName.Multiline = true;
             this.tbName.Name = "tbName";
-            this.tbName.Size = new System.Drawing.Size(346, 20);
+            this.tbName.Size = new System.Drawing.Size(346, 25);
             this.tbName.TabIndex = 1;
-            this.tbName.WordWrap = false;
+            this.tbName.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tbName_MouseClick);
+            this.tbName.Leave += new System.EventHandler(this.tbName_Leave);
+            this.tbName.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.tbName_PreviewKeyDown);
             // 
             // Cancel
             // 
