@@ -769,6 +769,7 @@ namespace ScriptEditor
             }
 
             string name = CreateProcFrm.CheckName;
+            if (name == null) return;
             if (currentTab.parseInfo.CheckExistsName(name, NameType.Proc)) {
                 MessageBox.Show("A procedure with this name has already been declared.", "Info");
                 return;
@@ -917,12 +918,13 @@ namespace ScriptEditor
 
             currentActiveTextAreaCtrl.SelectionManager.ClearSelection();
 
-            currentHighlightProc = null;
             HighlightProcedures.DeleteFromList(currentDocument, proc.name);
 
             ProcTree.Tag = TreeStatus.freeze; // предотвращает следующее обновление обозревателя
             ForceParseScript();
+            UpdateNodesTags();
             SetFocusDocument();
+            HighlightCurrentPocedure(currentActiveTextAreaCtrl.Caret.Line);
         }
 
         private void MoveProcedure(int sIndex)

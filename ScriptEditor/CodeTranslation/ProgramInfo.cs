@@ -279,6 +279,8 @@ namespace ScriptEditor.CodeTranslation
             Procedure top = null;
             foreach (Procedure p in procs)
             {
+                if (p.d.start == -1)
+                    continue;
                 if (top == null || p.d.start < top.d.start) top = p;
             }
             return top;

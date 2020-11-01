@@ -1244,20 +1244,29 @@ namespace ScriptEditor
                     return;
 
                 string code = e.Node.Tag.ToString();
-                int posCR = code.IndexOf("<cr>");
-                if (posCR != -1) {
+                int pos = code.IndexOf("<cr>");
+                if (pos != -1) {
                     string space = new string(' ', currentActiveTextAreaCtrl.Caret.Column);
-                    code = code.Remove(posCR) + Environment.NewLine + space;
+                    code = code.Replace("<cr>", Environment.NewLine + space);
                 }
                 if (!currentActiveTextAreaCtrl.SelectionManager.HasSomethingSelected) {
                     char c = currentDocument.GetCharAt(currentActiveTextAreaCtrl.Caret.Offset - 1);
                     if (char.IsLetterOrDigit(c)) code = " " + code;
-                    if (posCR == -1) {
+
+                    if (pos == -1) {
                         c = currentDocument.GetCharAt(currentActiveTextAreaCtrl.Caret.Offset);
                         if (char.IsLetterOrDigit(c)) code += " ";
                     }
                 }
+                var line = currentActiveTextAreaCtrl.Caret.Position;
                 currentActiveTextAreaCtrl.TextArea.InsertString(code);
+                // вернуть позицию строки
+                currentActiveTextAreaCtrl.Caret.Line = line.Line;
+                // установить курсор на начало списка аргументов
+                pos = code.IndexOf('{');
+                if (pos != -1) {
+                    currentActiveTextAreaCtrl.Caret.Column = line.Column + pos;
+                }
             } else if (Functions.NodeHitCheck(e.Location, e.Node.Bounds))
                         e.Node.Toggle();
         }
@@ -1532,6 +1541,15 @@ namespace ScriptEditor
             } else {
                 int value;
                 if (int.TryParse(text, out value)) {
+                    if (value > 0) {
+                        int offs = currentActiveTextAreaCtrl.SelectionManager.SelectionCollection[0].Offset;
+                        if (offs >= 0 && currentDocument.GetCharAt(offs - 1) == '-') {
+                            value = -value;
+                            ISelection sp = currentActiveTextAreaCtrl.SelectionManager.SelectionCollection[0];
+                            sp.StartPosition = new TextLocation(sp.StartPosition.Column - 1, sp.StartPosition.Line);
+                            currentActiveTextAreaCtrl.SelectionManager.SetSelection(sp);
+                        }
+                    }
                     text = "0x" + Convert.ToString(value, 16).ToUpper(); // dec -> hex
                     isConvert = true;
                 }

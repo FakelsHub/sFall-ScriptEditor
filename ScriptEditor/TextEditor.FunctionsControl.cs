@@ -207,7 +207,7 @@ namespace ScriptEditor
             if (fcdOpen)
                 dialogNodesDiagramToolStripMenuItem_Click(null, null);
 
-            if (decompileSuccess) {
+            if (!roundTrip && decompileSuccess) {
                 SaveFileDialog sfDecomp = new SaveFileDialog();
                 sfDecomp.Title = "Enter name to save decompile file";
                 sfDecomp.Filter = "Script files|*.ssl";
@@ -219,11 +219,15 @@ namespace ScriptEditor
                     ti.filename = Path.GetFileName(sfDecomp.FileName);
                     ti.filepath = sfDecomp.FileName;
 
-                    tabControl1.TabPages[ti.index].Text = tabs[ti.index].filename;
-                    tabControl1.TabPages[ti.index].ToolTipText = tabs[ti.index].filepath;
-
                     File.Copy(file, ti.filepath, true);
                     File.Delete(file);
+                    ti.FileTime = File.GetLastWriteTime(ti.filepath);
+
+                    tabControl1.TabPages[ti.index].Text = tabs[ti.index].filename;
+                    tabControl1.TabPages[ti.index].ToolTipText = tabs[ti.index].filepath;
+                    this.Text = SSE + ti.filepath + ((pDefineStripComboBox.SelectedIndex > 0) ? " [" + pDefineStripComboBox.Text + "]" : "");
+
+                    ForceParseScript();
                 }
                 sfDecomp.Dispose();
             }
@@ -801,6 +805,34 @@ namespace ScriptEditor
                 if (scrollNode != null && currentHighlightNode != null) currentHighlightNode.EnsureVisible();
             }
             ProcTree.Tag = TreeStatus.idle;
+        }
+
+        // обновляет процедуры в nodes.Tag
+        private void UpdateNodesTags()
+        {
+            // Avoid stomping on files while the parser is running
+            while (parserIsRunning) System.Threading.Thread.Sleep(10);
+
+            TreeNodeCollection nodes;
+            if (ProcTree.Nodes.Count > 1)
+                nodes = ProcTree.Nodes[1].Nodes;
+            else
+                nodes = ProcTree.Nodes[0].Nodes; // for parser off
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                Procedure np = nodes[i].Tag as Procedure;
+                if (np == null) continue;
+
+                foreach (Procedure p in currentTab.parseInfo.procs)
+                {
+                    if (p.Name == np.Name) {
+                        //if (p.d.declared != np.d.declared)
+                        nodes[i].Tag = p;
+                        break;
+                    }
+                }
+            }
         }
 
         private string GetCorrectNodeKeyName(TreeNode node)
