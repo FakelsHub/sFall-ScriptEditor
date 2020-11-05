@@ -52,11 +52,11 @@ namespace ScriptEditor.TextEditorUI
             return (time == fileTime);
         }
 
-        internal void SaveInternal(string saveText, bool isMsg = false, bool isClose = false)
+        internal void SaveInternal(string saveText, System.Text.Encoding encFile, bool isMsg = false, bool isClose = false, bool isScript = true)
         {
             File.WriteAllText(filepath, saveText, (isMsg) ? Settings.EncCodePage
-                                                          : (Settings.saveScriptUTF8) ? new UTF8Encoding(false)
-                                                                                      : Encoding.Default);
+                                                          : (isScript && Settings.saveScriptUTF8) ? new UTF8Encoding(false)
+                                                                                                  : encFile);
             if (!isClose) fileTime = File.GetLastWriteTime(filepath);
         }
 

@@ -18,7 +18,7 @@ namespace ScriptEditor
         private const uint SHCNF_IDLIST = 0x0U;
 
         private static readonly string appName = "SfallScriptEditor";
-        private static readonly string[] extAllowed = { FILE_EXTENSION, ".msg", ".int", ".fcd", ".h", ".ini", ".txt", ".xshd" };
+        private static readonly string[] extAllowed = { FILE_EXTENSION, ".msg", ".int", ".fcd", ".h", ".ini", ".txt", ".cfg", ".xshd" };
 
         public static bool CheckFileAllow(string ext, out bool Exists)
         {

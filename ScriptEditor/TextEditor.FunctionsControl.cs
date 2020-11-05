@@ -286,7 +286,7 @@ namespace ScriptEditor
                 }
                 Utilities.ConvertToUnixPlatform(ref saveText);
 
-                tab.SaveInternal(saveText, msg, close);
+                tab.SaveInternal(saveText, tab.textEditor.Encoding, msg, close, tab.shouldParse);
 
                 if (tab.changed && Settings.pathHeadersFiles != null && Path.GetExtension(tab.filename).ToLowerInvariant() == ".h" &&
                     String.Equals(Settings.pathHeadersFiles, Path.GetDirectoryName(tab.filepath), StringComparison.OrdinalIgnoreCase)) {

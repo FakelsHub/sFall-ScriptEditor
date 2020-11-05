@@ -219,7 +219,7 @@ namespace ScriptEditor.TextEditorUtilities
                         isAdjustSpaces = 0;
                     }
                     document.UndoStack.ClearAll();
-                    tab.SaveInternal(document.TextContent); // сохранить изменения в файл
+                    tab.SaveInternal(document.TextContent, tab.textEditor.Encoding); // сохранить изменения в файл
                 }
             }
 
