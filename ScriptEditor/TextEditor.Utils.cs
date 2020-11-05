@@ -314,17 +314,21 @@ namespace ScriptEditor
             DataGridView dgv = CommonDGV.DataGridCreate();
             dgv.DoubleClick += dgvErrors_DoubleClick;
 
+            int lastLine = 0, nextColumn = 0;
             foreach (var r in refs)
             {
+                if (lastLine != r.line) nextColumn = 0; 
                 Error error = new Error(ErrorType.Search) {
                     fileName = r.file,
                     line = r.line,
-                    column = TextUtilities.GetLineAsString(currentDocument, r.line - 1).IndexOf(word, StringComparison.OrdinalIgnoreCase),
+                    column = TextUtilities.GetLineAsString(currentDocument, r.line - 1).IndexOf(word, nextColumn, StringComparison.OrdinalIgnoreCase),
                     len = word.Length,
                     message = (String.Compare(Path.GetFileName(r.file), currentTab.filename, true) == 0)
                                ? TextUtilities.GetLineAsString(currentDocument, r.line - 1).TrimStart()
                                : "< Preview is not possible: for viewing goto this the reference link >"
                 };
+                lastLine = r.line;
+                nextColumn = error.column + word.Length;
                 if (error.column > 0)
                     error.column++;
                 dgv.Rows.Add(r.file, r.line, error);
