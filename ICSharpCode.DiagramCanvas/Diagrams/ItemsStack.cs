@@ -237,7 +237,8 @@ namespace ICSharpCode.Diagrams
 				r.X = r.Border + Padding;
 				r.Y = y + r.Border;
 
-				if (r is ICSharpCode.ClassDiagram.VectorShape && (((ICSharpCode.ClassDiagram.VectorShape)r).ScaleShape) == false) {
+				ICSharpCode.ClassDiagram.VectorShape vectorShape = r as ICSharpCode.ClassDiagram.VectorShape;
+				if (vectorShape != null && vectorShape.ScaleShape == false) {
 					r.ActualWidth = r.Height;
 				}
 				else if (!IsItemHeightValid(r))
@@ -414,14 +415,18 @@ namespace ICSharpCode.Diagrams
 		{
 			float h = 0;
 			if (axis == Axis.X || axis == Axis.Z)
-			{
+			{ // возвращает максимальную высоту из всех дочерных элементов
 				foreach (T item in items)
+				{
 					h = Math.Max(h, item.GetAbsoluteContentHeight() + item.Border * 2);
+				}
 			}
 			else if (axis == Axis.Y)
-			{
+			{ // возвращает сумму высоты всех дочерных элементов
 				foreach (T item in items)
+				{
 					h += item.GetAbsoluteContentHeight() + item.Border * 2 + spacing;
+				}
 				h = Math.Max(h - spacing, 0);
 			}
 			return h;

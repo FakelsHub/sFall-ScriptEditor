@@ -25,8 +25,8 @@ namespace ScriptEditor {
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextEditor));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.FunctionTreeLeft = new System.Windows.Forms.TreeView();
@@ -857,8 +857,8 @@ namespace ScriptEditor {
             // 
             // cType
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.cType.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cType.DefaultCellStyle = dataGridViewCellStyle3;
             this.cType.HeaderText = "Type";
             this.cType.Name = "cType";
             this.cType.ReadOnly = true;
@@ -872,8 +872,8 @@ namespace ScriptEditor {
             // 
             // cLine
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.cLine.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.cLine.DefaultCellStyle = dataGridViewCellStyle4;
             this.cLine.HeaderText = "Line";
             this.cLine.Name = "cLine";
             this.cLine.ReadOnly = true;
@@ -900,7 +900,7 @@ namespace ScriptEditor {
             this.tabControl3.Padding = new System.Drawing.Point(0, 0);
             this.tabControl3.SelectedIndex = 0;
             this.tabControl3.ShowToolTips = true;
-            this.tabControl3.Size = new System.Drawing.Size(268, 654);
+            this.tabControl3.Size = new System.Drawing.Size(265, 654);
             this.tabControl3.TabIndex = 1;
             this.tabControl3.TabStop = false;
             // 
@@ -914,7 +914,7 @@ namespace ScriptEditor {
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(0, 0, 2, 2);
-            this.tabPage4.Size = new System.Drawing.Size(260, 628);
+            this.tabPage4.Size = new System.Drawing.Size(257, 628);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Procedures";
             this.tabPage4.ToolTipText = "List of script procedures";
@@ -933,7 +933,7 @@ namespace ScriptEditor {
             this.ProcTree.Name = "ProcTree";
             this.ProcTree.ShowNodeToolTips = true;
             this.ProcTree.ShowRootLines = false;
-            this.ProcTree.Size = new System.Drawing.Size(258, 601);
+            this.ProcTree.Size = new System.Drawing.Size(255, 601);
             this.ProcTree.TabIndex = 0;
             this.ProcTree.TabStop = false;
             this.ProcTree.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.ProcTree_BeforeExpandCollapse);
@@ -2173,6 +2173,14 @@ namespace ScriptEditor {
             this.toolStripDropDownButton2.Size = new System.Drawing.Size(69, 22);
             this.toolStripDropDownButton2.Text = "Options";
             // 
+            // Settings_ToolStripMenuItem
+            // 
+            this.Settings_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("Settings_ToolStripMenuItem.Image")));
+            this.Settings_ToolStripMenuItem.Name = "Settings_ToolStripMenuItem";
+            this.Settings_ToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.Settings_ToolStripMenuItem.Text = "Settings";
+            this.Settings_ToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
             // tsmSetProjectFolder
             // 
             this.tsmSetProjectFolder.Image = ((System.Drawing.Image)(resources.GetObject("tsmSetProjectFolder.Image")));
@@ -2182,14 +2190,6 @@ namespace ScriptEditor {
             this.tsmSetProjectFolder.ToolTipText = "Sets the path to your project folder with .ssl and .h files.\r\nУстанавливает путь " +
     "к вашей папке проекта с .ssl и .h файлами.";
             this.tsmSetProjectFolder.Click += new System.EventHandler(this.tsmSetProjectFolder_Click);
-            // 
-            // Settings_ToolStripMenuItem
-            // 
-            this.Settings_ToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("Settings_ToolStripMenuItem.Image")));
-            this.Settings_ToolStripMenuItem.Name = "Settings_ToolStripMenuItem";
-            this.Settings_ToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.Settings_ToolStripMenuItem.Text = "Settings";
-            this.Settings_ToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // encodingMessagesToolStripMenuItem
             // 

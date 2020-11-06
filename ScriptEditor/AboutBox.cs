@@ -7,7 +7,7 @@ namespace ScriptEditor
     partial class AboutBox : Form
     {
         public const string appName = "Sfall Script Editor";
-        public static readonly string appVersion = Application.ProductVersion;
+        public static readonly string appVersion = Application.ProductVersion + ".RC";
         public static readonly string appDescription = " - extended version by Mr.Stalin";
         
         public AboutBox()

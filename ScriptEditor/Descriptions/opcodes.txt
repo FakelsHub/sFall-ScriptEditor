@@ -717,7 +717,7 @@ array party_member_list(int includeHidden) | - Returns array of all current part
 array path_find_to(ObjectPtr objFrom, int tileTo, int blockingType) | - Returns the shortest path to a given tile using given blocking function as an array of tile directions (0..5) to move on each step.
 ObjectPtr create_spatial(int scriptID, int tile, int elevation, int radius) | - Creates new spatial script with given SID, at given tile, and radius.
 int art_exists(int artFID) | - checks if given artFID exists in the game | - Useful when you want to check if critter can use specific weapon: art_exists((artFid bwand 0xffff0fff) bwor (weaponAnim * 0x1000)).
-int obj_is_carrying_obj(ObjectPtr invenObj, ObjectPtr itemObj) | - Returns number of itemObj inside invenObj's inventory, note that both arguments are object pointers.
+ObjectPtr obj_is_carrying_obj(ObjectPtr invenObj, ObjectPtr itemObj) | - Returns number of itemObj inside invenObj's inventory, note that both arguments are object pointers.
 
 // hook scripts
 int init_hook() | - The hook script equivilent of game_loaded; it returns 2 when the script is first loaded, 1 when the player reloads and 0 otherwise.
