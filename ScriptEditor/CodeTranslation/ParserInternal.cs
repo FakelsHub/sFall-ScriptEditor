@@ -289,7 +289,8 @@ namespace ScriptEditor.CodeTranslation
                 ProcedureRemoveSpec(ref bufferSSLCode[i]);
                 if (bufferSSLCode[i].StartsWith(PROCEDURE, StringComparison.OrdinalIgnoreCase)) {
                     // get name procedure
-                    string pName = bufferSSLCode[i].Substring(PROC_LEN, bufferSSLCode[i].Length - PROC_LEN);
+                    string pName = bufferSSLCode[i].Substring(PROC_LEN, bufferSSLCode[i].Length - PROC_LEN).TrimEnd();
+                    if (pName.Length == 0) continue;
 
                     RemoveCommentLine(ref pName, 0);
 
@@ -362,12 +363,14 @@ namespace ScriptEditor.CodeTranslation
 
                 ProcedureRemoveSpec(ref bufferSSLCode[i]);
                 if (bufferSSLCode[i].StartsWith(PROCEDURE)) {
-                    declarLine = -1;
-                    beginLine = -1;
                     // get name procedure
                     string pName = bufferSSLCode[i].Substring(PROC_LEN, bufferSSLCode[i].Length - PROC_LEN).TrimStart();
+                    if (pName.Length == 0) continue;
 
                     RemoveCommentLine(ref pName, 0); // удаляем комментарии с конца строки
+
+                    declarLine = -1;
+                    beginLine = -1;
 
                     // delete Begin or other information from procedure name
                     int z = pName.IndexOf(';');
