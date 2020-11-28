@@ -592,6 +592,8 @@ namespace ScriptEditor
             autoComplete.Colored = Settings.autocompleteColor;
             autoComplete.UpdateColor();
 
+            MessageFile.UpdateMessageTextLangPath();
+
             if (Settings.enableParser) ParseScript(1);
         }
 

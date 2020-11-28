@@ -16,11 +16,16 @@ namespace ScriptEditor.TextEditorUtilities
         public const string MissingFile = "The associated message file of the script could not be found.";
         public const string WrongTypeFile = "This file type can't have an associated message file.";
 
-        public static readonly string MessageTextSubPath = "..\\text\\" + Settings.language + "\\dialog\\";
+        public static string MessageTextSubPath = "..\\text\\" + Settings.language + "\\dialog\\";
 
         static bool onlyOnce = false;
 
         static List<string> missingFile = new List<string>();
+
+        public static void UpdateMessageTextLangPath()
+        {
+            MessageTextSubPath = string.Format("..\\text\\{0}\\dialog\\", Settings.language);
+        }
 
         public static void ShowMissingFiles()
         {
@@ -60,18 +65,17 @@ namespace ScriptEditor.TextEditorUtilities
 
             bool found = CheckPath(tab.filepath, fileName, out path, out defaultDir);
 
-            if (!found) {
-                if (!create) return false;
-                else {
-                    if (!Directory.Exists(defaultDir)) {
-                        MessageBox.Show("Failed to open or create associated message file in directory\n" + defaultDir, "Error: Directory does not exist");
-                        return false;
-                    } else if (MessageBox.Show("The associated message file this script could not be found.\nDo you want to create a new file?", "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes) {
-                        File.WriteAllText(path, "{100}{}{}");
-                    } else return false;
+            if (!found && create) {
+                found = MessageBox.Show(String.Format("The message file {0} associated with this script could not be found." +
+                                                      "\nDo you want to create a new file in {1} directory?", fileName, defaultDir),
+                                                      "Warning", MessageBoxButtons.YesNo) == DialogResult.Yes;
+                if (found) {
+                    if (!Directory.Exists(defaultDir)) Directory.CreateDirectory(defaultDir);
+                    path = Path.Combine(defaultDir, fileName);
+                    File.WriteAllText(path, "{100}{}{}");
                 }
             }
-            return true;
+            return found;
         }
 
         public static bool GetPath(TabInfo tab, int msgNumber, out string path, bool report = false)
@@ -125,10 +129,15 @@ namespace ScriptEditor.TextEditorUtilities
             return name;
         }
 
+        /// <summary>
+        /// Возвращает раcположение .msg файла
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="fileName"></param>
+        /// <param name="path">Возвращаемый полный путь к .msg файлу</param>
+        /// <param name="defaultDir">Возвращемый путь к папке в которой будет сохранен .msg файл диалога</param>
         private static bool CheckPath(string filePath, string fileName, out string path, out string defaultDir)
         {
-            bool found = true;
-
             if (Settings.outputDir == null)
                 defaultDir = Path.GetDirectoryName(filePath);
             else
@@ -136,8 +145,9 @@ namespace ScriptEditor.TextEditorUtilities
 
             // primary check in output dir
             path = Path.Combine(defaultDir, fileName);
-            if (!File.Exists(path)) {
-                found = false;
+
+            bool found = File.Exists(path);
+            if (!found) {
                 // second check in msg list path
                 for (int i = 0; i < Settings.msgListPath.Count; i++)
                 {
@@ -146,8 +156,7 @@ namespace ScriptEditor.TextEditorUtilities
                     string pth = Path.Combine(Settings.msgListPath[i], fileName);
                     if (File.Exists(pth)) {
                         path = pth;
-                        found = true;
-                        break;
+                        return true;
                     }
                     // проверить файлы в под папках
                     foreach (var subFolder in Directory.GetDirectories(Settings.msgListPath[i]))
@@ -155,16 +164,14 @@ namespace ScriptEditor.TextEditorUtilities
                         pth = Path.Combine(subFolder, fileName);
                         if (File.Exists(pth)) {
                             path = pth;
-                            found = true;
-                            break;
+                            return true;
                         }
                     }
                 }
-                // проверить текущую папку скрипта
-                if (!found && Settings.outputDir != null) {
+                // проверить текущую папку расположения .ssl скрипта
+                if (Settings.outputDir != null) {
                     path = Path.Combine(Path.GetDirectoryName(filePath), fileName);
-                    if (File.Exists(path))
-                        found = true;
+                    found = File.Exists(path);
                 }
             }
             return found;
