@@ -108,6 +108,8 @@ namespace ICSharpCode.TextEditor.Document
 			get;
 		}
 		
+		int GetOffsetForLineNumber(int lineNumber);
+
 		/// <remarks>
 		/// Returns a valid line number for the given offset.
 		/// </remarks>

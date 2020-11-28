@@ -49,6 +49,11 @@ namespace ICSharpCode.TextEditor.Document
 			this.document = document;
 			this.highlightingStrategy = highlightingStrategy;
 		}
+
+		public int GetOffsetForLineNumber(int lineNumber)
+		{
+			return GetLineSegment(lineNumber).Offset;
+		}
 		
 		public int GetLineNumberForOffset(int offset)
 		{

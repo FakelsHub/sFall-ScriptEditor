@@ -301,6 +301,11 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
+		public int GetOffsetForLineNumber(int lineNumber)
+		{
+			return lineTrackingStrategy.GetOffsetForLineNumber(lineNumber);
+		}
+
 		public int GetLineNumberForOffset(int offset)
 		{
 			return lineTrackingStrategy.GetLineNumberForOffset(offset);

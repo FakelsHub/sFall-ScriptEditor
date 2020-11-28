@@ -23,6 +23,18 @@ namespace ICSharpCode.TextEditor.Document
 		{
 		}
 
+		private string CheckAndAddEndNewLine(int lineNumber, TextArea textArea)
+		{
+			if (lineNumber >= textArea.Document.TotalNumberOfLines) {
+				// add lines to end
+				int c = lineNumber - textArea.Document.TotalNumberOfLines + 1;
+				int offset = textArea.Document.GetOffsetForLineNumber(textArea.Document.TotalNumberOfLines - 1);
+				textArea.Document.Insert(offset, new string('\n', c));
+				return string.Empty;
+			}
+			return Environment.NewLine;
+		}
+
 		/// <summary>
 		/// returns the whitespaces which are before a non white space character in the line line
 		/// as a string.
@@ -53,19 +65,24 @@ namespace ICSharpCode.TextEditor.Document
 					if (word.TrimStart().StartsWith("procedure ") && textArea.Document.FoldingManager.IsFoldStart(lineNumber)) {
 						goto exiting;
 					}
+					
 					lineNumber += 2;
+					string newLine = CheckAndAddEndNewLine(lineNumber, textArea);
+					
 					LineSegment line = textArea.Document.GetLineSegment(lineNumber);
+					
 					if (textArea.Document.GetText(line).TrimStart(whitespaceChars).Length == 0) {
 						if (lineText.TrimStart(whitespaceChars).ToLowerInvariant().StartsWith("if ")) {
-							lineText = TextUtilities.GetLineAsString(textArea.Document, ++lineNumber);
-							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\r\n");
+							newLine = CheckAndAddEndNewLine(++lineNumber, textArea);
+							lineText = TextUtilities.GetLineAsString(textArea.Document, lineNumber);
+							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end" + newLine);
 							word = lineText.TrimEnd(whitespaceChars).ToLowerInvariant();
 							if (word.EndsWith(" end")) {
 								line = textArea.Document.GetLineSegment(lineNumber);
-								textArea.Document.Insert(line.Offset, whitespaces.ToString() + "else begin\r\n");
+								textArea.Document.Insert(line.Offset, whitespaces.ToString() + "else begin" + newLine);
 							}
 						} else
-							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end\r\n");
+							textArea.Document.Insert(line.Offset, whitespaces.ToString() + "end" + newLine);
 					}
 					append = true;
 				}
