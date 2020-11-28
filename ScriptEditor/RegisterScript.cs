@@ -310,7 +310,7 @@ namespace ScriptEditor
         {
             dgvScripts.Sort(dgvScripts.Columns[1], System.ComponentModel.ListSortDirection.Ascending);
             Entry[] entries = new Entry[1];
-            entries[0] = new Entry(dgvScripts.RowCount, "none.int".PadRight(80));
+            entries[0] = new Entry(dgvScripts.RowCount, "none.int; # local_vars=");
             AddRow(entries[0]);
             dgvScripts.FirstDisplayedScrollingRowIndex = dgvScripts.RowCount - 1;
             NotSaved = true;
