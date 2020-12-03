@@ -609,6 +609,7 @@ namespace ScriptEditor.CodeTranslation
             int m, n = 0;
             do {
                 m = n;
+                n = -1;
                 foreach (var op in DialogFunctionsRules.opcodeTemplates)
                 {
                     if (op.Value.opcode != OpcodeType.Call) continue;
