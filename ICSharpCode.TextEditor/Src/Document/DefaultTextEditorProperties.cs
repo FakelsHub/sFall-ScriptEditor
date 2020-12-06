@@ -23,7 +23,7 @@ namespace ICSharpCode.TextEditor.Document
 		int                   indentationSize       = 4;
 		IndentStyle           indentStyle           = IndentStyle.Smart;
 		DocumentSelectionMode documentSelectionMode = DocumentSelectionMode.Normal;
-		Encoding              encoding              = System.Text.Encoding.UTF8;
+		Encoding              encoding              = new UTF8Encoding(false); //System.Text.Encoding.UTF8;
 		BracketMatchingStyle  bracketMatchingStyle  = BracketMatchingStyle.Outside;
 		FontContainer fontContainer;
 		static Font DefaultFont;

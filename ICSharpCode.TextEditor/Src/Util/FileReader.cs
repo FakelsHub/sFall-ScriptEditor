@@ -34,7 +34,12 @@ namespace ICSharpCode.TextEditor.Util
 		{
 			using (StreamReader reader = OpenStream(fs, encoding)) {
 				reader.Peek();
-				if (encoding != null) encoding = reader.CurrentEncoding;
+				if (encoding != null) {
+					Encoding fileEncoding = reader.CurrentEncoding;
+					if (!IsUnicode(fileEncoding)) {
+						encoding = fileEncoding;
+					}
+				}
 				return reader.ReadToEnd();
 			}
 		}
