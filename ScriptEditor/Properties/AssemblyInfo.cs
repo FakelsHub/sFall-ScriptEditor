@@ -8,7 +8,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sfall Team")]
 [assembly: AssemblyProduct("Script Editor")]
-[assembly: AssemblyCopyright("Copyright © Sfall Team 2010-2020")]
+[assembly: AssemblyCopyright("Copyright © Sfall Team 2010-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: System.CLSCompliant(true)]

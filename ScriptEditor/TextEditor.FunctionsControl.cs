@@ -708,8 +708,9 @@ namespace ScriptEditor
             ProcTree.Nodes[1].Tag = 1; // local tag
 
             foreach (Procedure p in currentTab.parseInfo.procs) {
-                if (!Settings.enableParser && p.d.end == -1)
-                    continue; //skip imported or broken procedures
+                // TODO: Это нужно только для отключенного парсера?
+                if (!Settings.enableParser && p.d.end == -1) continue; //skip imported or broken procedures
+
                 TreeNode tn = new TreeNode((!ViewArgsStripButton.Checked)? p.name : p.ToString(false));
                 tn.Name = p.name;
                 tn.Tag = p;

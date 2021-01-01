@@ -7,7 +7,7 @@ namespace ScriptEditor
     partial class AboutBox : Form
     {
         public const string appName = "Sfall Script Editor";
-        public static readonly string appVersion = Application.ProductVersion + ".RC";
+        public static readonly string appVersion = Application.ProductVersion + ".RC1";
         public static readonly string appDescription = " - extended version by Mr.Stalin";
         
         public AboutBox()
@@ -29,8 +29,7 @@ Copyright 2002-2010 by AlphaSierraPapa, Christoph Wille
 Controls modified by Mr.Stalin
 
 Script compilation is handled by sslc sfall edition
-The sfall script compiler, for sfall 4.0.0 
-Updated by phobos2077
+The sfall script compiler, for sfall 4.0 series
 
 Script preprocessing handled by mcpp 2.7.2 (BCD)
 Copyright (c) 1998, 2002-2008 Kiyoshi Matsui
@@ -40,9 +39,8 @@ Optimizing Compiler version 2.0 beta (01/11/2017)
 Copyright (c) 1984-2002 Sybase, Inc. All Rights Reserved.
 Copyright (c) 2002-2017 The Open Watcom Contributors.
 
-Script decompilation handled by int2ssl 8.4.2
+Script decompilation handled by int2ssl 8.4.6
 Copyright (C) Anchorite (TeamX), 2005-2009
-Continued by Nirran, phobos2077
 
 See licences.txt for licence texts.
 ";

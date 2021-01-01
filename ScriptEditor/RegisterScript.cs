@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Text;
 
 using ScriptEditor.TextEditorUtilities;
+using ICSharpCode.TextEditor.Util;
 
 namespace ScriptEditor
 {
     public partial class RegisterScript : Form
     {
         private static TextEditor TE;
+        private Encoding lstEncoding;
 
         private class Entry
         {
@@ -24,7 +27,7 @@ namespace ScriptEditor
             {
                 this.row = row;
                 int descPos = line.IndexOf(';');
-                int varPos  = line.IndexOf("# local_vars=", descPos);
+                int varPos  = line.LastIndexOf("# local_vars=");
                 script = line.Remove(descPos).Trim();
                 descPos++;
                 desc = line.Substring(descPos, varPos - descPos).Trim();
@@ -33,7 +36,7 @@ namespace ScriptEditor
 
             public string GetAsString()
             {
-                return script.PadRight(16) + "; " + desc.PadRight(46) + "# local_vars=" + vars.ToString();
+                return script.PadRight(16) + "; " + desc.PadRight(45) + " # local_vars=" + vars.ToString();
             }
 
             public string GetMsgAsString()
@@ -95,7 +98,14 @@ namespace ScriptEditor
 
             dgvScripts.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
             char[] space = new char[] { ' ' };
-            lines = new List<string>(File.ReadAllLines(lst, System.Text.Encoding.Default));
+
+            // определяем кодировку
+            StreamReader fsr = FileReader.OpenStream(File.OpenRead(lst), Encoding.Default);
+            lstEncoding = fsr.CurrentEncoding;
+            fsr.Close();
+
+            lines = new List<string>(File.ReadAllLines(lst, lstEncoding));
+
             if (script != null) {
                 DefinetextBox.Text = SCRIPT_H + Path.GetFileNameWithoutExtension(script).ToUpper();
                 for (int i = 0; i < lines.Count; i++)
@@ -107,7 +117,7 @@ namespace ScriptEditor
                 }   // new reg script
                 if (scriptNumb == -1) {
                     scriptNumb = lines.Count;
-                    lines.Add(script.PadRight(16) + ";".PadRight(48) + "# local_vars=0");
+                    lines.Add(script + "; # local_vars=0");
                     doAdd = true;
                     AllowCheckBox.Checked = Settings.allowDefine;
                     Save_button.Image = imageList1.Images[1];
@@ -201,18 +211,24 @@ namespace ScriptEditor
                 int index = (int)dgvScripts.Rows[i].Cells[1].Value;
                 entries[index - 1] = (Entry)dgvScripts.Rows[i].Cells[0].Value;
             }
+
             foreach (Entry entry in entries)
                 lines.Add(entry.GetAsString());
-            File.WriteAllLines(lstPath, lines.ToArray(), System.Text.Encoding.Default);
+
+            File.WriteAllLines(lstPath, lines.ToArray(), (FileReader.IsUnicode(lstEncoding)) ? new UTF8Encoding(false) : lstEncoding);
             lines.Clear();
+
             if (msgPath != null) {
                 linesMsg.Add(DESCMSG);
                 foreach (Entry entry in entries)
                     linesMsg.Add(entry.GetMsgAsString());
+
                 File.WriteAllLines(msgPath, linesMsg.ToArray(), Settings.EncCodePage);
                 linesMsg.Clear();
             }
+
             NotSaved = false;
+
             if (AllowCheckBox.Checked && headerPath == null) {
                 MessageBox.Show("The definition was not added in header file.\nCould not find file scripts.h", "Script header error");
                 return;
@@ -260,8 +276,6 @@ namespace ScriptEditor
                     entry.script = val;
                     break;
                 case 3:
-                    if (val.Length > 64 - 20)
-                        val = val.Remove(64 - 20);
                     entry.desc = val;
                     break;
                 case 4:

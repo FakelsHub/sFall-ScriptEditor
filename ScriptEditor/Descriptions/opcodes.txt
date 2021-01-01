@@ -135,7 +135,7 @@ void AddButtonProc (string btn_name, procedure button_on, procedure button_off, 
 void AddButtonText (string btn_name, string text) | - Create label text on button "btn_name".
 void AddRegion string reg_name {int x, int y, int x, int y, int x, int y, ...} | - Add an arbitrary region named "reg_name". || Notes: The area can be created only in the user window, when the window is deleted, the area is automatically deleted.
 void DeleteRegion (string reg_name) | - Remove region by reg_name.
-void AddRegionProc (string reg_name, procedure on, procedure off, procedure press, procedure release) | - Binds region to procedure for handling events.
+void AddRegionProc (string reg_name, procedure enter, procedure leave, procedure press, procedure release) | - Binds region to procedure for handling events.
 void ActivateRegion (string reg_name, int reg_proc) | - Execute one of procedures associated with region (see AddRegionProc).
 void GotoXY (int x, int y) | - Sets the current X and Y coordinates within the active window.
 void Print (string text) | - Displays text with current settings on the screen.
